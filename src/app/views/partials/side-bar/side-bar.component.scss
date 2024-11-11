@@ -1,0 +1,37 @@
+.ri-arrow-down-s-fill {
+  margin-left: 5px  ;
+}
+
+ol, ul {
+  padding-left: 0rem;
+}
+.header_transition_fixed {
+  background-color: #126f8a;
+  color: white;
+  animation: headerAnimation 0.3s 1;
+}
+
+@keyframes headerAnimation {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  100% {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}
+.header_transition_normal {
+  animation: headerAnimation2 0.3s 1;
+}
+
+@keyframes headerAnimation2 {
+  0% {
+    opacity: 0;
+    transform: translateY(10%);
+  }
+  100% {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}

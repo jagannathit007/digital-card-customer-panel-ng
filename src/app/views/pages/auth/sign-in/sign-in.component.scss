@@ -1,0 +1,54 @@
+.cleanWhite {
+  background: white !important;
+}
+
+.card-style-left {
+  min-width: 120px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  margin-right: 3px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 1px solid grey;
+}
+
+.card-style-right {
+  min-width: 120px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  margin-left: 3px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 1px solid grey;
+}
+
+.selected {
+  color: white;
+  background-color: #37506b;
+  border: 1px solid #37506b;
+  transition: all 0.3s;
+}
+
+.disable-focus:focus {
+  box-shadow: none;
+}
+
+
+input.ng-invalid.ng-touched {
+  border: 1px solid #dd3444 !important;
+}
+
+select.ng-invalid.ng-touched {
+  border: 1px solid #dd3444 !important;
+}
+
+.has-error {
+  color: #dd3444 !important;
+  font-size: 11px;
+}
+
+.resend{ cursor: pointer;}
