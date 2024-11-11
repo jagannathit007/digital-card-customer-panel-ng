@@ -2,25 +2,15 @@
   <div class="sidebar-content js-simplebar" style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
     <a class="sidebar-brand" style="color:#126f8a; background: aliceblue; padding: 10px 20px;" href="dashboard">
       <span class="align-middle">
-        <div class="text-truncate">{{userData?.name}}</div>
+        <div class="text-truncate">ItFuturz</div>
         <div style="font-size: 12px;">
-          Distributor Partner
+          Jagannath Maharana
         </div>
       </span>
     </a>
 
     <div class="vh-100" style="overflow-y: auto; overflow-x: hidden; padding-bottom: 50%;">
       <ul class="sidebar-nav">
-        <!-- <li class="sidebar-header">Modules</li>
-        <li class="sidebar-item" *ngFor="let item of sideBarService.list; let i = index" [routerLinkActive]="'active'">
-          <a class="sidebar-link user-select-none" [routerLink]="item.link">
-            <i class="align-middle" [attr.data-feather]="item?.icon"></i>
-            <span class="align-middle">{{item.title}}</span>
-          </a>
-        </li> -->
-
-
-        <!-- drop down -->
         <span *ngFor="let module of sideBarService.list">
           <li class="sidebar-header">{{module.moduleName}}</li>
           <li class="sidebar-item" *ngFor="let item of module.menus; let i = index" [routerLinkActive]="'active'">
@@ -53,18 +43,8 @@
 
 
         <li class="sidebar-header">Extra & Tools</li>
-        <li class="sidebar-item" [routerLinkActive]="'active'">
-          <a class="sidebar-link user-select-none" [routerLink]="'chat'">
-            <i class="align-middle" data-feather="message-circle"></i> <span class="align-middle">Chat</span>
-          </a>
-        </li>
-        <li class="sidebar-item" [routerLinkActive]="'active'">
-          <a class="sidebar-link user-select-none" [routerLink]="'profile'">
-            <i class="align-middle" data-feather="settings"></i> <span class="align-middle">Settings</span>
-          </a>
-        </li>
         <li class="sidebar-item">
-          <a class="sidebar-link user-select-none" (click)="onLogout()">
+          <a class="sidebar-link user-select-none">
             <i class="align-middle" data-feather="log-out"></i> <span class="align-middle">Logout</span>
           </a>
         </li>
@@ -72,13 +52,3 @@
     </div>
   </div>
 </nav>
-
-<div class="position-fixed" style="top: 54px;right: 0px;z-index: 1;width : 320px">
-  <div class="alert alert-warning alert-dismissible fade show" role="alert"
-    *ngFor="let item of sideBarService.socketService.newMassages; let i = index">
-    <strong>New Message From {{item.user.type | titlecase}}</strong> <br />
-    <span> {{item.user.name | uppercase}} Says, </span> <br>
-    <small>{{item.message}} </small>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-</div>
