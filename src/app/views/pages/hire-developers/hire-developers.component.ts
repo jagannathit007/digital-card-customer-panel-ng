@@ -11,16 +11,17 @@ import { apiEndpoints } from 'src/app/core/constants/api-endpoints';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { PaginationModel } from 'src/app/core/utilities/pagination-model';
 import { MasterService } from 'src/app/services/master.service';
+declare var $: any;
 
 @Component({
-  selector: 'app-job-applications',
+  selector: 'app-hire-developers',
   standalone: true,
   imports: [CommonModule, FormsModule, NgxPaginationModule],
-  templateUrl: './job-applications.component.html',
-  styleUrl: './job-applications.component.scss',
+  templateUrl: './hire-developers.component.html',
+  styleUrl: './hire-developers.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class JobApplicationsComponent implements OnInit {
+export class HireDevelopersComponent implements OnInit {
   constructor(
     private masterService: MasterService,
     private cdr: ChangeDetectorRef
@@ -32,11 +33,11 @@ export class JobApplicationsComponent implements OnInit {
 
   dataListing: PaginationModel | undefined;
   filter: any = { page: 1, search: '', limit: '10' };
-  form = { id: '0', reviewer: '', description: '' };
+  form = { id: '0', language: '', description: '' };
   getData = async () => {
     let result = await this.masterService.getData(
       this.filter,
-      apiEndpoints.GET_JOB_APPLICATIONS
+      apiEndpoints.GET_HIRE_DEVELOPERS
     );
     this.dataListing = result;
     this.cdr.detectChanges();
@@ -45,6 +46,22 @@ export class JobApplicationsComponent implements OnInit {
   onSearch = () => {
     this.filter.page = 1;
     this.getData();
+  };
+
+  showModal = () => {
+    this.form = { id: '0', language: '', description: '' };
+    $('#expertiseModal').modal('show');
+  };
+
+  onSubmit = async () => {
+    let result = await this.masterService.createData(
+      this.form,
+      apiEndpoints.SAVE_HIRE_DEVELOPERS
+    );
+    if (result) {
+      $('#expertiseModal').modal('hide');
+      this.getData();
+    }
   };
 
   onDelete = async (item: any) => {
@@ -56,7 +73,7 @@ export class JobApplicationsComponent implements OnInit {
     if (confirm.isConfirmed) {
       await this.masterService.deleteData(
         { id: item._id },
-        apiEndpoints.DELETE_TESTIMONIAL
+        apiEndpoints.DELETE_HIRE_DEVELOPERS
       );
       this.getData();
     }

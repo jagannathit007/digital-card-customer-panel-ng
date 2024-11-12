@@ -51,6 +51,11 @@ export class SideBarService {
           link: 'testimonial',
           icon: 'sliders',
         },
+        {
+          title: 'Hire Developers',
+          link: 'hire-developers',
+          icon: 'code',
+        },
       ],
     },
     {

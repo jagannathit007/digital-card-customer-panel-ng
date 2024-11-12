@@ -24,6 +24,21 @@ class ApiEndpoints {
   public GET_PRODUCTS: string = `${this.PATH}/getProducts`;
   public SAVE_PRODUCT: string = `${this.PATH}/saveProduct`;
   public DELETE_PRODUCT: string = `${this.PATH}/deleteProduct`;
+
+  public GET_TESTIMONIAL: string = `${this.PATH}/getTestimonials`;
+  public SAVE_TESTIMONIAL: string = `${this.PATH}/saveTestimonial`;
+  public DELETE_TESTIMONIAL: string = `${this.PATH}/deleteTestimonial`;
+
+  public GET_HIRE_DEVELOPERS: string = `${this.PATH}/getHireDevelopers`;
+  public SAVE_HIRE_DEVELOPERS: string = `${this.PATH}/saveHireDevelopers`;
+  public DELETE_HIRE_DEVELOPERS: string = `${this.PATH}/deleteHireDevelopers`;
+
+  public GET_JOB_APPLICATIONS: string = `${this.PATH}/getJobApplications`;
+  public GET_HIRING_APPLICATIONS: string = `${this.PATH}/getHiringApplications`;
+  public GET_COURSE_APPLICATIONS: string = `${this.PATH}/getCoursesApplications`;
+
+  public GET_PORTFOLIO: string = `${this.PATH}/getPortfolio`;
+  public SAVE_PORTFOLIO: string = `${this.PATH}/savePortfolio`;
 }
 
 export let apiEndpoints = new ApiEndpoints();

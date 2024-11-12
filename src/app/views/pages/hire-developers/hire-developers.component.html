@@ -4,11 +4,11 @@
       <div class="card-body">
         <div style="display: flex; justify-content: space-between;">
           <div>
-            <div style="font-size: 20px; line-height: 18px;">Testimonials</div>
+            <div style="font-size: 20px; line-height: 18px;">Hire Developers</div>
             <div style="font-size: 12px; color: grey">Data</div>
           </div>
           <div>
-            <button class="btn btn-success" type="button" (click)="showModal()">+ Add Testimonial</button>
+            <button class="btn btn-success" type="button" (click)="showModal()">+ Add Hire Developer</button>
           </div>
         </div>
 
@@ -31,7 +31,7 @@
             <thead>
               <tr>
                 <th width="5%" class="text-center">#</th>
-                <th>Reviewer Name</th>
+                <th>Language</th>
                 <th>Description</th>
                 <th width="20%" class="text-center">Action</th>
               </tr>
@@ -42,7 +42,7 @@
               filter.page, totalItems: dataListing!.totalDocs}; let i = $index; track item._id){
               <tr>
                 <td class="text-center">{{i+1}}</td>
-                <td>{{item.reviewer}}</td>
+                <td>{{item.language}}</td>
                 <td>{{item.description}}</td>
                 <td class="text-center">
                   <button class="btn btn-danger" (click)="onDelete(item)">
@@ -74,11 +74,11 @@
   </div>
 
   <!-- Modal -->
-  <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="expertiseModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-md">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Add Testimonial</h5>
+          <h5 class="modal-title" id="exampleModalLabel">Add Hire Developer</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -86,8 +86,8 @@
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group">
-                  <label>Reviewer Name</label>
-                  <input type="text" class="form-control" [(ngModel)]="form.reviewer"
+                  <label>Language</label>
+                  <input type="text" class="form-control" [(ngModel)]="form.language"
                     [ngModelOptions]="{standalone: true}">
                 </div>
               </div>

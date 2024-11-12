@@ -13,6 +13,7 @@ import { JobApplicationsComponent } from './views/pages/job-applications/job-app
 import { HiringInquiresComponent } from './views/pages/hiring-inquires/hiring-inquires.component';
 import { CourseInquiresComponent } from './views/pages/course-inquires/course-inquires.component';
 import { ContactInquiresComponent } from './views/pages/contact-inquires/contact-inquires.component';
+import { HireDevelopersComponent } from './views/pages/hire-developers/hire-developers.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'auth/login' },
@@ -28,6 +29,7 @@ export const routes: Routes = [
       { path: 'portfolio', component: PortfolioComponent },
       { path: 'expertise', component: ExpertiseComponent },
       { path: 'products', component: ProductsComponent },
+      { path: 'hire-developers', component: HireDevelopersComponent },
       { path: 'testimonial', component: TestimonialsComponent },
       { path: 'job-applications', component: JobApplicationsComponent },
       { path: 'hiring-inquires', component: HiringInquiresComponent },

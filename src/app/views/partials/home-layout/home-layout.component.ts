@@ -4,6 +4,8 @@ import { SideBarComponent } from '../side-bar/side-bar.component';
 import { HeaderComponent } from '../header/header.component';
 import { RouterOutlet } from '@angular/router';
 import { FooterComponent } from '../footer/footer.component';
+import { swalHelper } from 'src/app/core/constants/swal-helper';
+import { AppStorage } from 'src/app/core/utilities/app-storage';
 
 @Component({
   selector: 'app-home-layout',

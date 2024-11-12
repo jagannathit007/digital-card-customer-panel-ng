@@ -2,9 +2,48 @@
   <div class="col-md-12">
     <div class="card rounded-0">
       <div class="card-body">
-        <div style="font-size: 20px; line-height: 18px;">Portfolio</div>
-        <div style="font-size: 12px; color: grey">Data</div>
+        <div style="display: flex; justify-content: space-between;">
+          <div>
+            <div style="font-size: 20px; line-height: 18px;">Portfolio</div>
+            <div style="font-size: 12px; color: grey">Form</div>
+          </div>
+        </div>
 
+        <div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group mt-2">
+                <label>Experience</label>
+                <input type="text" class="form-control" [(ngModel)]="form.experience"
+                  [ngModelOptions]="{standalone: true}">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group mt-2">
+                <label>Project Completed</label>
+                <input type="text" class="form-control" [(ngModel)]="form.projectCompleted"
+                  [ngModelOptions]="{standalone: true}">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group mt-2">
+                <label>Satisfied Clients</label>
+                <input type="text" class="form-control" [(ngModel)]="form.satisfiedClients"
+                  [ngModelOptions]="{standalone: true}">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group mt-2">
+                <label>Team Members</label>
+                <input type="text" class="form-control" [(ngModel)]="form.teamMembers"
+                  [ngModelOptions]="{standalone: true}">
+              </div>
+            </div>
+          </div>
+          <div class="mt-2">
+            <button class="btn btn-primary" (click)="onSubmit()">Submit</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

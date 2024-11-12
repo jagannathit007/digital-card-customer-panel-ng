@@ -5,7 +5,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule],
-  template: `<p>dashboard works!</p>`,
+  template: `<h2>Comming Soon</h2>`,
   styleUrl: './dashboard.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
