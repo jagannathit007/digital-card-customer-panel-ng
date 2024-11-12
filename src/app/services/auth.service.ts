@@ -11,11 +11,7 @@ declare var $: any;
 })
 export class AuthService {
   private headers: any = [];
-  constructor(
-    private apiManager: ApiManager,
-    private storage: AppStorage,
-    private http: HttpClient
-  ) {}
+  constructor(private apiManager: ApiManager, private storage: AppStorage) {}
 
   private getHeaders = () => {
     this.headers = [];

@@ -1,0 +1,59 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="card rounded-0">
+      <div class="card-body">
+        <div style="font-size: 20px; line-height: 18px;">Job Applications</div>
+        <div style="font-size: 12px; color: grey">Data</div>
+
+        <div class="row mt-3 mb-2">
+          <div class="col">
+            <input type="text" class="form-control" placeholder="Search here...">
+          </div>
+          <div class="col-auto">
+            <select class="form-select">
+              <option value="10">10</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th width="5%" class="text-center">#</th>
+                <th>Name</th>
+                <th width="20%" class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-center">1</td>
+                <td>
+                  <div>Jagannath Maharana</div>
+                  <div><small>{{'jagannath@itfuturz.com'}}</small></div>
+                </td>
+                <td class="text-center">
+                  <button class="btn btn-info me-2">
+                    <i class="ri-edit-box-line"></i>
+                  </button>
+                  <button class="btn btn-danger">
+                    <i class="ri-delete-bin-5-line"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="d-flex justify-content-end">
+          <nav>
+            <pagination-controls class="pagination" (pageChange)="onPageChanged($event)">
+            </pagination-controls>
+          </nav>
+        </div>
+
+      </div>
+    </div>
+  </div>

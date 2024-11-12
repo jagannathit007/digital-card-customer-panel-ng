@@ -35,6 +35,7 @@ export class SignInComponent implements OnInit {
     this.isLoading = true;
     try {
       let response = await this.authService.signIn(this.loginForm.value);
+      this.isLoading = false;
       if (response) {
         window.location.href = '/dashboard';
       }

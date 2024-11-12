@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @Component({
   selector: 'app-hiring-inquires',
   standalone: true,
-  imports: [
-    CommonModule,
-  ],
-  template: `<p>hiring-inquires works!</p>`,
-  styleUrl: './hiring-inquires.component.css',
+  imports: [CommonModule, NgxPaginationModule],
+  templateUrl: './hiring-inquires.component.html',
+  styleUrl: './hiring-inquires.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HiringInquiresComponent { }
+export class HiringInquiresComponent {
+  onPageChanged(page: any) {}
+}

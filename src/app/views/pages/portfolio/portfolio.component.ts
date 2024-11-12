@@ -4,11 +4,11 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 @Component({
   selector: 'app-portfolio',
   standalone: true,
-  imports: [
-    CommonModule,
-  ],
-  template: `<p>portfolio works!</p>`,
-  styleUrl: './portfolio.component.css',
+  imports: [CommonModule],
+  templateUrl: './portfolio.component.html',
+  styleUrl: './portfolio.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PortfolioComponent { }
+export class PortfolioComponent {
+  onPageChanged(page: any) {}
+}
