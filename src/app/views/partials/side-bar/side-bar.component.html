@@ -2,7 +2,7 @@
   <div class="sidebar-content js-simplebar" style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
     <a class="sidebar-brand" style="color:#126f8a; background: aliceblue; padding: 10px 20px;" href="dashboard">
       <span class="align-middle">
-        <div class="text-truncate">ItFuturz</div>
+        <div class="text-truncate">Digital Card</div>
         <div style="font-size: 12px;">
           Jagannath Maharana
         </div>
@@ -21,6 +21,7 @@
                 <span class="align-middle">{{ item.title }}</span>
               </a>
             </ng-container>
+            
             <ng-container *ngIf="item.menu">
               <a class="sidebar-link user-select-none" (click)="sideBarService.toggleSubMenu(i)">
                 <i class="align-middle" [attr.data-feather]="item?.icon"></i>

@@ -25,10 +25,24 @@ export class SignInComponent implements OnInit {
   ngOnInit(): void {}
   isPassword: boolean = true;
   emailId = 'info@itfuturz.com';
+  // loginForm = new FormGroup({
+  //   // emailId: new FormControl('', [Validators.required, Validators.email]),
+  //   // password: new FormControl('', [Validators.required]),
+  //   phoneNumber:new FormControl('', [
+  //     Validators.required
+  //     Validators.pattern('^[0-9]{10}$')
+  //   ]),
+  // });
+
   loginForm = new FormGroup({
-    emailId: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [Validators.required]),
+    phoneNumber: new FormControl('', [
+      Validators.required, // Note the comma here
+      Validators.pattern('^[0-9]{10}$')
+    ])
+    
   });
+
+  
 
   isLoading: boolean = false;
   onSubmit = async () => {

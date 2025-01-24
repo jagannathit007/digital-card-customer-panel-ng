@@ -1,0 +1,63 @@
+<div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-6 col-md-8 col-sm-10">
+        <div class="card shadow border">
+          <div class="card-body">
+            <h5 class="card-title text-center mb-4">Upload Image</h5>
+  
+            <!-- Drag and Drop Area -->
+            <div
+              id="drop-zone"
+              class="drop-zone mb-3"
+              (click)="onFileInputClick()"
+              (dragover)="onDragOver($event)"
+              (dragleave)="onDragLeave()"
+              (drop)="onFileDrop($event)"
+            >
+              <p>{{ dragDropMessage }}</p>
+              <input
+                type="file"
+                class="form-control d-none"
+                #fileInput
+                accept="image/*"
+                (change)="onFileSelected($event)"
+              />
+            </div>
+  
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="onPreviewImage()"
+              >
+                <i data-feather="eye"></i> Preview
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                (click)="onAddImage()"
+              >
+                Add Image
+              </button>
+            </div>
+  
+            <!-- Preview Section -->
+            <div
+              *ngIf="previewSrc"
+              class="mt-4 text-center border p-3 rounded bg-light"
+            >
+              <h6>Preview:</h6>
+              <img
+                [src]="previewSrc"
+                alt="Selected Image"
+                class="img-fluid"
+                style="max-height: 300px;"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

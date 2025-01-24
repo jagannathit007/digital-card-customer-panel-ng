@@ -9,80 +9,21 @@ export class SideBarService {
 
   list: any[] = [
     {
-      moduleName: 'Modules',
+      moduleName: 'Member',
       menus: [
         {
-          title: 'Dashboard',
-          link: 'dashboard',
-          icon: 'monitor',
+          title: 'Member Detail',
+          link: 'member-detail',
+          icon: 'user',
         },
         {
-          title: 'Admins',
-          link: 'admins',
-          icon: 'users',
-        },
-        {
-          title: 'Courses',
-          link: 'courses',
-          icon: 'folder-plus',
-        },
-        {
-          title: 'Technologies',
-          link: 'technologies',
-          icon: 'cpu',
-        },
-        {
-          title: 'Portfolio',
-          link: 'portfolio',
-          icon: 'globe',
-        },
-        {
-          title: 'Expertise',
-          link: 'expertise',
-          icon: 'trello',
-        },
-        {
-          title: 'Products',
-          link: 'products',
-          icon: 'archive',
-        },
-        {
-          title: 'Testimonial',
-          link: 'testimonial',
-          icon: 'sliders',
-        },
-        {
-          title: 'Hire Developers',
-          link: 'hire-developers',
-          icon: 'code',
+          title: 'Business Card Details',
+          link: 'business-card-detail',
+          icon: 'credit-card',
         },
       ],
     },
-    {
-      moduleName: 'Website',
-      menus: [
-        {
-          title: 'Job Applications',
-          link: 'job-applications',
-          icon: 'file-text',
-        },
-        {
-          title: 'Hiring Inquires',
-          link: 'hiring-inquires',
-          icon: 'file-text',
-        },
-        {
-          title: 'Course Inquires',
-          link: 'course-inquires',
-          icon: 'file-text',
-        },
-        {
-          title: 'Contact Inquires',
-          link: 'contact-inquires',
-          icon: 'file-text',
-        },
-      ],
-    },
+    
   ];
   isMobile: boolean = false;
   activeSubMenuIndex: number | null = null;
@@ -102,3 +43,80 @@ export class SideBarService {
     this.router.navigateByUrl(`/${item}`);
   }
 }
+
+
+// {
+    //   moduleName: 'Modules',
+    //   menus: [
+    //     {
+    //       title: 'Dashboard',
+    //       link: 'dashboard',
+    //       icon: 'monitor',
+    //     },
+    //     {
+    //       title: 'Admins',
+    //       link: 'admins',
+    //       icon: 'users',
+    //     },
+    //     {
+    //       title: 'Courses',
+    //       link: 'courses',
+    //       icon: 'folder-plus',
+    //     },
+    //     {
+    //       title: 'Technologies',
+    //       link: 'technologies',
+    //       icon: 'cpu',
+    //     },
+    //     {
+    //       title: 'Portfolio',
+    //       link: 'portfolio',
+    //       icon: 'globe',
+    //     },
+    //     {
+    //       title: 'Expertise',
+    //       link: 'expertise',
+    //       icon: 'trello',
+    //     },
+    //     {
+    //       title: 'Products',
+    //       link: 'products',
+    //       icon: 'archive',
+    //     },
+    //     {
+    //       title: 'Testimonial',
+    //       link: 'testimonial',
+    //       icon: 'sliders',
+    //     },
+    //     {
+    //       title: 'Hire Developers',
+    //       link: 'hire-developers',
+    //       icon: 'code',
+    //     },
+    //   ],
+    // },
+    // {
+    //   moduleName: 'Website',
+    //   menus: [
+    //     {
+    //       title: 'Job Applications',
+    //       link: 'job-applications',
+    //       icon: 'file-text',
+    //     },
+    //     {
+    //       title: 'Hiring Inquires',
+    //       link: 'hiring-inquires',
+    //       icon: 'file-text',
+    //     },
+    //     {
+    //       title: 'Course Inquires',
+    //       link: 'course-inquires',
+    //       icon: 'file-text',
+    //     },
+    //     {
+    //       title: 'Contact Inquires',
+    //       link: 'contact-inquires',
+    //       icon: 'file-text',
+    //     },
+    //   ],
+    // },

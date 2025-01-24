@@ -1,4 +1,4 @@
-<main class="d-flex w-100">
+<main class="d-flex w-100 bg-warning ">
   <div class="container">
     <div class="row vh-100">
       <div class="col-lg-4 offset-lg-4 d-table h-100">
@@ -6,41 +6,65 @@
           <div class="card">
             <div class="card-body">
               <div class="my-3" align="center">
-                <img src="/assets/images/logo.png" alt="" width="110px">
+                <img src="assets\images\title.png" alt="" width="110px">
               </div>
-              <h2 class="text-center m-0 p-0"><b>ITFuturz Admin</b></h2>
+              <h2 class="text-center m-0 p-0"><b>Digital Card</b></h2>
               <div class="text-center mb-3">
                 <span style="font-size:13px;" class="text-muted">
                   Please login to start your session
                 </span>
               </div>
-              <form novalidate [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-                <div class="mb-2">
-                  <label>Email ID</label>
-                  <input inputmode="email" class="form-control form-control-lg" type="email" formControlName="emailId"
-                    autocomplete="off" required />
-                  <span class="has-error"
-                    *ngIf="!loginForm.controls.emailId?.valid && (loginForm.controls.emailId?.dirty ||loginForm.controls.emailId?.touched)">
-                    Email ID must be valid.
-                  </span>
-                </div>
+                <form novalidate [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                 
+                  <!-- <div class="mb-2">
+                    <label>Email ID</label>
+                    <input inputmode="email" class="form-control form-control-lg" type="email" formControlName="emailId"
+                      autocomplete="off" required />
+                    <span class="has-error"
+                      *ngIf="!loginForm.controls.emailId?.valid && (loginForm.controls.emailId?.dirty ||loginForm.controls.emailId?.touched)">
+                      Email ID must be valid.
+                    </span>
+                  </div> -->
 
-                <div class="mb-3">
-                  <label for="password">Password</label>
-                  <input class="form-control form-control-lg disable-focus" type="{{isPassword? 'password' :'text'}}"
-                    formControlName="password" autocomplete="off" id="password" required />
-                  <span class="has-error"
-                    *ngIf="!loginForm.controls.password?.valid && (loginForm.controls.password?.dirty ||loginForm.controls.password?.touched)">
-                    Password is required.
-                  </span>
-                </div>
-                <div class="text-center mt-2">
-                  <button type="submit" [disabled]="!loginForm.valid || isLoading "
-                    class="btn col-12 btn-lg btn-primary">
-                    Login
-                  </button>
-                </div>
-              </form>
+                  <div class="mb-2">
+                    <label>Phone Number</label>
+                    <input
+                      class="form-control form-control-lg"
+                      type="tel"
+                      inputmode="numeric"
+                      formControlName="phoneNumber"
+                      autocomplete="off"
+                      required
+                    />
+                    <span class="has-error"
+                      *ngIf="
+                        loginForm.controls.phoneNumber?.invalid &&
+                        (loginForm.controls.phoneNumber?.dirty ||
+                          loginForm.controls.phoneNumber?.touched)
+                      ">
+                      Phone number must be 10 digits.
+                    </span>
+                  </div>
+
+<!-- 
+                  <div class="mb-3">
+                    <label for="password">Password</label>
+                    <input class="form-control form-control-lg disable-focus" type="{{isPassword? 'password' :'text'}}"
+                      formControlName="password" autocomplete="off" id="password" required />
+                    <span class="has-error"
+                      *ngIf="!loginForm.controls.password?.valid && (loginForm.controls.password?.dirty ||loginForm.controls.password?.touched)">
+                      Password is required.
+                    </span>
+                  </div> -->
+
+
+                  <div class="text-center mt-2">
+                    <button type="submit" [disabled]="!loginForm.valid || isLoading "
+                      class="btn col-12 btn-lg btn-primary">
+                      Login
+                    </button>
+                  </div>
+                </form>
             </div>
           </div>
           <footer class="text-center text-light">
