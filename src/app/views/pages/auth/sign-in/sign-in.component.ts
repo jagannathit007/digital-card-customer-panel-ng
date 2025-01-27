@@ -23,38 +23,40 @@ export class SignInComponent implements OnInit {
   }
 
   ngOnInit(): void {}
-  isPassword: boolean = true;
-  emailId = 'info@itfuturz.com';
-  // loginForm = new FormGroup({
-  //   // emailId: new FormControl('', [Validators.required, Validators.email]),
-  //   // password: new FormControl('', [Validators.required]),
-  //   phoneNumber:new FormControl('', [
-  //     Validators.required
-  //     Validators.pattern('^[0-9]{10}$')
-  //   ]),
-  // });
 
-  loginForm = new FormGroup({
-    phoneNumber: new FormControl('', [
-      Validators.required, // Note the comma here
-      Validators.pattern('^[0-9]{10}$')
-    ])
-    
-  });
+  isPassword: boolean = true; 
+  emailId = 'info@itfuturz.com';
 
   
+  loginForm = new FormGroup({
+    emailId: new FormControl('', [
+      Validators.required, 
+      Validators.email,
+    ]),
+    password: new FormControl('', [
+      Validators.required,
+      Validators.minLength(6), 
+    ]),
+  });
 
   isLoading: boolean = false;
+
+  // Submit function
   onSubmit = async () => {
     this.isLoading = true;
-    try {
-      let response = await this.authService.signIn(this.loginForm.value);
-      this.isLoading = false;
-      if (response) {
-        window.location.href = '/dashboard';
+    if (this.loginForm.valid) {
+      try {
+        const response = await this.authService.signIn(this.loginForm.value);
+        this.isLoading = false;
+        if (response) {
+          window.location.href = '/dashboard';
+        }
+      } catch (error) {
+        console.error('Sign-In failed', error);
+        this.isLoading = false;
       }
-    } catch (error) {
-      console.error('Sign-In failed', error);
+    } else {
+      console.error('Form is invalid');
       this.isLoading = false;
     }
   };
