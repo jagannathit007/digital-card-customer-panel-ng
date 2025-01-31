@@ -28,19 +28,19 @@ export class AdminComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.getData();
+    // this.getData();
   }
 
   dataListing: PaginationModel | undefined;
   filter: any = { page: 1, search: '', limit: '10' };
   form = { name: '', emailId: '', password: '' };
   getData = async () => {
-    let result = await this.masterService.getData(
-      this.filter,
-      apiEndpoints.GET_ADMINS
-    );
-    this.dataListing = result;
-    this.cdr.detectChanges();
+    // let result = await this.masterService.getData(
+    //   this.filter,
+    //   apiEndpoints.GET_ADMINS
+    // );
+    // this.dataListing = result;
+    // this.cdr.detectChanges();
   };
 
   onSearch = () => {
@@ -54,29 +54,29 @@ export class AdminComponent implements OnInit {
   };
 
   onSubmit = async () => {
-    let result = await this.masterService.createData(
-      this.form,
-      apiEndpoints.CREATE_ADMIN
-    );
-    if (result) {
-      $('#adminModal').modal('hide');
-      this.getData();
-    }
+    // let result = await this.masterService.createData(
+    //   this.form,
+    //   apiEndpoints.CREATE_ADMIN
+    // );
+    // if (result) {
+    //   $('#adminModal').modal('hide');
+    //   this.getData();
+    // }
   };
 
   onDelete = async (item: any) => {
-    let confirm = await swalHelper.confirmation(
-      'Delete',
-      'Do you really want to delete?',
-      'warning'
-    );
-    if (confirm.isConfirmed) {
-      await this.masterService.deleteData(
-        { id: item._id },
-        apiEndpoints.DELETE_ADMIN
-      );
-      this.getData();
-    }
+    // let confirm = await swalHelper.confirmation(
+    //   'Delete',
+    //   'Do you really want to delete?',
+    //   'warning'
+    // );
+    // if (confirm.isConfirmed) {
+    //   await this.masterService.deleteData(
+    //     { id: item._id },
+    //     apiEndpoints.DELETE_ADMIN
+    //   );
+    //   this.getData();
+    // }
   };
 
   onPageChanged(page: any) {

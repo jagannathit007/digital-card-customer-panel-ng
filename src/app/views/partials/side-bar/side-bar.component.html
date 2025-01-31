@@ -3,8 +3,8 @@
     <a class="sidebar-brand" style="color:#126f8a; background: aliceblue; padding: 10px 20px;" href="dashboard">
       <span class="align-middle">
         <div class="text-truncate">Digital Card</div>
-        <div style="font-size: 12px;">
-          Jagannath Maharana
+        <div style="font-size: 12px;" >
+          {{ authService.profileData!=null ? authService.profileData.name : '--' }}
         </div>
       </span>
     </a>

@@ -12,14 +12,19 @@ export class SideBarService {
       moduleName: 'Member',
       menus: [
         {
-          title: 'Member Detail',
-          link: 'member-detail',
+          title: 'Business Card',
+          link: 'business-cards',
           icon: 'user',
         },
         {
-          title: 'Business Card Details',
-          link: 'business-card-detail',
+          title: 'Scanned Cards',
+          link: 'scanned-cards',
           icon: 'credit-card',
+        },
+        {
+          title: 'Account Settings',
+          link: 'account-settings',
+          icon: 'settings',
         },
       ],
     },

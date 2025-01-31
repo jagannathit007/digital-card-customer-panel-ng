@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { firstValueFrom, Observable, throwError } from 'rxjs';
+import { firstValueFrom, lastValueFrom, Observable, throwError } from 'rxjs';
 import { ResponseModel } from './response-model';
 import { AppStorage } from './app-storage';
 import { common } from '../constants/common';

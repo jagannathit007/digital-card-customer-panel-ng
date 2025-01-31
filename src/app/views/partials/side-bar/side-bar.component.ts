@@ -4,6 +4,7 @@ import { SideBarService } from './side-bar.service';
 import { CommonModule } from '@angular/common';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-side-bar',
@@ -16,6 +17,7 @@ export class SideBarComponent {
   constructor(
     private router: Router,
     private storage: AppStorage,
+    public authService: AuthService,
     public sideBarService: SideBarService
   ) {}
 

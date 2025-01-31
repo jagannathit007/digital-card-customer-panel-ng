@@ -49,7 +49,7 @@ export class SignInComponent implements OnInit {
         const response = await this.authService.signIn(this.loginForm.value);
         this.isLoading = false;
         if (response) {
-          window.location.href = '/dashboard';
+          window.location.href = '/business-cards';
         }
       } catch (error) {
         console.error('Sign-In failed', error);

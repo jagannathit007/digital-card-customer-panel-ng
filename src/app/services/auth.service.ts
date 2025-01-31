@@ -1,16 +1,21 @@
 import { Injectable } from '@angular/core';
 import { swalHelper } from '../core/constants/swal-helper';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { apiEndpoints } from '../core/constants/api-endpoints';
 import { common } from '../core/constants/common';
 import { ApiManager } from '../core/utilities/api-manager';
 import { AppStorage } from '../core/utilities/app-storage';
-declare var $: any;
+import { Observable, of } from 'rxjs';
+
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private headers: any = [];
+
+  profileData:any;
+  selectedBusinessCard: String = "";
+  businessCards$: Observable<any[]> = of([]);
   constructor(private apiManager: ApiManager, private storage: AppStorage) {}
 
   private getHeaders = () => {
@@ -31,10 +36,9 @@ export class AuthService {
         data,
         this.headers
       );
-      if (response.status == 200 && response.data != 0) {
+      if (response.status == 200 && response.data != null) {
         this.storage.clearAll();
-        const accessToken = response.data;
-        this.storage.set(common.TOKEN, accessToken);
+        this.storage.set(common.TOKEN, response.data);
         return true;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -43,6 +47,74 @@ export class AuthService {
     } catch (err) {
       swalHelper.showToast('Something went wrong!', 'error');
       return false;
+    }
+  }
+
+  async getProfile(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.GET_PROFILE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+  async updateProfile(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.UPDATE_PROFILE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async changePassword(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.CHANGE_PASSWORD,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
     }
   }
 }
