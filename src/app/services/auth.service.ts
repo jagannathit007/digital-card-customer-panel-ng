@@ -6,15 +6,14 @@ import { ApiManager } from '../core/utilities/api-manager';
 import { AppStorage } from '../core/utilities/app-storage';
 import { Observable, of } from 'rxjs';
 
-
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private headers: any = [];
 
-  profileData:any;
-  selectedBusinessCard: String = "";
+  profileData: any;
+  selectedBusinessCard: String = '';
   businessCards$: Observable<any[]> = of([]);
   constructor(private apiManager: ApiManager, private storage: AppStorage) {}
 
@@ -25,6 +24,15 @@ export class AuthService {
       this.headers.push({ Authorization: `Bearer ${token}` });
     }
   };
+
+  private addBusinessCardId(data: any) {
+    let businessCardId = this.storage.get(common.BUSINESS_CARD);
+
+    if (businessCardId != null) {
+      data.businessCardId = businessCardId;
+    }
+    return data;
+  }
 
   async signIn(data: any) {
     try {
@@ -81,6 +89,7 @@ export class AuthService {
           method: 'POST',
         },
         data,
+
         this.headers
       );
       if (response.status == 200 && response.data != null) {
@@ -94,6 +103,85 @@ export class AuthService {
       return null;
     }
   }
+
+  async updatePersonalDetails(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); // Adding businessCardId here
+
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.PERSONAL_DETAILS,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async updateBusinessDetails(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); // Adding businessCardId here
+
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.BUSINESS_DETAILS,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async updateDocumentDetails(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); // Adding businessCardId here
+
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.DOCUMENT_DETAILS,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
 
   async changePassword(data: any) {
     try {
