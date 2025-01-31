@@ -1,25 +1,25 @@
 <div class="mt-4">
     <div class="row d-flex flex-wrap">
         <div class="col-12 p-4">
-            <form>
+            <form ngNativeValidate>
                 <div class="row g-3">
 
                     <!-- Name Field (Optional) -->
                     <div class="col-md-4 col-12">
                         <label for="company" class="form-label">Company</label>
-                        <input type="text" id="company" class="form-control" />
+                        <input type="text" id="company" class="form-control" [(ngModel)]="form.company" [ngModelOptions]="{standalone: true}" required/>
                     </div>
 
                     <!-- Company Email Field (Optional) -->
                     <div class="col-md-4 col-12">
                         <label for="companyEmail" class="form-label">Company Email</label>
-                        <input type="email" id="companyEmail" class="form-control" />
+                        <input type="email" id="companyEmail" class="form-control" [(ngModel)]="form.company" [ngModelOptions]="{standalone: true}" required/>
                     </div>
 
                     <!-- Company Mobile Field (Optional) -->
                     <div class="col-md-4 col-12">
                         <label for="companyMobile" class="form-label">Company Mobile</label>
-                        <input type="text" id="companyMobile" class="form-control" />
+                        <input type="text" id="companyMobile" class="form-control" [(ngModel)]="form.company" [ngModelOptions]="{standalone: true}" required/>
                     </div>
 
                     <!-- Profile Image Upload -->
@@ -43,32 +43,32 @@
                         <div class="row g-3">
                             <div class="col-md-4 col-12">
                                 <label for="facebook" class="form-label">Facebook</label>
-                                <input type="text" id="facebook" class="form-control" />
+                                <input type="text" id="facebook" class="form-control" [(ngModel)]="form.companySocial.facebook" [ngModelOptions]="{standalone: true}" />
                             </div>
 
                             <div class="col-md-4 col-12">
                                 <label for="google" class="form-label">Google</label>
-                                <input type="text" id="google" class="form-control" />
+                                <input type="text" id="google" class="form-control" [(ngModel)]="form.companySocial.google" [ngModelOptions]="{standalone: true}" />
                             </div>
 
                             <div class="col-md-4 col-12">
                                 <label for="twitter" class="form-label">Twitter</label>
-                                <input type="text" id="twitter" class="form-control" />
+                                <input type="text" id="twitter" class="form-control" [(ngModel)]="form.companySocial.twitter" [ngModelOptions]="{standalone: true}" />
                             </div>
 
                             <div class="col-md-4 col-12">
                                 <label for="linkedIn" class="form-label">LinkedIn</label>
-                                <input type="text" id="linkedIn" class="form-control" />
+                                <input type="text" id="linkedIn" class="form-control" [(ngModel)]="form.companySocial.linkedIn" [ngModelOptions]="{standalone: true}" />
                             </div>
 
                             <div class="col-md-4 col-12">
                                 <label for="instagram" class="form-label">Instagram</label>
-                                <input type="text" id="instagram" class="form-control" />
+                                <input type="text" id="instagram" class="form-control" [(ngModel)]="form.companySocial.instagram" [ngModelOptions]="{standalone: true}" />
                             </div>
 
                             <div class="col-md-4 col-12">
                                 <label for="youtube" class="form-label">YouTube</label>
-                                <input type="text" id="youtube" class="form-control" />
+                                <input type="text" id="youtube" class="form-control" [(ngModel)]="form.companySocial.youtube" [ngModelOptions]="{standalone: true}" />
                             </div>
                         </div>
                     </div>
@@ -83,13 +83,13 @@
                             <!-- WhatsApp Message -->
                             <div class="col-md-6 col-12">
                                 <label for="whatsApp" class="form-label">WhatsApp</label>
-                                <textarea id="whatsApp" class="form-control" rows="4"></textarea>
+                                <textarea id="whatsApp" class="form-control" rows="4" [(ngModel)]="form.message.whatsApp" [ngModelOptions]="{standalone: true}"></textarea>
                             </div>
 
                             <!-- Email Message -->
                             <div class="col-md-6 col-12">
                                 <label for="email" class="form-label">Email</label>
-                                <textarea id="email" class="form-control" rows="4"></textarea>
+                                <textarea id="email" class="form-control" rows="4" [(ngModel)]="form.message.email" [ngModelOptions]="{standalone: true}"></textarea>
                             </div>
                         </div>
                     </div>
