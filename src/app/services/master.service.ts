@@ -20,6 +20,8 @@ export class MasterService {
     }
   };
 
+
+
   async deleteData(data: any, apiName: string) {
     try {
       this.getHeaders();
