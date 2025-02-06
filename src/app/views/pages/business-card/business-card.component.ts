@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { PersonalDetailsComponent } from './shared-details/personal-details/personal-details.component';
 import { DocumentDetailsComponent } from './shared-details/document-details/document-details.component';
 import { BusinessDetailsComponent } from "./shared-details/business-details/business-details.component";
+import { GalleryDetailsComponent } from "./shared-details/gallery-details/gallery-details.component";
 import { AuthService } from 'src/app/services/auth.service';
 import { AsyncPipe } from '@angular/common';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
@@ -18,6 +19,7 @@ import { FormsModule } from '@angular/forms';
     PersonalDetailsComponent,
     BusinessDetailsComponent,
     DocumentDetailsComponent,
+    GalleryDetailsComponent,
     BusinessDetailsComponent
 ],
   templateUrl: './business-card.component.html',
@@ -50,7 +52,11 @@ export class BusinessCardComponent {
     {
       title: "Document Details",
       href: "document-details"
-    }
+    },
+    {
+      title: "Gallery Details",
+      href: "gallery-details"
+    },
   ]
 
 }

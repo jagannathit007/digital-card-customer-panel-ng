@@ -19,7 +19,7 @@ import { common } from 'src/app/core/constants/common';
 export class PersonalDetailsComponent {
 
   constructor(private authService: AuthService, private storage: AppStorage) {
-    this.getCards();
+    // this.getCards();
   }
 
   getCards = async () => {

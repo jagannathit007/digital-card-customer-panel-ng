@@ -16,7 +16,7 @@ import { AuthService } from 'src/app/services/auth.service';
 export class BusinessDetailsComponent {
 
   constructor(private storage: AppStorage, public authService: AuthService) { 
-    this.authService.getBusinessCards();
+    // this.authService.getBusinessCards();
   }
 
 
