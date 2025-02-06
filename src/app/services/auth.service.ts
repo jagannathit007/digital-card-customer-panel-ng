@@ -12,10 +12,11 @@ import { Observable, of } from 'rxjs';
 export class AuthService {
   private headers: any = [];
 
+
   profileData: any;
   selectedBusinessCard: String = '';
   businessCards$: Observable<any[]> = of([]);
-  constructor(private apiManager: ApiManager, private storage: AppStorage) {}
+  constructor(private apiManager: ApiManager, private storage: AppStorage) { }
 
   private getHeaders = () => {
     this.headers = [];
@@ -27,11 +28,30 @@ export class AuthService {
 
   private addBusinessCardId(data: any) {
     let businessCardId = this.storage.get(common.BUSINESS_CARD);
-
     if (businessCardId != null) {
       data.businessCardId = businessCardId;
     }
     return data;
+  }
+
+  async getBusinessCards() {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        { url: apiEndpoints.BUSINESS_CARDS, method: 'POST' },
+        {},
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
   }
 
   async signIn(data: any) {
@@ -80,6 +100,7 @@ export class AuthService {
       return null;
     }
   }
+
   async updateProfile(data: any) {
     try {
       this.getHeaders();
@@ -181,7 +202,6 @@ export class AuthService {
       return null;
     }
   }
-
 
   async changePassword(data: any) {
     try {

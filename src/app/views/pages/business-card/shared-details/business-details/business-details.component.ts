@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { common } from 'src/app/core/constants/common';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-business-details',
@@ -14,7 +15,9 @@ import { AppStorage } from 'src/app/core/utilities/app-storage';
 })
 export class BusinessDetailsComponent {
 
-  constructor(private storage: AppStorage) { }
+  constructor(private storage: AppStorage, public authService: AuthService) { 
+    this.authService.getBusinessCards();
+  }
 
 
   profileImage: File | undefined;
@@ -64,7 +67,7 @@ export class BusinessDetailsComponent {
       formData.append('coverImage', this.coverImage, this.coverImage.name);
     }
 
-    
+
 
   }
 }
