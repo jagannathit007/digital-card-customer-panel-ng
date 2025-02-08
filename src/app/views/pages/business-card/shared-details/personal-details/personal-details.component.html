@@ -11,63 +11,170 @@
               <input type="text" id="name" class="form-control" [(ngModel)]="personalDetails.name" name="name"  required />
             </div>
         
-            <!-- Mobile Field -->
-            <div class="col-md-4 col-12">
-              <label for="mobile" class="form-label">Mobile</label>
-              <input type="text" id="mobile" class="form-control" [(ngModel)]="personalDetails.mobile" name="mobile" required />
-            </div>
+     <!-- Mobile Field -->
+<div class="col-md-4  col-12">
+  <div class="d-flex  justify-content-between align-items-center">
+      <label for="mobile" class="form-label">Mobile</label>
+      <div class="form-check form-switch  ">
+          <input class="form-check-input cursor-pointer" type="checkbox" id="mobileToggle" (change)="toggleSocialMedia('mobile')">
+      </div>
+  </div>
+  <input type="text" id="mobile" class="form-control" [(ngModel)]="personalDetails.mobile" name="mobile"  required />
+</div>
+
+<!-- Email Field -->
+<div class="col-md-4 col-12">
+  <div class="d-flex justify-content-between align-items-center">
+      <label for="emailId" class="form-label">Email</label>
+      <div class="form-check form-switch">
+          <input class="form-check-input cursor-pointer" type="checkbox" id="emailToggle" (change)="toggleSocialMedia('email')">
+      </div>
+  </div>
+  <input type="email" id="emailId" class="form-control" [(ngModel)]="personalDetails.emailId" name="emailId"  required />
+</div>
+
+<!-- WhatsApp Field -->
+<div class="col-md-4 col-12">
+  <div class="d-flex justify-content-between align-items-center">
+      <label for="whatsApp" class="form-label">WhatsApp</label>
+      <div class="form-check form-switch">
+          <input class="form-check-input cursor-pointer" type="checkbox" id="whatsAppToggle" (change)="toggleSocialMedia('whatsApp')">
+      </div>
+  </div>
+  <input type="text" id="whatsApp" class="form-control" [(ngModel)]="personalDetails.whatsApp" name="whatsApp"  required />
+</div>
+
         
-            <!-- Email Field -->
-            <div class="col-md-4 col-12">
-              <label for="emailId" class="form-label">Email</label>
-              <input type="email" id="emailId" class="form-control" [(ngModel)]="personalDetails.emailId" name="emailId" required />
-            </div>
-        
-            <!-- WhatsApp Field -->
-            <div class="col-md-4 col-12">
-              <label for="whatsApp" class="form-label">WhatsApp</label>
-              <input type="text" id="whatsApp" class="form-control" [(ngModel)]="personalDetails.whatsApp" name="whatsApp" required />
-            </div>
-        
-            <!-- Social Media Links -->
-            <div class="col-12 mt-4">
-              <label class="form-label" style="font-size: 16px;font-weight: 600;text-transform: uppercase; letter-spacing: 3px;">
-                Social Media Links
-              </label>
-              <div class="row g-3">
-                <div class="col-md-4 col-12">
-                  <label for="facebook" class="form-label">Facebook</label>
-                  <input type="text" id="facebook" class="form-control" [(ngModel)]="personalDetails.personalSocial.facebook" name="facebook" required />
-                </div>
-        
-                <div class="col-md-4 col-12">
-                  <label for="google" class="form-label">Google</label>
-                  <input type="text" id="google" class="form-control" [(ngModel)]="personalDetails.personalSocial.google" name="google" required />
-                </div>
-        
-                <div class="col-md-4 col-12">
-                  <label for="twitter" class="form-label">Twitter</label>
-                  <input type="text" id="twitter" class="form-control" [(ngModel)]="personalDetails.personalSocial.twitter" name="twitter"  required/>
-                </div>
-        
-                <div class="col-md-4 col-12">
-                  <label for="linkedIn" class="form-label">LinkedIn</label>
-                  <input type="text" id="linkedIn" class="form-control" [(ngModel)]="personalDetails.personalSocial.linkedIn" name="linkedIn"  required/>
-                </div>
-        
-                <div class="col-md-4 col-12">
-                  <label for="instagram" class="form-label">Instagram</label>
-                  <input type="text" id="instagram" class="form-control" [(ngModel)]="personalDetails.personalSocial.instagram" name="instagram" required />
-                </div>
-        
-                <div class="col-md-4 col-12">
-                  <label for="youtube" class="form-label">YouTube</label>
-                  <input type="text" id="youtube" class="form-control" [(ngModel)]="personalDetails.personalSocial.youtube" name="youtube" required />
-                </div>
-              </div>
-            </div>
-        
+
+
+<!-- Social Media Links -->
+<div class="col-12 mt-4">
+  
+  <label class="form-label" style="font-size: 16px;font-weight: 600;text-transform: uppercase; letter-spacing: 3px;">
+      Social Media Links
+  </label>
+
+  <button type="button" class="btn btn-primary my-2" data-bs-toggle="modal" data-bs-target="#addSocialMediaModal">
+      Add Link
+  </button>
+  
+  <!-- Display added social media links -->
+  <div class="row g-3">
+    
+    <div class="col-md-4 col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <label for="facebook" class="form-label">Facebook</label>
+        <div class="form-check form-switch">
+          <input class="form-check-input cursor-pointer" type="checkbox" id="facebookToggle" (change)="toggleSocialMedia('facebook')">
+        </div>
+      </div>
+      <input type="text" id="facebook" class="form-control" [(ngModel)]="personalDetails.personalSocial.facebook" name="facebook" required />
+    </div>
+    
+    <div class="col-md-4 col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <label for="google" class="form-label">Google</label>
+        <div class="form-check form-switch">
+          <input class="form-check-input cursor-pointer" type="checkbox" id="googleToggle" (change)="toggleSocialMedia('google')">
+        </div>
+      </div>
+      <input type="text" id="google" class="form-control" [(ngModel)]="personalDetails.personalSocial.google" name="google" required />
+    </div>
+    
+    <div class="col-md-4 col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <label for="twitter" class="form-label">Twitter</label>
+        <div class="form-check form-switch">
+          <input class="form-check-input cursor-pointer" type="checkbox" id="twitterToggle" (change)="toggleSocialMedia('twitter')">
+        </div>
+      </div>
+      <input type="text" id="twitter" class="form-control" [(ngModel)]="personalDetails.personalSocial.twitter" name="twitter" required />
+    </div>
+    
+    <div class="col-md-4 col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <label for="linkedIn" class="form-label">LinkedIn</label>
+        <div class="form-check form-switch">
+          <input class="form-check-input cursor-pointer" type="checkbox" id="linkedInToggle" (change)="toggleSocialMedia('linkedIn')">
+        </div>
+      </div>
+      <input type="text" id="linkedIn" class="form-control" [(ngModel)]="personalDetails.personalSocial.linkedIn" name="linkedIn" required />
+    </div>
+    
+    <div class="col-md-4 col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <label for="instagram" class="form-label">Instagram</label>
+        <div class="form-check form-switch">
+          <input class="form-check-input cursor-pointer" type="checkbox" id="instagramToggle" (change)="toggleSocialMedia('instagram')">
+        </div>
+      </div>
+      <input type="text" id="instagram" class="form-control" [(ngModel)]="personalDetails.personalSocial.instagram" name="instagram" required />
+    </div>
+    
+    <div class="col-md-4 col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <label for="youtube" class="form-label">YouTube</label>
+        <div class="form-check form-switch">
+          <input class="form-check-input cursor-pointer" type="checkbox" id="youtubeToggle" (change)="toggleSocialMedia('youtube')">
+        </div>
+      </div>
+      <input type="text" id="youtube" class="form-control" [(ngModel)]="personalDetails.personalSocial.youtube" name="youtube" required />
+    </div>
+     
+    <!-- DYNAMICALLY CREATED SOCIAL MEDIA INPUTS -->
+    <div class="col-md-4 col-12" *ngFor="let social of socialMediaList; let i = index">
+      <div class="d-flex justify-content-between align-items-center">
+        <label [for]="social.name.toLowerCase()" class="form-label">{{social.name}}</label>
+        <div class="form-check form-switch">
+          <input class="form-check-input cursor-pointer " 
+                 type="checkbox" 
+                 [id]="social.name.toLowerCase() + 'Toggle'"
+                 [checked]="social.isVisible"
+                 (change)="toggleSocialMedia(social.name)">
+        </div>
+      </div>
+      <input type="text" 
+             [id]="social.name.toLowerCase()" 
+             class="form-control" 
+             [(ngModel)]="social.link" 
+             [name]="social.name.toLowerCase()" 
+             required />
+    </div>
+
+  </div>
+
+
+</div>
+
+<!-- MODEL FOR ASKING ADD SOICAL FIELD -->
+<div class="modal fade" id="addSocialMediaModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="modalLabel">Add Social Media Link</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
+          <div class="modal-body">
+              <div class="mb-3">
+                  <label class="form-label">Platform Name</label>
+                  <input type="text" class="form-control" [(ngModel)]="newSocialMedia.name" name="socialName">
+              </div>
+              <div class="mb-3">
+                  <label class="form-label">Profile Link</label>
+                  <input type="text" class="form-control" [(ngModel)]="newSocialMedia.link" name="socialLink">
+              </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary" (click)="addSocialMedia()" data-bs-dismiss="modal">Add</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+
+          
+</div>
         
           <!-- Submit Button -->
           <div class="mt-3 d-flex justify-content-start">

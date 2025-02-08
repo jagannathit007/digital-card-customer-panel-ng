@@ -10,3 +10,30 @@
   }
 
   
+
+  .delete-icon {
+    width: 40px;
+    height: 40px;
+    background-color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+  }
+  
+  .delete-icon i {
+    color: red;
+    font-size: 20px;
+    transition: 0.3s ease-in-out;
+  }
+  
+  .delete-icon:hover {
+    background-color: red;
+  }
+  
+  .delete-icon:hover i {
+    color: white;
+  }
+  
