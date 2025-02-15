@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { common } from 'src/app/core/constants/common';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { AuthService } from 'src/app/services/auth.service';
+import { swalHelper } from 'src/app/core/constants/swal-helper';
 
 interface SocialMediaLink {
   name: string;
@@ -22,85 +23,50 @@ interface SocialMediaLink {
   styleUrl: './business-details.component.scss',
 })
 export class BusinessDetailsComponent {
-
-  socialMediaList: SocialMediaLink[] = [];
-  newSocialMedia: SocialMediaLink = { name: '', link: '', isVisible: true };
-
-  constructor(private storage: AppStorage, public authService: AuthService) { 
-    // this.authService.getBusinessCards();
+  newSocialMedia = { name: '', image: '', link: '', isVisible: true };
+  constructor(private storage: AppStorage, public authService: AuthService) {
+    this.getCards();
   }
-
 
   profileImage: File | undefined;
   coverImage: File | undefined;
+  businessProfile: any;
 
-  form = {
-    company: '',
-    companyEmail: '',
-    companyMobile: '',
-    companyAddress: '',
-    aboutCompany: '',
-    companyURL: '',
-    map: '',
-    businessCardId: '',
-    companySocial: {
-      facebook: '',
-      google: '',
-      twitter: '',
-      linkedIn: '',
-      instagram: '',
-      youtube: ''
-    },
-    message: {
-      whatsApp: '',
-      email: ''
-    }
-  }
-
-
-
-  toggleSocialMedia(platform: string) {
-    
-
-  }
-
-  addSocialMedia(){
-    if (this.newSocialMedia.name && this.newSocialMedia.link) {
-      // Add new social media link to the list
-      this.socialMediaList.push({
-        ...this.newSocialMedia,
-        isVisible: true
-      });
-
-      // Update personalDetails.personalSocial if the platform matches
-      const platformName = this.newSocialMedia.name.toLowerCase();
-      if (platformName in this.form.companySocial) {
-        (this.form.companySocial as any)[platformName] = this.newSocialMedia.link;
+  getCards = async () => {
+    let results = await this.authService.getBusinessCards();
+    if (results != null) {
+      let businessCardId = this.storage.get(common.BUSINESS_CARD);
+      let card = results.find((v: any) => v._id == businessCardId);
+      if (card != null) {
+        this.businessProfile = {
+          company: card.company,
+          aboutCompany: card.aboutCompany,
+          companyAddress: card.companyAddress,
+          message: card.message,
+          companySocialMedia: card.companySocialMedia
+        };
       }
-
-      // Reset the form
-      this.newSocialMedia = { name: '', link: '', isVisible: true };
     }
-
-
   }
 
-
-
-
+  addSocialMedia() {
+    this.businessProfile.companySocialMedia.push({
+      name: this.newSocialMedia.name,
+      link: this.newSocialMedia.link,
+      image: this.newSocialMedia.image,
+      visibility: this.newSocialMedia.isVisible,
+      isDefault: false,
+    });
+  }
 
   onSubmit = async () => {
     let formData = new FormData();
-    formData.append('company', this.form.company);
-    formData.append('companyEmail', this.form.companyEmail);
-    formData.append('companyMobile', this.form.companyMobile);
-    formData.append('companyAddress', this.form.companyAddress);
-    formData.append('aboutCompany', this.form.aboutCompany);
-    formData.append('companyURL', this.form.companyURL);
-    formData.append('map', this.form.map);
+    formData.append('company', this.businessProfile.company);
+    formData.append('aboutCompany', this.businessProfile.aboutCompany);
+    formData.append('companyAddress', this.businessProfile.companyAddress);
     formData.append('businessCardId', this.storage.get(common.BUSINESS_CARD));
-    formData.append('companySocial', JSON.stringify(this.form.companySocial));
-    formData.append('message', JSON.stringify(this.form.message));
+    formData.append('companySocialMedia', JSON.stringify(this.businessProfile.companySocialMedia));
+    formData.append('message', JSON.stringify(this.businessProfile.message));
 
     if (this.profileImage) {
       formData.append('profileImage', this.profileImage, this.profileImage.name);
@@ -110,7 +76,9 @@ export class BusinessDetailsComponent {
       formData.append('coverImage', this.coverImage, this.coverImage.name);
     }
 
-
-
+    let result = await this.authService.updateBusinessDetails(formData);
+    if (result) {
+      swalHelper.showToast('Business Details Updated Successfully!', "success");
+    }
   }
 }

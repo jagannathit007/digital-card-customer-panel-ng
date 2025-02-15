@@ -22,7 +22,7 @@ export class HeaderComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    // this.getProfile();
+    this.getProfile();
   }
 
   getProfile = async () => {

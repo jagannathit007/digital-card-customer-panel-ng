@@ -154,7 +154,6 @@ export class AuthService {
   async updateBusinessDetails(data: any) {
     try {
       this.getHeaders();
-      data = this.addBusinessCardId(data); // Adding businessCardId here
 
       let response = await this.apiManager.request(
         {
