@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FormsModule } from '@angular/forms'; 
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from 'src/app/services/auth.service';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
@@ -26,9 +26,7 @@ export class GalleryDetailsComponent {
     if (files) {
       for (let i = 0; i < files.length; i++) {
         const reader = new FileReader();
-        reader.onload = (e: any) => {
-          this.selectedImages.push(e.target.result);
-        };
+        reader.onload = (e: any) => this.selectedImages.push(e.target.result);
         reader.readAsDataURL(files[i]);
       }
     }
