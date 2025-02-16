@@ -36,6 +36,7 @@ export class HeaderComponent implements OnInit {
       if(card==null){
         this.authService.selectedBusinessCard = data.businessCards[0]._id;
         this.storage.set(common.BUSINESS_CARD, data.businessCards[0]._id);
+        window.location.reload();
       }
       this.authService.profileData = data;
       let businessCardsSubject = new BehaviorSubject<any[]>(data.businessCards);

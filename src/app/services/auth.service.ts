@@ -12,11 +12,10 @@ import { Observable, of } from 'rxjs';
 export class AuthService {
   private headers: any = [];
 
-
   profileData: any;
   selectedBusinessCard: String = '';
   businessCards$: Observable<any[]> = of([]);
-  constructor(private apiManager: ApiManager, private storage: AppStorage) { }
+  constructor(private apiManager: ApiManager, private storage: AppStorage) {}
 
   private getHeaders = () => {
     this.headers = [];
@@ -151,6 +150,83 @@ export class AuthService {
     }
   }
 
+  async updateGalleryDetails(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); // Adding businessCardId here
+
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.GALLERY_DETAILS,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async getGalleryDetails(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data);
+
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.GET_GALLERY,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async deleteGalleryDetails(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data);
+
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.DELETE_GALLERY,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
   async updateBusinessDetails(data: any) {
     try {
       this.getHeaders();
@@ -208,6 +284,102 @@ export class AuthService {
       let response = await this.apiManager.request(
         {
           url: apiEndpoints.CHANGE_PASSWORD,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async getScannedCards(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); // Adding businessCardId here
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.SCANNED_CARDS,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async updateScannedCard(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); // Adding businessCardId here
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.UPDATE_SCANNED_CARDS,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async deleteScannedCard(data: any) {
+    try {
+      this.getHeaders();
+      let request = { _id: data };
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.DELETE_SCANNED_CARDS,
+          method: 'POST',
+        },
+        request,
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async getKeywords(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); // Adding businessCardId here
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.KEYWORDS,
           method: 'POST',
         },
         data,

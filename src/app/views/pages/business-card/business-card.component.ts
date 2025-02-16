@@ -29,10 +29,15 @@ export class BusinessCardComponent {
 
   constructor(public authService: AuthService, private storage: AppStorage){
     this.authService.selectedBusinessCard = this.storage.get(common.BUSINESS_CARD) ?? "";
+    this.selectedTab = {
+      title: "Personal Details",
+      href: "personal-details"
+    };
   }
 
   onBusinessChange(){
     this.storage.set(common.BUSINESS_CARD, this.authService.selectedBusinessCard);
+    window.location.reload();
   }
 
   selectedTab = {
