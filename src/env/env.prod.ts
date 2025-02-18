@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  baseURL: 'http://localhost:3100',
-  route: 'admin',
+  baseURL: 'https://digitalcard.co.in',
+  route: 'web',
 };

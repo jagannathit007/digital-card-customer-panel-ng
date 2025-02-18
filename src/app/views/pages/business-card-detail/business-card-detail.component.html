@@ -40,7 +40,16 @@
             </tr>
           </thead>
           <tbody style="font-size: 12px;">
-            @if(scannedCards!=null){
+            @if(isLoading){
+              <tr>
+                <td class="text-center" colspan="6">
+                  <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </td>
+              </tr>
+            }
+            @if(isLoading == false && scannedCards!=null && scannedCards.docs.length > 0){
             <tr *ngFor="let card of scannedCards.docs | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems }">
               <td class="text-center">
                 <div class="fw-bold">{{ card.name }}</div>

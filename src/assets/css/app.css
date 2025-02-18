@@ -18986,13 +18986,13 @@ body[data-layout=boxed] .wrapper {
   --fa-font-brands: normal 400 1em/1 "Font Awesome 6 Brands"
 }
 
-@font-face {
+/* @font-face {
   font-display: block;
   font-family: Font Awesome\ 6 Brands;
   font-style: normal;
   font-weight: 400;
   src: url(../fonts/fa-brands-400.woff2) format("woff2"), url(../fonts/fa-brands-400.ttf) format("truetype")
-}
+} */
 
 .fa-brands,
 .fab {
@@ -27478,13 +27478,13 @@ body[data-layout=boxed] .wrapper {
   --fa-font-regular: normal 400 1em/1 "Font Awesome 6 Free"
 }
 
-@font-face {
+/* @font-face {
   font-display: block;
   font-family: Font Awesome\ 6 Free;
   font-style: normal;
   font-weight: 400;
   src: url(../fonts/fa-regular-400.woff2) format("woff2"), url(../fonts/fa-regular-400.ttf) format("truetype")
-}
+} */
 
 .fa-regular,
 .far {
@@ -27502,13 +27502,13 @@ body[data-layout=boxed] .wrapper {
   --fa-font-solid: normal 900 1em/1 "Font Awesome 6 Free"
 }
 
-@font-face {
+/* @font-face {
   font-display: block;
   font-family: Font Awesome\ 6 Free;
   font-style: normal;
   font-weight: 900;
   src: url(../fonts/fa-solid-900.woff2) format("woff2"), url(../fonts/fa-solid-900.ttf) format("truetype")
-}
+} */
 
 .fa-solid,
 .fas {

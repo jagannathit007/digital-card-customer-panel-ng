@@ -33,7 +33,9 @@ export class BusinessCardDetailComponent {
     this.fetchScannedCards();
   }
 
+  isLoading = false;
   fetchScannedCards = async () => {
+    this.isLoading = true;
     let query = {
       search: this.searchTerm,
       page: this.p,
@@ -44,6 +46,7 @@ export class BusinessCardDetailComponent {
       this.scannedCards = response;
       this.totalItems = response.totalDocs;
     }
+    this.isLoading = false;
   };
 
   updateScannedCard = async () => {
