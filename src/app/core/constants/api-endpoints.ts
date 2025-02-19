@@ -12,14 +12,13 @@ class ApiEndpoints {
   public DELETE_SCANNED_CARDS: string = `${this.PATH}/scanned-cards/delete`;
   public GET_GALLERY: string = `${this.PATH}/business-cards/gallery`;
   public KEYWORDS: string = `${this.PATH}/keywords`;
-  
-  
+
   public PERSONAL_DETAILS: string = `${this.PATH}/business-cards/personal/update`;
   public BUSINESS_DETAILS: string = `${this.PATH}/business-cards/business/update`;
+  public ADD_SOCIAL_MEDIA_LINK: string = `${this.PATH}/business-cards/addSocialLink`;
   public DOCUMENT_DETAILS: string = `${this.PATH}/business-cards/documents/update`;
   public GALLERY_DETAILS: string = `${this.PATH}/business-cards/gallery/update`;
   public DELETE_GALLERY: string = `${this.PATH}/business-cards/gallery/delete`;
-  
 }
 
 export let apiEndpoints = new ApiEndpoints();
