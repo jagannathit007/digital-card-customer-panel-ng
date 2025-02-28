@@ -50,7 +50,7 @@ export class PersonalDetailsComponent implements OnInit {
       let formData = new FormData();
       formData.append('name', this.newSocialMedia.name);
       formData.append('link', this.newSocialMedia.link);
-      formData.append('type', 'business');
+      formData.append('type', 'personal');
       formData.append('businessCardId', this.storage.get(common.BUSINESS_CARD));
       formData.append(
         'file',
