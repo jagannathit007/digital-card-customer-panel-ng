@@ -4,7 +4,6 @@ import { DocumentDetailsComponent } from './shared-details/document-details/docu
 import { BusinessDetailsComponent } from "./shared-details/business-details/business-details.component";
 import { GalleryDetailsComponent } from "./shared-details/gallery-details/gallery-details.component";
 import { AuthService } from 'src/app/services/auth.service';
-import { AsyncPipe } from '@angular/common';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { common } from 'src/app/core/constants/common';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +13,6 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-business-card',
   standalone: true,
   imports: [
-    AsyncPipe,
     FormsModule,
     PersonalDetailsComponent,
     BusinessDetailsComponent,
@@ -33,11 +31,6 @@ export class BusinessCardComponent {
       title: "Personal Details",
       href: "personal-details"
     };
-  }
-
-  onBusinessChange(){
-    this.storage.set(common.BUSINESS_CARD, this.authService.selectedBusinessCard);
-    window.location.reload();
   }
 
   selectedTab = {

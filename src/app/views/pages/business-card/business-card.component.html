@@ -2,14 +2,7 @@
     <div class="card">
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-                <h3 class="mb-2 mb-sm-0">Business Cards</h3>
-                <div class="d-flex flex-wrap justify-content-end">
-                    <select class="form-select" [(ngModel)]="authService.selectedBusinessCard" [ngModelOptions]="{standalone: true}" (change)="onBusinessChange()">
-                        @for (item of authService.businessCards$ | async; track item._id) {
-                            <option [value]="item._id">{{ item.company }}</option>
-                          }
-                    </select>
-                </div>
+                <h3 class="mb-2 mb-sm-0" >Business Cards</h3>     
             </div>
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 @for(tab of tabs; track tab){

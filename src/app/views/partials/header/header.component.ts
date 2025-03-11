@@ -6,11 +6,19 @@ import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { AuthService } from 'src/app/services/auth.service';
 import { common } from 'src/app/core/constants/common';
 import { BehaviorSubject } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    AsyncPipe,
+  ],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
@@ -18,8 +26,66 @@ export class HeaderComponent implements OnInit {
   constructor(
     public appWorker: AppWorker,
     private storage: AppStorage,
-    private authService: AuthService,
-  ) { }
+    public authService: AuthService
+  ) {
+    this.authService.selectedBusinessCard = this.storage.get(common.BUSINESS_CARD) ?? "";
+    this.selectedTab = {
+      title: "Personal Details",
+      href: "personal-details"
+    };
+    this.getCards();
+  }
+
+
+  onBusinessChange() {
+    this.storage.set(common.BUSINESS_CARD, this.authService.selectedBusinessCard);
+    window.location.reload();
+  }
+
+  copyToClipboard() {
+    const fullUrl = `${window.location.origin}/${this.authService.selectedBusinessCard}`;
+    navigator.clipboard.writeText(fullUrl).then(() => {
+      swalHelper.success("Copied!");
+    }).catch(err => {
+      console.error("Failed to copy: ", err);
+      swalHelper.error("Error!");
+    });
+  }
+
+  getCards = async () => {
+    let results = await this.authService.getBusinessCards();
+    const selectedBusinessId = this.authService.selectedBusinessCard;
+    const selectedBusinessDetails = results.filter(
+      (business: any) => business._id === selectedBusinessId
+    );
+    this.message = selectedBusinessDetails[0]?.message?.whatsApp ? selectedBusinessDetails[0].message.whatsApp : "hi";
+  };
+
+
+  selectedCountryCode: string = '91';
+  mobileNumber: string = '';
+  message: string = ``;
+
+  shareOnWhatsApp() {
+    if (!this.mobileNumber) {
+      alert("Please enter a WhatsApp number!");
+      return;
+    }
+
+    const formattedNumber = this.selectedCountryCode + this.mobileNumber.replace(/^0+/, '');
+
+    let whatsappURL = `https://wa.me/${formattedNumber}?text=${encodeURIComponent(this.message)}`;
+    window.open(whatsappURL, "_blank");
+  }
+
+
+
+
+  selectedTab = {
+    title: "Personal Details",
+    href: "personal-details"
+  };
+
 
   ngOnInit(): void {
     this.getProfile();
@@ -33,7 +99,7 @@ export class HeaderComponent implements OnInit {
         return v;
       });
       let card = this.storage.get(common.BUSINESS_CARD);
-      if(card==null){
+      if (card == null) {
         this.authService.selectedBusinessCard = data.businessCards[0]._id;
         this.storage.set(common.BUSINESS_CARD, data.businessCards[0]._id);
         window.location.reload();
