@@ -8,7 +8,7 @@ import { common } from 'src/app/core/constants/common';
 import { BehaviorSubject } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { environment } from 'src/env/env.prod';
 
 
 @Component({
@@ -43,9 +43,9 @@ export class HeaderComponent implements OnInit {
   }
 
   copyToClipboard() {
-    const fullUrl = `${window.location.origin}/${this.authService.selectedBusinessCard}`;
+    const fullUrl = `${  environment.baseURL}/${this.authService.selectedBusinessCard}`;
     navigator.clipboard.writeText(fullUrl).then(() => {
-      swalHelper.success("Copied!");
+      swalHelper.showToast("Copied!", "success");
     }).catch(err => {
       console.error("Failed to copy: ", err);
       swalHelper.error("Error!");

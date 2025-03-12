@@ -60,4 +60,10 @@ export class DocumentDetailsComponent {
       companyPAN: ''
     };
   }
+
+
+  addOtherDocument(){
+    
+  }
+
 }

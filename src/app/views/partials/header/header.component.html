@@ -4,11 +4,10 @@
   </a>
   <div class="d-flex flex-wrap justify-content-end align-items-center gap-3 p-2 ms-auto  business-select">
      <div class="icon-container shadow p-2 rounded bg-light" (click)="copyToClipboard()">
-        <i class="ri-file-copy-line text-primary"></i>
-     </div>
+      <i class="ri-links-line"></i>     </div>
      <div class="icon-container shadow p-2 rounded bg-light" data-bs-toggle="modal" data-bs-target="#shareModal">
-        <i class="ri-share-line text-success"></i>
-     </div>
+      <i class="ri-whatsapp-fill text-success"></i>
+   </div>
      <select class="form-select custom-select shadow-sm" [(ngModel)]="authService.selectedBusinessCard" 
      [ngModelOptions]="{standalone: true}" (change)="onBusinessChange()">
      @for (item of authService.businessCards$ | async; track item._id) {
