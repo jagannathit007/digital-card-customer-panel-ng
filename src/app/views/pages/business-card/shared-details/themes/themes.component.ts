@@ -1,0 +1,52 @@
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { swalHelper } from 'src/app/core/constants/swal-helper';
+import { AuthService } from 'src/app/services/auth.service';
+import { environment } from 'src/env/env.local';
+
+@Component({
+  selector: 'app-themes',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
+  templateUrl: './themes.component.html',
+  styleUrl: './themes.component.scss',
+})
+export class ThemeComponent {
+  themes: any[] = [];
+  data = localStorage.getItem('keyName');
+  constructor(private authService: AuthService) { }
+
+  async ngOnInit() {
+    const themesData = await this.authService.getThemes();
+    console.log(themesData);
+    if (themesData) {
+      this.themes = themesData.map((theme: any) => ({
+        title: theme.title,
+        code: theme.code,
+        id: theme._id
+      }));
+    }
+  }
+
+  getLocalStorageData(key: string): any {
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : null;
+  }
+
+  previewTheme(themeCode: string): void {
+    const business_card = this.getLocalStorageData('business_card');
+    const url = `${environment.baseURL}/${business_card}?theme=${themeCode}`;
+    window.open(url, '_blank');
+  }
+
+  async themeApply(themeId: string) {
+    // console.log(themeId);
+    let result = await this.authService.applyTheme(themeId);
+    // console.log(result);
+    if (result) {
+      swalHelper.showToast('Theme Updated Successfully!', 'success');
+    }
+  }
+}

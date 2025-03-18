@@ -4,9 +4,15 @@
       <label class="text-danger mb-1">Upto 10 Images</label>
       <input type="file" class="form-control" (change)="onFileSelected($event)" multiple accept="image/*">
     </div>
-    @if(galleries.length <10){ 
+    @if(galleries.length < 10){ 
       <div class="col-12 mt-3">
-        <button class="btn btn-primary" (click)="uploadImages()" [disabled]="isUploading">Upload Images</button>
+        <button class="btn btn-primary" (click)="uploadImages()" [disabled]="isUploading">
+          <span *ngIf="isUploading">
+            <i class="spinner-border spinner-border-sm me-2"></i>
+            Uploading...
+          </span>
+          <span *ngIf="!isUploading">Upload Images</span>
+        </button>
       </div>
     }
 </div>

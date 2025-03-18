@@ -22,6 +22,11 @@ export class SideBarService {
           icon: 'credit-card',
         },
         {
+          title: 'Google Reviews',
+          link: 'google-review',
+          icon: 'star',
+        },
+        {
           title: 'Account Settings',
           link: 'account-settings',
           icon: 'settings',

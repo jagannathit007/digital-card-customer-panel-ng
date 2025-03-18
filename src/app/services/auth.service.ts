@@ -15,7 +15,7 @@ export class AuthService {
   profileData: any;
   selectedBusinessCard: String = '';
   businessCards$: Observable<any[]> = of([]);
-  constructor(private apiManager: ApiManager, private storage: AppStorage) {}
+  constructor(private apiManager: ApiManager, private storage: AppStorage) { }
 
   private getHeaders = () => {
     this.headers = [];
@@ -421,4 +421,57 @@ export class AuthService {
       return null;
     }
   }
-}
+
+  async getThemes() {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        // change it...
+        {
+          url: apiEndpoints.THEMES_DETAILS,
+          method: 'POST'
+        },
+        {},
+        this.headers
+      );
+      if (response.status === 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message || 'Failed to fetch themes.', 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Error fetching themes!', 'error');
+      return null;
+    }
+  }
+
+  async applyTheme(themeId: string) {
+    try {
+      this.getHeaders();
+      const businessCardId = JSON.parse(localStorage.getItem('business_card') || '""');
+
+      // console.log(themeId,businessCardId);
+      // console.log(`${apiEndpoints.THEMES_UPDATE}/${businessCardId}`);
+      let response = await this.apiManager.request(
+        // change it...
+        {
+          url: `${apiEndpoints.THEMES_UPDATE}/${businessCardId}`,
+          method: 'POST'
+        },
+        {themeId, businessCardId},
+        this.headers
+      );
+
+      if (response.status === 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message || 'Failed to applied themes.', 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Error appling themes!', 'error');
+      return null;
+    }
+  }
+}  

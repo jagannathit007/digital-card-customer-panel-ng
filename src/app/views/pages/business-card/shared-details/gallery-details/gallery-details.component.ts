@@ -27,9 +27,24 @@ export class GalleryDetailsComponent {
     const files = event.target.files;
     if (files) {
       for (let i = 0; i < files.length; i++) {
-        const reader = new FileReader();
-        reader.onload = (e: any) => this.selectedImages.push(e.target.result);
-        reader.readAsDataURL(files[i]);
+        const file = files[i];
+
+        const img = new Image();
+        img.src = URL.createObjectURL(file);
+
+        img.onload = () => {
+          const isValidSize =
+            (img.width === 1250 && img.height === 720) ||
+            (img.width === 1600 && img.height === 900);
+
+          if (!isValidSize) {
+            swalHelper.showToast(`Invalid image size! Only 1250x720 or 1600x900 allowed.`, 'error');
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = (e: any) => this.selectedImages.push(e.target.result);
+          reader.readAsDataURL(file);
+        };
       }
     }
   }
@@ -101,7 +116,7 @@ export class GalleryDetailsComponent {
           'success'
         );
       }
-    }else{
+    } else {
       swalHelper.showToast(
         'Select images to upload!',
         'warning'

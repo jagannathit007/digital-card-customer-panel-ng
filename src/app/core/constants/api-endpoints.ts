@@ -19,6 +19,8 @@ class ApiEndpoints {
   public DOCUMENT_DETAILS: string = `${this.PATH}/business-cards/documents/update`;
   public GALLERY_DETAILS: string = `${this.PATH}/business-cards/gallery/update`;
   public DELETE_GALLERY: string = `${this.PATH}/business-cards/gallery/delete`;
+  public THEMES_DETAILS: string = `${this.PATH}/themes`;
+  public THEMES_UPDATE: string = `${this.PATH}/themes/update`;
 }
 
 export let apiEndpoints = new ApiEndpoints();

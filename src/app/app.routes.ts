@@ -5,6 +5,7 @@ import { AdminComponent } from './views/pages/admin/admin.component';
 import { BusinessCardDetailComponent } from './views/pages/business-card-detail/business-card-detail.component';
 import { BusinessCardComponent } from './views/pages/business-card/business-card.component';
 import { AccountSettingsComponent } from './views/pages/account-settings/account-settings.component';
+import { GoogleReviewComponent } from './views/pages/google-review/google-review.component';
 
 
 export const routes: Routes = [
@@ -17,6 +18,7 @@ export const routes: Routes = [
       // { path: 'admins', component: AdminComponent },
       { path: 'business-cards', component: BusinessCardComponent },
       { path: 'scanned-cards', component: BusinessCardDetailComponent },
+      { path: 'google-review', component: GoogleReviewComponent },
       { path: 'account-settings', component: AccountSettingsComponent }
     ],
   },
