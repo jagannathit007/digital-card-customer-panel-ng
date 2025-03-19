@@ -15,19 +15,42 @@ import { environment } from 'src/env/env.local';
 })
 export class ThemeComponent {
   themes: any[] = [];
-  data = localStorage.getItem('keyName');
+  currentAppliedTheme: any[]= [];
+  currentBcardId = this.getLocalStorageData("business_card");
   constructor(private authService: AuthService) { }
-
+  
   async ngOnInit() {
+
+    console.log(this.currentBcardId);
+
     const themesData = await this.authService.getThemes();
+
     console.log(themesData);
+    
     if (themesData) {
       this.themes = themesData.map((theme: any) => ({
         title: theme.title,
         code: theme.code,
-        id: theme._id
+        id: theme._id,
       }));
     }
+    let results = await this.authService.getBusinessCards();
+    
+    console.log(results);
+    
+    if (results) {
+      this.currentAppliedTheme = results.map((Bcard: any) => ({
+        currentThemeCode: Bcard.theme,
+        id: Bcard._id,
+      }));
+    }
+
+  }
+
+  isCurrentTheme(itemCode: string): boolean {
+    return this.currentAppliedTheme.some(theme =>
+      theme.id === this.currentBcardId && theme.currentThemeCode === itemCode
+    );
   }
 
   getLocalStorageData(key: string): any {
@@ -48,5 +71,6 @@ export class ThemeComponent {
     if (result) {
       swalHelper.showToast('Theme Updated Successfully!', 'success');
     }
+    await this.ngOnInit();
   }
 }
