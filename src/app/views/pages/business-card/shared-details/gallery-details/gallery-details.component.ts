@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from 'src/app/services/auth.service';
@@ -14,7 +14,8 @@ import { environment } from 'src/env/env.local';
   templateUrl: './gallery-details.component.html',
   styleUrls: ['./gallery-details.component.scss'],
 })
-export class GalleryDetailsComponent {
+export class GalleryDetailsComponent implements OnInit{
+  @ViewChild('fileInput') fileInput!: ElementRef;
   selectedImages: string[] = [];
   selectedImagesLength: number = 0;
   actualImageToDeleteIndex: number | null = null;

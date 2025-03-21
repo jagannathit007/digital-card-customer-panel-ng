@@ -459,7 +459,7 @@ export class AuthService {
           url: `${apiEndpoints.THEMES_UPDATE}/${businessCardId}`,
           method: 'POST'
         },
-        {themeId, businessCardId},
+        { themeId, businessCardId },
         this.headers
       );
 
@@ -472,6 +472,34 @@ export class AuthService {
     } catch (err) {
       swalHelper.showToast('Error appling themes!', 'error');
       return null;
+    }
+  }
+
+  // In your auth.service.ts
+  async getSubscriptionData(businessCardId: string): Promise<any[]> {
+    try {
+      const businessCards = await this.getBusinessCards();
+
+      if (!businessCards || !businessCardId) {
+        return [];
+      }
+
+      // Find the matching business card and extract subscription data
+      if (Array.isArray(businessCards)) {
+        const targetCard = businessCards.find(card => card._id === businessCardId);
+
+        if (targetCard?.subscription && Array.isArray(targetCard.subscription)) {
+          return targetCard.subscription.map((sub: any) => ({
+            _id: sub._id,
+            product: sub.product
+          }));
+        }
+      }
+
+      return [];
+    } catch (error) {
+      console.error("Error getting subscription data:", error);
+      return [];
     }
   }
 }  
