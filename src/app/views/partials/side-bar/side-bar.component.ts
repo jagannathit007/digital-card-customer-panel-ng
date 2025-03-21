@@ -37,12 +37,12 @@ export class SideBarComponent implements OnInit, AfterViewInit {
 
     if (this.currentBcardId) {
       this.subscriptionData = await this.authService.getSubscriptionData(this.currentBcardId);
-      console.log("Subscription data result:", this.subscriptionData);
+      // console.log("Subscription data result:", this.subscriptionData);
 
       this.filteredMenuList = this.sideBarService.getMenusByProducts(this.subscriptionData);
 
     } else {
-      console.log("No business card ID found in localStorage");
+      // console.log("No business card ID found in localStorage");
 
       this.filteredMenuList = [{
         moduleName: 'Member',

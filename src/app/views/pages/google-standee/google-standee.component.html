@@ -1,0 +1,186 @@
+<!-- src/app/google-standee/google-standee.component.html -->
+<div class="container mt-4">
+  <div class="card">
+    <div class="card-body">
+      <!-- Title and Action Buttons -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-0">Google Review</h3>
+        <div class="d-flex gap-2">
+          <!-- Show QR Code Button-->
+          <!-- <div class="btn-group me-2">
+                <button class="btn btn-outline-dark bg-white text-dark" [class.active]="isEnrollActive">
+                  Enroll the selected users
+                </button>
+                <button type="button" class="btn btn-outline-dark bg-white text-dark" (click)="toggleEnroll()">
+                  <div class="form-check form-switch m-0 p-0">
+                    <input class="form-check-input m-0" type="checkbox" role="switch" [(ngModel)]="isEnrollActive">
+                  </div>
+                </button>
+            </div> -->
+          <!-- Add Details Button - Only visible when toggle is active -->
+          <!-- <button *ngIf="isEnrollActive" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                Add Details
+            </button> -->
+          <!-- AI Review Toggle Button (White with Black Text) -->
+          <div class="btn-group align-items-center">
+            <button class="btn bg-white text-dark d-flex align-items-center" [class.active]="isAiReviewActive">
+              AI Review
+            </button>
+            <button type="button" class="btn bg-white text-dark d-flex align-items-center" (click)="toggleAiReview()">
+              <div class="form-check form-switch m-0 p-0 d-flex align-items-center">
+                <input class="form-check-input m-0" type="checkbox" role="switch" [(ngModel)]="isAiReviewActive">
+              </div>
+            </button>
+          </div>
+
+          <!-- New Enroll Users Button with Toggle -->
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#qrCodeModal">
+            <i>Show QR Code</i>
+          </button>
+
+
+        </div>
+      </div>
+
+      <!-- Search Bar and Page Limit Dropdown -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <input 
+          type="text" 
+          class="form-control" 
+          placeholder="Search..." 
+          [value]="searchTerm"
+          (input)="onSearchChange($event)">
+        <div class="ms-3">
+          <select 
+            class="form-select" 
+            [value]="itemsPerPage"
+            (change)="onItemsPerPageChange($event)">
+            <option *ngFor="let option of itemsPerPageOptions" [value]="option">
+              {{ option }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Scanned Cards Table -->
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover table-striped">
+          <thead class="table-light">
+            <tr>
+              <th>No.</th>
+              <th>Name</th>
+              <th>Contact</th>
+              <th class="text-center">Rating</th>
+              <th>Reviews</th>
+            </tr>
+          </thead>
+          <tbody style="font-size: 12px;">
+            <tr *ngIf="displayedData.length === 0">
+              <td colspan="5" class="text-center">No review data available</td>
+            </tr>
+            <tr *ngFor="let review of displayedData; let i = index">
+              <td class="text-center">{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
+              <td>{{ review.name || 'N/A' }}</td>
+              <td>{{ review.mobile || 'N/A' }}</td>
+              <td class="text-center">
+                <div class="d-flex justify-content-center">
+                  <ng-container *ngFor="let star of [1,2,3,4,5]">
+                    <i class="ri-star-fill text-warning" *ngIf="star <= review.star"></i>
+                    <i class="ri-star-line text-muted" *ngIf="star > review.star"></i>
+                  </ng-container>
+                </div>
+              </td>
+              <td>{{ review.message || 'No comment' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div class="text-end mt-3" *ngIf="totalItems > 0">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ Math.min(currentPage * itemsPerPage, totalItems) }}
+            of {{ totalItems }} entries
+          </div>
+          <div>
+            <nav aria-label="Page navigation">
+              <ul class="pagination justify-content-end mb-0">
+                <li class="page-item" [class.disabled]="currentPage === 1">
+                  <a class="page-link" href="javascript:void(0)" (click)="previousPage()">Previous</a>
+                </li>
+
+                <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+                  [class.active]="currentPage === i + 1">
+                  <a class="page-link" href="javascript:void(0)" (click)="currentPage = i + 1; updateDisplayedData()">
+                    {{ i + 1 }}
+                  </a>
+                </li>
+
+                <li class="page-item" [class.disabled]="currentPage === totalPages">
+                  <a class="page-link" href="javascript:void(0)" (click)="nextPage()">Next</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <!-- QR Code Modal -->
+      <div class="modal fade" id="qrCodeModal" tabindex="-1" aria-labelledby="qrCodeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="qrCodeModalLabel">QR Code</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p class="mb-2"><strong>Your website link:</strong></p>
+              <div class="mb-3">
+                <p>https://g.page/r/Ca_mY-J03vDtEBM/review</p>
+              </div>
+              <p class="mb-2"><strong>Your Review QR Code:</strong></p>
+              <!-- QR code would be displayed here -->
+              <img src="/api/placeholder/200/200" alt="QR Code">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add User Modal -->
+      <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="addUserModalLabel">Add User Details</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="text-center mb-4">
+                <!-- User icon illustration -->
+                <img src="/api/placeholder/120/120" alt="User icon">
+              </div>
+
+              <div class="mb-3">
+                <label for="userName" class="form-label">Name</label>
+                <input type="text" class="form-control" id="userName" placeholder="Your Name">
+              </div>
+
+              <div class="mb-3">
+                <label for="userEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="userEmail" placeholder="Your Email">
+                <div class="form-text">We respect your privacy. Your email will not be shared.</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="userContact" class="form-label">Contact Number</label>
+                <input type="tel" class="form-control" id="userContact" placeholder="Your Contact no.">
+              </div>
+
+              <div class="d-grid">
+                <button type="button" class="btn btn-primary" id="addUserBtn">Add User</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>

@@ -502,4 +502,28 @@ export class AuthService {
       return [];
     }
   }
+  async getReviews(businessCardId: string) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        // change it...
+        {
+          url: `https://xppc9p11-3100.inc1.devtunnels.ms/web/review/getReviews/${businessCardId}`,
+          method: 'POST'
+        },
+        {},
+        this.headers
+      );
+      if (response.status === 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message || 'Failed to fetch review', 'warning');
+        console.log(response.message);
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Error fetching reviews!', 'error');
+      return null;
+    }
+  }
 }  

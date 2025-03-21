@@ -5,7 +5,7 @@ import { AdminComponent } from './views/pages/admin/admin.component';
 import { BusinessCardDetailComponent } from './views/pages/business-card-detail/business-card-detail.component';
 import { BusinessCardComponent } from './views/pages/business-card/business-card.component';
 import { AccountSettingsComponent } from './views/pages/account-settings/account-settings.component';
-import { GoogleReviewComponent } from './views/pages/google-review/google-review.component';
+import { GoogleStandeeComponent } from './views/pages/google-standee/google-standee.component';
 import { AuthGuard } from './guards/auth.guard';
 
 
@@ -35,10 +35,10 @@ export const routes: Routes = [
         data: { requiredProduct: 'scanned-cards' }
       },
       {
-        path: 'google-review',
-        component: GoogleReviewComponent,
+        path: 'google-standee',
+        component: GoogleStandeeComponent,
         canActivate: [AuthGuard],
-        data: { requiredProduct: 'google-review' }
+        data: { requiredProduct: 'google-standee' }
       },
       {
         path: 'account-settings',

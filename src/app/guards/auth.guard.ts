@@ -60,8 +60,8 @@ export class AuthGuard implements CanActivate {
         hasAccess = products.some(product => 
           product === "digital-card" || product === "nfc-card");
         break;
-      case 'google-review':
-        hasAccess = products.some(product => product === "google-review");
+      case 'google-standee':
+        hasAccess = products.some(product => product === "google-standee");
         break;
       default:
         hasAccess = false;

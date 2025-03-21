@@ -21,6 +21,7 @@ class ApiEndpoints {
   public DELETE_GALLERY: string = `${this.PATH}/business-cards/gallery/delete`;
   public THEMES_DETAILS: string = `${this.PATH}/themes`;
   public THEMES_UPDATE: string = `${this.PATH}/themes/update`;
+  public GOOGLE_STANDEE_DETAILS: string = `${this.PATH}/review/getReviews`;
 }
 
 export let apiEndpoints = new ApiEndpoints();

@@ -30,8 +30,8 @@ export class SideBarService {
     };
 
     const googleReviewMenu = {
-      title: 'Google Reviews',
-      link: 'google-review',
+      title: 'Google Review',
+      link: 'google-standee',
       icon: 'star',
     };
 
@@ -47,7 +47,7 @@ export class SideBarService {
     );
 
     const hasGoogleReview = products.some(product =>
-      product === "google-review"
+      product === "google-standee"
     );
 
     // Define menus based on conditions
@@ -61,7 +61,7 @@ export class SideBarService {
       menus = [businessCardMenu, scannedCardsMenu, ...menus];
     }
 
-    // Add Google Reviews for google-review
+    // Add Google Reviews for google-standee
     if (hasGoogleReview) {
       // Insert Google Review before Account Settings
       menus.splice(menus.length - 1, 0, googleReviewMenu);
@@ -89,7 +89,7 @@ export class SideBarService {
   //       },
   //       {
   //         title: 'Google Reviews',
-  //         link: 'google-review',
+  //         link: 'google-standee',
   //         icon: 'star',
   //       },
   //       {
