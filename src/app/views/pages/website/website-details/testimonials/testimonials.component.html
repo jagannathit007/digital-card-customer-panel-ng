@@ -1,0 +1,94 @@
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-0">Testimonials</h3>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddTestimonialModal">
+            <i class="ri-add-circle-line"></i> Add Testimonial
+        </button>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm" (input)="onSearch()">
+        <div class="ms-3">
+            <select class="form-select" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th class="text-center" style="width: 5%;">No.</th>
+                    <th>Image</th>
+                    <th>Rating</th>
+                    <th>Client Name</th>
+                    <th>Feedback</th>
+                </tr>
+            </thead>
+            <tbody style="font-size: 12px;">
+                <tr *ngIf="isLoading">
+                    <td class="text-center" colspan="5">
+                        <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr *ngFor="let testimonial of filteredTestimonialList | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems }; let i = index">
+                    <td class="text-center">{{ i + 1 }}</td>
+                    <td class="text-center">
+                        <img [src]="testimonial.image[0]" class="img-fluid"
+                            style="width: 40px; height: 40px; object-fit: cover;">
+                    </td>
+                    <td>{{ testimonial.rating }}/5</td>
+                    <td>{{ testimonial.clientName }}</td>
+                    <td>{{ testimonial.feedback }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-end">
+        <pagination-controls (pageChange)="pageChangeEvent($event)" id="pager"></pagination-controls>
+    </div>
+</div>
+
+<div class="modal fade" id="AddTestimonialModal" tabindex="-1" aria-labelledby="AddTestimonialModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="AddTestimonialModalLabel">Add Testimonial</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="clientName" class="form-label">Client Name</label>
+                        <input type="text" class="form-control" id="clientName" placeholder="Enter client name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="rating" class="form-label">Rating</label>
+                        <input type="number" class="form-control" id="rating" min="1" max="5" placeholder="Enter rating (1-5)">
+                    </div>
+                    <div class="mb-3">
+                        <label for="feedback" class="form-label">Feedback</label>
+                        <textarea class="form-control" id="feedback" rows="3" placeholder="Enter feedback"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="testimonialsImage" class="form-label">Upload Image</label>
+                        <input type="file" class="form-control" id="testimonialsImage" multiple accept="image/*">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success">
+                    <i class="ri-add-circle-line"></i> Add Testimonial
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

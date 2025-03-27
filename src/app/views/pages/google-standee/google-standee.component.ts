@@ -17,7 +17,6 @@ export class GoogleStandeeComponent implements OnInit {
 
   currentBcardId: string = "";
   reviewData: any[] = [];
-  isEnrollActive: boolean = false;
   isAiReviewActive: boolean = false;
   currentPage: number = 1;
   itemsPerPage: number = 10;
@@ -27,6 +26,9 @@ export class GoogleStandeeComponent implements OnInit {
   searchTerm: string = '';
   itemsPerPageOptions: number[] = [10, 25, 50, 100];
   filteredData: any[] = [];
+  isLoading = false;
+  isQrLoading = false;
+  qrData: any = null;
 
   constructor(private cdRef: ChangeDetectorRef, private storage: AppStorage, public authService: AuthService,) {
     this.currentBcardId = this.storage.get(common.BUSINESS_CARD);
@@ -34,8 +36,26 @@ export class GoogleStandeeComponent implements OnInit {
 
   async ngOnInit() {
     console.log(this.currentBcardId);
+    this.isLoading = true;
 
     if (this.currentBcardId) {
+
+      this.isQrLoading = true;
+
+      this.qrData = await this.authService.getQrdetails(this.currentBcardId);
+      console.log('QR data from API:', this.qrData);
+
+      this.isAiReviewActive = this.qrData.isAIFeatureAllowed;
+      // console.log(this.isAiReviewActive);
+
+      if (Array.isArray(this.qrData) && this.qrData.length > 0) {
+        this.qrData = this.qrData[0];
+      } else {
+        this.qrData = this.qrData;
+      }
+
+      this.isQrLoading = false;
+
       this.reviewData = await this.authService.getReviews(this.currentBcardId);
       console.log('Review data from API:', this.reviewData);
 
@@ -48,9 +68,12 @@ export class GoogleStandeeComponent implements OnInit {
         this.reviewData = [];
         this.displayedData = [];
       }
+
+
     } else {
       console.log("No business card ID found in localStorage");
     }
+    this.isLoading = false;
     this.cdRef.detectChanges();
   }
 
@@ -62,6 +85,7 @@ export class GoogleStandeeComponent implements OnInit {
       return (
         (review.name && review.name.toLowerCase().includes(searchLower)) ||
         (review.mobile && review.mobile.toLowerCase().includes(searchLower)) ||
+        (review.email && review.email.toLowerCase().includes(searchLower)) ||
         (review.message && review.message.toLowerCase().includes(searchLower))
       );
     });
@@ -112,11 +136,10 @@ export class GoogleStandeeComponent implements OnInit {
     return Math.max(1, Math.ceil(this.totalItems / this.itemsPerPage));
   }
 
-  toggleEnroll(): void {
-    this.isEnrollActive = !this.isEnrollActive;
-  }
-
-  toggleAiReview(): void {
+  async toggleAiReview() {
     this.isAiReviewActive = !this.isAiReviewActive;
+    // console.log("Ai Review active:",this.isAiReviewActive);
+    const aiReview = await this.authService.upadteAiToggle(this.currentBcardId, this.isAiReviewActive);
+      // console.log('Ai toggle from API:', aiReview);
   }
 }

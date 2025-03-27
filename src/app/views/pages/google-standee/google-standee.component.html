@@ -21,21 +21,28 @@
           <!-- <button *ngIf="isEnrollActive" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#addUserModal">
                 Add Details
             </button> -->
+          <style>
+            .btn {
+              border: none !important;
+              outline: none !important;
+              box-shadow: none !important;
+            }
+          </style>
           <!-- AI Review Toggle Button (White with Black Text) -->
-          <div class="btn-group align-items-center">
-            <button class="btn bg-white text-dark d-flex align-items-center" [class.active]="isAiReviewActive">
+          <div class="btn-group align-items-center d-flex gap-1">
+            <span class="text-dark d-flex align-items-center">
               AI Review
-            </button>
-            <button type="button" class="btn bg-white text-dark d-flex align-items-center" (click)="toggleAiReview()">
+            </span>
+            <button type="button" class="btn bg-white align-items-center" (click)="toggleAiReview()">
               <div class="form-check form-switch m-0 p-0 d-flex align-items-center">
-                <input class="form-check-input m-0" type="checkbox" role="switch" [(ngModel)]="isAiReviewActive">
+                <input class="form-check-input m-0" type="checkbox" role="switch" [checked]="isAiReviewActive">
               </div>
             </button>
           </div>
 
           <!-- New Enroll Users Button with Toggle -->
           <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#qrCodeModal">
-            <i>Show QR Code</i>
+            <i class="ri-qr-code-line"></i> Show QR Code
           </button>
 
 
@@ -44,17 +51,10 @@
 
       <!-- Search Bar and Page Limit Dropdown -->
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <input 
-          type="text" 
-          class="form-control" 
-          placeholder="Search..." 
-          [value]="searchTerm"
+        <input type="text" class="form-control" placeholder="Search..." [value]="searchTerm"
           (input)="onSearchChange($event)">
         <div class="ms-3">
-          <select 
-            class="form-select" 
-            [value]="itemsPerPage"
-            (change)="onItemsPerPageChange($event)">
+          <select class="form-select" [value]="itemsPerPage" (change)="onItemsPerPageChange($event)">
             <option *ngFor="let option of itemsPerPageOptions" [value]="option">
               {{ option }}
             </option>
@@ -70,18 +70,27 @@
               <th>No.</th>
               <th>Name</th>
               <th>Contact</th>
+              <th>Email</th>
               <th class="text-center">Rating</th>
               <th>Reviews</th>
             </tr>
           </thead>
           <tbody style="font-size: 12px;">
-            <tr *ngIf="displayedData.length === 0">
-              <td colspan="5" class="text-center">No review data available</td>
+            @if(isLoading){
+            <tr>
+              <td class="text-center" colspan="6">
+                <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </td>
             </tr>
+            }
+            @if(isLoading == false){
             <tr *ngFor="let review of displayedData; let i = index">
               <td class="text-center">{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
               <td>{{ review.name || 'N/A' }}</td>
               <td>{{ review.mobile || 'N/A' }}</td>
+              <td>{{ review.email || 'N/A' }}</td>
               <td class="text-center">
                 <div class="d-flex justify-content-center">
                   <ng-container *ngFor="let star of [1,2,3,4,5]">
@@ -92,6 +101,7 @@
               </td>
               <td>{{ review.message || 'No comment' }}</td>
             </tr>
+            }
           </tbody>
         </table>
       </div>
@@ -134,14 +144,21 @@
               <h5 class="modal-title" id="qrCodeModalLabel">QR Code</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body text-center">
               <p class="mb-2"><strong>Your website link:</strong></p>
               <div class="mb-3">
-                <p>https://g.page/r/Ca_mY-J03vDtEBM/review</p>
+                <p *ngIf="qrData">{{ qrData.qrLink }}</p>
+                <p *ngIf="!qrData" class="text-danger">No QR data available</p>
               </div>
+            
               <p class="mb-2"><strong>Your Review QR Code:</strong></p>
-              <!-- QR code would be displayed here -->
-              <img src="/api/placeholder/200/200" alt="QR Code">
+            
+              <!-- Centering QR Code -->
+              <div *ngIf="qrData?.qrLink" class="d-flex justify-content-center">
+                <img [src]="'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + qrData.qrLink" alt="QR Code">
+              </div>
+            
+              <p *ngIf="!qrData?.qrLink" class="text-danger">QR Code not available</p>
             </div>
           </div>
         </div>

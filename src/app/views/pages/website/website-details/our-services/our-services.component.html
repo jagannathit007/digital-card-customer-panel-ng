@@ -1,0 +1,103 @@
+<div class="container mt-4">
+
+    <!-- Title and Add Service Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-0">Service List</h3>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddServiceModal">
+            <i class="ri-add-circle-line"></i> Add Service
+        </button>
+    </div>
+
+    <!-- Search Bar and Items Per Page Dropdown -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm" (input)="onSearch()">
+        <div class="ms-3">
+            <select class="form-select" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Service Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th class="text-center" style="width: 5%;">No.</th>
+                    <th class="text-center" style="width: 10%;">Image</th>
+                    <th style="width: 30%;">Title</th>
+                    <th style="width: 55%;">Description</th>
+                </tr>
+            </thead>
+            <tbody style="font-size: 12px;">
+                <!-- Loading Spinner -->
+                <tr *ngIf="isLoading">
+                    <td class="text-center" colspan="4">
+                        <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Service Rows -->
+                <tr
+                    *ngFor="let service of filteredServices | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems }; let i = index">
+                    <td class="text-center">{{ i + 1 }}</td>
+                    <td class="text-center">
+                        <img [src]="service.image" class="img-fluid" style="width: 40px; height: 40px; object-fit: cover;">
+                    </td>
+                    <td>{{ service.title }}</td>
+                    <td>{{ service.description }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="text-end">
+        <pagination-controls (pageChange)="pageChangeEvent($event)" id="pager"></pagination-controls>
+    </div>
+</div>
+
+<!-- Add Service Modal -->
+<div class="modal fade" id="AddServiceModal" tabindex="-1" aria-labelledby="AddServiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="AddServiceModalLabel">Add Service</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <!-- Image Upload -->
+                    <div class="mb-3">
+                        <label for="serviceImage" class="form-label">Upload Image</label>
+                        <input type="file" class="form-control" id="serviceImage" multiple accept="image/*">
+                    </div>
+
+                    <!-- Service Title -->
+                    <div class="mb-3">
+                        <label for="serviceTitle" class="form-label">Service Title</label>
+                        <input type="text" class="form-control" id="serviceTitle" placeholder="Enter service title">
+                    </div>
+
+                    <!-- Service Description -->
+                    <div class="mb-3">
+                        <label for="serviceDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="serviceDescription" rows="3"
+                            placeholder="Enter description"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success">
+                    <i class="ri-add-circle-line"></i> Add Service
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

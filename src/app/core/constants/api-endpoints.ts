@@ -22,6 +22,15 @@ class ApiEndpoints {
   public THEMES_DETAILS: string = `${this.PATH}/themes`;
   public THEMES_UPDATE: string = `${this.PATH}/themes/update`;
   public GOOGLE_STANDEE_DETAILS: string = `${this.PATH}/review/getReviews`;
+  public GET_QR_DETAILS: string = `${this.PATH}/qr-link/get-qr-details`;
+  public UPDATE_AI_DETAILS: string = `${this.PATH}/qr-link/update-ai-feature`;
+
+  public WEBSITE_BUILDER: string = `${this.PATH}/website/get-details`;
+  public WEBSITE_CONTACT_UPDATE_LINK: string = `${this.PATH}/website/social/update`;
+  public WEBSITE_CONTACT_ADD: string = `${this.PATH}/website/contact/add`;
+  public WEBSITE_CONTACT_EDIT: string = `${this.PATH}/website/contact/update`;
+  public WEBSITE_CONTACT_DELETE: string = `${this.PATH}/website/contact/delete`;
+
 }
 
 export let apiEndpoints = new ApiEndpoints();

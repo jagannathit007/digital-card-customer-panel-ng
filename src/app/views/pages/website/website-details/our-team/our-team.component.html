@@ -1,0 +1,101 @@
+<div class="container mt-4">
+
+    <!-- Title and Add Team Member Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-0">Team Members</h3>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddTeamMemberModal">
+            <i class="ri-add-circle-line"></i> Add Team Member
+        </button>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm" (input)="onSearch()">
+        <div class="ms-3">
+            <select class="form-select" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Team Members Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th class="text-center" style="width: 5%;">No.</th>
+                    <th class="text-center">Image</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody style="font-size: 12px;">
+                <!-- Loading Spinner -->
+                <tr *ngIf="isLoading">
+                    <td class="text-center" colspan="4">
+                        <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Team Member Rows -->
+                <tr
+                    *ngFor="let member of filteredMembers | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems }; let i = index">
+                    <td class="text-center">{{ i + 1 }}</td>
+                    <td class="text-center">
+                        <img [src]="member.image" class="img-fluid rounded-circle"
+                            style="width: 40px; height: 40px; object-fit: cover;">
+                    </td>
+                    <td>{{ member.name }}</td>
+                    <td>{{ member.role }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="text-end">
+        <pagination-controls (pageChange)="pageChangeEvent($event)" id="pager"></pagination-controls>
+    </div>
+</div>
+
+<div class="modal fade" id="AddTeamMemberModal" tabindex="-1" aria-labelledby="AddTeamMemberModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="AddTeamMemberModalLabel">Add Team Member</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <!-- Image Upload -->
+                    <div class="mb-3">
+                        <label for="memberImage" class="form-label">Upload Profile Picture</label>
+                        <input type="file" class="form-control" id="memberImage" accept="image/*">
+                    </div>
+
+                    <!-- Team Member Name -->
+                    <div class="mb-3">
+                        <label for="memberName" class="form-label">Team Member Name</label>
+                        <input type="text" class="form-control" id="memberName" placeholder="Enter name">
+                    </div>
+
+                    <!-- Team Member Role -->
+                    <div class="mb-3">
+                        <label for="memberRole" class="form-label">Role</label>
+                        <input type="text" class="form-control" id="memberRole" placeholder="Enter role (e.g., Developer, Designer)">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success">
+                    <i class="ri-user-add-line"></i> Add Team Member
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

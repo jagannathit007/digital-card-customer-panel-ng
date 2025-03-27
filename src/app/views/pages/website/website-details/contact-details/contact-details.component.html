@@ -1,0 +1,145 @@
+<div class="container mt-4">
+
+    <!-- Social Media Links Section -->
+    <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Social Media Links</h3>
+            <button class="btn btn-success" (click)="saveSocialMediaLinks()">
+                Save Changes
+            </button>
+        </div>
+        <div class="row g-3 mt-2">
+            <div class="col-md-6">
+                <label for="instagram" class="form-label">
+                    <i class="ri-instagram-fill text-danger"></i> Instagram
+                </label>
+                <input type="text" id="instagram" class="form-control" [(ngModel)]="socialLinks.instagram" placeholder="Enter Instagram URL" />
+            </div>
+            <div class="col-md-6">
+                <label for="facebook" class="form-label">
+                    <i class="ri-facebook-circle-fill text-primary"></i> Facebook
+                </label>
+                <input type="text" id="facebook" class="form-control" [(ngModel)]="socialLinks.facebook" placeholder="Enter Facebook URL" />
+            </div>
+            <div class="col-md-6">
+                <label for="linkedin" class="form-label">
+                    <i class="ri-linkedin-box-fill text-info"></i> LinkedIn
+                </label>
+                <input type="text" id="linkedin" class="form-control" [(ngModel)]="socialLinks.linkedin" placeholder="Enter LinkedIn URL" />
+            </div>
+            <div class="col-md-6">
+                <label for="x" class="form-label">
+                    <i class="ri-twitter-x-line text-dark"></i> X (Twitter)
+                </label>
+                <input type="text" id="x" class="form-control" [(ngModel)]="socialLinks.twitter" placeholder="Enter X (Twitter) URL" />
+            </div>
+        </div>
+    </div>
+    
+
+    <!-- Contact List Section -->
+    <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Contact List</h3>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddContactModal">
+                <i class="ri-add-circle-line"></i> Add Contact
+            </button>
+        </div>
+    </div>
+
+    <!-- Search & Items Per Page Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm" (input)="onSearch()">
+        <div class="ms-3">
+            <select class="form-select" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Contact Table Section -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th class="text-center" style="width: 50px;">No.</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th width="10%" class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody style="font-size: 12px;">
+                <!-- Loading Spinner -->
+                <tr *ngIf="isLoading">
+                    <td class="text-center" colspan="5">
+                        <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Contact Rows -->
+                <tr *ngFor="let contact of filteredContacts ?? [] | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems }; let i = index">
+                    <td class="text-center">{{ i + 1 }}</td>
+                    <td>{{ contact.email }}</td>
+                    <td>{{ contact.phone }}</td>
+                    <td>{{ contact.address }}</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#AddContactModal" (click)="editContact(contact)">
+                          <i class="ri-edit-box-line"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" (click)="deleteContact(contact)">
+                          <i class="ri-delete-bin-line"></i>
+                        </button>
+                      </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="text-end">
+        <pagination-controls (pageChange)="pageChangeEvent($event)" id="pager"></pagination-controls>
+    </div>
+</div>
+
+<!-- Add Contact Modal -->
+<div class="modal fade" id="AddContactModal" tabindex="-1" aria-labelledby="AddContactModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="AddContactModalLabel">Add Contact</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="contactEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="contactEmail" placeholder="Enter email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactPhone" class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="contactPhone" placeholder="Enter phone number">
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactAddress" class="form-label">Address</label>
+                        <textarea class="form-control" id="contactAddress" rows="2" placeholder="Enter address"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button *ngIf="!selectedContactId" type="button" class="btn btn-success" (click)="addContact()">
+                    <i class="ri-add-circle-line"></i> Add Contact
+                </button>
+                <button *ngIf="selectedContactId" type="button" class="btn btn-primary" (click)="updateContact()">
+                    <i class="ri-edit-box-line"></i> Update Contact
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

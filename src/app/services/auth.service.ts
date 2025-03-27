@@ -508,6 +508,7 @@ export class AuthService {
       let response = await this.apiManager.request(
         // change it...
         {
+          // url: `${apiEndpoints.GOOGLE_STANDEE_DETAILS}/${businessCardId}`,
           url: `https://xppc9p11-3100.inc1.devtunnels.ms/web/review/getReviews/${businessCardId}`,
           method: 'POST'
         },
@@ -523,6 +524,202 @@ export class AuthService {
       }
     } catch (err) {
       swalHelper.showToast('Error fetching reviews!', 'error');
+      return null;
+    }
+  }
+  async getQrdetails(businessCardId: string) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        // change it...
+        {
+          // url: `${apiEndpoints.GET_QR_DETAILS}/${businessCardId}`,
+          url: `https://xppc9p11-3100.inc1.devtunnels.ms/web/qr-link/get-qr-details/${businessCardId}`,
+          method: 'POST'
+        },
+        {},
+        this.headers
+      );
+      if (response.status === 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message || 'Failed to fetch Qr Code details!', 'warning');
+        console.log(response.message);
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Error fetching Qr Code details!', 'error');
+      return null;
+    }
+  }
+  async upadteAiToggle(businessCardId: string, isAIFeatureAllowed: boolean) {
+    try {
+      // console.log(businessCardId, isAIFeatureAllowed);
+      
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        // change it...
+        {
+          // url: `${apiEndpoints.UPDATE_AI_DETAILS}/${businessCardId}`,
+          url: `https://xppc9p11-3100.inc1.devtunnels.ms/web/qr-link/update-ai-feature/${businessCardId}`,
+          method: 'POST'
+        },
+        { isAIFeatureAllowed },
+        this.headers
+      );
+      // console.log(response);
+      
+      if (response.status === 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message || 'Failed to fetch Qr Code details!', 'warning');
+        console.log(response.message);
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Error fetching Qr Code details!', 'error');
+      return null;
+    }
+  }
+
+  async getWebsiteDetails(businessCardId: string) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        // change it...
+        {
+          // url: `${apiEndpoints.WEBSITE_BUILDER}/${businessCardId}`,
+          url: `https://xppc9p11-3100.inc1.devtunnels.ms/web/website/get-details/${businessCardId}`,
+          method: 'POST'
+        },
+        {},
+        this.headers
+      );
+      if (response.status === 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message || 'Failed to fetch website details!', 'warning');
+        console.log(response.message);
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Error fetching website details!', 'error');
+      return null;
+    }
+  }
+
+  async updateSocialLink(businessCardId: string, socialLinks: any) {
+    try {
+      this.getHeaders();
+
+      let response = await this.apiManager.request(
+        // change it...
+        {
+          // url: `${apiEndpoints.WEBSITE_CONTACT_UPDATE_LINK}`,
+          url: `https://xppc9p11-3100.inc1.devtunnels.ms/web/website/social/update`,
+          method: 'POST'
+        },
+        { businessCardId, ...socialLinks },
+        this.headers
+      );
+      // console.log(response);
+      
+      if (response.status === 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message || 'Failed to fetch social details!', 'warning');
+        console.log(response.message);
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Error fetching social details!', 'error');
+      return null;
+    }
+  }
+
+  async AddContactData(businessCardId: string, data: any) {
+    try {
+      this.getHeaders();
+
+      let response = await this.apiManager.request(
+        // change it...
+        {
+          // url: `${apiEndpoints.WEBSITE_CONTACT_UPDATE_LINK}`,
+          url: `https://xppc9p11-3100.inc1.devtunnels.ms/web/website/contact/add`,
+          method: 'POST'
+        },
+        { businessCardId, ...data },
+        this.headers
+      );
+      // console.log(response);
+      
+      if (response.status === 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message || 'Failed to Add contact details!', 'warning');
+        console.log(response.message);
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Error Add contact details!', 'error');
+      return null;
+    }
+  }
+
+  async updateContactData(businessCardId: string, contactId: string, data: any) {
+    try {
+      this.getHeaders();
+
+      let response = await this.apiManager.request(
+        // change it...
+        {
+          // url: `${apiEndpoints.WEBSITE_CONTACT_EDIT}`,
+          url: `https://xppc9p11-3100.inc1.devtunnels.ms/web/website/contact/update`,
+          method: 'POST'
+        },
+        { businessCardId, contactId, ...data },
+        this.headers
+      );
+      // console.log(response);
+      
+      if (response.status === 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message || 'Failed to update contact details!', 'warning');
+        console.log(response.message);
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Error update contact details!', 'error');
+      return null;
+    }
+  }
+
+  async deleteContactData(businessCardId: string, contactId: string) {
+    try {
+      this.getHeaders();
+
+      let response = await this.apiManager.request(
+        // change it...
+        {
+          // url: `${apiEndpoints.WEBSITE_CONTACT_DELETE}`,
+          url: `https://xppc9p11-3100.inc1.devtunnels.ms/web/website/contact/delete`,
+          method: 'POST'
+        },
+        { businessCardId, contactId },
+        this.headers
+      );
+      // console.log(response);
+      
+      if (response.status === 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message || 'Failed to delete contact details!', 'warning');
+        console.log(response.message);
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Error delete contact details!', 'error');
       return null;
     }
   }

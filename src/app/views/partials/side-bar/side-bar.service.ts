@@ -29,6 +29,12 @@ export class SideBarService {
       icon: 'credit-card',
     };
 
+    const websiteDetailsMenu = {
+      title: 'Website Builder',
+      link: 'website-details',
+      icon: 'layout',
+    };
+
     const googleReviewMenu = {
       title: 'Google Review',
       link: 'google-standee',
@@ -46,6 +52,10 @@ export class SideBarService {
       product === "digital-card" || product === "nfc-card"
     );
 
+    const hasWebsiteDetails = products.some(product =>
+      product === "website-details"
+    );
+
     const hasGoogleReview = products.some(product =>
       product === "google-standee"
     );
@@ -59,6 +69,11 @@ export class SideBarService {
     // Add Business Card and Scanned Cards for digital-card or nfc-card
     if (hasDigitalOrNFC) {
       menus = [businessCardMenu, scannedCardsMenu, ...menus];
+    }
+
+    if (hasWebsiteDetails) {
+      // Insert Website before Account Settings
+      menus.splice(menus.length - 1, 0, websiteDetailsMenu);
     }
 
     // Add Google Reviews for google-standee

@@ -7,6 +7,7 @@ import { BusinessCardComponent } from './views/pages/business-card/business-card
 import { AccountSettingsComponent } from './views/pages/account-settings/account-settings.component';
 import { GoogleStandeeComponent } from './views/pages/google-standee/google-standee.component';
 import { AuthGuard } from './guards/auth.guard';
+import { WebsiteComponent } from './views/pages/website/website.component';
 
 
 export const routes: Routes = [
@@ -33,6 +34,12 @@ export const routes: Routes = [
         component: BusinessCardDetailComponent,
         canActivate: [AuthGuard],
         data: { requiredProduct: 'scanned-cards' }
+      },
+      {
+        path: 'website-details',
+        component: WebsiteComponent,
+        canActivate: [AuthGuard],
+        data: { requiredProduct: 'website-details' }
       },
       {
         path: 'google-standee',
