@@ -6,7 +6,6 @@ import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { AuthService } from 'src/app/services/auth.service';
 import { common } from 'src/app/core/constants/common';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
-// import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-contact-details',
@@ -36,6 +35,8 @@ export class ContactDetailsComponent implements OnInit {
   };
   contactForm: any[] = [];
   selectedContactId: string = "";
+  selectedContact: any = null;
+
 
   constructor(private storage: AppStorage, public authService: AuthService) { }
 
@@ -217,24 +218,24 @@ export class ContactDetailsComponent implements OnInit {
   }
 
 
-  async deleteContact(contact: any) {
-
+  setSelectedContact(contact: any) {
+    this.selectedContact = contact;
+  }
+  
+  async confirmDelete() {
+    if (!this.selectedContact) return;
+  
     const businessCardId = this.storage.get(common.BUSINESS_CARD);
-    
-    let contactId = contact._id;
-
+    const contactId = this.selectedContact._id;
+  
     if (!businessCardId) {
       swalHelper.showToast('Business Card ID is missing!', 'error');
       return;
     }
-
-    if (!confirm('Are you sure you want to delete this contact?')) {
-      return;
-    }
-
+  
     try {
       let response = await this.authService.deleteContactData(businessCardId, contactId);
-
+  
       if (response) {
         swalHelper.showToast('Contact Deleted Successfully!', 'success');
         await this.fetchContacts();
@@ -245,7 +246,25 @@ export class ContactDetailsComponent implements OnInit {
       swalHelper.showToast('Error deleting contact!', 'error');
       console.error(err);
     }
+  
+    // Reset selected contact
+  this.selectedContact = null;
+
+  // Close modal
+  let modalElement = document.getElementById('deleteContactModal');
+  if (modalElement) {
+    (modalElement as any).classList.remove('show');
+    (modalElement as any).setAttribute('aria-hidden', 'true');
+    (modalElement as any).setAttribute('style', 'display: none;');
+
+    let backdrop = document.querySelector('.modal-backdrop');
+    if (backdrop) {
+      backdrop.remove();
+    }
   }
+
+  }
+
 
 
   onItemsPerPageChange() {
