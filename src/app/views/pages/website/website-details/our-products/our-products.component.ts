@@ -52,13 +52,13 @@ export class OurProductsComponent implements OnInit {
         name: 'Product 1',
         price: 29.99,
         description: 'This is a sample product.',
-        images: ['src/assets/images/logo.png']
+        images: ['']
       },
       {
         name: 'Product 2',
         price: 49.99,
         description: 'Another sample product.',
-        images: ['src/assets/images/avatar.png']
+        images: ['']
       }
     ];
   

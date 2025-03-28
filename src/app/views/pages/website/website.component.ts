@@ -12,7 +12,7 @@ import { TestimonialsComponent } from './website-details/testimonials/testimonia
 import { ThemesComponent } from './website-details/themes/themes.component';
 import { SeoDetailsComponent } from './website-details/seo-details/seo-details.component';
 import { ContactDetailsComponent } from './website-details/contact-details/contact-details.component';
-
+import { ContactDetailComponent } from './website-details/contact-detail/contact-detail.component';
 @Component({
   selector: 'app-website',
   standalone: true,
@@ -27,6 +27,7 @@ import { ContactDetailsComponent } from './website-details/contact-details/conta
     ThemesComponent,
     SeoDetailsComponent,
     ContactDetailsComponent,
+    ContactDetailComponent
   ],
   templateUrl: './website.component.html',
   styleUrl: './website.component.scss',
@@ -80,6 +81,10 @@ export class WebsiteComponent { constructor(public authService: AuthService, pri
     {
       title: "Contact Details",
       href: "contact-details",
+    },
+    {
+      title: "Contact-Details",
+      href: "contact-detail",
     },
   ]
 

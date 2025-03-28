@@ -89,7 +89,7 @@
                     <td>{{ contact.phone }}</td>
                     <td>{{ contact.address }}</td>
                     <td class="text-center">
-                        <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#AddContactModal" (click)="editContact(contact)">
+                        <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#EditContactModal" (click)="editContact(contact)">
                           <i class="ri-edit-box-line"></i>
                         </button>
                         <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteContactModal" (click)="setSelectedContact(contact)">
@@ -108,7 +108,6 @@
 </div>
 
 
-
 <!-- Add Contact Modal -->
 <div class="modal fade" id="AddContactModal" tabindex="-1" aria-labelledby="AddContactModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -118,27 +117,73 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form>
+                <form #contactForm="ngForm">
                     <div class="mb-3">
                         <label for="contactEmail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="contactEmail" placeholder="Enter email">
+                        <input 
+                            type="email" 
+                            class="form-control" 
+                            id="contactEmail" 
+                            name="email" 
+                            placeholder="Enter email" 
+                            [(ngModel)]="newContact.email" 
+                            #email="ngModel" 
+                            required 
+                            [pattern]="RegularRegex.email">
+                        <div *ngIf="email.invalid && email.touched" class="text-danger">
+                            Please enter a valid email address.
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="contactPhone" class="form-label">Phone</label>
-                        <input type="tel" class="form-control" id="contactPhone" placeholder="Enter phone number">
+                        <input 
+                            type="tel" 
+                            class="form-control" 
+                            id="contactPhone" 
+                            name="phone" 
+                            placeholder="Enter phone number" 
+                            [(ngModel)]="newContact.phone" 
+                            #phone="ngModel" 
+                            required 
+                            [pattern]="RegularRegex.phoneNo">
+                        <div *ngIf="phone.invalid && phone.touched" class="text-danger">
+                            Please enter a valid 10-digit phone number.
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="contactAddress" class="form-label">Address</label>
-                        <textarea class="form-control" id="contactAddress" rows="2" placeholder="Enter address"></textarea>
+                        <textarea 
+                            class="form-control" 
+                            id="contactAddress" 
+                            name="address" 
+                            rows="2" 
+                            placeholder="Enter address" 
+                            [(ngModel)]="newContact.address" 
+                            #address="ngModel" 
+                            required>
+                        </textarea>
+                        <div *ngIf="address.invalid && address.touched" class="text-danger">
+                            Address is required.
+                        </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button *ngIf="!selectedContactId" type="button" class="btn btn-success" (click)="addContact()">
+                <button 
+                    *ngIf="!selectedContactId" 
+                    type="button" 
+                    class="btn btn-success" 
+                    [disabled]="contactForm.invalid" 
+                    (click)="addContact()">
                     <i class="ri-add-circle-line"></i> Add Contact
                 </button>
-                <button *ngIf="selectedContactId" type="button" class="btn btn-primary" (click)="updateContact()">
+                <button 
+                    *ngIf="selectedContactId" 
+                    type="button" 
+                    class="btn btn-primary" 
+                    [disabled]="contactForm.invalid" 
+                    (click)="updateContact()">
                     <i class="ri-edit-box-line"></i> Save Contact
                 </button>
             </div>

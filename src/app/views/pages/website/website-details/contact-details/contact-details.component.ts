@@ -6,6 +6,7 @@ import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { AuthService } from 'src/app/services/auth.service';
 import { common } from 'src/app/core/constants/common';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
+import { RegularRegex } from 'src/app/core/constants/regular-regex';
 
 @Component({
   selector: 'app-contact-details',
@@ -38,6 +39,15 @@ export class ContactDetailsComponent implements OnInit {
   selectedContact: any = null;
 
 
+  RegularRegex = RegularRegex; 
+  newContact = {
+    email: '',
+    phone: '',
+    address: ''
+  };
+
+
+
   constructor(private storage: AppStorage, public authService: AuthService) { }
 
   async ngOnInit() {
@@ -64,8 +74,8 @@ export class ContactDetailsComponent implements OnInit {
         this.contacts = results.contact ? [...results.contact] : [];
       }
 
-      console.log("Extracted Social Links: ", this.socialLinks);
-      console.log("Extracted Contacts: ", this.contacts);
+      // console.log("Extracted Social Links: ", this.socialLinks);
+      // console.log("Extracted Contacts: ", this.contacts);
 
       this.filteredContacts = [...this.contacts];
       // console.log(this.filteredContacts);
@@ -113,64 +123,117 @@ export class ContactDetailsComponent implements OnInit {
     }
   }
 
+  // async addContact() {
+  //   const businessCardId = this.storage.get(common.BUSINESS_CARD);
+
+  //   if (!businessCardId) {
+  //     console.error("Business Card ID not found!");
+  //     swalHelper.showToast("Business Card ID is missing!", "error");
+  //     return;
+  //   }
+
+  //   let email = (document.getElementById('contactEmail') as HTMLInputElement).value.trim();
+  //   let phone = (document.getElementById('contactPhone') as HTMLInputElement).value.trim();
+  //   let address = (document.getElementById('contactAddress') as HTMLTextAreaElement).value.trim();
+
+  //   if (!email || !phone || !address) {
+  //     swalHelper.showToast("Please fill all fields!", "warning");
+  //     return;
+  //   }
+
+  //   const newContact = { email, phone, address };
+
+  //   try {
+  //     let response = await this.authService.AddContactData(businessCardId, newContact);
+
+  //     if (response) {
+  //       swalHelper.showToast("Contact Added Successfully!", "success");
+  //       console.log("Added Contact:", response);
+
+  //       await this.fetchContacts();
+
+
+  //       const closeButton = document.querySelector('#AddContactModal .btn-close');
+  //       if (closeButton) {
+  //         (closeButton as HTMLButtonElement).click();
+  //         (document.getElementById('contactEmail') as HTMLInputElement).value = '';
+  //         (document.getElementById('contactPhone') as HTMLInputElement).value = '';
+  //         (document.getElementById('contactAddress') as HTMLTextAreaElement).value = '';
+  //       }
+
+  //     } else {
+  //       swalHelper.showToast("Failed to add contact!", "warning");
+  //     }
+  //   } catch (err) {
+  //     swalHelper.showToast("Error adding contact!", "error");
+  //     console.error("Error:", err);
+  //   }
+  // }
+
   async addContact() {
     const businessCardId = this.storage.get(common.BUSINESS_CARD);
 
     if (!businessCardId) {
-      console.error("Business Card ID not found!");
-      swalHelper.showToast("Business Card ID is missing!", "error");
-      return;
+        console.error("Business Card ID not found!");
+        swalHelper.showToast("Business Card ID is missing!", "error");
+        return;
     }
 
     let email = (document.getElementById('contactEmail') as HTMLInputElement).value.trim();
     let phone = (document.getElementById('contactPhone') as HTMLInputElement).value.trim();
     let address = (document.getElementById('contactAddress') as HTMLTextAreaElement).value.trim();
 
-    if (!email || !phone || !address) {
-      swalHelper.showToast("Please fill all fields!", "warning");
-      return;
+    console.log("my email", email);
+
+    // Validation using RegularRegex
+    if (!email || !RegularRegex.email.test(email)) {
+        swalHelper.showToast("Please enter a valid email address!", "warning");
+        return;
+    }
+
+    if (!phone || !RegularRegex.phoneNo.test(phone)) {
+        swalHelper.showToast("Please enter a valid 10-digit phone number!", "warning");
+        return;
+    }
+
+    if (!address || address.length < 5) {
+        swalHelper.showToast("Address must be at least 5 characters long!", "warning");
+        return;
     }
 
     const newContact = { email, phone, address };
 
     try {
-      let response = await this.authService.AddContactData(businessCardId, newContact);
+        let response = await this.authService.AddContactData(businessCardId, newContact);
 
-      if (response) {
-        swalHelper.showToast("Contact Added Successfully!", "success");
-        console.log("Added Contact:", response);
+        if (response) {
+            swalHelper.showToast("Contact Added Successfully!", "success");
+            console.log("Added Contact:", response);
+            
 
-        await this.fetchContacts();
+            await this.fetchContacts();
 
-
-        const closeButton = document.querySelector('#AddContactModal .btn-close');
-        if (closeButton) {
-          (closeButton as HTMLButtonElement).click();
-          (document.getElementById('contactEmail') as HTMLInputElement).value = '';
-          (document.getElementById('contactPhone') as HTMLInputElement).value = '';
-          (document.getElementById('contactAddress') as HTMLTextAreaElement).value = '';
+            const closeButton = document.querySelector('#AddContactModal .btn-close');
+            if (closeButton) {
+                (closeButton as HTMLButtonElement).click();
+                (document.getElementById('contactEmail') as HTMLInputElement).value = '';
+                (document.getElementById('contactPhone') as HTMLInputElement).value = '';
+                (document.getElementById('contactAddress') as HTMLTextAreaElement).value = '';
+            }
+        } else {
+            swalHelper.showToast("Failed to add contact!", "warning");
         }
-
-      } else {
-        swalHelper.showToast("Failed to add contact!", "warning");
-      }
     } catch (err) {
-      swalHelper.showToast("Error adding contact!", "error");
-      console.error("Error:", err);
+        swalHelper.showToast("Error adding contact!", "error");
+        console.error("Error:", err);
     }
-  }
+}
 
   async editContact(contact: any) {
     console.log("Edit contact: ", contact);
 
-    // // Populate form with existing contact data
-    // this.contactForm.setValue({
-    //   contactEmail: contact.email || '',
-    //   contactPhone: contact.phone || '',
-    //   contactAddress: contact.address || ''
-    // });
-
     // Store the selected contact ID
+    
     this.selectedContactId = contact._id;
     console.log(this.selectedContactId);
   }
