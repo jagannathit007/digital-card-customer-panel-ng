@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HomeComponent } from './website-details/home/home.component';
 import { AboutSectionComponent } from './website-details/about-section/about-section.component';
 import { OurProductsComponent } from './website-details/our-products/our-products.component';
 import { OurTeamComponent } from './website-details/our-team/our-team.component';
@@ -17,6 +18,7 @@ import { ContactDetailsComponent } from './website-details/contact-details/conta
   standalone: true,
   imports: [
     FormsModule,
+    HomeComponent,
     OurProductsComponent,
     OurTeamComponent,
     OurServicesComponent,
@@ -33,17 +35,21 @@ import { ContactDetailsComponent } from './website-details/contact-details/conta
 export class WebsiteComponent { constructor(public authService: AuthService, private storage: AppStorage){
     this.authService.selectedBusinessCard = this.storage.get(common.BUSINESS_CARD) ?? "";
     this.selectedTab = {
-      title: "Our Products",
-      href: "our-products",
+      title: "Home",
+      href: "home",
     };
   }
 
   selectedTab = {
-    title: "Our Products",
-    href: "our-products",
+    title: "Home",
+    href: "home",
   };
 
   tabs = [
+    {
+      title: "Home",
+      href: "home",
+    },
     {
       title: "Our Products",
       href: "our-products",

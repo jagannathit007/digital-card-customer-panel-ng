@@ -14,6 +14,9 @@
                 }
             </ul>
             <div class="mt-2">
+                @if(selectedTab.href == "home"){
+                    <app-home></app-home>
+                    }
                 @if(selectedTab.href == "our-products"){
                 <app-our-products></app-our-products>
                 }
