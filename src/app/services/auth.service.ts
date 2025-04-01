@@ -508,8 +508,7 @@ export class AuthService {
       let response = await this.apiManager.request(
         // change it...
         {
-          // url: `${apiEndpoints.GOOGLE_STANDEE_DETAILS}/${businessCardId}`,
-          url: `https://xppc9p11-3100.inc1.devtunnels.ms/web/review/getReviews/${businessCardId}`,
+          url: `${apiEndpoints.GOOGLE_STANDEE_DETAILS}/${businessCardId}`,
           method: 'POST'
         },
         {},
@@ -533,8 +532,7 @@ export class AuthService {
       let response = await this.apiManager.request(
         // change it...
         {
-          // url: `${apiEndpoints.GET_QR_DETAILS}/${businessCardId}`,
-          url: `https://xppc9p11-3100.inc1.devtunnels.ms/web/qr-link/get-qr-details/${businessCardId}`,
+          url: `${apiEndpoints.GET_QR_DETAILS}/${businessCardId}`,
           method: 'POST'
         },
         {},
@@ -560,8 +558,7 @@ export class AuthService {
       let response = await this.apiManager.request(
         // change it...
         {
-          // url: `${apiEndpoints.UPDATE_AI_DETAILS}/${businessCardId}`,
-          url: `https://xppc9p11-3100.inc1.devtunnels.ms/web/qr-link/update-ai-feature/${businessCardId}`,
+          url: `${apiEndpoints.UPDATE_AI_DETAILS}/${businessCardId}`,
           method: 'POST'
         },
         { isAIFeatureAllowed },
@@ -588,8 +585,7 @@ export class AuthService {
       let response = await this.apiManager.request(
         // change it...
         {
-          // url: `${apiEndpoints.WEBSITE_BUILDER}/${businessCardId}`,
-          url: `https://xppc9p11-3100.inc1.devtunnels.ms/web/website/get-details/${businessCardId}`,
+          url: `${apiEndpoints.WEBSITE_BUILDER}/${businessCardId}`,
           method: 'POST'
         },
         {},
@@ -608,6 +604,487 @@ export class AuthService {
     }
   }
 
+// WEBSITE MODULE ALL SERVICES
+  // home section /UPDATE/
+  async updateHomeDetails(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); 
+      
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_HOME_UPDATE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  // our-product ADD/UPDATE/DELETE
+  async addProducts(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); 
+      
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_OUR_PRODUCTS_ADD,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+  
+  async updateProducts(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); 
+      
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_OUR_PRODUCTS_UPDATE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+  
+  async deleteProducts(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); 
+      
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_OUR_PRODUCTS_DELETE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+   // our-team ADD/UPDATE/DELETE
+   async addTeams(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); 
+      
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_OUR_TEAM_ADD,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+  
+  async updateTeams(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); 
+      
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_OUR_TEAM_UPDATE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+  
+  async deleteTeams(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); 
+      
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_OUR_TEAM_DELETE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+    // our-services ADD/UPDATE/DELETE
+    async addServices(data: any) {
+      try {
+        this.getHeaders();
+        data = this.addBusinessCardId(data); 
+        
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_OUR_SERVICS_ADD,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        
+        if (response.status == 200 && response.data != null) {
+          return response.data;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return null;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return null;
+      }
+    }
+    
+    async updateServices(data: any) {
+      try {
+        this.getHeaders();
+        data = this.addBusinessCardId(data); 
+        
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_OUR_SERVICS_UPDATE,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        
+        if (response.status == 200 && response.data != null) {
+          return response.data;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return null;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return null;
+      }
+    }
+    
+    async deleteServices(data: any) {
+      try {
+        this.getHeaders();
+        data = this.addBusinessCardId(data); 
+        
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_OUR_SERVICS_DELETE,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        
+        if (response.status == 200 && response.data != null) {
+          return response.data;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return null;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return null;
+      }
+    }
+  
+
+      // our-clients ADD/UPDATE/DELETE
+  async addClients(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); 
+      
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_OUR_CLIENTS_ADD,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+  
+  async updateClients(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); 
+      
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_OUR_CLIENTS_UPDATE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+  
+  async deleteClients(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); 
+      
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_TESTIMONIALS_DELETE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  // about section /UPDATE/
+  async updateAboutUs(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); 
+      
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_ABOUT_UPDATE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  // testimonials services ADD/UPDATE/DELETE
+  async addTestimonials(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); 
+      
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_TESTIMONIALS_ADD,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+  
+  async updateTestimonials(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); 
+      
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_TESTIMONIALS_UPDATE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+  
+  async deleteTestimonials(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); 
+      
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_TESTIMONIALS_DELETE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  
+  // SEO details /UPDATE/
+  async updateSeoDeatils(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data); 
+      
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_SEO_UPDATE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  
+  // contact details /ADD/UPDATE/DELETE
   async updateSocialLink(businessCardId: string, socialLinks: any) {
     try {
       this.getHeaders();
@@ -615,8 +1092,7 @@ export class AuthService {
       let response = await this.apiManager.request(
         // change it...
         {
-          // url: `${apiEndpoints.WEBSITE_CONTACT_UPDATE_LINK}`,
-          url: `https://xppc9p11-3100.inc1.devtunnels.ms/web/website/social/update`,
+          url: `${apiEndpoints.WEBSITE_CONTACT_UPDATE_LINK}`,
           method: 'POST'
         },
         { businessCardId, ...socialLinks },
@@ -644,8 +1120,7 @@ export class AuthService {
       let response = await this.apiManager.request(
         // change it...
         {
-          // url: `${apiEndpoints.WEBSITE_CONTACT_UPDATE_LINK}`,
-          url: `https://xppc9p11-3100.inc1.devtunnels.ms/web/website/contact/add`,
+          url: `${apiEndpoints.WEBSITE_CONTACT_ADD}`,
           method: 'POST'
         },
         { businessCardId, ...data },
@@ -673,8 +1148,7 @@ export class AuthService {
       let response = await this.apiManager.request(
         // change it...
         {
-          // url: `${apiEndpoints.WEBSITE_CONTACT_EDIT}`,
-          url: `https://xppc9p11-3100.inc1.devtunnels.ms/web/website/contact/update`,
+          url: `${apiEndpoints.WEBSITE_CONTACT_EDIT}`,
           method: 'POST'
         },
         { businessCardId, contactId, ...data },
@@ -702,8 +1176,7 @@ export class AuthService {
       let response = await this.apiManager.request(
         // change it...
         {
-          // url: `${apiEndpoints.WEBSITE_CONTACT_DELETE}`,
-          url: `https://xppc9p11-3100.inc1.devtunnels.ms/web/website/contact/delete`,
+          url: `${apiEndpoints.WEBSITE_CONTACT_DELETE}`,
           method: 'POST'
         },
         { businessCardId, contactId },
@@ -723,4 +1196,6 @@ export class AuthService {
       return null;
     }
   }
+
+
 }  

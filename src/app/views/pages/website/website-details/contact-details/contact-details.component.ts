@@ -61,7 +61,7 @@ export class ContactDetailsComponent implements OnInit {
       let businessCardId = this.storage.get(common.BUSINESS_CARD);
       // console.log("business card from contact-details", businessCardId);
       let results = await this.authService.getWebsiteDetails(businessCardId);
-      // console.log("website details: ", results);
+      console.log("website details: ", results);
 
       if (results) {
         this.socialLinks = {
@@ -214,6 +214,8 @@ export class ContactDetailsComponent implements OnInit {
             await this.fetchContacts();
 
             const closeButton = document.querySelector('#AddContactModal .btn-close');
+            console.log("closeButton", closeButton);
+            
             if (closeButton) {
                 (closeButton as HTMLButtonElement).click();
                 (document.getElementById('contactEmail') as HTMLInputElement).value = '';
@@ -238,7 +240,7 @@ export class ContactDetailsComponent implements OnInit {
     console.log(this.selectedContactId);
   }
 
-  async updateContact() {
+  async updateContact() { 
     if (!this.selectedContactId) {
       swalHelper.showToast('No contact selected for update!', 'warning');
       return;

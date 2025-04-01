@@ -25,7 +25,45 @@ class ApiEndpoints {
   public GET_QR_DETAILS: string = `${this.PATH}/qr-link/get-qr-details`;
   public UPDATE_AI_DETAILS: string = `${this.PATH}/qr-link/update-ai-feature`;
 
+  // all website details modules
   public WEBSITE_BUILDER: string = `${this.PATH}/website/get-details`;
+
+  // testimonials apis
+  public WEBSITE_TESTIMONIALS_ADD: string = `${this.PATH}/website/testimonial/add`;
+  public WEBSITE_TESTIMONIALS_UPDATE: string = `${this.PATH}/website/testimonial/update`;
+  public WEBSITE_TESTIMONIALS_DELETE: string = `${this.PATH}/website/testimonial/delete`;
+
+  // our-clients apis
+  public WEBSITE_OUR_CLIENTS_ADD: string = `${this.PATH}/website/client/add`;
+  public WEBSITE_OUR_CLIENTS_UPDATE: string = `${this.PATH}/website/client/update`;
+  public WEBSITE_OUR_CLIENTS_DELETE: string = `${this.PATH}/website/client/delete`;
+
+  // our-services apis
+  public WEBSITE_OUR_SERVICS_ADD: string = `${this.PATH}/website/service/add`;
+  public WEBSITE_OUR_SERVICS_UPDATE: string = `${this.PATH}/website/service/update`;
+  public WEBSITE_OUR_SERVICS_DELETE: string = `${this.PATH}/website/service/delete`;
+
+  // our-Teams apis
+  public WEBSITE_OUR_TEAM_ADD: string = `${this.PATH}/website/team/add`;
+  public WEBSITE_OUR_TEAM_UPDATE: string = `${this.PATH}/website/team/update`;
+  public WEBSITE_OUR_TEAM_DELETE: string = `${this.PATH}/website/team/delete`;
+
+  // our-Products-apis
+  public WEBSITE_OUR_PRODUCTS_ADD: string = `${this.PATH}/website/product/add`;
+  public WEBSITE_OUR_PRODUCTS_UPDATE: string = `${this.PATH}/website/product/update`;
+  public WEBSITE_OUR_PRODUCTS_DELETE: string = `${this.PATH}/website/product/delete`;
+
+  // website_ABOUT-SECTION_apis
+  public WEBSITE_ABOUT_UPDATE: string = `${this.PATH}/website/about/update`;
+
+  // website_ABOUT-SECTION_apis
+  public WEBSITE_HOME_UPDATE: string = `${this.PATH}/website/home/update`;
+
+  // website_seo_apis
+  public WEBSITE_SEO_UPDATE: string = `${this.PATH}/website/seo/update`;
+
+
+
   public WEBSITE_CONTACT_UPDATE_LINK: string = `${this.PATH}/website/social/update`;
   public WEBSITE_CONTACT_ADD: string = `${this.PATH}/website/contact/add`;
   public WEBSITE_CONTACT_EDIT: string = `${this.PATH}/website/contact/update`;

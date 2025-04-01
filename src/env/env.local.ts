@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  baseURL: 'https://xppc9p11-3100.inc1.devtunnels.ms',
+  baseURL: 'http://localhost:3100',
   // baseURL: 'https://digitalcard.co.in',
   route: 'web',
 };

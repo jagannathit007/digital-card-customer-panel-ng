@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { NgxPaginationModule } from 'ngx-pagination';
 
 @Component({
   selector: 'app-seo-details',
@@ -9,17 +8,13 @@ import { NgxPaginationModule } from 'ngx-pagination';
   imports: [
     CommonModule,
     FormsModule,
-    NgxPaginationModule,
   ],
   templateUrl: './seo-details.component.html',
   styleUrl: './seo-details.component.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SeoDetailsComponent implements OnInit {
-  searchTerm: string = '';
-  itemsPerPage: number = 10;
+
   totalItems: number = 0;
-  p: number = 1;
   isLoading: boolean = false;
   seoDetails: any[] = [];
   filteredSeoDetails: any[] = [];
@@ -53,21 +48,6 @@ export class SeoDetailsComponent implements OnInit {
     this.isLoading = false;
   }
 
-  onSearch() {
-    if (!this.searchTerm.trim()) {
-      this.filteredSeoDetails = [...this.seoDetails];
-    } else {
-      this.filteredSeoDetails = this.seoDetails.filter(detail =>
-        detail.metaTitle.toLowerCase().includes(this.searchTerm.toLowerCase())
-      );
-    }
-  }
+  
 
-  onItemsPerPageChange() {
-    this.p = 1;
-  }
-
-  pageChangeEvent(event: number) {
-    this.p = event;
-  }
 }

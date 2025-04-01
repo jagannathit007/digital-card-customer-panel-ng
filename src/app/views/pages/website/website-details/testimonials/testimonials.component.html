@@ -27,25 +27,43 @@
                     <th>Rating</th>
                     <th>Client Name</th>
                     <th>Feedback</th>
+                    <th width="10%" class="text-center">Action</th>
                 </tr>
             </thead>
             <tbody style="font-size: 12px;">
                 <tr *ngIf="isLoading">
-                    <td class="text-center" colspan="5">
+                    <td class="text-center" colspan="6">
                         <div class="spinner-border spinner-border-sm text-secondary" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </td>
                 </tr>
+                <tr *ngIf="!isLoading && filteredTestimonialList.length === 0">
+                    <td class="text-center" colspan="6">Data is not available</td>
+                </tr>
                 <tr *ngFor="let testimonial of filteredTestimonialList | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems }; let i = index">
-                    <td class="text-center">{{ i + 1 }}</td>
+                    <td class="text-center">{{ (p - 1) * itemsPerPage + i + 1 }}</td>
                     <td class="text-center">
-                        <img [src]="testimonial.image[0]" class="img-fluid"
-                            style="width: 40px; height: 40px; object-fit: cover;">
+                        <img [src]="baseURL + '/' + testimonial.image" class="img-fluid cursor-pointer"
+                            style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;"
+                            *ngIf="testimonial.image && testimonial.image.length"
+                            data-bs-toggle="modal" data-bs-target="#imageModal" 
+                            (click)="selectedImage = baseURL + '/' + testimonial.image">
+                        <span *ngIf="!testimonial.image || testimonial.image.length === 0">No Image</span>
                     </td>
+                    
+                                       
                     <td>{{ testimonial.rating }}/5</td>
                     <td>{{ testimonial.clientName }}</td>
                     <td>{{ testimonial.feedback }}</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-primary me-1" data-bs-toggle="modal" data-bs-target="#EditTestimonialsModal" (click)="editTestimonial(testimonial)">
+                          <i class="ri-edit-box-line"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteTestimonialsModal" (click)="deleteTestimonials(testimonial._id)">
+                            <i class="ri-delete-bin-line"></i>
+                          </button>
+                      </td>
                 </tr>
             </tbody>
         </table>
@@ -56,6 +74,7 @@
     </div>
 </div>
 
+<!-- TESTIMONIALS MODAL -->
 <div class="modal fade" id="AddTestimonialModal" tabindex="-1" aria-labelledby="AddTestimonialModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -64,31 +83,138 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form>
+                <form #testimonialForm="ngForm">
                     <div class="mb-3">
                         <label for="clientName" class="form-label">Client Name</label>
-                        <input type="text" class="form-control" id="clientName" placeholder="Enter client name">
+                        <input type="text" class="form-control" id="clientName" placeholder="Enter client name" 
+                            [(ngModel)]="newTestimonial.clientName" name="clientName" #clientName="ngModel" required>
+                        <div *ngIf="clientName.invalid && clientName.touched" class="text-danger">
+                            Client name is required!
+                        </div>
                     </div>
+
                     <div class="mb-3">
                         <label for="rating" class="form-label">Rating</label>
-                        <input type="number" class="form-control" id="rating" min="1" max="5" placeholder="Enter rating (1-5)">
+                        <input type="number" class="form-control" id="rating" min="1" max="5" placeholder="Enter rating (1-5)" 
+                            [(ngModel)]="newTestimonial.rating" name="rating" #rating="ngModel" required>
+                        <div *ngIf="rating.invalid && rating.touched" class="text-danger">
+                            Rating must be between 1 and 5!
+                        </div>
                     </div>
+
                     <div class="mb-3">
                         <label for="feedback" class="form-label">Feedback</label>
-                        <textarea class="form-control" id="feedback" rows="3" placeholder="Enter feedback"></textarea>
+                        <textarea class="form-control" id="feedback" rows="3" placeholder="Enter feedback" 
+                            [(ngModel)]="newTestimonial.feedback" name="feedback" #feedback="ngModel" required>
+                        </textarea>
+                        <div *ngIf="feedback.invalid && feedback.touched" class="text-danger">
+                            Feedback is required!
+                        </div>
                     </div>
+
                     <div class="mb-3">
                         <label for="testimonialsImage" class="form-label">Upload Image</label>
-                        <input type="file" class="form-control" id="testimonialsImage" multiple accept="image/*">
+                        <input type="file" class="form-control" id="testimonialsImage" (change)="onFileChange($event)" accept="image/*">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success">
-                    <i class="ri-add-circle-line"></i> Add Testimonial
+                <button type="button" class="btn btn-success" (click)="addTestimonial()" [disabled]="testimonialForm.invalid || isLoading">
+                    <i class="ri-add-circle-line"></i> 
+                    {{ isLoading ? 'Adding...' : 'Add Testimonial' }}
                 </button>
             </div>
         </div>
     </div>
 </div>
+
+
+<!-- Edit Testimonial Modal -->
+<div class="modal fade" id="EditTestimonialsModal" tabindex="-1" aria-labelledby="EditTestimonialsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="EditTestimonialsModalLabel">Edit Testimonial</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="editClientName" class="form-label">Client Name</label>
+                        <input type="text" class="form-control" id="editClientName" placeholder="Enter client name" 
+                            [(ngModel)]="editingTestimonial.clientName" name="editClientName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editRating" class="form-label">Rating</label>
+                        <input type="number" class="form-control" id="editRating" min="1" max="5" placeholder="Enter rating (1-5)"
+                            [(ngModel)]="editingTestimonial.rating" name="editRating">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editFeedback" class="form-label">Feedback</label>
+                        <textarea class="form-control" id="editFeedback" rows="3" placeholder="Enter feedback"
+                            [(ngModel)]="editingTestimonial.feedback" name="editFeedback"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editTestimonialsImage" class="form-label">Current Image</label>
+                        <div *ngIf="editingTestimonial.currentImage && editingTestimonial.currentImage.length" class="mb-2">
+                            <img [src]="baseURL + '/' + editingTestimonial.currentImage" class="img-thumbnail" style="max-height: 100px;">
+                        </div>
+                        <div *ngIf="!editingTestimonial.currentImage || editingTestimonial.currentImage.length === 0" class="mb-2">
+                            <span class="text-muted">No current image</span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editTestimonialsImage" class="form-label">Upload New Image</label>
+                        <input type="file" class="form-control" id="editTestimonialsImage" (change)="onEditFileChange($event)" accept="image/*">
+                        <small class="text-muted">Leave empty to keep the current image</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" (click)="updateTestimonial()" [disabled]="isLoading">
+                    <i class="ri-save-line"></i> {{ isLoading ? 'Saving...' : 'Save Changes' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Testimonial Modal -->
+<div class="modal fade" id="deleteTestimonialsModal" tabindex="-1" aria-labelledby="deleteTestimonialsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteTestimonialsModalLabel">Delete Testimonial</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>Are you sure you want to delete this testimonial?</p>
+                <p class="text-danger"><small>This action cannot be undo.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" (click)="confirmDeleteTestimonial()" [disabled]="isLoading">
+                    <i class="ri-delete-bin-line"></i> {{ isLoading ? 'Deleting...' : 'Delete' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ROW IMAGE POPUP MODAL -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img [src]="selectedImage" class="img-fluid rounded" style="max-width: 100%; max-height: 80vh;">
+            </div>
+        </div>
+    </div>
+</div>
+
