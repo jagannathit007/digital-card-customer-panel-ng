@@ -303,6 +303,58 @@ export class AuthService {
     }
   }
 
+  async getDocumentsDetail() {
+    try {
+      this.getHeaders();
+      let data = {}
+      data = this.addBusinessCardId(data);
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.GET_OTHER_DOCUMENTS,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async updateotherDocuments(otherDocuments: any) {
+    try {
+      this.getHeaders();
+      let data = { otherDocuments }
+      data = this.addBusinessCardId(data);
+
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.OTHER_DOCUMENT_DETAILS,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
   async changePassword(data: any) {
     try {
       this.getHeaders();

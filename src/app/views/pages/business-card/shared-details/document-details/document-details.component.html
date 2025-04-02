@@ -29,7 +29,8 @@
               <!-- ✅ Other Documents (Dynamically Rendered) -->
               <div class="col-md-4 col-12 mt-3" *ngFor="let doc of documentDetails.otherDocuments; let i = index">
                 <label class="form-label">{{ doc.name }}</label>
-                <input type="text" class="form-control" [(ngModel)]="doc.link" [name]="'otherDocuments' + i" />
+                <input type="text" class="form-control" [(ngModel)]="doc.value" [name]="'otherDocuments' + i" />
+                <a class="text-danger" style="font-size: 12px;" (click)="deleteSocial(i)">Delete</a>
               </div>
             </div>
           
@@ -44,9 +45,7 @@
 </div>
 
 
-<!-- MODEL FOR ASKING OTHER DOCUMENT FIELD -->
-<!-- MODEL FOR ASKING  OTHER DOCUMENT FIELD -->
-<div class="modal fade" id="addOtherDocuments" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true"
+<div class="modal fade" id="addOtherDocuments" tabindex="-1" aria-labelledby="modalLabel"
   data-bs-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -59,12 +58,12 @@
           <div class="mb-3">
             <label class="form-label">Name</label>
             <input type="text" class="form-control" [(ngModel)]="newDocument.name"
-              [ngModelOptions]="{standalone:true}" name="socialName" required>
+              [ngModelOptions]="{standalone:true}" name="otherName" required>
           </div>
           <div class="mb-3">
             <label class="form-label">Value</label>
-            <input type="text" class="form-control" [(ngModel)]="newDocument.link"
-              [ngModelOptions]="{standalone:true}" name="socialLink" required>
+            <input type="text" class="form-control" [(ngModel)]="newDocument.value"
+              [ngModelOptions]="{standalone:true}" name="otherValue" required>
           </div>
         </div>
         <div class="modal-footer">

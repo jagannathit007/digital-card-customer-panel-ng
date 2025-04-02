@@ -35,8 +35,18 @@ export class DocumentDetailsComponent {
 
   public newDocument: any = {
     name: '',
-    link: ''
+    value: ''
   };
+
+  ngOnInit(): void {
+    this.gteOtherDocuments();
+  }
+
+  gteOtherDocuments = async () => {
+    let results = await this.authService.getDocumentsDetail();
+    console.log("results", results);
+    this.documentDetails.otherDocuments = results?.otherDocuments || [];
+  }
 
   getCards = async () => {
     let results = await this.authService.getBusinessCards();
@@ -57,7 +67,10 @@ export class DocumentDetailsComponent {
   // Submit form
   submitForm = async () => {
     let result = await this.authService.updateDocumentDetails(this.documentDetails);
-    if (result) {
+    const otherDocuments = this.documentDetails.otherDocuments;
+    let updateResult = await this.authService.updateotherDocuments(otherDocuments);
+    
+    if (result && updateResult) {
       swalHelper.showToast('Document Details Updated Successfully!', "success");
     }
   }
@@ -73,33 +86,26 @@ export class DocumentDetailsComponent {
 
 
   addOtherDocument = async () => {
-    if (!this.newDocument.name || !this.newDocument.link) {
+    if (!this.newDocument.name || !this.newDocument.value) {
       swalHelper.showToast('Please fill in all fields!', 'error');
       return;
     }
 
     const newDoc = {
       name: this.newDocument.name,
-      link: this.newDocument.link
+      value: this.newDocument.value
     };
   
-  
     this.documentDetails.otherDocuments.push(newDoc);
-  
-    // TODO : Uncomment the following line to update the document details in the backend
-    // let result = await this.authService.updateDocumentDetails(this.documentDetails);
-  
-    // if (result) {
-      this.newDocument = { name: '', link: '' }; 
-      const modalElement = document.getElementById('addOtherDocuments');
-      const modal = bootstrap.Modal.getInstance(modalElement);
-      modal.hide();
-  
-      swalHelper.showToast('Document Added Successfully!', 'success');
-      
-    // }    
+
+    this.newDocument = { name: '', value: '' }; 
+    const modalElement = document.getElementById('addOtherDocuments');
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    modal.hide();
   };
     
-  
+  deleteSocial(index: number) {
+    this.documentDetails.otherDocuments.splice(index, 1);
+  }
 
 }
