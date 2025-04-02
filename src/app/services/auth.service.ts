@@ -930,7 +930,7 @@ export class AuthService {
       
       let response = await this.apiManager.request(
         {
-          url: apiEndpoints.WEBSITE_TESTIMONIALS_DELETE,
+          url: apiEndpoints.WEBSITE_OUR_CLIENTS_DELETE,
           method: 'POST',
         },
         data,

@@ -27,6 +27,8 @@ export class TestimonialsComponent implements OnInit {
   totalItems: number = 0;
   p: number = 1;
   isLoading: boolean = false;
+
+  
   testimonialList: any[] = [];
   filteredTestimonialList: any[] = [];
   testimonialID: string = '';
