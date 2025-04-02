@@ -742,6 +742,7 @@ export class AuthService {
     try {
       this.getHeaders();
       data = this.addBusinessCardId(data); 
+      console.log("===",data)
       
       let response = await this.apiManager.request(
         {
