@@ -3,10 +3,10 @@
         <div class="col-12 p-4">
           <form #documentForm="ngForm" (ngSubmit)="submitForm()">
 
-            <div>              
+            <div class="d-flex justify-content-end mb-3">           
               <button type="button" class="btn btn-primary my-2 ms-2" data-bs-toggle="modal"
               data-bs-target="#addOtherDocuments">
-                Other Documents
+              <i class="ri-add-circle-line"></i> Add Other Documents
             </button>
             </div>
 
@@ -25,6 +25,11 @@
               <div class="col-md-4 col-12">
                 <label for="personalPAN" class="form-label">Personal PAN</label>
                 <input type="text" id="personalPAN" class="form-control" [(ngModel)]="documentDetails.personalPAN" name="personalPAN" />
+              </div>
+              <!-- ✅ Other Documents (Dynamically Rendered) -->
+              <div class="col-md-4 col-12 mt-3" *ngFor="let doc of documentDetails.otherDocuments; let i = index">
+                <label class="form-label">{{ doc.name }}</label>
+                <input type="text" class="form-control" [(ngModel)]="doc.link" [name]="'otherDocuments' + i" />
               </div>
             </div>
           
@@ -53,13 +58,13 @@
         <div class="modal-body">
           <div class="mb-3">
             <label class="form-label">Name</label>
-            <!-- <input type="text" class="form-control" [(ngModel)]="newSocialMedia.name"
-              [ngModelOptions]="{standalone:true}" name="socialName" required> -->
+            <input type="text" class="form-control" [(ngModel)]="newDocument.name"
+              [ngModelOptions]="{standalone:true}" name="socialName" required>
           </div>
           <div class="mb-3">
             <label class="form-label">Value</label>
-            <!-- <input type="text" class="form-control" [(ngModel)]="newSocialMedia.link"
-              [ngModelOptions]="{standalone:true}" name="socialLink" required> -->
+            <input type="text" class="form-control" [(ngModel)]="newDocument.link"
+              [ngModelOptions]="{standalone:true}" name="socialLink" required>
           </div>
         </div>
         <div class="modal-footer">

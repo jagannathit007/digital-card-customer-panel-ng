@@ -9,6 +9,8 @@ import { AuthService } from 'src/app/services/auth.service';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { common } from 'src/app/core/constants/common';
 
+declare var bootstrap: any;
+
 @Component({
   selector: 'app-document-details',
   standalone: true,
@@ -26,7 +28,14 @@ export class DocumentDetailsComponent {
   public documentDetails: any = {
     gstNo: '',
     personalPAN: '',
-    companyPAN: ''
+    companyPAN: '',
+    otherDocuments: [] 
+  };
+
+
+  public newDocument: any = {
+    name: '',
+    link: ''
   };
 
   getCards = async () => {
@@ -38,7 +47,8 @@ export class DocumentDetailsComponent {
         this.documentDetails = {
           gstNo: card.document.gstNo,
           personalPAN: card.document.personalPAN,
-          companyPAN: card.document.companyPAN
+          companyPAN: card.document.companyPAN,
+          otherDocuments: card.document?.otherDocuments || [] 
         };
       }
     }
@@ -62,8 +72,34 @@ export class DocumentDetailsComponent {
   }
 
 
-  addOtherDocument(){
+  addOtherDocument = async () => {
+    if (!this.newDocument.name || !this.newDocument.link) {
+      swalHelper.showToast('Please fill in all fields!', 'error');
+      return;
+    }
+
+    const newDoc = {
+      name: this.newDocument.name,
+      link: this.newDocument.link
+    };
+  
+  
+    this.documentDetails.otherDocuments.push(newDoc);
+  
+    // TODO : Uncomment the following line to update the document details in the backend
+    // let result = await this.authService.updateDocumentDetails(this.documentDetails);
+  
+    // if (result) {
+      this.newDocument = { name: '', link: '' }; 
+      const modalElement = document.getElementById('addOtherDocuments');
+      const modal = bootstrap.Modal.getInstance(modalElement);
+      modal.hide();
+  
+      swalHelper.showToast('Document Added Successfully!', 'success');
+      
+    // }    
+  };
     
-  }
+  
 
 }
