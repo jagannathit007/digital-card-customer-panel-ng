@@ -10,46 +10,53 @@ import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { environment } from 'src/env/env.prod';
 
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    AsyncPipe,
-  ],
+  imports: [CommonModule, FormsModule, AsyncPipe],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit {
+  private deferredPrompt: any;
+  private installModal: any;
+  showInstallButton: boolean = false;
+
   constructor(
     public appWorker: AppWorker,
     private storage: AppStorage,
     public authService: AuthService
   ) {
-    this.authService.selectedBusinessCard = this.storage.get(common.BUSINESS_CARD) ?? "";
+    this.authService.selectedBusinessCard =
+      this.storage.get(common.BUSINESS_CARD) ?? '';
     this.selectedTab = {
-      title: "Personal Details",
-      href: "personal-details"
+      title: 'Personal Details',
+      href: 'personal-details',
     };
     this.getCards();
   }
 
-
   onBusinessChange() {
-    this.storage.set(common.BUSINESS_CARD, this.authService.selectedBusinessCard);
+    this.storage.set(
+      common.BUSINESS_CARD,
+      this.authService.selectedBusinessCard
+    );
     window.location.reload();
   }
 
   copyToClipboard() {
-    const fullUrl = `${  environment.baseURL}/${this.authService.selectedBusinessCard}`;
-    navigator.clipboard.writeText(fullUrl).then(() => {
-      swalHelper.showToast("Copied!", "success");
-    }).catch(err => {
-      console.error("Failed to copy: ", err);
-      swalHelper.error("Error!");
-    });
+    const fullUrl = `${environment.baseURL}/${this.authService.selectedBusinessCard}`;
+    navigator.clipboard
+      .writeText(fullUrl)
+      .then(() => {
+        swalHelper.showToast('Copied!', 'success');
+      })
+      .catch((err) => {
+        console.error('Failed to copy: ', err);
+        swalHelper.error('Error!');
+      });
   }
 
   getCards = async () => {
@@ -58,9 +65,10 @@ export class HeaderComponent implements OnInit {
     const selectedBusinessDetails = results.filter(
       (business: any) => business._id === selectedBusinessId
     );
-    this.message = selectedBusinessDetails[0]?.message?.whatsApp ? selectedBusinessDetails[0].message.whatsApp : "hi";
+    this.message = selectedBusinessDetails[0]?.message?.whatsApp
+      ? selectedBusinessDetails[0].message.whatsApp
+      : 'hi';
   };
-
 
   selectedCountryCode: string = '91';
   mobileNumber: string = '';
@@ -68,27 +76,111 @@ export class HeaderComponent implements OnInit {
 
   shareOnWhatsApp() {
     if (!this.mobileNumber) {
-      alert("Please enter a WhatsApp number!");
+      alert('Please enter a WhatsApp number!');
       return;
     }
 
-    const formattedNumber = this.selectedCountryCode + this.mobileNumber.replace(/^0+/, '');
+    const formattedNumber =
+      this.selectedCountryCode + this.mobileNumber.replace(/^0+/, '');
 
-    let whatsappURL = `https://wa.me/${formattedNumber}?text=${encodeURIComponent(this.message)}`;
-    window.open(whatsappURL, "_blank");
+    let whatsappURL = `https://wa.me/${formattedNumber}?text=${encodeURIComponent(
+      this.message
+    )}`;
+    window.open(whatsappURL, '_blank');
   }
 
-
-
-
   selectedTab = {
-    title: "Personal Details",
-    href: "personal-details"
+    title: 'Personal Details',
+    href: 'personal-details',
   };
 
-
   ngOnInit(): void {
+    this.checkPwaInstallation();
     this.getProfile();
+  }
+
+  checkPwaInstallation() {
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone;
+      const alreadyDenied = localStorage.getItem('pwaDenied') === 'true';
+
+    // Handle beforeinstallprompt event (Chrome-only)
+    window.addEventListener('beforeinstallprompt', (event: any) => {
+      event.preventDefault();
+      this.showInstallButton = true;
+      this.deferredPrompt = event;
+
+      if (!alreadyDenied) {
+
+        setTimeout(() => {
+          this.installModal = bootstrap.Modal.getOrCreateInstance(
+            document.getElementById('installPwaModal')
+          );
+          this.installModal.show();
+        }, 1000);
+      }
+    });
+
+    // For Safari/iOS users who don't get the beforeinstallprompt event
+    if (this.isIos() && !isStandalone) {
+      this.showInstallButton = true;
+      if(!alreadyDenied){
+        setTimeout(() => {
+          this.installModal = bootstrap.Modal.getOrCreateInstance(
+            document.getElementById('installGuideModal')
+          );
+          this.installModal.show();
+        }, 1000);
+      }
+      
+    }
+  }
+
+  isIos(): boolean {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    return /iphone|ipad|ipod/.test(userAgent);
+  }
+
+  openInstallModal() {
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone;
+
+    // For Safari/iOS users who don't get the beforeinstallprompt event
+    if (this.isIos() && !isStandalone) {
+      setTimeout(() => {
+        this.installModal = bootstrap.Modal.getOrCreateInstance(
+          document.getElementById('installGuideModal')
+        );
+        this.installModal.show();
+      }, 1000);
+    } else {
+      setTimeout(() => {
+        this.installModal = bootstrap.Modal.getOrCreateInstance(
+          document.getElementById('installPwaModal')
+        );
+        this.installModal.show();
+      }, 1000);
+    }
+  }
+
+  installPwa() {
+    if (this.deferredPrompt) {
+      this.deferredPrompt.prompt();
+      this.deferredPrompt.userChoice.then((choiceResult: any) => {
+        if (choiceResult.outcome === 'accepted') {
+          this.showInstallButton = false;
+          this.installModal.hide();
+        }
+
+        this.deferredPrompt = null;
+      });
+    }
+  }
+
+  denyInstall() {
+    localStorage.setItem('pwaDenied', 'true');
   }
 
   getProfile = async () => {
@@ -109,7 +201,7 @@ export class HeaderComponent implements OnInit {
       this.authService.businessCards$ = businessCardsSubject.asObservable();
       this.storage.set(common.USER_DATA, data);
     }
-  }
+  };
 
   logout = async () => {
     let confirm = await swalHelper.confirmation(
