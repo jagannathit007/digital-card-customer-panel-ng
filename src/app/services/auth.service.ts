@@ -1057,11 +1057,10 @@ export class AuthService {
 
   
   // SEO details /UPDATE/
-  async updateSeoDeatils(data: any) {
+  async updateSeoDetails(data: any) {
     try {
       this.getHeaders();
       data = this.addBusinessCardId(data); 
-      
       let response = await this.apiManager.request(
         {
           url: apiEndpoints.WEBSITE_SEO_UPDATE,
@@ -1070,6 +1069,8 @@ export class AuthService {
         data,
         this.headers
       );
+
+
       
       if (response.status == 200 && response.data != null) {
         return response.data;
