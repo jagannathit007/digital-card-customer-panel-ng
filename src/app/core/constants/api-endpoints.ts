@@ -17,6 +17,8 @@ class ApiEndpoints {
   public BUSINESS_DETAILS: string = `${this.PATH}/business-cards/business/update`;
   public ADD_SOCIAL_MEDIA_LINK: string = `${this.PATH}/business-cards/addSocialLink`;
   public DOCUMENT_DETAILS: string = `${this.PATH}/business-cards/documents/update`;
+  public GET_OTHER_DOCUMENTS: string = `${this.PATH}/business-cards/other-documents`;
+  public OTHER_DOCUMENT_DETAILS: string = `${this.PATH}/business-cards/other-documents/update`;
   public GALLERY_DETAILS: string = `${this.PATH}/business-cards/gallery/update`;
   public DELETE_GALLERY: string = `${this.PATH}/business-cards/gallery/delete`;
 }

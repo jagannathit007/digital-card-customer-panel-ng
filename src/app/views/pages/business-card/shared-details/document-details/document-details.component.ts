@@ -9,6 +9,8 @@ import { AuthService } from 'src/app/services/auth.service';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { common } from 'src/app/core/constants/common';
 
+declare var bootstrap: any;
+
 @Component({
   selector: 'app-document-details',
   standalone: true,
@@ -26,8 +28,25 @@ export class DocumentDetailsComponent {
   public documentDetails: any = {
     gstNo: '',
     personalPAN: '',
-    companyPAN: ''
+    companyPAN: '',
+    otherDocuments: [] 
   };
+
+
+  public newDocument: any = {
+    name: '',
+    value: ''
+  };
+
+  ngOnInit(): void {
+    this.gteOtherDocuments();
+  }
+
+  gteOtherDocuments = async () => {
+    let results = await this.authService.getDocumentsDetail();
+    console.log("results", results);
+    this.documentDetails.otherDocuments = results?.otherDocuments || [];
+  }
 
   getCards = async () => {
     let results = await this.authService.getBusinessCards();
@@ -38,7 +57,8 @@ export class DocumentDetailsComponent {
         this.documentDetails = {
           gstNo: card.document.gstNo,
           personalPAN: card.document.personalPAN,
-          companyPAN: card.document.companyPAN
+          companyPAN: card.document.companyPAN,
+          otherDocuments: card.document?.otherDocuments || [] 
         };
       }
     }
@@ -47,7 +67,10 @@ export class DocumentDetailsComponent {
   // Submit form
   submitForm = async () => {
     let result = await this.authService.updateDocumentDetails(this.documentDetails);
-    if (result) {
+    const otherDocuments = this.documentDetails.otherDocuments;
+    let updateResult = await this.authService.updateotherDocuments(otherDocuments);
+    
+    if (result && updateResult) {
       swalHelper.showToast('Document Details Updated Successfully!', "success");
     }
   }
@@ -62,8 +85,27 @@ export class DocumentDetailsComponent {
   }
 
 
-  addOtherDocument(){
+  addOtherDocument = async () => {
+    if (!this.newDocument.name || !this.newDocument.value) {
+      swalHelper.showToast('Please fill in all fields!', 'error');
+      return;
+    }
+
+    const newDoc = {
+      name: this.newDocument.name,
+      value: this.newDocument.value
+    };
+  
+    this.documentDetails.otherDocuments.push(newDoc);
+
+    this.newDocument = { name: '', value: '' }; 
+    const modalElement = document.getElementById('addOtherDocuments');
+    const modal = bootstrap.Modal.getInstance(modalElement);
+    modal.hide();
+  };
     
+  deleteSocial(index: number) {
+    this.documentDetails.otherDocuments.splice(index, 1);
   }
 
 }

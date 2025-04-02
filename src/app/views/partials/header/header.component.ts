@@ -106,21 +106,22 @@ export class HeaderComponent implements OnInit {
       const alreadyDenied = localStorage.getItem('pwaDenied') === 'true';
 
     // Handle beforeinstallprompt event (Chrome-only)
-    window.addEventListener('beforeinstallprompt', (event: any) => {
-      event.preventDefault();
-      this.showInstallButton = true;
-      this.deferredPrompt = event;
+    if (this.isAndroid()) {
+      window.addEventListener('beforeinstallprompt', (event: any) => {
+        event.preventDefault();
+        this.showInstallButton = true;
+        this.deferredPrompt = event;
 
-      if (!alreadyDenied) {
-
-        setTimeout(() => {
-          this.installModal = bootstrap.Modal.getOrCreateInstance(
-            document.getElementById('installPwaModal')
-          );
-          this.installModal.show();
-        }, 1000);
-      }
-    });
+        if (!alreadyDenied) {
+          setTimeout(() => {
+            this.installModal = bootstrap.Modal.getOrCreateInstance(
+              document.getElementById('installPwaModal')
+            );
+            this.installModal.show();
+          }, 1000);
+        }
+      });
+    }
 
     // For Safari/iOS users who don't get the beforeinstallprompt event
     if (this.isIos() && !isStandalone) {
@@ -139,8 +140,14 @@ export class HeaderComponent implements OnInit {
 
   isIos(): boolean {
     const userAgent = window.navigator.userAgent.toLowerCase();
-    return /iphone|ipad|ipod/.test(userAgent);
+    return /iphone/.test(userAgent);
   }
+
+  isAndroid(): boolean {
+    const userAgent = window.navigator.userAgent.toLowerCase();    
+    return /android/.test(userAgent);
+  }
+  
 
   openInstallModal() {
     const isStandalone =
