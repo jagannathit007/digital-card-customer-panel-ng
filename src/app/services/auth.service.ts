@@ -1148,7 +1148,6 @@ export class AuthService {
       this.getHeaders();
 
       let response = await this.apiManager.request(
-        // change it...
         {
           url: `${apiEndpoints.WEBSITE_CONTACT_EDIT}`,
           method: 'POST'
@@ -1156,7 +1155,6 @@ export class AuthService {
         { businessCardId, contactId, ...data },
         this.headers
       );
-      // console.log(response);
       
       if (response.status === 200 && response.data != null) {
         return response.data;
@@ -1176,7 +1174,7 @@ export class AuthService {
       this.getHeaders();
 
       let response = await this.apiManager.request(
-        // change it...
+     
         {
           url: `${apiEndpoints.WEBSITE_CONTACT_DELETE}`,
           method: 'POST'
@@ -1184,7 +1182,7 @@ export class AuthService {
         { businessCardId, contactId },
         this.headers
       );
-      // console.log(response);
+
       
       if (response.status === 200 && response.data != null) {
         return response.data;
