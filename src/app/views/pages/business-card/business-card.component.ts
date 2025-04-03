@@ -7,6 +7,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { common } from 'src/app/core/constants/common';
 import { FormsModule } from '@angular/forms';
+import { ThemeComponent } from './shared-details/themes/themes.component';
 
 
 @Component({
@@ -18,7 +19,8 @@ import { FormsModule } from '@angular/forms';
     BusinessDetailsComponent,
     DocumentDetailsComponent,
     GalleryDetailsComponent,
-    BusinessDetailsComponent
+    BusinessDetailsComponent,
+    ThemeComponent,
 ],
   templateUrl: './business-card.component.html',
   styleUrl: './business-card.component.scss',
@@ -52,7 +54,11 @@ export class BusinessCardComponent {
       href: "document-details"
     },
     {
-      title: "Gallery Details",
+      title: "Themes",
+      href: "themes"
+    },
+    {
+      title: "Galleries",
       href: "gallery-details"
     },
   ]

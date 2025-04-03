@@ -1,0 +1,112 @@
+<div class="container mt-4">
+
+    <!-- Title and Add Product Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-0">Product List</h3>
+        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddProductModal">
+            <i class="ri-add-circle-line"></i> Add Product
+        </button>
+    </div>
+
+    <!-- Search Bar and Items Per Page Dropdown -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm" (input)="onSearch()">
+        <div class="ms-3">
+            <select class="form-select" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Product Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th class="text-center" style="width: 5px;">No.</th>
+                    <th class="text-center">Image</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody style="font-size: 12px;">
+                <!-- Loading Spinner -->
+                <tr *ngIf="isLoading">
+                    <td class="text-center" colspan="5">
+                        <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Product Rows -->
+                <tr
+                    *ngFor="let product of filteredProducts | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems }; let i = index">
+                    <td class="text-center">{{ i + 1 }}</td>
+                    <td class="text-center">
+                        <img [src]="product.images[0]" class="img-fluid"
+                            style="width: 40px; height: 40px; object-fit: cover;">
+                    </td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.price | currency }}</td>
+                    <td>{{ product.description }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- Pagination Controls -->
+    <div class="text-end">
+        <pagination-controls (pageChange)="pageChangeEvent($event)" id="pager"></pagination-controls>
+    </div>
+</div>
+
+<div class="modal fade" id="AddProductModal" tabindex="-1" aria-labelledby="AddProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="AddProductModalLabel">Add Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <!-- Image Upload -->
+                    <div class="mb-3">
+                        <label for="productImage" class="form-label">Upload Image</label>
+                        <input type="file" class="form-control" id="productImage" multiple accept="image/*">
+                    </div>
+
+                    <!-- Product Name -->
+                    <div class="mb-3">
+                        <label for="productName" class="form-label">Product Name</label>
+                        <input type="text" class="form-control" id="productName" placeholder="Enter product name">
+                    </div>
+
+                    <!-- Product Price -->
+                    <div class="mb-3">
+                        <label for="productPrice" class="form-label">Price</label>
+                        <input type="number" class="form-control" id="productPrice" placeholder="Enter price">
+                    </div>
+
+                    <!-- Product Description -->
+                    <div class="mb-3">
+                        <label for="productDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="productDescription" rows="3"
+                            placeholder="Enter description"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success">
+                    <i class="ri-add-circle-line"></i> Add Product
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

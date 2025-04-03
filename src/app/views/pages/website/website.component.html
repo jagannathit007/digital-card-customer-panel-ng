@@ -1,0 +1,51 @@
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+                <h3 class="mb-2 mb-sm-0">Website Builder Details</h3>
+            </div>
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                @for(tab of tabs; track tab){
+                <li class="nav-item" role="presentation">
+                    <a (click)="selectedTab = tab" class="nav-link {{ tab.href == selectedTab.href ? 'active' : '' }}">
+                        {{ tab.title }}
+                    </a>
+                </li>
+                }
+            </ul>
+            <div class="mt-2">
+                @if(selectedTab.href == "home"){
+                    <app-home></app-home>
+                    }
+                @if(selectedTab.href == "our-products"){
+                <app-our-products></app-our-products>
+                }
+                @if(selectedTab.href == "our-team"){
+                <app-our-team></app-our-team>
+                }
+                @if(selectedTab.href == "our-services"){
+                <app-our-services></app-our-services>
+                }
+                @if(selectedTab.href == "our-clients"){
+                <app-our-clients></app-our-clients>
+                }
+                @if(selectedTab.href == "about-section"){
+                <app-about-section></app-about-section>
+                }
+                @if(selectedTab.href == "testimonials"){
+                <app-testimonials></app-testimonials>
+                }
+                @if(selectedTab.href == "themes"){
+                <app-themes></app-themes>
+                }
+                @if(selectedTab.href == "seo-details"){
+                <app-seo-details></app-seo-details>
+                }
+                @if(selectedTab.href == "contact-details"){
+                <app-contact-details></app-contact-details>
+                }
+           
+            </div>
+        </div>
+    </div>
+</div>
