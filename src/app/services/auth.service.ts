@@ -1085,117 +1085,114 @@ export class AuthService {
     }
   }
 
-  
-  // contact details /ADD/UPDATE/DELETE
-  async updateSocialLink(businessCardId: string, socialLinks: any) {
+
+  // social links and contact ADD/UPDATE/DELETE
+  async updateSocialLink(data: any) {
     try {
       this.getHeaders();
-
+      data = this.addBusinessCardId(data); 
       let response = await this.apiManager.request(
-        // change it...
         {
-          url: `${apiEndpoints.WEBSITE_CONTACT_UPDATE_LINK}`,
-          method: 'POST'
+          url: apiEndpoints.WEBSITE_CONTACT_UPDATE_LINK,
+          method: 'POST',
         },
-        { businessCardId, ...socialLinks },
+        data,
         this.headers
       );
-      // console.log(response);
+
+
       
-      if (response.status === 200 && response.data != null) {
+      if (response.status == 200 && response.data != null) {
         return response.data;
       } else {
-        swalHelper.showToast(response.message || 'Failed to fetch social details!', 'warning');
-        console.log(response.message);
+        swalHelper.showToast(response.message, 'warning');
         return null;
       }
     } catch (err) {
-      swalHelper.showToast('Error fetching social details!', 'error');
+      swalHelper.showToast('Something went wrong!', 'error');
       return null;
     }
   }
 
-  async AddContactData(businessCardId: string, data: any) {
+  async addContact(data: any) {
     try {
       this.getHeaders();
-
+      data = this.addBusinessCardId(data); 
       let response = await this.apiManager.request(
-        // change it...
         {
-          url: `${apiEndpoints.WEBSITE_CONTACT_ADD}`,
-          method: 'POST'
+          url: apiEndpoints.WEBSITE_CONTACT_ADD,
+          method: 'POST',
         },
-        { businessCardId, ...data },
+        data,
         this.headers
       );
-      // console.log(response);
+
+
       
-      if (response.status === 200 && response.data != null) {
+      if (response.status == 200 && response.data != null) {
         return response.data;
       } else {
-        swalHelper.showToast(response.message || 'Failed to Add contact details!', 'warning');
-        console.log(response.message);
+        swalHelper.showToast(response.message, 'warning');
         return null;
       }
     } catch (err) {
-      swalHelper.showToast('Error Add contact details!', 'error');
+      swalHelper.showToast('Something went wrong!', 'error');
       return null;
     }
   }
 
-  async updateContactData(businessCardId: string, contactId: string, data: any) {
+  async updateContact(data: any) {
     try {
       this.getHeaders();
-
+      data = this.addBusinessCardId(data); 
       let response = await this.apiManager.request(
         {
-          url: `${apiEndpoints.WEBSITE_CONTACT_EDIT}`,
-          method: 'POST'
+          url: apiEndpoints.WEBSITE_CONTACT_EDIT,
+          method: 'POST',
         },
-        { businessCardId, contactId, ...data },
+        data,
         this.headers
       );
+
+
       
-      if (response.status === 200 && response.data != null) {
+      if (response.status == 200 && response.data != null) {
         return response.data;
       } else {
-        swalHelper.showToast(response.message || 'Failed to update contact details!', 'warning');
-        console.log(response.message);
+        swalHelper.showToast(response.message, 'warning');
         return null;
       }
     } catch (err) {
-      swalHelper.showToast('Error update contact details!', 'error');
+      swalHelper.showToast('Something went wrong!', 'error');
       return null;
     }
   }
 
-  async deleteContactData(businessCardId: string, contactId: string) {
+  async deleteContact(data: any) {
     try {
       this.getHeaders();
-
+      data = this.addBusinessCardId(data); 
       let response = await this.apiManager.request(
-     
         {
-          url: `${apiEndpoints.WEBSITE_CONTACT_DELETE}`,
-          method: 'POST'
+          url: apiEndpoints.WEBSITE_CONTACT_DELETE,
+          method: 'POST',
         },
-        { businessCardId, contactId },
+        data,
         this.headers
       );
 
+
       
-      if (response.status === 200 && response.data != null) {
+      if (response.status == 200 && response.data != null) {
         return response.data;
       } else {
-        swalHelper.showToast(response.message || 'Failed to delete contact details!', 'warning');
-        console.log(response.message);
+        swalHelper.showToast(response.message, 'warning');
         return null;
       }
     } catch (err) {
-      swalHelper.showToast('Error delete contact details!', 'error');
+      swalHelper.showToast('Something went wrong!', 'error');
       return null;
     }
   }
-
 
 }  

@@ -47,7 +47,6 @@ export class HomeComponent {
           bannerImage: results.home.bannerImage ? this.baseURL +"/"+ results.home.bannerImage : null,
           logoImage: results.home.logoImage ? this.baseURL +"/"+ results.home.logoImage : null,
         };
-        console.log(this.home, 'home data');
         if (this.home.bannerImage) {
           this.bannerImagePreview = this.home.bannerImage;
         }

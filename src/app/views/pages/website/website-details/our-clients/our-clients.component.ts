@@ -57,18 +57,15 @@ export class OurClientsComponent implements OnInit {
     try {
       let businessCardId = this.storage.get(common.BUSINESS_CARD);
       let results = await this.authService.getWebsiteDetails(businessCardId);
-      console.log("website details", results);
       
       if (results) {
         this.clientsList = results.clients ? [...results.clients] : [];
         this.filteredClients = [...this.clientsList];
-        console.log('Our clients:', this.filteredClients);
         this.totalItems = this.clientsList.length;
       } else {
         swalHelper.showToast('Failed to fetch clients!', 'warning');
       }
     } catch (error) {
-      console.error('Error fetching clients: ', error);
       swalHelper.showToast('Error fetching clients!', 'error');
     } finally {
       this.isLoading = false;
@@ -173,7 +170,6 @@ export class OurClientsComponent implements OnInit {
         swalHelper.showToast('Client updated successfully!', 'success');
       }
     } catch (error) {
-      console.error('Error updating client: ', error);
       swalHelper.showToast('Error updating client!', 'error');
     } finally {
       this.isLoading = false;
