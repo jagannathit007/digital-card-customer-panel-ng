@@ -1,15 +1,10 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Component, Input } from '@angular/core';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { AuthService } from 'src/app/services/auth.service';
 import { environment } from 'src/env/env.local';
 
 @Component({
   selector: 'app-themes',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './themes.component.html',
   styleUrl: './themes.component.scss',
 })

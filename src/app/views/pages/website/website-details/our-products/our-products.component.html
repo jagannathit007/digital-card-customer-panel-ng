@@ -24,16 +24,16 @@
     <!-- Product Table -->
     <div class="table-responsive">
         <table class="table table-bordered table-hover table-striped">
-            <thead class="table-light">
+            <thead class="table-primary text-uppercase">
                 <tr>
-                    <th class="text-center" style="width: 5px;">No.</th>
+                    <th class="text-center" style="width: 5px;">#</th>
                     <th class="text-center">Image</th>
                     <th>Name</th>
                     <th>Price</th>
                     <th>Description</th>
                 </tr>
             </thead>
-            <tbody style="font-size: 12px;">
+            <tbody >
                 <!-- Loading Spinner -->
                 <tr *ngIf="isLoading">
                     <td class="text-center" colspan="5">
@@ -48,8 +48,18 @@
                     *ngFor="let product of filteredProducts | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems }; let i = index">
                     <td class="text-center">{{ i + 1 }}</td>
                     <td class="text-center">
-                        <img [src]="product.images[0]" class="img-fluid"
-                            style="width: 40px; height: 40px; object-fit: cover;">
+                        <div class="tw-flex tw-items-center tw-gap-2" style="cursor: pointer;" (click)="onOpenImageModal(product.images)">
+                            <img [src]="product.images[0]" alt="Product Image"
+                                style="width: 25px;height: 25px;"  />
+                            <span *ngIf="product.images.length > 1"
+                                [tooltip]="'... +' + (product.images.length - 1) + ' more images'"
+                                tooltipPosition="above">
+                                <span class="mx-2 fw-bold text-success "> . . .</span>
+                                <!-- <span class="fw-bold text-success"> . </span>
+                            <span class="fw-bold text-success "> . </span> -->
+                                <span class="badge bg-success">+{{ product.images.length - 1 }}</span>
+                            </span>
+                        </div>
                     </td>
                     <td>{{ product.name }}</td>
                     <td>{{ product.price | currency }}</td>
@@ -66,7 +76,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="AddProductModal" tabindex="-1" aria-labelledby="AddProductModalLabel" aria-hidden="true">
+<div class="modal fade" id="AddProductModal" tabindex="-1" aria-labelledby="AddProductModalLabel" >
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -106,6 +116,37 @@
                 <button type="button" class="btn btn-success">
                     <i class="ri-add-circle-line"></i> Add Product
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="image-carousel" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog"
+    aria-labelledby="modalTitleId" >
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fw-bold" id="modalTitleId">
+                    Product Images
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                      <div class="carousel-item {{i==0?'active':''}}" *ngFor="let img of imageForCarousel;let i=index">
+                        <img [src]="img" class="d-block w-100" alt="...">
+                      </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                      <span class="carousel-control-prev-icon" ></span>
+                      <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                      <span class="carousel-control-next-icon" ></span>
+                      <span class="visually-hidden">Next</span>
+                    </button>
+                  </div>
             </div>
         </div>
     </div>

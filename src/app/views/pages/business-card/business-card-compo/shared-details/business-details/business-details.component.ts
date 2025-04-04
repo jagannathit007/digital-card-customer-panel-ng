@@ -1,6 +1,4 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 import { common } from 'src/app/core/constants/common';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { AuthService } from 'src/app/services/auth.service';
@@ -10,8 +8,6 @@ declare var $:any;
 
 @Component({
   selector: 'app-business-details',
-  standalone: true,
-  imports: [FormsModule, CommonModule],
   templateUrl: './business-details.component.html',
   styleUrl: './business-details.component.scss',
 })

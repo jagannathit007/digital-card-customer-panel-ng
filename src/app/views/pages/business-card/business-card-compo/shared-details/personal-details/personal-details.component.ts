@@ -1,8 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
-import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-import { CommonModule } from '@angular/common';
 import { AuthService } from 'src/app/services/auth.service';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { common } from 'src/app/core/constants/common';
@@ -11,8 +8,6 @@ declare var $: any;
 
 @Component({
   selector: 'app-personal-details',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './personal-details.component.html',
   styleUrl: './personal-details.component.scss',
 })

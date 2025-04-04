@@ -1,0 +1,13 @@
+<div class="container-fluid">
+  <div class="row px-1">
+    @for (tab of tabs; track tab) {
+    <a style="cursor: pointer;text-decoration: none;" class="col-auto custom-card px-3 "
+      [ngClass]="{'active':isActive(tab.href)}" (click)="navigateToTab(tab.href)">
+      <span><i class="{{tab.icon}}"></i> {{ tab.title }}</span>
+    </a>
+    }
+  </div>
+  <div class="card my-2 px-4 rounded-3">
+      <router-outlet></router-outlet>
+  </div>
+</div>

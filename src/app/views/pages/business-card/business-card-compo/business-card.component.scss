@@ -1,0 +1,22 @@
+.active {
+  background: #153b54 !important;
+  color: #fff !important;
+  width: 12% !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.custom-card {
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  border-radius: 6px;
+  margin: 5px;
+  border-bottom: 0.5px solid rgb(231, 231, 231);
+  color: #153b54;
+  width: 12%;
+  font-size: 14px;
+  font-weight: 500;
+}

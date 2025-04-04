@@ -1,5 +1,8 @@
-<div class="container mt-3">
+<div class="my-3">
   <div class="row">
+    <label for="" class="fw-bold text-uppercase fs-3">Galleries</label>
+  </div>
+  <div class="row mt-4">
     <div class="col-md-8 col-12">
       <input type="file" class="form-control" (change)="onFileSelected($event)" multiple accept="image/*"
         [disabled]="galleries.length >= 10" #fileInput/>
@@ -7,17 +10,17 @@
     </div>
 
     <div class="col-md-4 mt-0">
-      <button class="btn btn-primary" (click)="uploadImages()" [disabled]="galleries.length >= 10 || isUploading">
+      <button class="btn btn-info" (click)="uploadImages()" [disabled]="galleries.length >= 10 || isUploading">
         <span *ngIf="isUploading">
           <i class="spinner-border spinner-border-sm me-2"></i>
           Uploading...
         </span>
-        <span *ngIf="!isUploading">Upload Images</span>
+        <span *ngIf="!isUploading"><i class="ri-folder-upload-fill"></i> Upload Images</span>
       </button>
     </div>
   </div>
 
-  <div class="row mt-3">
+  <div class="row mt-4">
     @for (image of galleries; track $index) {
     <div class="col-lg-3 col-md-4 col-sm-6 mb-2">
       <div class="card position-relative">

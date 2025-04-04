@@ -1,6 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from 'src/app/services/auth.service';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
@@ -9,8 +7,6 @@ import { environment } from 'src/env/env.local';
 
 @Component({
   selector: 'app-gallery-details',
-  standalone: true,
-  imports: [FormsModule, CommonModule],
   templateUrl: './gallery-details.component.html',
   styleUrls: ['./gallery-details.component.scss'],
 })

@@ -3,7 +3,7 @@ import { SignInComponent } from './views/pages/auth/sign-in/sign-in.component';
 import { HomeLayoutComponent } from './views/partials/home-layout/home-layout.component';
 import { AdminComponent } from './views/pages/admin/admin.component';
 import { BusinessCardDetailComponent } from './views/pages/business-card-detail/business-card-detail.component';
-import { BusinessCardComponent } from './views/pages/business-card/business-card.component';
+import { BusinessCardComponent } from './views/pages/business-card/business-card-compo/business-card.component';
 import { AccountSettingsComponent } from './views/pages/account-settings/account-settings.component';
 import { GoogleStandeeComponent } from './views/pages/google-standee/google-standee.component';
 import { AuthGuard } from './guards/auth.guard';
@@ -25,7 +25,7 @@ export const routes: Routes = [
       // },
       {
         path: 'business-cards',
-        component: BusinessCardComponent,
+        loadChildren:()=>import('./views/pages/business-card/business-card.module').then(m=>m.BusinessCardModule),
         canActivate: [AuthGuard],
         data: { requiredProduct: 'business-cards' }
       },
