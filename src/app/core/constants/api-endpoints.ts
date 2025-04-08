@@ -71,6 +71,18 @@ class ApiEndpoints {
   public WEBSITE_CONTACT_EDIT: string = `${this.PATH}/website/contact/update`;
   public WEBSITE_CONTACT_DELETE: string = `${this.PATH}/website/contact/delete`;
 
+
+// businessCard
+   //SERVICES 
+  public GET_BUSINESS_CARD_SERVICES: string = `${this.PATH}/businessCard/getServices`;
+  public CREATE_BUSINESS_CARD_SERVICES: string = `${this.PATH}/businessCard/createServices`;
+  public DELETE_BUSINESS_CARD_SERVICES: string = `${this.PATH}/businessCard/deleteServices`;
+
+  // PRODUCT
+  public GET_BUSINESS_CARD_PRODUCTS: string = `${this.PATH}/businessCard/getProducts`;
+  public CREATE_BUSINESS_CARD_PRODUCTS: string = `${this.PATH}/businessCard/createProducts`;
+  public DELETE_BUSINESS_CARD_PRODUCTS: string = `${this.PATH}/businessCard/deleteProducts`;
+
 }
 
 export let apiEndpoints = new ApiEndpoints();

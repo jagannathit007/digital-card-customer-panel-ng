@@ -12,6 +12,9 @@ import { GalleryDetailsComponent } from './business-card-compo/shared-details/ga
 import { PersonalDetailsComponent } from './business-card-compo/shared-details/personal-details/personal-details.component';
 import { ThemeComponent } from './business-card-compo/shared-details/themes/themes.component';
 import { BusinessCardComponent } from './business-card-compo/business-card.component';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
 
 
 @NgModule({
@@ -29,6 +32,9 @@ import { BusinessCardComponent } from './business-card-compo/business-card.compo
     CommonModule,
     FormsModule,
     RouterModule,
+    NgxPaginationModule,
+    NgSelectModule,
+    TooltipDirective,
     BusinessCardRoutingModule
   ]
 })
