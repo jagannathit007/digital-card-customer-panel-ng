@@ -166,8 +166,8 @@ export class BusinessProductsComponent implements OnInit {
   _createProducts = async (data: any) => {
     try {
       await this.businessCardService.createProducts(data)
-      this._reset()
       this.modal.close('create-products');
+      this._reset()
     } catch (error) {
       console.log('Something went Wrong', error)
     }
