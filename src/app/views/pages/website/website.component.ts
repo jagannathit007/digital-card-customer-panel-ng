@@ -35,14 +35,14 @@ import { ContactDetailsComponent } from './website-details/contact-details/conta
 export class WebsiteComponent { constructor(public authService: AuthService, private storage: AppStorage){
     this.authService.selectedBusinessCard = this.storage.get(common.BUSINESS_CARD) ?? "";
     this.selectedTab = {
-      title: "Home",
-      href: "home",
+      title: "Our Products",
+    href: "our-products",
     };
   }
 
   selectedTab = {
-    title: "Home",
-    href: "home",
+    title: "Our Products",
+    href: "our-products",
   };
 
   tabs = [

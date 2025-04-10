@@ -1,128 +1,146 @@
-<div class="container mt-4">
-
-    <!-- Title and Add Product Button -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="mb-0">Product List</h3>
-        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddProductModal">
-            <i class="ri-add-circle-line"></i> Add Product
-        </button>
+<div class="row py-4">
+    <div class="col-md ">
+        <span class="fs-3 fw-bold">Our products</span>
     </div>
-
-    <!-- Search Bar and Items Per Page Dropdown -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm" (input)="onSearch()">
-        <div class="ms-3">
-            <select class="form-select" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-            </select>
-        </div>
+    <div class="col-md-auto">
+        <button class="btn btn-info" (click)="onOpenCraeteModal()"><i class="ri-add-circle-line"></i> Add
+            products</button>
     </div>
+    <!-- <div class="col-md-auto">
+        <select class="form-select form-select-lg" [(ngModel)]="payload.limit"
+                (ngModelChange)="onChange()">
+                <option value=10>10</option>
+                <option value=20>20</option>
+                <option value=50>50</option>
+                <option value=100>100</option>
+                <option value=200>200</option>
+              </select>
+    </div> -->
 
-    <!-- Product Table -->
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover table-striped">
-            <thead class="table-primary text-uppercase">
+    <div class="table-responsive mt-4">
+        <table class="table table-bordered">
+            <thead class="text-uppercase bg-light">
                 <tr>
-                    <th class="text-center" style="width: 5px;">#</th>
-                    <th class="text-center">Image</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Description</th>
+                    <th class="text-center" [width]="'5%'">#</th>
+                    <th>Product Name </th>
+                    <th [width]="'15%'">Price</th>
+                    <th class="text-center" [width]="'20%'">Images</th>
+                    <th [width]="'25%'">Description</th>
+                    <th class="text-center" [width]="'15%'"><i class="ri-tools-fill"></i></th>
                 </tr>
             </thead>
-            <tbody >
-                <!-- Loading Spinner -->
-                <tr *ngIf="isLoading">
-                    <td class="text-center" colspan="5">
+            <tbody *ngIf="isLoading">
+                <tr>
+                    <td class="text-center" colspan="6">
                         <div class="spinner-border spinner-border-sm text-secondary" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </td>
                 </tr>
-
-                <!-- Product Rows -->
+            </tbody>
+            <tbody *ngIf="!isLoading && products.length==0">
+                <tr>
+                    <td class="text-center" colspan="6">
+                        <img src="../../../../../../../assets/images/NoRecordFound.png" alt="" style="width: 90px;">
+                        <div class="fw-bold"> No Records Found </div>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody *ngIf="!isLoading && products.length>0">
                 <tr
-                    *ngFor="let product of filteredProducts | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems }; let i = index">
-                    <td class="text-center">{{ i + 1 }}</td>
+                    *ngFor="let item of products;let i=index">
+                    <td class="text-center">{{i+1}}</td>
+                    <!-- <td class="text-center">{{ (payload.page - 1) * payload.limit + i + 1 }}</td> -->
+                    <td>{{item.name}}</td>
+                    <td>{{item.price | currency:'INR'}}</td>
+                    <td>{{item.description}}</td>
                     <td class="text-center">
-                        <div class="tw-flex tw-items-center tw-gap-2" style="cursor: pointer;" (click)="onOpenImageModal(product.images)">
-                            <img [src]="product.images[0]" alt="Product Image"
-                                style="width: 25px;height: 25px;"  />
-                            <span *ngIf="product.images.length > 1"
-                                [tooltip]="'... +' + (product.images.length - 1) + ' more images'"
-                                tooltipPosition="above">
+                        <div class="tw-flex tw-items-center " style="cursor: pointer;" *ngIf="item.images.length>0"
+                            (click)="onOpenImageModal(item.images)">
+                            <img src="{{imageBaseURL}}{{item.images[0]}}" alt="Product Image"
+                                style="width: 25px;height: 25px;" />
+                            <span *ngIf="item.images.length > 1"
+                                [tooltip]="'... +' + (item.images.length - 1) + ' more images'" tooltipPosition="above">
                                 <span class="mx-2 fw-bold text-success "> . . .</span>
-                                <!-- <span class="fw-bold text-success"> . </span>
-                            <span class="fw-bold text-success "> . </span> -->
-                                <span class="badge bg-success">+{{ product.images.length - 1 }}</span>
+                                <span class="badge bg-success">+{{ item.images.length - 1 }}</span>
                             </span>
                         </div>
+                        <div *ngIf="item.images.length==0"> :: NA ::</div>
                     </td>
-                    <td>{{ product.name }}</td>
-                    <td>{{ product.price | currency }}</td>
-                    <td>{{ product.description }}</td>
+                    <td class="text-center"><button class="btn btn-sm btn-info" (click)="onOpenUpdateModal(item)"><i
+                                class="ri-edit-fill"></i></button>
+                        <button class="btn btn-danger btn-sm ms-1" (click)="_deleteProducts(item._id)"><i
+                                class="ri-delete-bin-6-fill"></i></button>
                 </tr>
             </tbody>
         </table>
-    </div>
-
-
-    <!-- Pagination Controls -->
-    <div class="text-end">
-        <pagination-controls (pageChange)="pageChangeEvent($event)" id="pager"></pagination-controls>
+        <!-- <div class="d-flex justify-content-end">
+            <pagination-controls class="pagination" (pageChange)="onPageChange($event)"></pagination-controls>
+        </div> -->
     </div>
 </div>
 
-<div class="modal fade" id="AddProductModal" tabindex="-1" aria-labelledby="AddProductModalLabel" >
-    <div class="modal-dialog modal-dialog-centered">
+
+<div class="modal fade" id="create-products" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="AddProductModalLabel">Add Product</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h4 class="modal-title" id="modalTitleId">
+                    {{selectedProducts._id!=null ?'Update':'Add'}} products
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    (click)="onCloseModal('create-products')"></button>
             </div>
-            <div class="modal-body">
-                <form>
-                    <!-- Image Upload -->
-                    <div class="mb-3">
-                        <label for="productImage" class="form-label">Upload Image</label>
-                        <input type="file" class="form-control" id="productImage" multiple accept="image/*">
-                    </div>
+            <form action="" (ngSubmit)="onCreateProducts()" ngNativeValidate>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span class="fw-bold">Product Name <code class="text-danger">*</code></span>
+                            <input type="text" [(ngModel)]="selectedProducts.name" [ngModelOptions]="{standalone:true}"
+                                required class="form-control mt-1" placeholder="Please Enter Product Name">
+                        </div>
+                        <div class="col-md-12 mt-4">
+                            <span class="fw-bold">Price <code class="text-danger">*</code></span>
+                            <input type="text" [(ngModel)]="selectedProducts.price" [ngModelOptions]="{standalone:true}"
+                                required class="form-control mt-1" placeholder="Please Enter price">
+                        </div>
+                        <div class="col-md-12 mt-4">
+                            <span class="fw-bold">Upload Images <code class="text-danger">*</code></span>
+                            <input type="file" #fileInput name="images" multiple accept="image/*"
+                                (change)="onUploadImage($event)" class="form-control mt-1"/>
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                <div *ngFor="let img of selectedProducts.images; let i = index"
+                                    class="position-relative">
+                                    <img [src]="getImagePreview(img)" alt="preview"
+                                        style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;" />
+                                    <button type="button"
+                                        class="btn-close position-absolute top-0 end-0 bg-white rounded-circle "
+                                        (click)="removeImage(i)"
+                                        style="position: absolute; top: -4px; right: -4px; font-size: 10px; color: red; cursor: pointer;"
+                                        aria-label="Close"></button>
+                                </div>
+                            </div>
 
-                    <!-- Product Name -->
-                    <div class="mb-3">
-                        <label for="productName" class="form-label">Product Name</label>
-                        <input type="text" class="form-control" id="productName" placeholder="Enter product name">
+                        </div>
+                        <div class="col-md-12 mt-4">
+                            <span class="fw-bold">Description <code class="text-danger">*</code></span>
+                            <textarea rows="3" [(ngModel)]="selectedProducts.description"
+                                [ngModelOptions]="{standalone:true}" required class="form-control mt-1"
+                                placeholder="Please Enter Description"></textarea>
+                        </div>
                     </div>
-
-                    <!-- Product Price -->
-                    <div class="mb-3">
-                        <label for="productPrice" class="form-label">Price</label>
-                        <input type="number" class="form-control" id="productPrice" placeholder="Enter price">
-                    </div>
-
-                    <!-- Product Description -->
-                    <div class="mb-3">
-                        <label for="productDescription" class="form-label">Description</label>
-                        <textarea class="form-control" id="productDescription" rows="3"
-                            placeholder="Enter description"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success">
-                    <i class="ri-add-circle-line"></i> Add Product
-                </button>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success"><i class="ri-save-fill"></i> Save</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="image-carousel" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog"
-    aria-labelledby="modalTitleId" >
+<div class="modal fade" id="image-carousel" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    role="dialog" aria-labelledby="modalTitleId">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -134,19 +152,22 @@
             <div class="modal-body">
                 <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
                     <div class="carousel-inner">
-                      <div class="carousel-item {{i==0?'active':''}}" *ngFor="let img of imageForCarousel;let i=index">
-                        <img [src]="img" class="d-block w-100" alt="...">
-                      </div>
+                        <div class="carousel-item {{i==0?'active':''}}"
+                            *ngFor="let img of imageForCarousel;let i=index">
+                            <img src="{{imageBaseURL}}{{img}}" class="d-block w-100" alt="...">
+                        </div>
                     </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-                      <span class="carousel-control-prev-icon" ></span>
-                      <span class="visually-hidden">Previous</span>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                        <span class="visually-hidden">Previous</span>
                     </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-                      <span class="carousel-control-next-icon" ></span>
-                      <span class="visually-hidden">Next</span>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                        <span class="visually-hidden">Next</span>
                     </button>
-                  </div>
+                </div>
             </div>
         </div>
     </div>
