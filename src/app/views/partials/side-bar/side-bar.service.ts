@@ -71,16 +71,16 @@ export class SideBarService {
       menus = [businessCardMenu, scannedCardsMenu, ...menus];
     }
 
-    if (hasWebsiteDetails) {
-      // Insert Website before Account Settings
-      menus.splice(menus.length - 1, 0, websiteDetailsMenu);
-    }
+    // if (hasWebsiteDetails) {
+    //   // Insert Website before Account Settings
+    //   menus.splice(menus.length - 1, 0, websiteDetailsMenu);
+    // }
 
     // Add Google Reviews for google-standee
-    if (hasGoogleReview) {
-      // Insert Google Review before Account Settings
-      menus.splice(menus.length - 1, 0, googleReviewMenu);
-    }
+    // if (hasGoogleReview) {
+    //   // Insert Google Review before Account Settings
+    //   menus.splice(menus.length - 1, 0, googleReviewMenu);
+    // }
 
     // Return the final menu structure
     return [{

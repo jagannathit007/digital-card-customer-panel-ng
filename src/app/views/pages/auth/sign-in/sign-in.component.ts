@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { AuthService } from '../../../../services/auth.service';
 import { CommonModule } from '@angular/common';
+import { environment } from 'src/env/env.local';
 declare var $: any;
 
 @Component({
@@ -24,6 +25,7 @@ export class SignInComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  whileLabelName = environment.whiteLabelName;
   isPassword: boolean = true; 
   emailId = 'info@itfuturz.com';
 

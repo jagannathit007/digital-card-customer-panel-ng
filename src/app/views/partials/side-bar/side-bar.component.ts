@@ -8,6 +8,7 @@ import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { AuthService } from 'src/app/services/auth.service';
 import { common } from 'src/app/core/constants/common';
 import * as featherIcons from 'feather-icons'; 
+import { environment } from 'src/env/env.local';
 
 @Component({
   selector: 'app-side-bar',
@@ -31,6 +32,7 @@ export class SideBarComponent implements OnInit, AfterViewInit {
     this.currentBcardId = this.storage.get(common.BUSINESS_CARD);
   }
 
+  whiteLabelName = environment.whiteLabelName;
   async ngOnInit() {
     // console.log("Business Card ID from localStorage:", this.currentBcardId);
     // console.log("type of Business Card ID", typeof(this.currentBcardId));
