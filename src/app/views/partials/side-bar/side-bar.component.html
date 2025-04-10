@@ -11,7 +11,7 @@
 
     <div class="vh-100" style="overflow-y: auto; overflow-x: hidden; padding-bottom: 50%;">
       <ul class="sidebar-nav">
-        <span *ngFor="let module of sideBarService.list">
+        <span *ngFor="let module of filteredMenuList">
           <li class="sidebar-header">{{module.moduleName}}</li>
           <li class="sidebar-item" *ngFor="let item of module.menus; let i = index" [routerLinkActive]="'active'">
             <ng-container *ngIf="!item.menu">
