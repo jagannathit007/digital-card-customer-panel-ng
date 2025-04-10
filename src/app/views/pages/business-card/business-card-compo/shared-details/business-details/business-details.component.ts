@@ -77,22 +77,6 @@ export class BusinessDetailsComponent {
     }
   }
 
-  onProfileImageSelected(event: any): void {
-    const files = event.target.files;
-    if (files) {
-      this.profileImage = files[0];
-      console.log(this.profileImage);
-    }
-  }
-
-  onCoverImageSelected(event: any): void {
-    const files = event.target.files;
-    if (files) {
-      this.coverImage = files[0];
-      console.log(this.coverImage);
-    }
-  }
-
   onSubmit = async () => {
     let formData = new FormData();
     formData.append('company', this.businessProfile.company);
@@ -106,7 +90,11 @@ export class BusinessDetailsComponent {
     formData.append('message', JSON.stringify(this.businessProfile.message));
 
     if (this.profileImage) {
-      formData.append('profileImage', this.profileImage, this.profileImage.name);
+      formData.append(
+        'profileImage',
+        this.profileImage,
+        this.profileImage.name
+      );
     }
 
     if (this.coverImage) {

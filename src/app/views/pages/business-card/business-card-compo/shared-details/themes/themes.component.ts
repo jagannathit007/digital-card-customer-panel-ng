@@ -10,14 +10,18 @@ import { environment } from 'src/env/env.local';
 })
 export class ThemeComponent {
   themes: any[] = [];
-  currentAppliedTheme: any[] = [];
+  currentAppliedTheme: any[]= [];
   currentBcardId = this.getLocalStorageData("business_card");
   constructor(private authService: AuthService) { }
-
+  
   async ngOnInit() {
+
+    console.log(this.currentBcardId);
 
     const themesData = await this.authService.getThemes();
 
+    console.log(themesData);
+    
     if (themesData) {
       this.themes = themesData.map((theme: any) => ({
         title: theme.title,
@@ -26,7 +30,9 @@ export class ThemeComponent {
       }));
     }
     let results = await this.authService.getBusinessCards();
-
+    
+    console.log(results);
+    
     if (results) {
       this.currentAppliedTheme = results.map((Bcard: any) => ({
         currentThemeCode: Bcard.theme,
@@ -54,7 +60,9 @@ export class ThemeComponent {
   }
 
   async themeApply(themeId: string) {
+    // console.log(themeId);
     let result = await this.authService.applyTheme(themeId);
+    // console.log(result);
     if (result) {
       swalHelper.showToast('Theme Updated Successfully!', 'success');
     }

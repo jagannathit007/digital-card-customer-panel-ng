@@ -51,7 +51,7 @@ export class HeaderComponent implements OnInit {
     navigator.clipboard
       .writeText(fullUrl)
       .then(() => {
-        swalHelper.showToast('Profile Link Copied!', 'success');
+        swalHelper.showToast('Copied!', 'success');
       })
       .catch((err) => {
         console.error('Failed to copy: ', err);
