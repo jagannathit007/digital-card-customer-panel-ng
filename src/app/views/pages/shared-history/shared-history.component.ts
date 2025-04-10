@@ -52,7 +52,6 @@ export class SharedHistoryComponent {
         let response = await this.shareHistoryService.getSharedHistory(this.payload)
         if (response) {
           this.historyDetails = response
-          console.log(this.historyDetails);
         }
         this.isLoading = false
         this.cdr.detectChanges();

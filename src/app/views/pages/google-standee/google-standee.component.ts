@@ -35,7 +35,6 @@ export class GoogleStandeeComponent implements OnInit {
   }
 
   async ngOnInit() {
-    console.log(this.currentBcardId);
     this.isLoading = true;
 
     if (this.currentBcardId) {
@@ -43,11 +42,7 @@ export class GoogleStandeeComponent implements OnInit {
       this.isQrLoading = true;
 
       this.qrData = await this.authService.getQrdetails(this.currentBcardId);
-      console.log('QR data from API:', this.qrData);
-
       this.isAiReviewActive = this.qrData.isAIFeatureAllowed;
-      // console.log(this.isAiReviewActive);
-
       if (Array.isArray(this.qrData) && this.qrData.length > 0) {
         this.qrData = this.qrData[0];
       } else {
@@ -57,14 +52,10 @@ export class GoogleStandeeComponent implements OnInit {
       this.isQrLoading = false;
 
       this.reviewData = await this.authService.getReviews(this.currentBcardId);
-      console.log('Review data from API:', this.reviewData);
-
       if (this.reviewData && this.reviewData.length > 0) {
         this.totalItems = this.reviewData.length;
         this.updateDisplayedData();
-        console.log('Displayed data after update:', this.displayedData);
       } else {
-        console.log('No review data returned from API');
         this.reviewData = [];
         this.displayedData = [];
       }
@@ -138,8 +129,6 @@ export class GoogleStandeeComponent implements OnInit {
 
   async toggleAiReview() {
     this.isAiReviewActive = !this.isAiReviewActive;
-    // console.log("Ai Review active:",this.isAiReviewActive);
     const aiReview = await this.authService.upadteAiToggle(this.currentBcardId, this.isAiReviewActive);
-      // console.log('Ai toggle from API:', aiReview);
   }
 }

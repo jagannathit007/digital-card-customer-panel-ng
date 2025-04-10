@@ -27,12 +27,7 @@ export class GalleryDetailsComponent implements OnInit{
   onFileSelected(event: any): void {
     const files = event.target.files;
     this.selectedImagesLength = this.selectedImagesLength + files.length;
-
-    // console.log("galleries image length:",this.galleries.length);
-    // console.log("selectedImageslength",this.selectedImagesLength);
-
     const totalImages = this.galleries.length + this.selectedImagesLength;
-    // console.log("total Images", totalImages);
 
     if(totalImages > 10){
       swalHelper.showToast(`Only 10 images you can add`, 'error');
@@ -103,7 +98,6 @@ export class GalleryDetailsComponent implements OnInit{
         this.galleries = result.images.map((v: any) => {
           return `${environment.baseURL}/${v}`;
         });
-        console.log(this.galleries);
       }
       this.isLoading = false;
     };

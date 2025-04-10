@@ -99,14 +99,10 @@ export class SideBarService {
     }
   }
   navigateWithQueryParams(submenu: any) {
-    console.log("submenu",submenu);
-    
     this.router.navigate([submenu.link], { queryParams: submenu.queryParams });
   }
 
   onNavSwitch(item: string) {
-    console.log(item);
-    
     this.router.navigateByUrl(`/${item}`);
   }
 }

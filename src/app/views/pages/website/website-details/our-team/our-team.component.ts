@@ -200,9 +200,7 @@ export class OurTeamComponent implements OnInit {
         teamId: this.memberId 
       };
       
-      console.log("tfyguhijokl",data)
       const result = await this.authService.deleteTeams(data);
-      console.log("fghjkl;",result)
       
       if (result) {
         this.members = this.members.filter(m => m._id !== this.memberId);

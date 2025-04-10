@@ -41,7 +41,6 @@ export class BusinessDetailsComponent {
 
   socialMediaImage: File | undefined;
   addSocialMedia = async () => {
-    console.log(this.newSocialMedia.name, this.socialMediaImage);
     if (this.socialMediaImage != null) {
       let formData = new FormData();
       formData.append('name', this.newSocialMedia.name);
@@ -73,7 +72,6 @@ export class BusinessDetailsComponent {
     const files = event.target.files;
     if (files) {
       this.socialMediaImage = files[0];
-      console.log(this.socialMediaImage)
     }
   }
 

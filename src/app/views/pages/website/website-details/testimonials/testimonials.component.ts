@@ -67,7 +67,6 @@ export class TestimonialsComponent implements OnInit {
       if (results) {
         this.testimonialList = results.testimonials ? [...results.testimonials] : [];
         this.filteredTestimonialList = [...this.testimonialList];
-        console.log('Testimonial List:', this.filteredTestimonialList);
         this.totalItems = this.testimonialList.length;
       } else {
         swalHelper.showToast('Failed to fetch testimonials!', 'warning');
@@ -97,7 +96,6 @@ export class TestimonialsComponent implements OnInit {
       
       if (this.newTestimonial.image) {
         formData.append('file', this.newTestimonial.image);
-        console.log('file',this.newTestimonial.image);
       }
   
       const result = await this.authService.addTestimonials(formData);

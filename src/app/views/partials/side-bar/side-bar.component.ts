@@ -36,9 +36,6 @@ export class SideBarComponent implements OnInit, AfterViewInit {
       this.subscriptionData = await this.authService.getSubscriptionData(this.currentBcardId);
 
       this.filteredMenuList = this.sideBarService.getMenusByProducts(this.subscriptionData);
-      console.log(this.filteredMenuList);
-      
-
     } else {
       this.filteredMenuList = [{
         moduleName: 'Member',
