@@ -32,25 +32,28 @@ export class SideBarComponent implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
-    // console.log("Business Card ID from localStorage:", this.currentBcardId);
-    // console.log("type of Business Card ID", typeof(this.currentBcardId));
-
     if (this.currentBcardId) {
       this.subscriptionData = await this.authService.getSubscriptionData(this.currentBcardId);
-      // console.log("Subscription data result:", this.subscriptionData);
 
       this.filteredMenuList = this.sideBarService.getMenusByProducts(this.subscriptionData);
+      console.log(this.filteredMenuList);
+      
 
     } else {
-      // console.log("No business card ID found in localStorage");
-
       this.filteredMenuList = [{
         moduleName: 'Member',
-        menus: [{
+        menus: [
+        {
           title: 'Account Settings',
           link: 'account-settings',
           icon: 'settings',
-        }]
+        },
+        // {
+        //   title: 'Shared History',
+        //   link: 'shared-history',
+        //   icon: 'clock',
+        // },
+      ]
       }];
     }
   }

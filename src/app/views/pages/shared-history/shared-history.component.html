@@ -1,0 +1,106 @@
+<div class="row my-2 px-4" >
+    <div class="card">
+      <div class="card-body  rounded-3">
+        <div class="row">
+          <div class="col">
+            <label class="fw-bold text-uppercase fs-3">Shared History</label>
+          </div>
+          <div class="col-md-auto">
+            <button class="btn btn-success" (click)="_exportExcel()">
+              <i class="ri-file-excel-2-line"></i> Export to Excel
+            </button>
+          </div>
+        </div>
+        <div class="row mt-4">
+          <div class="col-md">
+            <span class="fw-bold">Search</span>
+            <input type="text" [(ngModel)]="payload.search" class="form-control" placeholder="Search by Name or Mobile">
+          </div>
+          <div class="col-md-auto">
+            <span class="fw-bold">Page</span>
+            <select class="form-select form-select-lg" [(ngModel)]="payload.limit"
+                (ngModelChange)="onChange()">
+                <option value=10>10</option>
+                <option value=20>20</option>
+                <option value=50>50</option>
+                <option value=100>100</option>
+                <option value=200>200</option>
+              </select>
+            <!-- <ng-select [items]="[10,20,50,100,200,500]" [(ngModel)]="payload.limit" placeholder="Select Page" (change)="onChange()"></ng-select> -->
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="table-responsive">
+            <table class="table table-responsive table-bordered">
+              <thead class="bg-light text-uppercase">
+                <tr>
+                  <th class="text-center">#</th>
+                  <th>Name</th>
+                  <th class="text-center">Date</th>
+                  <th class="text-center">Mobile</th>
+                  <th class="text-center"><i class="ri-tools-fill"></i></th>
+                </tr>
+              </thead>
+              <tbody *ngIf="!isLoading && historyDetails?.docs && historyDetails.docs.length > 0">
+                  <tr
+                      *ngFor="let item of historyDetails.docs || [] | paginate: {itemsPerPage: payload.limit, currentPage: payload.page, totalItems: historyDetails.totalDocs}; let i = index">
+                      <td [width]="'5%'" class="text-center">{{ (payload.page - 1) * payload.limit + i + 1 }}</td>
+                    <td >{{item.name | titlecase}}</td>
+                    <td class="text-center" [width]="'15%'">{{item.createdAt | date:'dd-MM-yyyy'}} {{item.createdAt | date:'hh:MM a'}}</td>
+                    <td class="text-center" [width]="'15%'">{{item.mobile}}</td>
+                    <td class="text-center" [width]="'10%'">
+                      <a href="tel:{{item.mobile}}" class="btn btn-info btn-sm">
+                        <i class="ri-phone-fill"></i>
+                    </a>
+                    
+                    <!-- WhatsApp button -->
+                    <a href="https://api.whatsapp.com/send?phone={{item.mobile}}" target="_blank" class="btn btn-success btn-sm ms-1">
+                      <i class="ri-whatsapp-fill"></i>
+                  </a>
+                      <!-- <button type="button" class="btn btn-info btn-sm"><i class="ri-phone-fill"></i></button>
+                      <button type="button" class="btn btn-success btn-sm ms-1"><i class="ri-whatsapp-fill"></i></button> -->
+                      <!-- <button type="button" class="btn btn-primary btn-sm ms-1"><i class="ri-download-2-line"></i></button> -->
+                    </td>
+                  </tr>
+                </tbody>
+            </table>
+  
+            <div class="d-flex justify-content-end" >
+              <pagination-controls id="bulkMapping" class="pagination" (pageChange)="onPageChange($event)">
+              </pagination-controls>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exportModalLabel">Export to Excel</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="mb-3">
+              <label for="keywordSelect" class="form-label">Select Keyword</label>
+              <select class="form-select" id="keywordSelect" [(ngModel)]="selectedKeyword" [ngModelOptions]="{standalone: true}">
+                <option value="All">ALL</option>
+                @for (item of keywords; track $index) {
+                  <option value="{{item}}">{{item || "Others" | uppercase }}</option>
+                }
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-success" (click)="exportExcel()">
+            <i class="ri-file-excel-2-line"></i> Export
+          </button>
+        </div>
+      </div>
+    </div>
+  </div> -->

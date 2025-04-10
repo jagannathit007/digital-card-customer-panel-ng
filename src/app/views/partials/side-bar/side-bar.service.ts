@@ -47,6 +47,12 @@ export class SideBarService {
       icon: 'settings',
     };
 
+    const SharedHistoryMenu = {
+      title: 'Shared History',
+      link: 'shared-history',
+      icon: 'clock',
+    };
+
     // Check for specific product types
     const hasDigitalOrNFC = products.some(product =>
       product === "digital-card" || product === "nfc-card"
@@ -60,62 +66,28 @@ export class SideBarService {
       product === "google-standee"
     );
 
-    // Define menus based on conditions
     let menus = [];
 
-    // Always include Account Settings
     menus.push(accountSettingsMenu);
-
-    // Add Business Card and Scanned Cards for digital-card or nfc-card
+    // menus.push(SharedHistoryMenu);
     if (hasDigitalOrNFC) {
       menus = [businessCardMenu, scannedCardsMenu, ...menus];
     }
 
     if (hasWebsiteDetails) {
-      // Insert Website before Account Settings
       menus.splice(menus.length - 1, 0, websiteDetailsMenu);
     }
 
-    // Add Google Reviews for google-standee
     if (hasGoogleReview) {
-      // Insert Google Review before Account Settings
       menus.splice(menus.length - 1, 0, googleReviewMenu);
     }
 
-    // Return the final menu structure
     return [{
       moduleName: 'Member',
       menus: menus
     }];
   }
-  // list: any[] = [
-  //   {
-  //     moduleName: 'Member',
-  //     menus: [
-  //       {
-  //         title: 'Business Card',
-  //         link: 'business-cards',
-  //         icon: 'user',
-  //       },
-  //       {
-  //         title: 'Scanned Cards',
-  //         link: 'scanned-cards',
-  //         icon: 'credit-card',
-  //       },
-  //       {
-  //         title: 'Google Reviews',
-  //         link: 'google-standee',
-  //         icon: 'star',
-  //       },
-  //       {
-  //         title: 'Account Settings',
-  //         link: 'account-settings',
-  //         icon: 'settings',
-  //       },
-  //     ],
-  //   },
-
-  // ];
+  
   isMobile: boolean = false;
   activeSubMenuIndex: number | null = null;
 
@@ -127,10 +99,14 @@ export class SideBarService {
     }
   }
   navigateWithQueryParams(submenu: any) {
+    console.log("submenu",submenu);
+    
     this.router.navigate([submenu.link], { queryParams: submenu.queryParams });
   }
 
   onNavSwitch(item: string) {
+    console.log(item);
+    
     this.router.navigateByUrl(`/${item}`);
   }
 }

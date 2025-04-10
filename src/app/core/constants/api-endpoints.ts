@@ -83,6 +83,11 @@ class ApiEndpoints {
   public CREATE_BUSINESS_CARD_PRODUCTS: string = `${this.PATH}/businessCard/createProducts`;
   public DELETE_BUSINESS_CARD_PRODUCTS: string = `${this.PATH}/businessCard/deleteProducts`;
 
+
+  //share history
+  public SHARED_HISTORY: string = `${this.PATH}/shared/history`;
+  public SHARED_KEYWORDS: string = `${this.PATH}/shared/keywords`;
+  public SHARED_DOWNLOADEXCEL: string = `${this.PATH}/shared/downloadExcel`;
 }
 
 export let apiEndpoints = new ApiEndpoints();
