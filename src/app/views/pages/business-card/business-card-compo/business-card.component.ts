@@ -37,17 +37,17 @@ export class BusinessCardComponent implements OnInit{
 
   tabs = [
     {
-      title: "Personal Details",
+      title: "Personal",
       href: "personal-details",
       icon:"ri-user-3-fill"
     },
     {
-      title: "Business Details",
+      title: "Business",
       href: "business-details",
       icon:"ri-info-card-fill"
     },
     {
-      title: "Document Details",
+      title: "Documents",
       href: "document-details",
       icon:"ri-article-fill"
       

@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
-  baseURL: 'https://digitalcard.co.in',
+  whiteLabelName: 'Go Digital',
+  baseURL: 'https://godigital.vsshah.in',
   route: 'web',
 };

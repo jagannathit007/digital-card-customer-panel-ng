@@ -2,7 +2,7 @@
   <div class="sidebar-content js-simplebar" style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
     <a class="sidebar-brand" style="color:#126f8a; background: aliceblue; padding: 10px 20px;" [routerLink]="'business-cards'">
       <span class="align-middle">
-        <div class="text-truncate">Digital Card</div>
+        <div class="text-truncate">{{whiteLabelName}}</div>
         <div style="font-size: 12px;" >
           {{ authService.profileData!=null ? authService.profileData.name : '--' }}
         </div>
