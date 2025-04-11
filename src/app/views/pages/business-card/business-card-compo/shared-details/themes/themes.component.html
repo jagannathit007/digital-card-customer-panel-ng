@@ -1,8 +1,8 @@
-<div class="container mt-3">
-  <div class="row g-3">
+<div class="py-4">
+  <div class="row g-4">
     <div class="col-12 col-sm-6 col-md-4 col-lg-3" *ngFor="let item of themes">
-      <div class="card theme-card h-100 position-relative">
-        <div class="card-body d-flex flex-column">
+      <div class="card theme-card h-100 position-relative" style="border: 1px solid rgb(236, 235, 235);">
+        <div class="card-body d-flex flex-column shadow-lg">
           <div class="d-flex align-items-start mb-2">
             <i class="ri-brush-4-line me-2 fs-2" style="line-height: 1.4;"></i>
             <div class="flex-grow-1">
@@ -19,13 +19,12 @@
 
           <div class="d-flex gap-2 mt-auto">
             <button 
-              class="btn w-100" 
-              style="background-color: #b8b8b8; color: #ffffff;" 
+              class="btn w-100 btn-secondary" 
               (click)="previewTheme(item.code)">
               Preview
             </button>
             <button 
-              class="btn w-100 btn btn-primary" 
+              class="btn w-100 btn btn-info" 
               (click)="themeApply(item.id)">
               Apply
             </button>
