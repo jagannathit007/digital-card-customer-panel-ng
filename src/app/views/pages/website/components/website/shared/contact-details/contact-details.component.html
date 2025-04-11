@@ -58,9 +58,11 @@
 
     <div class="row mt-3">
         <div class="col">
+            <span class="fw-semibold">Search</span>
             <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm" (input)="onSearch()">
         </div>
         <div class="col-auto">
+            <span class="fw-semibold">Page</span>
                 <select class="form-select" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
                     <option value="10">10</option>
                     <option value="25">25</option>

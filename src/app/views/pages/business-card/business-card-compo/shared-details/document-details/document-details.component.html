@@ -13,21 +13,21 @@
           <form #documentForm="ngForm" (ngSubmit)="submitForm()">
             <div class="row g-3">
               <div class="col-md-4 col-12">
-                <label for="gstNo" class="form-label">GST Number</label>
+                <label for="gstNo" class="form-label fw-semibold">GST Number</label>
                 <input type="text" id="gstNo" class="form-control" [(ngModel)]="documentDetails.gstNo" name="gstNo" />
               </div>
           
               <div class="col-md-4 col-12">
-                <label for="companyPAN" class="form-label">Company PAN</label>
+                <label for="companyPAN" class="form-label fw-semibold">Company PAN</label>
                 <input type="text" id="companyPAN" class="form-control" [(ngModel)]="documentDetails.companyPAN" name="companyPAN"/>
               </div>
           
               <div class="col-md-4 col-12">
-                <label for="personalPAN" class="form-label">Personal PAN</label>
+                <label for="personalPAN" class="form-label fw-semibold">Personal PAN</label>
                 <input type="text" id="personalPAN" class="form-control" [(ngModel)]="documentDetails.personalPAN" name="personalPAN" />
               </div>
               <div class="col-md-4 col-12 mt-3" *ngFor="let doc of documentDetails.otherDocuments; let i = index">
-                <label class="form-label">{{ doc.name }}</label>
+                <label class="form-label fw-semibold">{{ doc.name }}</label>
                 <div class="d-flex justify-content-between">
                   <input type="text" class="form-control" [(ngModel)]="doc.value" [name]="'otherDocuments' + i" />
                   <button class="btn btn-danger btn-sm ms-2 rounded-2" (click)="deleteSocial(i)"><i class="ri-delete-bin-line"></i></button>
