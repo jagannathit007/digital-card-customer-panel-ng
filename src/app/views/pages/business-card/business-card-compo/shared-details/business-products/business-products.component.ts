@@ -4,6 +4,8 @@ import { BusinessCardService } from 'src/app/services/business-card.service';
 import { Doc, Payload, Products } from './business-products.interface';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
+import { AppStorage } from 'src/app/core/utilities/app-storage';
+import { common } from 'src/app/core/constants/common';
 
 @Component({
   selector: 'app-business-products',
@@ -17,17 +19,23 @@ export class BusinessProductsComponent implements OnInit {
   constructor(
     private businessCardService: BusinessCardService,
     private modal: ModalService,
-    private zone: NgZone
+    private zone: NgZone,
+    private storage:AppStorage,
   ) { }
 
+  businessCardId:any
   ngOnInit() {
+    this.businessCardId=this.storage.get(common.BUSINESS_CARD)
+    this.payload.businesscardId=this.businessCardId
+    this.selectedProducts.businesscardId=this.businessCardId
     this._getServices()
   }
 
   payload: any = {
     search: '',
     page: 1,
-    limit: 10
+    limit: 10,
+    businesscardId:''
   }
 
   onPageChange(page: number) {
@@ -39,13 +47,15 @@ export class BusinessProductsComponent implements OnInit {
     this.payload = {
       search: '',
       page: 1,
-      limit: 10
+      limit: 10,
+      businesscardId:this.businessCardId
     },
     this.selectedProducts= {
       _id: null,
       name: '',
       image: [] as File[],
-      description: ''
+      description: '',
+      businesscardId:this.businessCardId
     },
     this.fileInputRef.nativeElement.value = '';
     this._getServices()
@@ -71,12 +81,14 @@ export class BusinessProductsComponent implements OnInit {
     _id: null,
     name: '',
     images: [] as File[],
-    description: ''
+    description: '',
+    businesscardId:''
   }
   imageBaseURL = environment.baseURL + '/';
 
   onOpenUpdateModal(item: any) {
     this.selectedProducts = item;
+    this.selectedProducts.businesscardId=this.businessCardId
     this.modal.open('create-products');
   }
 
@@ -147,16 +159,21 @@ export class BusinessProductsComponent implements OnInit {
       }
       return true;
     });
+    console.log(this.selectedProducts);
     
     const formdata = new FormData()
     formdata.append('name', this.selectedProducts.name)
     formdata.append('description', this.selectedProducts.description)
+    if(this.selectedProducts.businesscardId){
+      formdata.append('businesscardId', this.selectedProducts.businesscardId)
+    }
     this.selectedProducts.images.forEach((file: File, index: number) => {
       formdata.append('images', file);
     });
     if(this.selectedProducts._id){
       formdata.append('id', this.selectedProducts._id);
     }
+     
     if(this.selectedProducts.existingImages){
       formdata.append('existingImages', JSON.stringify(this.selectedProducts.existingImages));
     }
@@ -182,7 +199,7 @@ export class BusinessProductsComponent implements OnInit {
         'warning'
       );
       if (confirm.isConfirmed) {
-        await this.businessCardService.deleteProducts({ id: id })
+        await this.businessCardService.deleteProducts({businesscardId:this.businessCardId, id: id })
       }
       this._reset()
     } catch (error) {

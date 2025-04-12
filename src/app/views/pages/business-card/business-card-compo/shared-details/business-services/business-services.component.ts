@@ -4,6 +4,8 @@ import { BusinessCardService } from 'src/app/services/business-card.service';
 import { Doc, Payload, Services } from './business-services.interface';
 import { ModalService } from 'src/app/core/utilities/modal';
 import { environment } from 'src/env/env.local';
+import { AppStorage } from 'src/app/core/utilities/app-storage';
+import { common } from 'src/app/core/constants/common';
 
 @Component({
   selector: 'app-business-services',
@@ -14,17 +16,23 @@ export class BusinessServicesComponent implements OnInit{
 
   constructor(
     private businessCardService:BusinessCardService,
-    private modal:ModalService
+    private modal:ModalService,
+    private storage:AppStorage
   ){}
 
+  businessCardId:any
   ngOnInit(){
+    this.businessCardId=this.storage.get(common.BUSINESS_CARD)
+    this.payLoad.businessCardId=this.businessCardId
+    this.selectedServices.businessCardId=this.businessCardId
     this._getServices()
   }
 
   payLoad:any={
     search:'',
     page:1,
-    limit:10
+    limit:10,
+    businessCardId:''
   }
 
   onChange(){
@@ -41,13 +49,15 @@ export class BusinessServicesComponent implements OnInit{
     this.payLoad={
       search:'',
       page:1,
-      limit:10
+      limit:10,
+      businessCardId:this.businessCardId
     }
     this.selectedServices={
       _id:'',
       title:'',
       image:null as File | null,
-      description:'' 
+      description:'',
+      businessCardId:this.businessCardId 
     }
     this._getServices()
   }
@@ -74,12 +84,14 @@ export class BusinessServicesComponent implements OnInit{
     _id:null,
     title:'',
     image:null as File | null,
-    description:''
+    description:'',
+    businessCardId:''
   }
   imageBaseURL = environment.baseURL+ '/';
 
   onOpenUpdateModal(item:any){ 
     this.selectedServices=item; 
+    this.selectedServices.businessCardId=this.businessCardId
     this.modal.open('create-services');
   }
 
@@ -111,7 +123,10 @@ export class BusinessServicesComponent implements OnInit{
   onCreateService(){
     const formdata=new FormData()
     formdata.append('title',this.selectedServices.title)
-    formdata.append('description',this.selectedServices.description)
+    formdata.append('description',this.selectedServices.description);
+    if(this.selectedServices.businessCardId){
+      formdata.append('businessCardId',this.selectedServices.businessCardId)
+    }
     if(this.selectedServices.image){
       formdata.append('image',this.selectedServices.image)
     }
@@ -140,7 +155,7 @@ export class BusinessServicesComponent implements OnInit{
         'warning'
       );
       if (confirm.isConfirmed) {
-      await this.businessCardService.deleteServices({id:id})
+      await this.businessCardService.deleteServices({businessCardId:this.businessCardId,id:id})
       }
       this._reset()
     } catch (error) {
