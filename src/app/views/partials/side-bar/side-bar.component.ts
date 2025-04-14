@@ -8,7 +8,6 @@ import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { AuthService } from 'src/app/services/auth.service';
 import { common } from 'src/app/core/constants/common';
 import * as featherIcons from 'feather-icons'; 
-import { environment } from 'src/env/env.local';
 
 @Component({
   selector: 'app-side-bar',
@@ -32,15 +31,11 @@ export class SideBarComponent implements OnInit, AfterViewInit {
     this.currentBcardId = this.storage.get(common.BUSINESS_CARD);
   }
 
-  whiteLabelName = environment.whiteLabelName;
   async ngOnInit() {
     if (this.currentBcardId) {
       this.subscriptionData = await this.authService.getSubscriptionData(this.currentBcardId);
 
       this.filteredMenuList = this.sideBarService.getMenusByProducts(this.subscriptionData);
-      console.log(this.filteredMenuList);
-      
-
     } else {
       this.filteredMenuList = [{
         moduleName: 'Member',

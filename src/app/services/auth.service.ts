@@ -503,8 +503,9 @@ export class AuthService {
       this.getHeaders();
       const businessCardId = JSON.parse(localStorage.getItem('business_card') || '""');
       let response = await this.apiManager.request(
+        // change it...
         {
-          url: `${apiEndpoints.THEMES_UPDATE}`,
+          url: `${apiEndpoints.THEMES_UPDATE}/${businessCardId}`,
           method: 'POST'
         },
         { themeId, businessCardId },
@@ -790,8 +791,6 @@ export class AuthService {
     try {
       this.getHeaders();
       data = this.addBusinessCardId(data); 
-      console.log("===",data)
-      
       let response = await this.apiManager.request(
         {
           url: apiEndpoints.WEBSITE_OUR_TEAM_UPDATE,

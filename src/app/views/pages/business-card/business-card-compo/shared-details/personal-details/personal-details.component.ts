@@ -40,7 +40,6 @@ export class PersonalDetailsComponent implements OnInit {
 
   socialMediaImage: File | undefined;
   addSocialMedia = async () => {
-    console.log(this.newSocialMedia.name, this.socialMediaImage);
     if (this.socialMediaImage != null) {
       let formData = new FormData();
       formData.append('name', this.newSocialMedia.name);
@@ -75,7 +74,6 @@ export class PersonalDetailsComponent implements OnInit {
     const files = event.target.files;
     if (files) {
       this.socialMediaImage = files[0];
-      console.log(this.socialMediaImage);
     }
   }
 

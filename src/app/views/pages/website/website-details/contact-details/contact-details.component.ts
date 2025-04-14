@@ -59,10 +59,7 @@ export class ContactDetailsComponent implements OnInit {
     try {
 
       let businessCardId = this.storage.get(common.BUSINESS_CARD);
-      // console.log("business card from contact-details", businessCardId);
       let results = await this.authService.getWebsiteDetails(businessCardId);
-      console.log("website details: ", results);
-
       if (results) {
         this.socialLinks = {
           instagram: results.socialMedia?.instagram || '',
@@ -73,14 +70,8 @@ export class ContactDetailsComponent implements OnInit {
 
         this.contacts = results.contact ? [...results.contact] : [];
       }
-
-      // console.log("Extracted Social Links: ", this.socialLinks);
-      // console.log("Extracted Contacts: ", this.contacts);
-
       this.filteredContacts = [...this.contacts];
-      // console.log(this.filteredContacts);
       this.totalItems = this.contacts.length;
-      // console.log(this.totalItems);
 
     } catch (error) {
       console.error("Error fetching website details: ", error);
@@ -183,9 +174,6 @@ export class ContactDetailsComponent implements OnInit {
     let phone = (document.getElementById('contactPhone') as HTMLInputElement).value.trim();
     let address = (document.getElementById('contactAddress') as HTMLTextAreaElement).value.trim();
 
-    console.log("my email", email);
-
-    // Validation using RegularRegex
     if (!email || !RegularRegex.email.test(email)) {
         swalHelper.showToast("Please enter a valid email address!", "warning");
         return;
@@ -208,14 +196,9 @@ export class ContactDetailsComponent implements OnInit {
 
         if (response) {
             swalHelper.showToast("Contact Added Successfully!", "success");
-            console.log("Added Contact:", response);
-            
-
             await this.fetchContacts();
 
             const closeButton = document.querySelector('#AddContactModal .btn-close');
-            console.log("closeButton", closeButton);
-            
             if (closeButton) {
                 (closeButton as HTMLButtonElement).click();
                 (document.getElementById('contactEmail') as HTMLInputElement).value = '';
@@ -232,12 +215,7 @@ export class ContactDetailsComponent implements OnInit {
 }
 
   async editContact(contact: any) {
-    console.log("Edit contact: ", contact);
-
-    // Store the selected contact ID
-    
     this.selectedContactId = contact._id;
-    console.log(this.selectedContactId);
   }
 
   async updateContact() { 

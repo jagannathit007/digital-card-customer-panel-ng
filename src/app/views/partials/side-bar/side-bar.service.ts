@@ -74,16 +74,13 @@ export class SideBarService {
       menus = [businessCardMenu, scannedCardsMenu, ...menus];
     }
 
-    // if (hasWebsiteDetails) {
-    //   // Insert Website before Account Settings
-    //   menus.splice(menus.length - 1, 0, websiteDetailsMenu);
-    // }
+    if (hasWebsiteDetails) {
+      menus.splice(menus.length - 1, 0, websiteDetailsMenu);
+    }
 
-    // Add Google Reviews for google-standee
-    // if (hasGoogleReview) {
-    //   // Insert Google Review before Account Settings
-    //   menus.splice(menus.length - 1, 0, googleReviewMenu);
-    // }
+    if (hasGoogleReview) {
+      menus.splice(menus.length - 1, 0, googleReviewMenu);
+    }
 
     return [{
       moduleName: 'Member',
@@ -102,14 +99,10 @@ export class SideBarService {
     }
   }
   navigateWithQueryParams(submenu: any) {
-    console.log("submenu",submenu);
-    
     this.router.navigate([submenu.link], { queryParams: submenu.queryParams });
   }
 
   onNavSwitch(item: string) {
-    console.log(item);
-    
     this.router.navigateByUrl(`/${item}`);
   }
 }

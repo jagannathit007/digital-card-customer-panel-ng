@@ -37,7 +37,6 @@ export class DocumentDetailsComponent {
 
   gteOtherDocuments = async () => {
     let results = await this.authService.getDocumentsDetail();
-    console.log("results", results);
     this.documentDetails.otherDocuments = results?.otherDocuments || [];
   }
 

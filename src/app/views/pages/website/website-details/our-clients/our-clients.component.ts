@@ -57,12 +57,9 @@ export class OurClientsComponent implements OnInit {
     try {
       let businessCardId = this.storage.get(common.BUSINESS_CARD);
       let results = await this.authService.getWebsiteDetails(businessCardId);
-      console.log("website details", results);
-      
       if (results) {
         this.clientsList = results.clients ? [...results.clients] : [];
         this.filteredClients = [...this.clientsList];
-        console.log('Our clients:', this.filteredClients);
         this.totalItems = this.clientsList.length;
       } else {
         swalHelper.showToast('Failed to fetch clients!', 'warning');
@@ -89,7 +86,6 @@ export class OurClientsComponent implements OnInit {
       formData.append('url', this.newClient.url || '');
       if (this.newClient.image) {
         formData.append('file', this.newClient.image);
-        console.log('file', this.newClient.image);
       }
 
       const result = await this.authService.addClients(formData);

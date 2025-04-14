@@ -41,7 +41,6 @@ export class BusinessDetailsComponent {
 
   socialMediaImage: File | undefined;
   addSocialMedia = async () => {
-    console.log(this.newSocialMedia.name, this.socialMediaImage);
     if (this.socialMediaImage != null) {
       let formData = new FormData();
       formData.append('name', this.newSocialMedia.name);
@@ -73,23 +72,6 @@ export class BusinessDetailsComponent {
     const files = event.target.files;
     if (files) {
       this.socialMediaImage = files[0];
-      console.log(this.socialMediaImage)
-    }
-  }
-
-  onProfileImageSelected(event: any): void {
-    const files = event.target.files;
-    if (files) {
-      this.profileImage = files[0];
-      console.log(this.profileImage);
-    }
-  }
-
-  onCoverImageSelected(event: any): void {
-    const files = event.target.files;
-    if (files) {
-      this.coverImage = files[0];
-      console.log(this.coverImage);
     }
   }
 
@@ -106,7 +88,11 @@ export class BusinessDetailsComponent {
     formData.append('message', JSON.stringify(this.businessProfile.message));
 
     if (this.profileImage) {
-      formData.append('profileImage', this.profileImage, this.profileImage.name);
+      formData.append(
+        'profileImage',
+        this.profileImage,
+        this.profileImage.name
+      );
     }
 
     if (this.coverImage) {

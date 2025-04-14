@@ -70,8 +70,6 @@ export class BusinessServicesComponent implements OnInit{
       let response=await this.businessCardService.getServices(this.payLoad)
       if(response){
         this.services=response
-        console.log(this.services);
-        
       }
       this.isLoading=false
     } catch (error) {
@@ -107,8 +105,6 @@ export class BusinessServicesComponent implements OnInit{
   onUploadImage(event:any){
     const file = event.target.files[0] as File;
     this.selectedServices.image = file;
-    console.log(this.selectedServices);
-    
   }
 
   showImage(image: any) {
