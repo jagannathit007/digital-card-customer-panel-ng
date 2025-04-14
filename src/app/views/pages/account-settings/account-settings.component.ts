@@ -35,9 +35,9 @@ export class AccountSettingsComponent {
       name: this.profile.name,
       emailId: this.profile.email
     });
-    if(result){
+    if (result) {
       swalHelper.showToast("Profile updated successfully!", 'success');
-      setTimeout(()=> window.location.reload(), 1000)
+      setTimeout(() => window.location.reload(), 1000)
     }
   }
 
@@ -53,6 +53,11 @@ export class AccountSettingsComponent {
 
         if (result) {
           swalHelper.showToast("Password updated!", 'success');
+          this.passwordForm = {
+            oldPassword: '',
+            newPassword: '',
+            confirmPassword: ''
+          }
         }
       }
     } else {

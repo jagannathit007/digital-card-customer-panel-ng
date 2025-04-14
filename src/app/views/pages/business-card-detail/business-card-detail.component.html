@@ -1,22 +1,31 @@
 <!-- src/app/scanned-cards/scanned-cards.component.html -->
-<div class="container mt-4">
+<div>
   <div class="card">
     <div class="card-body">
-      <!-- Title and Action Buttons -->
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="mb-0">Scanned Cards</h3>
-        <div class="d-flex gap-2">
-          <!-- Export to Excel Button with Modal Trigger -->
-          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exportModal">
+      <div class="row">
+        <div class="col">
+          <span class="fs-3 fw-bold">Scanned Cards</span>
+        </div>
+        <div class="col-auto">
+          <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exportModal">
             <i class="ri-file-excel-2-line"></i> Export to Excel
           </button>
         </div>
       </div>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex gap-2">
+          <!-- Export to Excel Button with Modal Trigger -->
+        </div>
+      </div>
 
       <!-- Search Bar and Page Limit Dropdown -->
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm" (input)="onSearch()">
-        <div class="ms-3">
+      <div class="row">
+        <div class="col">
+          <span class="fw-bold">Search</span>
+          <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm" (input)="onSearch()">
+        </div>
+        <div class="col-auto">
+          <span class="fw-bold">Page</span>
           <select class="form-select" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
             <option value="10">10</option>
             <option value="25">25</option>
@@ -27,11 +36,12 @@
       </div>
 
       <!-- Scanned Cards Table -->
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover table-striped">
-          <thead class="table-light">
+      <div class="table-responsive mt-4">
+        <table class="table table-bordered table-hover ">
+          <thead class="table-light text-uppercase">
             <tr>
-              <th class="text-center">Name</th>
+              <th class="text-center" [width]="'5%'">#</th>
+              <th>Name</th>
               <th class="text-center">Contact</th>
               <th>Address</th>
               <th>Keywords</th>
@@ -39,7 +49,7 @@
               <th width="10%" class="text-center">Action</th>
             </tr>
           </thead>
-          <tbody style="font-size: 12px;">
+          <tbody>
             @if(isLoading){
               <tr>
                 <td class="text-center" colspan="6">
@@ -50,8 +60,9 @@
               </tr>
             }
             @if(isLoading == false && scannedCards!=null && scannedCards.docs.length > 0){
-            <tr *ngFor="let card of scannedCards.docs | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems }">
-              <td class="text-center">
+            <tr *ngFor="let card of scannedCards.docs | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems };let i=index">
+              <td class="text-center">{{ (p - 1) * itemsPerPage + i + 1 }}</td>
+              <td>
                 <div class="fw-bold">{{ card.name }}</div>
                 <div class="text-muted" style="font-size: 12px;">{{ card.companyName }}</div>
               </td>
@@ -63,10 +74,10 @@
               <td>{{ card.keywords || ':: NA ::'}}</td>
               <td>{{ card.notes || ':: NA ::' }}</td>
               <td class="text-center">
-                <button class="btn btn-sm btn-outline-primary me-1" (click)="openEditModal(card)">
+                <button class="btn btn-sm btn-info me-1" (click)="openEditModal(card)">
                   <i class="ri-edit-box-line"></i>
                 </button>
-                <button class="btn btn-sm btn-outline-danger" (click)="deleteScannedCard(card._id)">
+                <button class="btn btn-sm btn-danger" (click)="deleteScannedCard(card._id)">
                   <i class="ri-delete-bin-line"></i>
                 </button>
               </td>
@@ -86,7 +97,7 @@
 
 <!-- Edit Modal -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="editModalLabel">Edit Scanned Card</h5>
@@ -134,7 +145,7 @@
 
 <!-- Export Modal -->
 <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exportModalLabel">Export to Excel</h5>

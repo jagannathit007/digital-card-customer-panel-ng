@@ -60,7 +60,7 @@ export class GoogleStandeeComponent implements OnInit {
         this.displayedData = [];
       }
 
-
+      this.isLoading = true;
     } else {
       console.log("No business card ID found in localStorage");
     }

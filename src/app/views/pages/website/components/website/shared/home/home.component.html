@@ -1,0 +1,44 @@
+<div class="row">
+    <div class="row">
+        <label class="fw-bold text-uppercase fs-3">Home Page Details</label>
+    </div>
+
+    <div *ngIf="isLoading" class="text-center my-4">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <div class="row g-4 my-0" *ngIf="!isLoading">
+        <div class="col-md-6 col-12">
+            <label for="heading" class="form-label fw-bold">Heading</label>
+            <input type="text" id="heading" class="form-control" [(ngModel)]="home.heading" required />
+        </div>
+
+        <div class="col-md-6 col-12">
+            <label for="slogan" class="form-label fw-bold">Slogan</label>
+            <input type="text" id="slogan" class="form-control" [(ngModel)]="home.slogan" required />
+        </div>
+
+        <div class="col-md-6 col-12">
+            <label for="bannerImage" class="form-label fw-bold">Banner Image</label>
+            <input type="file" id="bannerImage" class="form-control" (change)="onBannerImageSelected($event)" />
+            <div *ngIf="bannerImagePreview" class="mt-2">
+                <img [src]="bannerImagePreview" alt="Banner Preview" class="img-thumbnail" width="200" />
+            </div>
+        </div>
+
+        <div class="col-md-6 col-12">
+            <label for="logoImage" class="form-label fw-bold">Logo Image</label>
+            <input type="file" id="logoImage" class="form-control" (change)="onLogoImageSelected($event)" />
+            <div *ngIf="logoImagePreview" class="mt-2">
+                <img [src]="logoImagePreview" alt="Logo Preview" class="img-thumbnail" width="150" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="mt-3 d-flex justify-content-end">
+        <button type="button" class="btn btn-success me-2" (click)="savehomeDetails()"><i class="ri-save-fill"></i> Save</button>
+    </div>
+</div>
