@@ -26,13 +26,9 @@
          <a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown">
            <i class="align-middle" data-feather="settings"></i>
          </a>
-         <a  href="#" data-bs-toggle="dropdown" style="text-decoration: none;">
-            @if (businessDetails!=null) {
-               <!-- <img *ngIf="" style="object-fit: cover;"  src="{{imageUrl}}{{businessDetails?.image?.profileImage}}"> -->
-               <app-avatar [name]="businessDetails?.name" />
-            }@else{
-               <!-- <app-avatar [name]="businessDetails?.name" /> -->
-            }
+         <a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
+           <img style="object-fit: cover;" src="./../../../../../../../assets/images/avatar.png"
+             class="avatar img-fluid rounded me-1" />
          </a>
          <div class="dropdown-menu dropdown-menu-end">
            <a class="dropdown-item" href="/account-settings">

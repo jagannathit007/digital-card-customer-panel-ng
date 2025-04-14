@@ -11,9 +11,12 @@ export class SideBarService {
   constructor(private router: Router, public authService: AuthService, private storage: AppStorage) {
   }
 
+  // Add this to SideBarService
   getMenusByProducts(subscriptionData: any[]): any[] {
+    // Extract product names from subscription data
     const products = subscriptionData.map(item => item.product);
 
+    // Define menu items
     const businessCardMenu = {
       title: 'Business Card',
       link: 'business-cards',
@@ -50,6 +53,7 @@ export class SideBarService {
       icon: 'clock',
     };
 
+    // Check for specific product types
     const hasDigitalOrNFC = products.some(product =>
       product === "digital-card" || product === "nfc-card"
     );
@@ -65,8 +69,9 @@ export class SideBarService {
     let menus = [];
 
     menus.push(accountSettingsMenu);
+    // menus.push(SharedHistoryMenu);
     if (hasDigitalOrNFC) {
-      menus = [businessCardMenu, scannedCardsMenu,SharedHistoryMenu, ...menus];
+      menus = [businessCardMenu, scannedCardsMenu, ...menus];
     }
 
     if (hasWebsiteDetails) {
@@ -101,3 +106,80 @@ export class SideBarService {
     this.router.navigateByUrl(`/${item}`);
   }
 }
+
+
+// {
+//   moduleName: 'Modules',
+//   menus: [
+//     {
+//       title: 'Dashboard',
+//       link: 'dashboard',
+//       icon: 'monitor',
+//     },
+//     {
+//       title: 'Admins',
+//       link: 'admins',
+//       icon: 'users',
+//     },
+//     {
+//       title: 'Courses',
+//       link: 'courses',
+//       icon: 'folder-plus',
+//     },
+//     {
+//       title: 'Technologies',
+//       link: 'technologies',
+//       icon: 'cpu',
+//     },
+//     {
+//       title: 'Portfolio',
+//       link: 'portfolio',
+//       icon: 'globe',
+//     },
+//     {
+//       title: 'Expertise',
+//       link: 'expertise',
+//       icon: 'trello',
+//     },
+//     {
+//       title: 'Products',
+//       link: 'products',
+//       icon: 'archive',
+//     },
+//     {
+//       title: 'Testimonial',
+//       link: 'testimonial',
+//       icon: 'sliders',
+//     },
+//     {
+//       title: 'Hire Developers',
+//       link: 'hire-developers',
+//       icon: 'code',
+//     },
+//   ],
+// },
+// {
+//   moduleName: 'Website',
+//   menus: [
+//     {
+//       title: 'Job Applications',
+//       link: 'job-applications',
+//       icon: 'file-text',
+//     },
+//     {
+//       title: 'Hiring Inquires',
+//       link: 'hiring-inquires',
+//       icon: 'file-text',
+//     },
+//     {
+//       title: 'Course Inquires',
+//       link: 'course-inquires',
+//       icon: 'file-text',
+//     },
+//     {
+//       title: 'Contact Inquires',
+//       link: 'contact-inquires',
+//       icon: 'file-text',
+//     },
+//   ],
+// },
