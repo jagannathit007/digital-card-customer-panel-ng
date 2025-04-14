@@ -1,0 +1,5 @@
+<div class="bg-info rounded-5 d-flex align-items-center justify-content-center text-white"
+  [ngStyle]="{ 'width': size + 'px', 'height': size + 'px', 'font-size': size / 2.3 + 'px' }">
+  <span *ngIf="initials">{{ initials }}</span>
+  <i *ngIf="!initials" class="ph-duotone ph-user"></i>
+</div>
