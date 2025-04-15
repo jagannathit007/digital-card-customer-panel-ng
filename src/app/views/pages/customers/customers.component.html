@@ -1,0 +1,212 @@
+<div class="row my-2 px-4">
+    <div class="card">
+        <div class="card-body  rounded-3">
+            <div class="row">
+                <div class="col">
+                    <label class="fw-bold text-uppercase fs-3">Customers</label>
+                </div>
+                <div class="col-md-auto">
+                    <input type="file" #excelInput hidden (change)="onOpenImportExcelModel($event)" accept=".xlsx, .xls" />
+                    <button class="btn btn-success" (click)="excelInput.click()">
+                        <i class="ri-import-line"></i> Import Excel
+                    </button>
+
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md">
+                    <span class="fw-bold">Search</span>
+                    <input type="text" [(ngModel)]="payload.search" class="form-control" (keyup)="onChange()"
+                        placeholder="Search by Name or Mobile">
+                </div>
+                <div class="col-md-auto">
+                    <span class="fw-bold">Page</span>
+                    <select class="form-select form-select" [(ngModel)]="payload.limit" (ngModelChange)="onChange()">
+                        <option value=10>10</option>
+                        <option value=20>20</option>
+                        <option value=50>50</option>
+                        <option value=100>100</option>
+                        <option value=200>200</option>
+                    </select>
+                </div>
+                <div class="col-md-auto">
+                    <div class="fw-bold text-white">Customer</div>
+                    <button class="btn btn-info" (click)="onOpenAddCustomerModal()">
+                        <i class="ri-add-circle-line"></i> Add
+                    </button>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="table-responsive">
+                    <table class="table table-responsive table-bordered">
+                        <thead class="bg-light text-uppercase">
+                            <tr>
+                                <th class="text-center">#</th>
+                                <th>Name</th>
+                                <th class="text-center" [width]="'10%'">Country Code</th>
+                                <th class="text-center" [width]="'15%'">Mobile</th>
+                                <th class="text-center" [width]="'10%'">DOB</th>
+                                <th [width]="'15%'">Spouse Name</th>
+                                <th [width]="'12%'">Relation</th>
+                                <th class="text-center" [width]="'10%'">Spouse_DOB</th>
+                                <th class="text-center" [width]="'10%'"><i class="ri-tools-fill"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="isLoading">
+                            <tr>
+                                <td class="text-center" colspan="9">
+                                    <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="!isLoading && customers && customers.docs && customers?.docs.length==0" >
+                            <tr>
+                                <td class="text-center" colspan="9">
+                                    <img src="/src/assets/images/NoRecordFound.png" alt="" style="width: 90px;">
+                                    <div class="fw-bold"> No Records Found </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="!isLoading && customers?.docs && customers.docs.length > 0">
+                            <tr
+                                *ngFor="let item of customers.docs || [] | paginate: {itemsPerPage: payload.limit, currentPage: payload.page, totalItems: customers.totalDocs}; let i = index">
+                                <td [width]="'5%'" class="text-center">{{ (payload.page - 1) * payload.limit + i + 1 }}
+                                </td>
+                                <td>{{item.name | titlecase }}</td>
+                                <td >{{item.countryCode}}</td>
+                                <td class="text-center" >{{item.mobile}}</td>
+                                <td class="text-center" >{{item.dob || '-'}}</td>
+                                <td >{{(item.spouse_name | titlecase ) || '-'}}</td>
+                                <td >{{(item.spouse_relation | titlecase ) || '-'}}</td>
+                                <td class="text-center" >{{item.spouse_DOB || '-'}}</td>
+                                <td class="text-center" >
+                                    <button type="button" class="btn btn-info btn-sm" (click)="onOpenUpdateModal(item)">
+                                        <i class="ri-edit-line"></i></button>
+                                    <button type="button" class="btn btn-danger btn-sm ms-1"
+                                        (click)="_deleteCustomer(item._id)">
+                                        <i class="ri-delete-bin-line"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="d-flex justify-content-end">
+                        <pagination-controls class="pagination" (pageChange)="onPageChange($event)">
+                        </pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="add-customer" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog"
+    aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="modalTitleId">
+                    Add to Customer
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" (submit)="_SaveCustomer()" ngNativeValidate>
+                <div class="modal-body">
+                    <div class="row my-3">
+                        <div class="col-md-6">
+                            <label for="" class="fw-medium">Customer Name <code class="text-danger">*</code></label>
+                            <input type="text" class="form-control mt-1" [(ngModel)]="customer.name"
+                                placeholder="Enter Customer Name" required [ngModelOptions]="{standalone: true}">
+                        </div>
+                        <div class="col-md-6 mt-3">
+                            <label for="" class="fw-medium">Date of Birth <code class="text-danger">*</code></label>
+                            <input type="date" class="form-control mt-1" [(ngModel)]="customer.dob"
+                                placeholder="Enter Customer DOB" required [ngModelOptions]="{standalone: true}">
+                        </div>
+                        <div class="col-md-6 ">
+                            <label for="" class="fw-medium">Country Code <code class="text-danger">*</code></label>
+                            <input type="text" class="form-control mt-1" [(ngModel)]="customer.countryCode"
+                                placeholder="Enter Mobile No" required [ngModelOptions]="{standalone: true}">
+                        </div>
+                        <div class="col-md-6 ">
+                            <label for="" class="fw-medium">Mobile No <code class="text-danger">*</code></label>
+                            <input type="text" class="form-control mt-1" [(ngModel)]="customer.mobile"
+                                placeholder="Enter Mobile No" required [ngModelOptions]="{standalone: true}" digitOnly
+                                maxlength="10" minlength="10">
+                        </div>
+                        <div class="col-md-6 mt-3">
+                            <label for="" class="fw-medium">Spouse Name</label>
+                            <input type="text" class="form-control mt-1" [(ngModel)]="customer.spouse_name"
+                                placeholder="Enter Spouse Name" [ngModelOptions]="{standalone: true}">
+                        </div>
+                        <div class="col-md-6 mt-3">
+                            <label for="" class="fw-medium">Relation</label>
+                            <input type="text" class="form-control mt-1" [(ngModel)]="customer.spouse_relation"
+                                placeholder="Enter Spouse Relation" [ngModelOptions]="{standalone: true}">
+                        </div>
+                        <div class="col-md-6 mt-3">
+                            <label for="" class="fw-medium">Spouse Birth Date</label>
+                            <input type="date" class="form-control mt-1" [(ngModel)]="customer.spouse_DOB"
+                                placeholder="Enter Spouse DOB" [ngModelOptions]="{standalone: true}">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success"><i class="ri-save-3-line"></i>
+                        Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="import-excel" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog"
+    aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="modalTitleId">
+                    Import Excel
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-responsive table-bordered">
+                        <thead class="bg-light text-uppercase">
+                            <tr>
+                                <th class="text-center">#</th>
+                                <th>Name</th>
+                                <th class="text-center">Country Code</th>
+                                <th class="text-center">Mobile</th>
+                                <th class="text-center">DOB</th>
+                                <th>Spouse Name</th>
+                                <th>Relation</th>
+                                <th class="text-center">Spouse_DOB</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="let item of previewData;let i=index">
+                                <td [width]="'5%'" class="text-center">{{i+1}}</td>
+                                <td>{{item.name | titlecase }}</td>
+                                <td class="text-center" [width]="'10%'">{{item.countryCode}}</td>
+                                <td class="text-center" [width]="'15%'">{{item.mobile}}</td>
+                                <td class="text-center" [width]="'10%'">{{item.dob || '-'}}</td>
+                                <td [width]="'15%'">{{(item.spouse_name | titlecase ) || '-'}}</td>
+                                <td [width]="'12%'">{{(item.spouse_relation | titlecase ) || '-'}}</td>
+                                <td class="text-center" [width]="'10%'">{{item.spouse_DOB || '-'}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" (click)="_saveExcel(previewData)"><i class="ri-save-line" ></i> Save</button>
+            </div>
+        </div>
+    </div>
+</div>

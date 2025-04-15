@@ -7,6 +7,8 @@ class ApiEndpoints {
   public UPDATE_PROFILE: string = `${this.PATH}/update-profile`;
   public CHANGE_PASSWORD: string = `${this.PATH}/change-password`;
   public BUSINESS_CARDS: string = `${this.PATH}/business-cards`;
+
+  //scanned card
   public SCANNED_CARDS: string = `${this.PATH}/scanned-cards`;
   public UPDATE_SCANNED_CARDS: string = `${this.PATH}/scanned-cards/update`;
   public DELETE_SCANNED_CARDS: string = `${this.PATH}/scanned-cards/delete`;
@@ -88,6 +90,13 @@ class ApiEndpoints {
   public SHARED_HISTORY: string = `${this.PATH}/shared/history`;
   public SHARED_KEYWORDS: string = `${this.PATH}/shared/keywords`;
   public SHARED_DOWNLOADEXCEL: string = `${this.PATH}/shared/downloadExcel`;
+
+  //customer
+  public ADD_CUSTOMER: string = `${this.PATH}/customer/updateCustomer`;
+  public GET_CUSTOMER: string = `${this.PATH}/customer/getCustomer`;
+  public DELETE_CUSTOMER: string = `${this.PATH}/customer/deleteCustomer`;
+  public SAVE_EXCEL_CUSTOMER: string = `${this.PATH}/customer/saveExcelCustomer`;
+  
 }
 
 export let apiEndpoints = new ApiEndpoints();
