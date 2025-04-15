@@ -51,12 +51,12 @@
             <tbody *ngIf="!isLoading && products.length>0">
                 <tr
                     *ngFor="let item of products;let i=index">
-                    <td class="text-center">{{i+1}}</td>
+                    <td class="text-center" [width]="'5%'">{{i+1}}</td>
                     <!-- <td class="text-center">{{ (payload.page - 1) * payload.limit + i + 1 }}</td> -->
                     <td>{{item.name}}</td>
-                    <td>{{item.price | currency:'INR'}}</td>
-                    <td>{{item.description}}</td>
-                    <td class="text-center">
+                    <td [width]="'15%'">{{item.price | currency:'INR'}}</td>
+                    <td [width]="'25%'">{{item.description}}</td>
+                    <td class="text-center" [width]="'20%'">
                         <div class="tw-flex tw-items-center " style="cursor: pointer;" *ngIf="item.images.length>0"
                             (click)="onOpenImageModal(item.images)">
                             <img src="{{imageBaseURL}}{{item.images[0]}}" alt="Product Image"
@@ -69,7 +69,7 @@
                         </div>
                         <div *ngIf="item.images.length==0"> :: NA ::</div>
                     </td>
-                    <td class="text-center"><button class="btn btn-sm btn-info" (click)="onOpenUpdateModal(item)"><i
+                    <td class="text-center" [width]="'15%'"><button class="btn btn-sm btn-info" (click)="onOpenUpdateModal(item)"><i
                                 class="ri-edit-fill"></i></button>
                         <button class="btn btn-danger btn-sm ms-1" (click)="_deleteProducts(item._id)"><i
                                 class="ri-delete-bin-6-fill"></i></button>
