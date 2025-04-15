@@ -159,7 +159,6 @@ export class BusinessProductsComponent implements OnInit {
       }
       return true;
     });
-    console.log(this.selectedProducts);
     
     const formdata = new FormData()
     formdata.append('name', this.selectedProducts.name)

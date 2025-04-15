@@ -65,7 +65,6 @@ export class ApiManager {
       }
     } catch (error: any) {
       if (error.status != null) {
-        console.log(error.status);
         if (String(error.status) === '401') {
           this.appStorage.clearAll();
           window.location.href = '/';

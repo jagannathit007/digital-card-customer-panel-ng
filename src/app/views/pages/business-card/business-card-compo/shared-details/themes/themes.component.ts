@@ -16,8 +16,6 @@ export class ThemeComponent {
   
   async ngOnInit() {
 
-    console.log(this.currentBcardId);
-
     const themesData = await this.authService.getThemes();
     if (themesData) {
       this.themes = themesData.map((theme: any) => ({

@@ -72,7 +72,6 @@ export class HeaderComponent implements OnInit {
     this.message = selectedBusinessDetails[0]?.message?.whatsApp
     ? selectedBusinessDetails[0].message.whatsApp
     : 'hi';
-    console.log("selected business",selectedBusinessDetails);
     this.businessDetails=selectedBusinessDetails[0]
       this.cdr.detectChanges();
   };

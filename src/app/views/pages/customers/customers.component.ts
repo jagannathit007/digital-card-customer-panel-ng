@@ -184,7 +184,6 @@ export class CustomersComponent implements OnInit{
   
       XLSX.writeFile(workbook, filename);
       
-      console.log('Excel file downloaded successfully');
     } catch (error) {
       console.error('Error generating Excel file:', error);
     }
@@ -197,10 +196,7 @@ export class CustomersComponent implements OnInit{
   _saveExcel=async(data:any)=>{
     let response=await this.customerService.saveExcelCustomer(data)
     this.modal.close('import-excel')
-    console.log(response);
-    
     if(response!=1 && response!=0 && response!=null){
-      console.log(response);
       this.handleUploadResponse(response);
     }
     this.reset();
