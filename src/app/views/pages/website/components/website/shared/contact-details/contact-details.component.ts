@@ -98,7 +98,6 @@ export class ContactDetailsComponent implements OnInit {
 
       if (response) {
         swalHelper.showToast("Social Media Links Updated Successfully!", "success");
-        console.log("Updated Social Media Links: ", response);
       } else {
         swalHelper.showToast("Failed to update social media links!", "warning");
       }

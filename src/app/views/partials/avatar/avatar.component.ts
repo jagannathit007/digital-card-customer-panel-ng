@@ -20,9 +20,6 @@ export class AvatarComponent {
   getInitials(name: string): string {
     if (!name) return '';
     const words = name.trim().split(' ');
-    console.log("Am i calling");
-    
-    
     if (words.length === 1) {
       return words[0].substring(0, 2).toUpperCase();
     }
