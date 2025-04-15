@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AppWorker } from '../../../core/workers/app.worker';
 import { CommonModule } from '@angular/common';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
@@ -8,15 +8,14 @@ import { common } from 'src/app/core/constants/common';
 import { BehaviorSubject } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { environment } from 'src/env/env.local';
-import { AvatarComponent } from '../avatar/avatar.component';
+import { environment } from 'src/env/env.prod';
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, FormsModule, AsyncPipe,AvatarComponent],
+  imports: [CommonModule, FormsModule, AsyncPipe],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
@@ -28,8 +27,7 @@ export class HeaderComponent implements OnInit {
   constructor(
     public appWorker: AppWorker,
     private storage: AppStorage,
-    public authService: AuthService,
-    private cdr:ChangeDetectorRef
+    public authService: AuthService
   ) {
     this.authService.selectedBusinessCard =
       this.storage.get(common.BUSINESS_CARD) ?? '';
@@ -61,8 +59,6 @@ export class HeaderComponent implements OnInit {
       });
   }
 
-  businessDetails:any=null
-  imageUrl=environment.baseURL + '/'
   getCards = async () => {
     let results = await this.authService.getBusinessCards();
     const selectedBusinessId = this.authService.selectedBusinessCard;
@@ -70,11 +66,8 @@ export class HeaderComponent implements OnInit {
       (business: any) => business._id === selectedBusinessId
     );
     this.message = selectedBusinessDetails[0]?.message?.whatsApp
-    ? selectedBusinessDetails[0].message.whatsApp
-    : 'hi';
-    console.log("selected business",selectedBusinessDetails);
-    this.businessDetails=selectedBusinessDetails[0]
-      this.cdr.detectChanges();
+      ? selectedBusinessDetails[0].message.whatsApp
+      : 'hi';
   };
 
   selectedCountryCode: string = '91';

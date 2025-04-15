@@ -39,12 +39,14 @@ export const routes: Routes = [
       {
         path: 'google-standee',
         loadComponent:()=>import('./views/pages/google-standee/google-standee.component').then(m=>m.GoogleStandeeComponent),
+        component: GoogleStandeeComponent,
         canActivate: [AuthGuard],
         data: { requiredProduct: 'google-standee' }
       },
       {
         path: 'account-settings',
         loadComponent:()=>import('./views/pages/account-settings/account-settings.component').then(m=>m.AccountSettingsComponent),
+        component: AccountSettingsComponent,
         canActivate: [AuthGuard],
         data: { requiredProduct: 'account-settings' }
       },
@@ -63,5 +65,5 @@ export const routes: Routes = [
     ],
   },
   // Catch-all redirect to account settings
-  { path: '**', redirectTo: 'HomeLayoutComponent' }
+  { path: '**', redirectTo: 'business-cards' }
 ];
