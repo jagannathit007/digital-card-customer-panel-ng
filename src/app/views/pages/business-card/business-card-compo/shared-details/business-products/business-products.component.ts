@@ -111,8 +111,8 @@ export class BusinessProductsComponent implements OnInit {
       this.selectedProducts.images = [];
     }
 
-    if (totalImages > 5) {
-      swalHelper.warning('You can upload a maximum of 5 images.')
+    if (totalImages > 15) {
+      swalHelper.warning('You can upload a maximum of 15 images.')
       this.selectedProducts.images = [] as File[]
       this.fileInputRef.nativeElement.value = '';
     }else{
