@@ -3,9 +3,11 @@ import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { common } from 'src/app/core/constants/common';
+import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { ModalService } from 'src/app/core/utilities/modal';
 import { AuthService } from 'src/app/services/auth.service';
+import { CustomerService } from 'src/app/services/customer.service';
 import { ShareHistoryService } from 'src/app/services/share-history.service';
 
 @Component({
@@ -21,13 +23,14 @@ export class SharedHistoryComponent {
       private shareHistoryService: ShareHistoryService,
       private storage: AppStorage,
       private cdr: ChangeDetectorRef,
-      private modalService: ModalService,
-      private authService: AuthService
+      private modal: ModalService,
+      private customerService:CustomerService
     ) { }
     businessCard: any;
-    ngOnInit(): void {
-      this.businessCard = this.storage.get(common.BUSINESS_CARD);
+    async ngOnInit(){
+      this.businessCard =this.storage.get(common.BUSINESS_CARD);
       this.payload.businessCardId = this.businessCard
+      this.customer.businessCardId=this.businessCard
       this._getShareHistory();
       // this.getKeywords();
     }
@@ -39,6 +42,24 @@ export class SharedHistoryComponent {
       businessCardId: ''
     }
   
+    reset(){
+      this.payload={
+        search: '',
+        page: 1,
+        limit: 10,
+        businessCardId: this.businessCard
+      },
+      this.customer={
+        name:'',
+        dob:'',
+        mobile:'',
+        businessCardId:this.businessCard,
+        spouse_relation:'',
+        spouse_DOB:'',
+        spouse_name:'',
+      },
+      this._getShareHistory();
+    }
     onChange() {
       this.payload.page = 1
       this._getShareHistory();
@@ -68,7 +89,7 @@ export class SharedHistoryComponent {
     }
   
     onOpenExportModal() {
-      this.modalService.open('exportModal')
+      this.modal.open('exportModal')
     }
   
     selectedKeyword = "";
@@ -85,5 +106,30 @@ export class SharedHistoryComponent {
       this.shareHistoryService.downloadExcel({
         businessCardId: this.businessCard
       });
+    }
+
+    customer={
+      name:'',
+      dob:'',
+      mobile:'',
+      businessCardId:'',
+      spouse_relation:'',
+      spouse_DOB:'',
+      spouse_name:'',
+    }
+    onOpenAddToCustomerModal(data:any){
+      this.customer.name=data.name
+      this.customer.mobile=data.mobile
+      this.customer.businessCardId=this.businessCard
+      this.modal.open('add-customer');
+    }
+  
+    _SaveCustomer=async()=>{
+      this.modal.close('add-customer');
+      let conn=await swalHelper.confirmation('Create','Do you really want to create Customer?','warning')
+      if(conn.isConfirmed){
+      await this.customerService.addCustomer(this.customer)
+      }
+      this.reset();
     }
 }

@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 
 @Directive({
-  standalone:true,
+  standalone: true,
   selector: '[digitOnly]',
 })
 export class DigitOnlyDirective implements OnChanges {

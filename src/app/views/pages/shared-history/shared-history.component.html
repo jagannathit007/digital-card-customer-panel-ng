@@ -49,6 +49,9 @@
                     <td class="text-center" [width]="'15%'">{{item.createdAt | date:'dd-MM-yyyy'}} {{item.createdAt | date:'hh:MM a'}}</td>
                     <td class="text-center" [width]="'15%'">{{item.mobile}}</td>
                     <td class="text-center" [width]="'10%'">
+                      <button class="btn btn-sm btn-success me-1" (click)="onOpenAddToCustomerModal(item)">
+                        <i class="ri-add-circle-line"></i>
+                      </button>
                       <a href="tel:{{item.mobile}}" class="btn btn-info btn-sm">
                         <i class="ri-phone-fill"></i>
                     </a>
@@ -104,3 +107,48 @@
       </div>
     </div>
   </div> -->
+
+  <div class="modal fade" id="add-customer" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog"
+  aria-labelledby="modalTitleId" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modalTitleId">
+          Add to Customer
+        </h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-12">
+            <span class="fw-bold">Customer Name:</span> {{customer.name}}
+          </div>
+          <div class="col-12">
+            <span class="fw-bold">Mobile No:</span> {{customer.mobile}}
+          </div>
+        </div>
+        <div class="row my-3">
+          <div class="col-md-12">
+           <label for="" >Date of Birth</label>  
+           <input type="text" class="form-control mt-1" [(ngModel)]="customer.dob" placeholder="Enter Customer DOB">
+          </div>
+          <div class="col-md-12 mt-3">
+            <label for="" >Spouse Name</label>  
+            <input type="text" class="form-control mt-1" [(ngModel)]="customer.spouse_name" placeholder="Enter Spouse Name">
+          </div>
+          <div class="col-md-12 mt-3">
+            <label for="" >Relation</label>  
+            <input type="text" class="form-control mt-1" [(ngModel)]="customer.spouse_relation" placeholder="Enter Spouse Relation">
+          </div>
+          <div class="col-md-12 mt-3">
+            <label for="" >Spouse Birth Date</label>  
+            <input type="text" class="form-control mt-1" [(ngModel)]="customer.spouse_DOB" placeholder="Enter Spouse DOB">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success" (click)="_SaveCustomer()"><i class="ri-save-3-line"></i> Save</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -17,7 +17,7 @@ export class SideBarService {
     const businessCardMenu = {
       title: 'Business Card',
       link: 'business-cards',
-      icon: 'user',
+      icon: 'briefcase',
     };
 
     const scannedCardsMenu = {
@@ -50,6 +50,12 @@ export class SideBarService {
       icon: 'clock',
     };
 
+    const customerMenu = {
+      title: 'Customers',
+      link: 'customers',
+      icon: 'user',
+    };
+
     const hasDigitalOrNFC = products.some(product =>
       product === "digital-card" || product === "nfc-card"
     );
@@ -65,6 +71,8 @@ export class SideBarService {
     let menus = [];
 
     menus.push(accountSettingsMenu);
+    menus.push(customerMenu)
+
     if (hasDigitalOrNFC) {
       menus = [businessCardMenu, scannedCardsMenu,SharedHistoryMenu, ...menus];
     }

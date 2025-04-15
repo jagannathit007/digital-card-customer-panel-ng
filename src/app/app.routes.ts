@@ -15,19 +15,8 @@ export const routes: Routes = [
   {
     path: '',
     component: HomeLayoutComponent,
-    canActivate: [AuthGuard], // Protect the entire layout
+    canActivate: [AuthGuard],
     children: [
-      // {
-      //   path: 'shared-history',
-      //   loadComponent:()=>import('./views/pages/shared-history/shared-history.component').then(c=>c.SharedHistoryComponent),
-      //   canActivate: [AuthGuard],
-      //   data: { requiredProduct: 'shared-history' }
-      // },
-      // {
-      //   path: 'admins', 
-      //   component: AdminComponent,
-      //   canActivate: [AuthGuard],
-      // },
       {
         path: 'business-cards',
         loadChildren:()=>import('./views/pages/business-card/business-card.module').then(m=>m.BusinessCardModule),
@@ -64,6 +53,12 @@ export const routes: Routes = [
         loadComponent:()=>import('./views/pages/shared-history/shared-history.component').then(c=>c.SharedHistoryComponent),
         canActivate: [AuthGuard],
         data: { requiredProduct: 'shared-history' }
+      },
+      {
+        path: 'customers',
+        loadComponent:()=>import('./views/pages/customers/customers.component').then(c=>c.CustomersComponent),
+        canActivate: [AuthGuard],
+        // data: { requiredProduct: 'customers' }
       },
     ],
   },

@@ -14,11 +14,9 @@
       </div>
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex gap-2">
-          <!-- Export to Excel Button with Modal Trigger -->
         </div>
       </div>
 
-      <!-- Search Bar and Page Limit Dropdown -->
       <div class="row">
         <div class="col">
           <span class="fw-bold">Search</span>
@@ -35,7 +33,6 @@
         </div>
       </div>
 
-      <!-- Scanned Cards Table -->
       <div class="table-responsive mt-4">
         <table class="table table-bordered table-hover ">
           <thead class="table-light text-uppercase">
@@ -51,16 +48,17 @@
           </thead>
           <tbody>
             @if(isLoading){
-              <tr>
-                <td class="text-center" colspan="6">
-                  <div class="spinner-border spinner-border-sm text-secondary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                  </div>
-                </td>
-              </tr>
+            <tr>
+              <td class="text-center" colspan="6">
+                <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </td>
+            </tr>
             }
             @if(isLoading == false && scannedCards!=null && scannedCards.docs.length > 0){
-            <tr *ngFor="let card of scannedCards.docs | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems };let i=index">
+            <tr
+              *ngFor="let card of scannedCards.docs | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems };let i=index">
               <td class="text-center">{{ (p - 1) * itemsPerPage + i + 1 }}</td>
               <td>
                 <div class="fw-bold">{{ card.name }}</div>
@@ -74,8 +72,11 @@
               <td>{{ card.keywords || ':: NA ::'}}</td>
               <td>{{ card.notes || ':: NA ::' }}</td>
               <td class="text-center">
+                <button class="btn btn-sm btn-success me-1" (click)="onOpenAddToCustomerModal(card)">
+                  <i class="ri-add-circle-line"></i>
+                </button>
                 <button class="btn btn-sm btn-info me-1" (click)="openEditModal(card)">
-                  <i class="ri-edit-box-line"></i>
+                  <i class="ri-edit-line"></i>
                 </button>
                 <button class="btn btn-sm btn-danger" (click)="deleteScannedCard(card._id)">
                   <i class="ri-delete-bin-line"></i>
@@ -89,7 +90,8 @@
 
       <!-- Pagination Controls -->
       <div class="text-end">
-        <pagination-controls (pageChange)="pageChangeEvent($event)" id="pager" (pageBoundsCorrection)="pageChangeEvent($event)" ></pagination-controls>
+        <pagination-controls (pageChange)="pageChangeEvent($event)" id="pager"
+          (pageBoundsCorrection)="pageChangeEvent($event)"></pagination-controls>
       </div>
     </div>
   </div>
@@ -107,31 +109,38 @@
         <form>
           <div class="mb-3">
             <label for="editName" class="form-label">Name</label>
-            <input type="text" class="form-control" id="editName" [(ngModel)]="editCard.name" [ngModelOptions]="{standalone: true}">
+            <input type="text" class="form-control" id="editName" [(ngModel)]="editCard.name"
+              [ngModelOptions]="{standalone: true}">
           </div>
           <div class="mb-3">
             <label for="editMobile" class="form-label">Mobile</label>
-            <input type="text" class="form-control" id="editMobile" [(ngModel)]="editCard.mobile" [ngModelOptions]="{standalone: true}">
+            <input type="text" class="form-control" id="editMobile" [(ngModel)]="editCard.mobile"
+              [ngModelOptions]="{standalone: true}">
           </div>
           <div class="mb-3">
             <label for="editCompanyEmailId" class="form-label">Company Email</label>
-            <input type="text" class="form-control" id="editCompanyEmailId" [(ngModel)]="editCard.companyEmailId" [ngModelOptions]="{standalone: true}">
+            <input type="text" class="form-control" id="editCompanyEmailId" [(ngModel)]="editCard.companyEmailId"
+              [ngModelOptions]="{standalone: true}">
           </div>
           <div class="mb-3">
             <label for="editCompanyName" class="form-label">Company Name</label>
-            <input type="text" class="form-control" id="editCompanyName" [(ngModel)]="editCard.companyName" [ngModelOptions]="{standalone: true}">
+            <input type="text" class="form-control" id="editCompanyName" [(ngModel)]="editCard.companyName"
+              [ngModelOptions]="{standalone: true}">
           </div>
           <div class="mb-3">
             <label for="editAddress" class="form-label">Address</label>
-            <input type="text" class="form-control" id="editAddress" [(ngModel)]="editCard.address" [ngModelOptions]="{standalone: true}">
+            <input type="text" class="form-control" id="editAddress" [(ngModel)]="editCard.address"
+              [ngModelOptions]="{standalone: true}">
           </div>
           <div class="mb-3">
             <label for="editKeywords" class="form-label">Keywords</label>
-            <input type="text" class="form-control" id="editKeywords" [(ngModel)]="editCard.keywords" [ngModelOptions]="{standalone: true}">
+            <input type="text" class="form-control" id="editKeywords" [(ngModel)]="editCard.keywords"
+              [ngModelOptions]="{standalone: true}">
           </div>
           <div class="mb-3">
             <label for="editNotes" class="form-label">Notes</label>
-            <input type="text" class="form-control" id="editNotes" [(ngModel)]="editCard.notes" [ngModelOptions]="{standalone: true}">
+            <input type="text" class="form-control" id="editNotes" [(ngModel)]="editCard.notes"
+              [ngModelOptions]="{standalone: true}">
           </div>
         </form>
       </div>
@@ -156,10 +165,11 @@
           <!-- Keyword Dropdown -->
           <div class="mb-3">
             <label for="keywordSelect" class="form-label">Select Keyword</label>
-            <select class="form-select" id="keywordSelect" [(ngModel)]="selectedKeyword" [ngModelOptions]="{standalone: true}">
+            <select class="form-select" id="keywordSelect" [(ngModel)]="selectedKeyword"
+              [ngModelOptions]="{standalone: true}">
               <option value="All">ALL</option>
               @for (item of keywords; track $index) {
-                <option value="{{item}}">{{item || "Others" | uppercase }}</option>
+              <option value="{{item}}">{{item || "Others" | uppercase }}</option>
               }
             </select>
           </div>
@@ -170,6 +180,55 @@
         <button type="button" class="btn btn-success" (click)="exportExcel()">
           <i class="ri-file-excel-2-line"></i> Export
         </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="add-customer" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog"
+  aria-labelledby="modalTitleId" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modalTitleId">
+          Add to Customer
+        </h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col">
+            <span class="fw-bold">Customer Name:</span> {{customer.name}}
+          </div>
+        <div class="row my-3">
+          <div class="col-md-6">
+            <label for="" >Country Code</label>  
+            <input type="text" class="form-control mt-1" [(ngModel)]="customer.countryCode" placeholder="Enter country code">
+           </div>
+           <div class="col-md-6">
+            <label for="" >Mobile No</label>  
+            <input type="text" class="form-control mt-1" [(ngModel)]="customer.mobile" placeholder="Enter Mobile No" digitOnly maxlength="10" minlength="10">
+           </div>
+          <div class="col-md-6 mt-3">
+           <label for="" >Date of Birth</label>  
+           <input type="text" class="form-control mt-1" [(ngModel)]="customer.dob" placeholder="Enter Customer DOB">
+          </div>
+          <div class="col-md-6 mt-3">
+            <label for="" >Spouse Name</label>  
+            <input type="text" class="form-control mt-1" [(ngModel)]="customer.spouse_name" placeholder="Enter Spouse Name">
+          </div>
+          <div class="col-md-6 mt-3">
+            <label for="" >Relation</label>  
+            <input type="text" class="form-control mt-1" [(ngModel)]="customer.spouse_relation" placeholder="Enter Spouse Relation">
+          </div>
+          <div class="col-md-6 mt-3">
+            <label for="" >Spouse Birth Date</label>  
+            <input type="text" class="form-control mt-1" [(ngModel)]="customer.spouse_DOB" placeholder="Enter Spouse DOB">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success" (click)="_SaveCustomer()"><i class="ri-save-3-line"></i> Save</button>
       </div>
     </div>
   </div>
