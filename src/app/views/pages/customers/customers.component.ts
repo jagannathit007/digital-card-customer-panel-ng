@@ -78,7 +78,8 @@ export class CustomersComponent implements OnInit{
       spouse_relation:'',
       spouse_DOB:'',
       spouse_name:'',
-    } 
+    } ,
+    this.previewData=[]
     this._getCustomers()
   }
 
@@ -196,7 +197,9 @@ export class CustomersComponent implements OnInit{
   _saveExcel=async(data:any)=>{
     let response=await this.customerService.saveExcelCustomer(data)
     this.modal.close('import-excel')
-    if(response){
+    console.log(response);
+    
+    if(response!=1 && response!=0 && response!=null){
       console.log(response);
       this.handleUploadResponse(response);
     }

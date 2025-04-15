@@ -64,7 +64,7 @@
                         <tbody *ngIf="!isLoading && customers && customers.docs && customers?.docs.length==0" >
                             <tr>
                                 <td class="text-center" colspan="9">
-                                    <img src="/src/assets/images/NoRecordFound.png" alt="" style="width: 90px;">
+                                    <img src="../../../../assets/images/NoRecordFound.png" alt="" style="width: 90px;">
                                     <div class="fw-bold"> No Records Found </div>
                                 </td>
                             </tr>
@@ -75,7 +75,7 @@
                                 <td [width]="'5%'" class="text-center">{{ (payload.page - 1) * payload.limit + i + 1 }}
                                 </td>
                                 <td>{{item.name | titlecase }}</td>
-                                <td >{{item.countryCode}}</td>
+                                <td class="text-center"><span *ngIf="item.countryCode">+</span> {{item.countryCode}}</td>
                                 <td class="text-center" >{{item.mobile}}</td>
                                 <td class="text-center" >{{item.dob || '-'}}</td>
                                 <td >{{(item.spouse_name | titlecase ) || '-'}}</td>
@@ -103,7 +103,7 @@
 </div>
 
 <div class="modal fade" id="add-customer" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog"
-    aria-labelledby="modalTitleId" aria-hidden="true">
+    aria-labelledby="modalTitleId" >
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -120,17 +120,17 @@
                             <input type="text" class="form-control mt-1" [(ngModel)]="customer.name"
                                 placeholder="Enter Customer Name" required [ngModelOptions]="{standalone: true}">
                         </div>
-                        <div class="col-md-6 mt-3">
+                        <div class="col-md-6 ">
                             <label for="" class="fw-medium">Date of Birth <code class="text-danger">*</code></label>
                             <input type="date" class="form-control mt-1" [(ngModel)]="customer.dob"
                                 placeholder="Enter Customer DOB" required [ngModelOptions]="{standalone: true}">
                         </div>
-                        <div class="col-md-6 ">
+                        <div class="col-md-6 mt-3">
                             <label for="" class="fw-medium">Country Code <code class="text-danger">*</code></label>
                             <input type="text" class="form-control mt-1" [(ngModel)]="customer.countryCode"
-                                placeholder="Enter Mobile No" required [ngModelOptions]="{standalone: true}">
+                                placeholder="Enter Country Code" required [ngModelOptions]="{standalone: true}">
                         </div>
-                        <div class="col-md-6 ">
+                        <div class="col-md-6 mt-3">
                             <label for="" class="fw-medium">Mobile No <code class="text-danger">*</code></label>
                             <input type="text" class="form-control mt-1" [(ngModel)]="customer.mobile"
                                 placeholder="Enter Mobile No" required [ngModelOptions]="{standalone: true}" digitOnly
@@ -164,7 +164,7 @@
 </div>
 
 <div class="modal fade" id="import-excel" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog"
-    aria-labelledby="modalTitleId" aria-hidden="true">
+    aria-labelledby="modalTitleId" >
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">

@@ -16,7 +16,7 @@ declare var $: any;
 @Component({
   selector: 'app-business-card-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgxPaginationModule,DigitOnlyDirective],
+  imports: [CommonModule, FormsModule, NgxPaginationModule, DigitOnlyDirective],
   templateUrl: './business-card-detail.component.html',
   styleUrl: './business-card-detail.component.scss',
 })
@@ -30,16 +30,16 @@ export class BusinessCardDetailComponent {
   editCard: any = {};
 
   constructor(
-    private authService: AuthService, 
+    private authService: AuthService,
     private storage: AppStorage,
-    private modal:ModalService,
-    private customerService:CustomerService
-  ) {}
+    private modal: ModalService,
+    private customerService: CustomerService
+  ) { }
 
-  businessCardId:any
-  async ngOnInit(){
-    this.businessCardId=await this.storage.get(common.BUSINESS_CARD);
-    this.customer.businessCardId=this.businessCardId
+  businessCardId: any
+  async ngOnInit() {
+    this.businessCardId = await this.storage.get(common.BUSINESS_CARD);
+    this.customer.businessCardId = this.businessCardId
     this.getKeywords();
     this._getScannedCards();
   }
@@ -68,7 +68,7 @@ export class BusinessCardDetailComponent {
       swalHelper.showToast('Card Updated Sucessfully!', 'success');
     }
   };
-  
+
   selectedKeyword = "";
   getKeywords = async () => {
     let response = await this.authService.getKeywords({});
@@ -94,7 +94,7 @@ export class BusinessCardDetailComponent {
     }
   };
 
-  exportExcel = async() => {
+  exportExcel = async () => {
     let userId = this.storage.get(common.USER_DATA)._id;
     let businessCardId = this.storage.get(common.BUSINESS_CARD);
     let link = `${environment.baseURL}/${environment.route}/download-excel/scanned-cards?u=${userId}&b=${businessCardId}&k=${this.selectedKeyword}`;
@@ -121,44 +121,58 @@ export class BusinessCardDetailComponent {
     this._getScannedCards();
   }
 
-  customer={
-    name:'',
-    dob:'',
-    countryCode:'',
-    mobile:'',
-    businessCardId:'',
-    spouse_relation:'',
-    spouse_DOB:'',
-    spouse_name:'',
+  customer = {
+    name: '',
+    dob: '',
+    countryCode: '',
+    mobile: '',
+    businessCardId: '',
+    spouse_relation: '',
+    spouse_DOB: '',
+    spouse_name: '',
   }
 
-  reset(){
-    this.customer={
-      name:'',
-      dob:'',
-      countryCode:'',
-      mobile:'',
-      businessCardId:this.businessCardId,
-      spouse_relation:'',
-      spouse_DOB:'',
-      spouse_name:'',
-    } ,
-    this._getScannedCards()
+  reset() {
+    this.customer = {
+      name: '',
+      dob: '',
+      countryCode: '',
+      mobile: '',
+      businessCardId: this.businessCardId,
+      spouse_relation: '',
+      spouse_DOB: '',
+      spouse_name: '',
+    },
+      this._getScannedCards()
   }
 
-  onOpenAddToCustomerModal(data:any){
-    this.customer.businessCardId=this.businessCardId
-    this.customer.mobile=data.mobile
-    this.customer.name=data.name
+  onOpenAddToCustomerModal(data: any) {
+    this.customer.businessCardId = this.businessCardId
+    const raw = data.mobile || '';
+    const digitsOnly = raw.replace(/[^\d]/g, '');
+
+    if (digitsOnly.length > 10) {
+      this.customer.countryCode = digitsOnly.slice(0, digitsOnly.length - 10);
+      this.customer.mobile = digitsOnly.slice(-10);
+    } else {
+      this.customer.countryCode = '';
+      this.customer.mobile = digitsOnly;
+    }
+    this.customer.name = data.name
     this.modal.open('add-customer');
   }
 
-  _SaveCustomer=async()=>{
+  _SaveCustomer = async () => {
     this.modal.close('add-customer');
-    let conn=await swalHelper.confirmation('Create','Do you really want to create Customer?','warning')
-    if(conn.isConfirmed){
-    await this.customerService.addCustomer(this.customer)
+    let conn = await swalHelper.confirmation('Create', 'Do you really want to create Customer?', 'warning')
+    if (conn.isConfirmed) {
+      await this.customerService.addCustomer(this.customer)
     }
     this.reset();
+  }
+
+  onCloseCustomerModal(){
+    this.reset();
+    this.modal.close('add-customer');
   }
 }
