@@ -30,7 +30,7 @@ export class GalleryDetailsComponent implements OnInit{
     const totalImages = this.galleries.length + this.selectedImagesLength;
 
     if(totalImages > 10){
-      swalHelper.showToast(`Only 10 images you can add`, 'error');
+      swalHelper.showToast(`Only 10 images are allowed to upload!`, 'warning');
       this.ngOnInit();
       return;
     }
@@ -42,14 +42,14 @@ export class GalleryDetailsComponent implements OnInit{
         img.src = URL.createObjectURL(file);
 
         img.onload = () => {
-          const isValidSize =
-            (img.width === 1250 && img.height === 720) ||
-            (img.width === 1600 && img.height === 900);
+          // const isValidSize =
+          //   (img.width === 1250 && img.height === 720) ||
+          //   (img.width === 1600 && img.height === 900);
 
-          if (!isValidSize) {
-            swalHelper.showToast(`Invalid image size! Only 1250x720 or 1600x900 allowed.`, 'error');
-            return;
-          }
+          // if (!isValidSize) {
+          //   swalHelper.showToast(`Invalid image size! Only 1250x720 or 1600x900 allowed.`, 'error');
+          //   return;
+          // }
           const reader = new FileReader();
           reader.onload = (e: any) => this.selectedImages.push(e.target.result);
           reader.readAsDataURL(files[i]);

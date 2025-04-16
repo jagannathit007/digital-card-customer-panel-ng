@@ -6,7 +6,7 @@
     <div class="col-md-8 col-12">
       <input type="file" class="form-control" (change)="onFileSelected($event)" multiple accept="image/*"
         [disabled]="galleries.length >= 10" #fileInput/>
-      <label class="text-danger mb-1 mt-2">Upto 10 Images & Image size should be 1250 X 720 or 1600 X 900</label>
+      <small class="text-muted mb-1 mt-2">You can upload up-to 10 Images only</small>
     </div>
 
     <div class="col-md-4 mt-0">
