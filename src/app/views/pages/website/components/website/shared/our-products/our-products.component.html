@@ -8,16 +8,6 @@
                 products</button>
         </div>
     </div>
-    <!-- <div class="col-md-auto">
-        <select class="form-select form-select-lg" [(ngModel)]="payload.limit"
-                (ngModelChange)="onChange()">
-                <option value=10>10</option>
-                <option value=20>20</option>
-                <option value=50>50</option>
-                <option value=100>100</option>
-                <option value=200>200</option>
-              </select>
-    </div> -->
 
     <div class="table-responsive mt-4">
         <table class="table table-bordered table-hover">
@@ -103,9 +93,8 @@
                                 required class="form-control mt-1" placeholder="Please Enter Product Name">
                         </div>
                         <div class="col-md-12 mt-4">
-                            <span class="fw-bold">Price <code class="text-danger">*</code></span>
-                            <input type="text" [(ngModel)]="selectedProducts.price" [ngModelOptions]="{standalone:true}"
-                                required class="form-control mt-1" placeholder="Please Enter price">
+                            <span class="fw-bold">Price </span>
+                            <input type="text" [(ngModel)]="selectedProducts.price" [ngModelOptions]="{standalone:true}" class="form-control mt-1" placeholder="Please Enter price">
                         </div>
                         <div class="col-md-12 mt-4">
                             <span class="fw-bold">Upload Images <code class="text-danger">*</code></span>
