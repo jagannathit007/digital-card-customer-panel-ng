@@ -64,6 +64,21 @@ export class BusinessDetailsComponent {
     }
   };
 
+  onSelectCoverImage(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      this.coverImage = input.files[0];
+    }
+  }
+
+  onSelectProfileImage(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      this.profileImage = input.files[0];
+      console.log(this.profileImage);
+    }
+  }
+
   deleteSocial(index: number) {
     this.businessProfile.companySocialMedia.splice(index, 1);
   }
@@ -88,11 +103,7 @@ export class BusinessDetailsComponent {
     formData.append('message', JSON.stringify(this.businessProfile.message));
 
     if (this.profileImage) {
-      formData.append(
-        'profileImage',
-        this.profileImage,
-        this.profileImage.name
-      );
+      formData.append('profileImage', this.profileImage, this.profileImage.name);
     }
 
     if (this.coverImage) {

@@ -24,13 +24,13 @@
           <!-- Profile Image Upload -->
           <div class="col-md-6 col-12">
             <label for="profileImage" class="form-label fw-bold">Profile Image</label>
-            <input type="file" id="profileImage" class="form-control" />
+            <input type="file" id="profileImage" class="form-control" (change)="onSelectProfileImage($event)" />
           </div>
 
           <!-- Cover Image Upload -->
           <div class="col-md-6 col-12">
             <label for="coverImage" class="form-label fw-bold">Cover Image</label>
-            <input type="file" id="coverImage" class="form-control" />
+            <input type="file" id="coverImage" class="form-control" (change)="onSelectCoverImage($event)" />
           </div>
 
           <div class="col-md-12 mt-5">
@@ -47,7 +47,8 @@
               <div class="col-md-4 col-12">
                 <div class="d-flex justify-content-between align-items-center">
                   <label for="{{item.name}}" class="form-label">
-                    <img src="{{baseURL}}/{{item.image}}" alt="" height="20"><span class=" fw-semibold ms-2">{{item.name}}</span> 
+                    <img src="{{baseURL}}/{{item.image}}" alt="" height="20"><span
+                      class=" fw-semibold ms-2">{{item.name}}</span>
                   </label>
                   <div class="form-check form-switch">
                     <input class="form-check-input cursor-pointer" [ngModelOptions]="{standalone: true}"
@@ -58,7 +59,8 @@
                   <input type="text" id="{{item.name}}" class="form-control" [(ngModel)]="item.link"
                     [ngModelOptions]="{standalone: true}" name="{{item.name}}" required="{{item.visibility}}" />
                   @if(!item.isDefault){
-                  <button class="btn btn-danger btn-sm ms-2 rounded-2" (click)="deleteSocial($index)"><i class="ri-delete-bin-line"></i></button>
+                  <button class="btn btn-danger btn-sm ms-2 rounded-2" (click)="deleteSocial($index)"><i
+                      class="ri-delete-bin-line"></i></button>
                   }
                 </div>
               </div>

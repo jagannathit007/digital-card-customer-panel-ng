@@ -21,7 +21,7 @@ export class GalleryDetailsComponent implements OnInit{
 
   ngOnInit() {
     this.selectedImagesLength = 0;
-    this.getGallery();  
+    this.getGallery();
   }
 
   onFileSelected(event: any): void {
