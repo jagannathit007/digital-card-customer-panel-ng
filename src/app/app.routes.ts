@@ -58,7 +58,7 @@ export const routes: Routes = [
         path: 'customers',
         loadComponent:()=>import('./views/pages/customers/customers.component').then(c=>c.CustomersComponent),
         canActivate: [AuthGuard],
-        // data: { requiredProduct: 'customers' }
+        data: { requiredProduct: 'customers' }
       },
     ],
   },

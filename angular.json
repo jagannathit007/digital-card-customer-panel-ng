@@ -29,12 +29,14 @@
               "node_modules/remixicon/fonts/remixicon.css",
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/assets/css/app.css",
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/intl-tel-input/build/css/intlTelInput.css"
             ],
             "scripts": [
               "node_modules/bootstrap/dist/js/bootstrap.min.js",
               "node_modules/jquery/dist/jquery.min.js",
-              "src/assets/js/app.js"
+              "src/assets/js/app.js",
+              "node_modules/intl-tel-input/build/js/intlTelInput.min.js"
             ],
             "serviceWorker": true,
             "ngswConfigPath": "ngsw-config.json"

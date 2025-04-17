@@ -1,12 +1,12 @@
 <div class="row py-4">
-    <div class="col-md ">
+    <div class="col">
         <span class="fs-3 fw-bold">Our Services</span>
     </div>
-    <div class="col-md-auto">
+    <div class="col-auto">
         <button class="btn btn-info" (click)="onOpenCraeteModal()"><i class="ri-add-circle-line"></i> Add
             Services</button>
     </div>
-    <div class="col-md-auto" *ngIf=" services && services.docs ">
+    <div class="col-auto" *ngIf=" services && services.docs ">
         <ng-select [items]="[10,20,50,100,200,500]" [(ngModel)]="payLoad.limit" placeholder="Select Page" (change)="onChange()"></ng-select>
     </div>
 

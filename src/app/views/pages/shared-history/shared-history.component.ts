@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { common } from 'src/app/core/constants/common';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
+import { COUNTRY_CODES } from 'src/app/core/utilities/countryCode';
 import { ModalService } from 'src/app/core/utilities/modal';
 import { AuthService } from 'src/app/services/auth.service';
 import { CustomerService } from 'src/app/services/customer.service';
@@ -13,12 +15,13 @@ import { ShareHistoryService } from 'src/app/services/share-history.service';
 @Component({
   selector: 'app-shared-history',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgxPaginationModule],
+  imports: [CommonModule, FormsModule, NgxPaginationModule,NgSelectModule],
   templateUrl: './shared-history.component.html',
   styleUrl: './shared-history.component.scss'
 })
 export class SharedHistoryComponent {
 
+  countryList = COUNTRY_CODES;
   constructor(
     private shareHistoryService: ShareHistoryService,
     private storage: AppStorage,
@@ -52,7 +55,7 @@ export class SharedHistoryComponent {
       this.customer = {
         name: '',
         dob: '',
-        countryCode: '',
+        countryCode: null,
         mobile: '',
         businessCardId: this.businessCard,
         spouse_relation: '',
@@ -109,10 +112,10 @@ export class SharedHistoryComponent {
     });
   }
 
-  customer = {
+  customer :any= {
     name: '',
     dob: '',
-    countryCode: '',
+    countryCode: null,
     mobile: '',
     businessCardId: '',
     spouse_relation: '',
@@ -122,13 +125,15 @@ export class SharedHistoryComponent {
   onOpenAddToCustomerModal(data: any) {
     this.customer.name = data.name
     const raw = data.mobile || '';
+    const hasPlus = raw.startsWith('+');
     const digitsOnly = raw.replace(/[^\d]/g, '');
-
+  
     if (digitsOnly.length > 10) {
-      this.customer.countryCode = digitsOnly.slice(0, digitsOnly.length - 10);
+      const code = digitsOnly.slice(0, digitsOnly.length - 10);
+      this.customer.countryCode = hasPlus ? `+${code}` : `+${code}`;
       this.customer.mobile = digitsOnly.slice(-10);
     } else {
-      this.customer.countryCode = '';
+      this.customer.countryCode = null;
       this.customer.mobile = digitsOnly;
     }
     // this.customer.mobile=data.mobile

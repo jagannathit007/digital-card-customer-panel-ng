@@ -6,7 +6,8 @@
                     <label class="fw-bold text-uppercase fs-3">Customers</label>
                 </div>
                 <div class="col-md-auto">
-                    <input type="file" #excelInput hidden (change)="onOpenImportExcelModel($event)" accept=".xlsx, .xls" />
+                    <input type="file" #excelInput hidden (change)="onOpenImportExcelModel($event)"
+                        accept=".xlsx, .xls" />
                     <button class="btn btn-success" (click)="excelInput.click()">
                         <i class="ri-import-line"></i> Import Excel
                     </button>
@@ -61,7 +62,7 @@
                                 </td>
                             </tr>
                         </tbody>
-                        <tbody *ngIf="!isLoading && customers && customers.docs && customers?.docs.length==0" >
+                        <tbody *ngIf="!isLoading && customers && customers.docs && customers?.docs.length==0">
                             <tr>
                                 <td class="text-center" colspan="9">
                                     <img src="../../../../assets/images/NoRecordFound.png" alt="" style="width: 90px;">
@@ -75,13 +76,14 @@
                                 <td [width]="'5%'" class="text-center">{{ (payload.page - 1) * payload.limit + i + 1 }}
                                 </td>
                                 <td>{{item.name | titlecase }}</td>
-                                <td class="text-center"><span *ngIf="item.countryCode">+</span> {{item.countryCode}}</td>
-                                <td class="text-center" >{{item.mobile}}</td>
-                                <td class="text-center" >{{item.dob || '-'}}</td>
-                                <td >{{(item.spouse_name | titlecase ) || '-'}}</td>
-                                <td >{{(item.spouse_relation | titlecase ) || '-'}}</td>
-                                <td class="text-center" >{{item.spouse_DOB || '-'}}</td>
-                                <td class="text-center" >
+                                <td class="text-center">{{item.countryCode}}
+                                </td>
+                                <td class="text-center">{{item.mobile}}</td>
+                                <td class="text-center">{{item.dob || '-'}}</td>
+                                <td>{{(item.spouse_name | titlecase ) || '-'}}</td>
+                                <td>{{(item.spouse_relation | titlecase ) || '-'}}</td>
+                                <td class="text-center">{{item.spouse_DOB || '-'}}</td>
+                                <td class="text-center">
                                     <button type="button" class="btn btn-info btn-sm" (click)="onOpenUpdateModal(item)">
                                         <i class="ri-edit-line"></i></button>
                                     <button type="button" class="btn btn-danger btn-sm ms-1"
@@ -103,14 +105,14 @@
 </div>
 
 <div class="modal fade" id="add-customer" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog"
-    aria-labelledby="modalTitleId" >
+    aria-labelledby="modalTitleId">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="modalTitleId">
                     Add to Customer
                 </h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" (click)="onCloseCustomerModal()"></button>
             </div>
             <form action="" (submit)="_SaveCustomer()" ngNativeValidate>
                 <div class="modal-body">
@@ -126,9 +128,23 @@
                                 placeholder="Enter Customer DOB" required [ngModelOptions]="{standalone: true}">
                         </div>
                         <div class="col-md-6 mt-3">
-                            <label for="" class="fw-medium">Country Code <code class="text-danger">*</code></label>
-                            <input type="text" class="form-control mt-1" [(ngModel)]="customer.countryCode"
-                                placeholder="Enter Country Code" required [ngModelOptions]="{standalone: true}">
+                            <label for="" class="fw-medium mb-1">Country Code <code class="text-danger">*</code></label>
+                            <ng-select [items]="countryList" bindLabel="name" bindValue="dialCode"
+                                placeholder="Select country" [(ngModel)]="customer.countryCode" [searchable]="true"
+                                [clearable]="false" [ngModelOptions]="{standalone: true}">
+
+                                <ng-template ng-label-tmp let-item="item">
+                                    <img [src]="item.flag" width="24" height="18" style="margin-right: 8px;"
+                                        alt="{{ item.name }} flag" />
+                                    {{ item.name }} ({{ item.dialCode }})
+                                </ng-template>
+
+                                <ng-template ng-option-tmp let-item="item">
+                                    <img [src]="item.flag" width="24" height="18" style="margin-right: 8px;"
+                                        alt="{{ item.name }} flag" />
+                                    {{ item.name }} ({{ item.dialCode }})
+                                </ng-template>
+                            </ng-select>
                         </div>
                         <div class="col-md-6 mt-3">
                             <label for="" class="fw-medium">Mobile No <code class="text-danger">*</code></label>
@@ -164,7 +180,7 @@
 </div>
 
 <div class="modal fade" id="import-excel" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog"
-    aria-labelledby="modalTitleId" >
+    aria-labelledby="modalTitleId">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -189,8 +205,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr
-                                *ngFor="let item of previewData;let i=index">
+                            <tr *ngFor="let item of previewData;let i=index">
                                 <td [width]="'5%'" class="text-center">{{i+1}}</td>
                                 <td>{{item.name | titlecase }}</td>
                                 <td class="text-center" [width]="'10%'">{{item.countryCode}}</td>
@@ -205,7 +220,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" (click)="_saveExcel(previewData)"><i class="ri-save-line" ></i> Save</button>
+                <button type="button" class="btn btn-success" (click)="_saveExcel(previewData)"><i
+                        class="ri-save-line"></i> Save</button>
             </div>
         </div>
     </div>

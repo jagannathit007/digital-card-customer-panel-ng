@@ -10,17 +10,21 @@ import { environment } from 'src/env/env.local';
 import { ModalService } from 'src/app/core/utilities/modal';
 import { CustomerService } from 'src/app/services/customer.service';
 import { DigitOnlyDirective } from 'src/app/core/directives/digit-only';
+import { COUNTRY_CODES } from 'src/app/core/utilities/countryCode';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 declare var $: any;
 
 @Component({
   selector: 'app-business-card-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgxPaginationModule, DigitOnlyDirective],
+  imports: [CommonModule, FormsModule, NgxPaginationModule, DigitOnlyDirective,NgSelectModule],
   templateUrl: './business-card-detail.component.html',
   styleUrl: './business-card-detail.component.scss',
 })
 export class BusinessCardDetailComponent {
+
+  countryList = COUNTRY_CODES;
   scannedCards: any;
   keywords: any[] = [];
   p: number = 1;
@@ -121,10 +125,10 @@ export class BusinessCardDetailComponent {
     this._getScannedCards();
   }
 
-  customer = {
+  customer:any = {
     name: '',
     dob: '',
-    countryCode: '',
+    countryCode: null,
     mobile: '',
     businessCardId: '',
     spouse_relation: '',
@@ -136,7 +140,7 @@ export class BusinessCardDetailComponent {
     this.customer = {
       name: '',
       dob: '',
-      countryCode: '',
+      countryCode: null,
       mobile: '',
       businessCardId: this.businessCardId,
       spouse_relation: '',
@@ -147,20 +151,25 @@ export class BusinessCardDetailComponent {
   }
 
   onOpenAddToCustomerModal(data: any) {
-    this.customer.businessCardId = this.businessCardId
+    this.customer.businessCardId = this.businessCardId;
+  
     const raw = data.mobile || '';
+    const hasPlus = raw.startsWith('+');
     const digitsOnly = raw.replace(/[^\d]/g, '');
-
+  
     if (digitsOnly.length > 10) {
-      this.customer.countryCode = digitsOnly.slice(0, digitsOnly.length - 10);
+      const code = digitsOnly.slice(0, digitsOnly.length - 10);
+      this.customer.countryCode = hasPlus ? `+${code}` : `+${code}`;
       this.customer.mobile = digitsOnly.slice(-10);
     } else {
-      this.customer.countryCode = '';
+      this.customer.countryCode = null;
       this.customer.mobile = digitsOnly;
     }
-    this.customer.name = data.name
+  
+    this.customer.name = data.name;
     this.modal.open('add-customer');
   }
+  
 
   _SaveCustomer = async () => {
     this.modal.close('add-customer');

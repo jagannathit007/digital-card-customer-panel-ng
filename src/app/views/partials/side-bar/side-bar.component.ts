@@ -45,11 +45,6 @@ export class SideBarComponent implements OnInit, AfterViewInit {
           link: 'account-settings',
           icon: 'settings',
         },
-        // {
-        //   title: 'Shared History',
-        //   link: 'shared-history',
-        //   icon: 'clock',
-        // },
       ]
       }];
     }

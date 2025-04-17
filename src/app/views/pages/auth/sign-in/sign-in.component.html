@@ -19,59 +19,47 @@
                 <!-- Email ID Field -->
                 <div class="mb-2">
                   <label>Email ID</label>
-                  <input
-                    inputmode="email"
-                    class="form-control form-control-lg"
-                    type="email"
-                    formControlName="emailId"
-                    autocomplete="off"
-                    required
-                  />
-                  <span
-                    class="has-error"
-                    *ngIf="
+                  <input inputmode="email" class="form-control form-control-lg" type="email" formControlName="emailId"
+                    autocomplete="off" required />
+                  <span class="has-error" *ngIf="
                       !loginForm.controls.emailId?.valid &&
                       (loginForm.controls.emailId?.dirty || loginForm.controls.emailId?.touched)
-                    "
-                  >
+                    ">
                     Email ID must be valid.
                   </span>
                 </div>
-              
+
                 <!-- Password Field -->
-                <div class="mb-3">
-                  <label for="password">Password</label>
-                  <input
-                    class="form-control form-control-lg disable-focus"
-                    type="{{ isPassword ? 'password' : 'text' }}"
-                    formControlName="password"
-                    autocomplete="off"
-                    id="password"
-                    required
-                  />
-                  <span
-                    class="has-error"
-                    *ngIf="
-                      !loginForm.controls.password?.valid &&
-                      (loginForm.controls.password?.dirty || loginForm.controls.password?.touched)
-                    "
-                  >
+                <div class="mb-3 ">
+                  <div class="position-relative">
+                    <label for="password">Password</label>
+                    <input class="form-control form-control-lg disable-focus" [type]="isPassword ? 'text' : 'password'"
+                      formControlName="password" autocomplete="off" id="password" required />
+                    <div class="position-absolute"
+                      style="top: 70%; right: 1rem; transform: translateY(-50%); cursor: pointer;">
+                      <i class="ri-{{ isPassword ? 'eye-fill' : 'eye-off-fill' }}"
+                        (click)="isPassword = !isPassword"></i>
+                    </div>
+                  </div>
+                  <div class="has-error d-block" *ngIf="
+                        !loginForm.controls.password?.valid &&
+                        (loginForm.controls.password?.dirty || loginForm.controls.password?.touched)
+                      ">
                     Password must be at least 6 characters long.
-                  </span>
+                  </div>
+
+
                 </div>
-              
+
                 <!-- Submit Button -->
                 <div class="text-center mt-2">
-                  <button
-                    type="submit"
-                    [disabled]="!loginForm.valid || isLoading"
-                    class="btn col-12 btn-lg btn-primary"
-                  >
+                  <button type="submit" [disabled]="!loginForm.valid || isLoading"
+                    class="btn col-12 btn-lg btn-primary">
                     Login
                   </button>
                 </div>
               </form>
-              
+
 
             </div>
           </div>

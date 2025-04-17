@@ -1,0 +1,7 @@
+::ng-deep .country-code-only .iti__tel-input {
+    display: none !important;
+    pointer-events: none;
+  }
+  ::ng-deep .country-code-only input {
+    display: none !important;
+  }

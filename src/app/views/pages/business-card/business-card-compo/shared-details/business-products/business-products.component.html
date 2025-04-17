@@ -1,12 +1,12 @@
 <div class="row py-4">
-    <div class="col-md ">
+    <div class="col">
         <span class="fs-3 fw-bold">Our products</span>
     </div>
-    <div class="col-md-auto">
+    <div class="col-auto">
         <button class="btn btn-info" (click)="onOpenCraeteModal()"><i class="ri-add-circle-line"></i> Add
             products</button>
     </div>
-    <div class="col-md-auto">
+    <div class="col-auto">
         <ng-select [items]="[10,20,50,100,200,500]" [(ngModel)]="payload.limit" placeholder="Select Page"></ng-select>
     </div>
 
@@ -92,7 +92,7 @@
                                 required class="form-control mt-1" placeholder="Please Enter Product Name">
                         </div>
                         <div class="col-md-12 mt-4">
-                            <span class="fw-bold">Upload Images <code class="text-danger">* ( You can upload up to 15 images)</code></span>
+                            <span class="fw-bold">Upload Images <code class="text-danger">* (Upload Upto 15 Images & Image size should be 1250 X 720 or 1600 X 900)</code></span>
                             <input type="file" #fileInput name="images" multiple accept="image/*"
                                 (change)="onUploadImage($event)" class="form-control mt-1"/>
                             <div class="d-flex flex-wrap gap-2 mt-2">

@@ -34,7 +34,7 @@ export class SignInComponent implements OnInit {
   ngOnInit(): void {}
 
   whileLabelName = environment.whiteLabelName;
-  isPassword: boolean = true; 
+  isPassword: boolean = false; 
   emailId = 'info@itfuturz.com';
 
   

@@ -201,10 +201,25 @@
             <span class="fw-bold">Customer Name:</span> {{customer.name}}
           </div>
         <div class="row my-3">
-          <div class="col-md-6">
-            <label for="" >Country Code</label>  
-            <input type="text" class="form-control mt-1" [(ngModel)]="customer.countryCode" placeholder="Enter country code">
-           </div>
+          <div class="col-md-6 ">
+            <label for="" class="fw-medium mb-1">Country Code <code class="text-danger">*</code></label>
+            <ng-select [items]="countryList" bindLabel="name" bindValue="dialCode"
+                placeholder="Select country" [(ngModel)]="customer.countryCode" [searchable]="true"
+                [clearable]="false" [ngModelOptions]="{standalone: true}">
+
+                <ng-template ng-label-tmp let-item="item">
+                    <img [src]="item.flag" width="24" height="18" style="margin-right: 8px;"
+                        alt="{{ item.name }} flag" />
+                    {{ item.name }} ({{ item.dialCode }})
+                </ng-template>
+
+                <ng-template ng-option-tmp let-item="item">
+                    <img [src]="item.flag" width="24" height="18" style="margin-right: 8px;"
+                        alt="{{ item.name }} flag" />
+                    {{ item.name }} ({{ item.dialCode }})
+                </ng-template>
+            </ng-select>
+        </div>
            <div class="col-md-6">
             <label for="" >Mobile No</label>  
             <input type="text" class="form-control mt-1" [(ngModel)]="customer.mobile" placeholder="Enter Mobile No" digitOnly maxlength="10" minlength="10">

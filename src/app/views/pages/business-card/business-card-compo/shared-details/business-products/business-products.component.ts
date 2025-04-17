@@ -105,20 +105,52 @@ export class BusinessProductsComponent implements OnInit {
   onUploadImage(event: any) {
     const files: FileList = event.target.files;
     const newFiles: File[] = Array.from(files);
-    const totalImages = (this.selectedProducts?.images?.length || 0) + newFiles.length;
-
+  
     if (!this.selectedProducts.images) {
       this.selectedProducts.images = [];
     }
-
+  
+    const totalImages = this.selectedProducts.images.length + newFiles.length;
+  
     if (totalImages > 15) {
-      swalHelper.warning('You can upload a maximum of 15 images.')
-      this.selectedProducts.images = [] as File[]
+      swalHelper.warning('You can upload a maximum of 15 images.');
+      this.selectedProducts.images = [];
       this.fileInputRef.nativeElement.value = '';
-    }else{
-      this.selectedProducts.images.push(...newFiles);
+      return;
     }
-
+  
+    const allowedDimensions = [
+      { width: 1250, height: 720 },
+      { width: 1600, height: 900 }
+    ];
+  
+    let validImages: File[] = [];
+    let processed = 0;
+  
+    for (let file of newFiles) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const img = new Image();
+        img.onload = () => {
+          const isValid = allowedDimensions.some(dim =>
+            img.width === dim.width && img.height === dim.height
+          );
+  
+          if (isValid) {
+            validImages.push(file);
+          } else {
+            swalHelper.warning(`Image "${file.name}" must be 1250x720 or 1600x900.`);
+          }
+  
+          processed++;
+          if (processed === newFiles.length) {
+            this.selectedProducts.images.push(...validImages);
+          }
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   showImage(image: any) {

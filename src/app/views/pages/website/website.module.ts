@@ -18,7 +18,6 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { FormsModule } from '@angular/forms';
 import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
 
-
 @NgModule({
   declarations: [
     WebsiteComponent,
@@ -39,7 +38,7 @@ import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
     RouterModule,
     NgxPaginationModule,
     FormsModule,
-    TooltipDirective
+    TooltipDirective,
   ]
 })
 export class WebsiteModule { }

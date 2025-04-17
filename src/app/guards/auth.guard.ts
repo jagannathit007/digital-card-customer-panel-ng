@@ -37,6 +37,10 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
+    if (requiredProduct === 'customers') {
+      return true;
+    }
+
     const subscriptionData = await this.authService.getSubscriptionData(currentBcardId);
     const products = subscriptionData.map(item => item.product);
 

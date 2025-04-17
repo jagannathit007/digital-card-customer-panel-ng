@@ -97,7 +97,7 @@
                             <input type="text" [(ngModel)]="selectedProducts.price" [ngModelOptions]="{standalone:true}" class="form-control mt-1" placeholder="Please Enter price">
                         </div>
                         <div class="col-md-12 mt-4">
-                            <span class="fw-bold">Upload Images <code class="text-danger">*</code></span>
+                            <span class="fw-bold">Upload Images <code class="text-danger">* (Upload Upto 15 Images & Image size should be 1250 X 720 or 1600 X 900)</code></span>
                             <input type="file" #fileInput name="images" multiple accept="image/*"
                                 (change)="onUploadImage($event)" class="form-control mt-1"/>
                             <div class="d-flex flex-wrap gap-2 mt-2">
