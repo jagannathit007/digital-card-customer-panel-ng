@@ -3,17 +3,18 @@ import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { AuthService } from 'src/app/services/auth.service';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { common } from 'src/app/core/constants/common';
+import { ModalService } from 'src/app/core/utilities/modal';
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-document-details',
   templateUrl: './document-details.component.html',
-  styleUrl: './document-details.component.css',
+  styleUrl: './document-details.component.scss',
 })
 export class DocumentDetailsComponent {
 
-  constructor(private authService: AuthService, private storage: AppStorage) { 
+  constructor(private authService: AuthService, private storage: AppStorage, private modal: ModalService) { 
     this.getCards();
   }
 
@@ -32,10 +33,10 @@ export class DocumentDetailsComponent {
   };
 
   ngOnInit(): void {
-    this.gteOtherDocuments();
+    this.getOtherDocuments();
   }
 
-  gteOtherDocuments = async () => {
+  getOtherDocuments = async () => {
     let results = await this.authService.getDocumentsDetail();
     this.documentDetails.otherDocuments = results?.otherDocuments || [];
   }
@@ -74,6 +75,11 @@ export class DocumentDetailsComponent {
       personalPAN: '',
       companyPAN: ''
     };
+    this.modal.close("addOtherDocuments");
+  }
+
+  openModal = () => {
+    this.modal.open("addOtherDocuments");
   }
 
 
@@ -91,9 +97,7 @@ export class DocumentDetailsComponent {
     this.documentDetails.otherDocuments.push(newDoc);
 
     this.newDocument = { name: '', value: '' }; 
-    const modalElement = document.getElementById('addOtherDocuments');
-    const modal = bootstrap.Modal.getInstance(modalElement);
-    modal.hide();
+    this.modal.close('addOtherDocuments');
   };
     
   deleteSocial(index: number) {

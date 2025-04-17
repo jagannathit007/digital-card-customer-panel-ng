@@ -8,6 +8,7 @@ import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { AuthService } from 'src/app/services/auth.service';
 import { common } from 'src/app/core/constants/common';
 import * as featherIcons from 'feather-icons'; 
+import { environment } from 'src/env/env.local';
 
 @Component({
   selector: 'app-side-bar',
@@ -21,6 +22,8 @@ export class SideBarComponent implements OnInit, AfterViewInit {
   currentBcardId: string = "";
   subscriptionData: any[] = [];
   filteredMenuList: any[] = [];
+
+  whiteLabelName: string = environment.whiteLabelName;
 
   constructor(
     private router: Router,
