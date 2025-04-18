@@ -9,7 +9,7 @@
       <div *ngIf="showInstallButton" class="icon-container shadow p-2 rounded bg-light downloadIcon" (click)="openInstallModal()">
         <i class="ri-download-2-line"></i>
       </div>
-      <div class="icon-container shadow p-2 rounded bg-light" data-bs-toggle="modal" data-bs-target="#shareModal">
+      <div class="icon-container shadow p-2 rounded bg-light" (click)="modal.open('shareModal')">
         <i class="ri-whatsapp-fill text-success"></i>
       </div>
       <select class="form-select custom-select shadow-sm" [(ngModel)]="authService.selectedBusinessCard"
@@ -56,7 +56,7 @@
         <div *ngIf="showInstallButton" class="icon-container p-2 rounded bg-light" (click)="openInstallModal()">
           <i class="ri-download-2-line"></i>
         </div>
-        <div class="icon-container p-2 rounded bg-light" data-bs-toggle="modal" data-bs-target="#shareModal">
+        <div class="icon-container p-2 rounded bg-light" (click)="modal.open('shareModal')">
           <i class="ri-whatsapp-fill text-success"></i>
         </div>
       </div>
@@ -114,7 +114,7 @@
       <div class="modal-content">
          <div class="modal-header">
             <h5 class="modal-title" id="shareModalLabel">Share Profile</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <button type="button" class="btn-close" (click)="modal.close('shareModal')"></button>
          </div>
          <div class="modal-body">
             <!-- Country Selection Dropdown -->

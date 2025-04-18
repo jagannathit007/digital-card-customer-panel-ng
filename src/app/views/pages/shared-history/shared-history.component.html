@@ -47,20 +47,14 @@
                 <td class="text-center" [width]="'15%'">{{item.createdAt | date:'dd-MM-yyyy'}} {{item.createdAt | date:'hh:MM a'}}</td>
                 <td class="text-center" [width]="'15%'">{{item.mobile}}</td>
                 <td class="text-center" [width]="'15%'">
-                  <!-- <button class="btn btn-sm btn-success me-1" (click)="onOpenAddToCustomerModal(item)">
-                    <i class="ri-add-circle-line"></i>
-                  </button> -->
-                  <a href="tel:{{item.mobile}}" class="btn btn-info btn-sm">
+                  <a [href]="'tel:' + item.mobile" class="btn btn-info btn-sm">
                     <i class="ri-phone-fill"></i>
-                </a>
+                  </a>
                 
                 <!-- WhatsApp button -->
                 <a href="https://api.whatsapp.com/send?phone={{item.mobile}}" target="_blank" class="btn btn-success btn-sm ms-1">
                   <i class="ri-whatsapp-fill"></i>
               </a>
-                  <!-- <button type="button" class="btn btn-info btn-sm"><i class="ri-phone-fill"></i></button>
-                  <button type="button" class="btn btn-success btn-sm ms-1"><i class="ri-whatsapp-fill"></i></button> -->
-                  <!-- <button type="button" class="btn btn-primary btn-sm ms-1"><i class="ri-download-2-line"></i></button> -->
                 </td>
               </tr>
             </tbody>
@@ -110,10 +104,10 @@
   <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="modalTitleId">
+        <h4 class="modal-title fw-medium" id="modalTitleId">
           Add to Customer
         </h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="onCloseCustomerModal()"></button>
+        <button type="button" class="btn-close" (click)="onCloseCustomerModal()"></button>
       </div>
       <div class="modal-body">
         <div class="row">

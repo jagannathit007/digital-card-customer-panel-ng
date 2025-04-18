@@ -4,6 +4,7 @@ import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { AuthService } from 'src/app/services/auth.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
+import { ModalService } from 'src/app/core/utilities/modal';
 declare var $:any;
 
 @Component({
@@ -14,7 +15,11 @@ declare var $:any;
 export class BusinessDetailsComponent {
   baseURL = environment.baseURL;
   newSocialMedia = { name: '', link: '' };
-  constructor(private storage: AppStorage, public authService: AuthService) {
+  constructor(
+    private storage: AppStorage, 
+    public authService: AuthService,
+    private modal:ModalService
+  ) {
     this.getCards();
   }
 
@@ -53,7 +58,7 @@ export class BusinessDetailsComponent {
       if (result) {
         this.businessProfile.companySocialMedia = result;
         this.socialMediaImage = undefined;
-        $('#addSocialMediaModal').modal("hide");
+        this.modal.close('addSocialMediaModal');
         $('#platformImage').val(null);
         this.newSocialMedia = {
           name: '',
@@ -115,4 +120,12 @@ export class BusinessDetailsComponent {
       swalHelper.showToast('Business Details Updated Successfully!', 'success');
     }
   };
+
+  onOpenSocialMediaModal(){
+    this.modal.open('addSocialMediaModal');
+  }
+
+  onCloseSocialMediaModal(){
+    this.modal.close('addSocialMediaModal');
+  }
 }

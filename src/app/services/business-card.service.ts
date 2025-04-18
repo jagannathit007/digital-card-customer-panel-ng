@@ -81,7 +81,7 @@ export class BusinessCardService {
           this.headers
         );
         if (response.status == 200 && response.data != 0) {
-          swalHelper.showToast(response.message, 'success');
+          swalHelper.success(response.message);
           return true;
         } else {
           swalHelper.showToast(response.message, 'warning');
@@ -153,7 +153,7 @@ export class BusinessCardService {
           this.headers
         );
         if (response.status == 200 && response.data != 0) {
-          swalHelper.showToast(response.message, 'success');
+          swalHelper.success(response.message);
           return true;
         } else {
           swalHelper.showToast(response.message, 'warning');

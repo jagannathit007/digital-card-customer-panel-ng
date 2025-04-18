@@ -80,7 +80,7 @@ export class CustomerService {
         this.headers
       );
       if (response.status == 200 && response.data != 0) {
-        swalHelper.showToast(response.message, 'success');
+        swalHelper.success(response.message);
         return true;
       } else {
         swalHelper.warning(response.message);

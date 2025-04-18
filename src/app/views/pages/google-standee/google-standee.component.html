@@ -22,7 +22,7 @@
           </div>
 
          <div class="col-auto">
-           <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#qrCodeModal">
+           <button class="btn btn-success" (click)="modal.open('qrCodeModal')">
              <i class="ri-qr-code-line"></i> Show QR Code
            </button>
          </div>
@@ -154,7 +154,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="qrCodeModalLabel">QR Code</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              <button type="button" class="btn-close" (click)="modal.close('qrCodeModal')"></button>
             </div>
             <div class="modal-body text-center">
               <p class="mb-2"><strong>Your website link:</strong></p>

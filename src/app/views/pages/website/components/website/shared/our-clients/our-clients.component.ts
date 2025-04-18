@@ -7,6 +7,7 @@ import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { AuthService } from 'src/app/services/auth.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
+import { ModalService } from 'src/app/core/utilities/modal';
 
 @Component({
   selector: 'app-our-clients',
@@ -40,7 +41,7 @@ export class OurClientsComponent implements OnInit {
     currentImage: ''
   };
 
-  constructor(private storage: AppStorage, public authService: AuthService) {}
+  constructor(private storage: AppStorage, public authService: AuthService,public modal:ModalService) {}
 
   async ngOnInit() {
     await this.fetchWebsiteDetails();
@@ -90,12 +91,7 @@ export class OurClientsComponent implements OnInit {
         
         await this.fetchWebsiteDetails();
         this.resetForm();
-        
-        const modal = document.getElementById('AddClientModal');
-        if (modal) {
-          (modal as any).querySelector('.btn-close')?.click();
-        }
-        
+        this.modal.close('AddClientModal')
         swalHelper.showToast('Client added successfully!', 'success');
       }
     } catch (error) {
@@ -126,6 +122,7 @@ export class OurClientsComponent implements OnInit {
       image: null,
       currentImage: client.image || ''
     };
+    this.modal.open('EditClientModal');
   }
 
   async updateClient() {
@@ -154,12 +151,7 @@ export class OurClientsComponent implements OnInit {
         }
         
         await this.fetchWebsiteDetails();
-        
-        const modal = document.getElementById('EditClientModal');
-        if (modal) {
-          (modal as any).querySelector('.btn-close')?.click();
-        }
-        
+        this.modal.close('EditClientModal')
         swalHelper.showToast('Client updated successfully!', 'success');
       }
     } catch (error) {
@@ -170,8 +162,12 @@ export class OurClientsComponent implements OnInit {
     }
   }
 
-  prepareDeleteClient(clientID: string) {
+  prepareDeleteClient=async(clientID: string)=>{
     this.clientID = clientID;
+    const confirm=await swalHelper.delete();
+      if(confirm.isConfirmed){
+        this.confirmDeleteClient();
+      }
   }
 
   async confirmDeleteClient() {
@@ -191,13 +187,7 @@ export class OurClientsComponent implements OnInit {
         this.totalItems = this.clientsList.length;
         
         await this.fetchWebsiteDetails();
-        
-        const modal = document.getElementById('deleteClientModal');
-        if (modal) {
-          (modal as any).querySelector('.btn-close')?.click();
-        }
-        
-        swalHelper.showToast('Client deleted successfully!', 'success');
+        swalHelper.success('Client deleted successfully!');
       }
     } catch (error) {
       console.error('Error deleting client: ', error);
@@ -238,5 +228,9 @@ export class OurClientsComponent implements OnInit {
 
   resetForm() {
     this.newClient = { name: '', url: '', image: null };
+  }
+
+  OnCloseModal(modal:string){
+    this.modal.close(modal)
   }
 }

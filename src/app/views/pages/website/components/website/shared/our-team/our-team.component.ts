@@ -7,6 +7,7 @@ import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { AuthService } from 'src/app/services/auth.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
+import { ModalService } from 'src/app/core/utilities/modal';
 
 @Component({
   selector: 'app-our-team',
@@ -43,7 +44,8 @@ export class OurTeamComponent implements OnInit {
   constructor(
     private storage: AppStorage, 
     public authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public modal:ModalService
   ) {}
 
   async ngOnInit() {
@@ -97,12 +99,7 @@ export class OurTeamComponent implements OnInit {
         
         await this.fetchTeamMembers();
         this.resetForm();
-        
-        const modal = document.getElementById('AddTeamMemberModal');
-        if (modal) {
-          (modal as any).querySelector('.btn-close')?.click();
-        }
-        
+        this.modal.close('AddTeamMemberModal');
         swalHelper.showToast('Team member added successfully!', 'success');
       }
     } catch (error) {
@@ -134,6 +131,7 @@ export class OurTeamComponent implements OnInit {
       photo: null,
       currentPhoto: member.photo || ''
     };
+    this.modal.open('EditTeamMemberModal');
     this.cdr.markForCheck();
   }
 
@@ -161,14 +159,8 @@ export class OurTeamComponent implements OnInit {
           this.members[index] = result;
           this.filteredMembers = [...this.members];
         }
-        
         await this.fetchTeamMembers();
-        
-        const modal = document.getElementById('EditTeamMemberModal');
-        if (modal) {
-          (modal as any).querySelector('.btn-close')?.click();
-        }
-        
+        this.modal.close('EditTeamMemberModal')
         swalHelper.showToast('Team member updated successfully!', 'success');
       }
     } catch (error) {
@@ -180,9 +172,13 @@ export class OurTeamComponent implements OnInit {
     }
   }
 
-  prepareDeleteMember(memberId: string) {
+  prepareDeleteMember=async(memberId: string)=>{
     this.memberId = memberId;
     this.cdr.markForCheck();
+    const confirm=await swalHelper.delete();
+      if(confirm.isConfirmed){
+        this.confirmDeleteMember()
+      }
   }
 
   async confirmDeleteMember() {
@@ -200,15 +196,8 @@ export class OurTeamComponent implements OnInit {
         this.members = this.members.filter(m => m._id !== this.memberId);
         this.filteredMembers = [...this.members];
         this.totalItems = this.members.length;
-        
         await this.fetchTeamMembers();
-        
-        const modal = document.getElementById('deleteTeamMemberModal');
-        if (modal) {
-          (modal as any).querySelector('.btn-close')?.click();
-        }
-        
-        swalHelper.showToast('Team member deleted successfully!', 'success');
+        swalHelper.success('Team member deleted successfully!');
       }
     } catch (error) {
       console.error('Error deleting team member: ', error);
@@ -224,7 +213,6 @@ export class OurTeamComponent implements OnInit {
       swalHelper.showToast('Team member name is required!', 'warning');
       return false;
     }
-    
     return true;
   }
 
@@ -254,5 +242,9 @@ export class OurTeamComponent implements OnInit {
   resetForm() {
     this.newMember = { name: '', role: '', photo: null };
     this.cdr.markForCheck();
+  }
+
+  onCloseEditMemberModal(){
+    this.modal.close('EditTeamMemberModal');
   }
 }

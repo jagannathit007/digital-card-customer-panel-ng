@@ -18,7 +18,7 @@ declare var $: any;
 @Component({
   selector: 'app-business-card-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgxPaginationModule, DigitOnlyDirective,NgSelectModule],
+  imports: [CommonModule, FormsModule, NgxPaginationModule, DigitOnlyDirective, NgSelectModule],
   templateUrl: './business-card-detail.component.html',
   styleUrl: './business-card-detail.component.scss',
 })
@@ -36,7 +36,7 @@ export class BusinessCardDetailComponent {
   constructor(
     private authService: AuthService,
     private storage: AppStorage,
-    private modal: ModalService,
+    public modal: ModalService,
     private customerService: CustomerService
   ) { }
 
@@ -83,21 +83,16 @@ export class BusinessCardDetailComponent {
   };
 
   deleteScannedCard = async (id: String) => {
-    let confirm = await swalHelper.confirmation(
-      'Delete',
-      'Do you really want to delete?',
-      'warning'
-    );
+    const confirm = await swalHelper.delete();
     if (confirm.isConfirmed) {
       let response = await this.authService.deleteScannedCard(id);
       if (response != null) {
         this.p = 1;
         this._getScannedCards();
-        swalHelper.showToast('Card Updated Sucessfully!', 'success');
+        swalHelper.success('Data deleted successfully')
       }
-    }
-  };
-
+    };
+  }
   exportExcel = async () => {
     let userId = this.storage.get(common.USER_DATA)._id;
     let businessCardId = this.storage.get(common.BUSINESS_CARD);
@@ -125,7 +120,7 @@ export class BusinessCardDetailComponent {
     this._getScannedCards();
   }
 
-  customer:any = {
+  customer: any = {
     name: '',
     dob: '',
     countryCode: null,
@@ -152,11 +147,11 @@ export class BusinessCardDetailComponent {
 
   onOpenAddToCustomerModal(data: any) {
     this.customer.businessCardId = this.businessCardId;
-  
+
     const raw = data.mobile || '';
     const hasPlus = raw.startsWith('+');
     const digitsOnly = raw.replace(/[^\d]/g, '');
-  
+
     if (digitsOnly.length > 10) {
       const code = digitsOnly.slice(0, digitsOnly.length - 10);
       this.customer.countryCode = hasPlus ? `+${code}` : `+${code}`;
@@ -165,11 +160,11 @@ export class BusinessCardDetailComponent {
       this.customer.countryCode = null;
       this.customer.mobile = digitsOnly;
     }
-  
+
     this.customer.name = data.name;
     this.modal.open('add-customer');
   }
-  
+
 
   _SaveCustomer = async () => {
     this.modal.close('add-customer');
@@ -180,7 +175,7 @@ export class BusinessCardDetailComponent {
     this.reset();
   }
 
-  onCloseCustomerModal(){
+  onCloseCustomerModal() {
     this.reset();
     this.modal.close('add-customer');
   }

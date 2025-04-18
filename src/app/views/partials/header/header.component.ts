@@ -10,6 +10,7 @@ import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { environment } from 'src/env/env.local';
 import { AvatarComponent } from '../avatar/avatar.component';
+import { ModalService } from 'src/app/core/utilities/modal';
 
 declare var bootstrap: any;
 
@@ -29,6 +30,7 @@ export class HeaderComponent implements OnInit {
     public appWorker: AppWorker,
     private storage: AppStorage,
     public authService: AuthService,
+    public modal:ModalService,
     private cdr:ChangeDetectorRef
   ) {
     this.authService.selectedBusinessCard =
@@ -120,6 +122,7 @@ export class HeaderComponent implements OnInit {
 
         if (!alreadyDenied) {
           setTimeout(() => {
+            
             this.installModal = bootstrap.Modal.getOrCreateInstance(
               document.getElementById('installPwaModal')
             );

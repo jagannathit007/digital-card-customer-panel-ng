@@ -7,6 +7,7 @@ import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { AuthService } from 'src/app/services/auth.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
+import { ModalService } from 'src/app/core/utilities/modal';
 
 @Component({
   selector: 'app-our-services',
@@ -43,7 +44,8 @@ export class OurServicesComponent implements OnInit {
   constructor(
     private storage: AppStorage, 
     public authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public modal:ModalService
   ) {}
 
   async ngOnInit() {
@@ -97,12 +99,7 @@ export class OurServicesComponent implements OnInit {
         
         await this.fetchWebsiteDetails();
         this.resetForm();
-        
-        const modal = document.getElementById('AddServiceModal');
-        if (modal) {
-          (modal as any).querySelector('.btn-close')?.click();
-        }
-        
+        this.modal.close('AddServiceModal')
         swalHelper.showToast('Service added successfully!', 'success');
       }
     } catch (error) {
@@ -134,6 +131,7 @@ export class OurServicesComponent implements OnInit {
       image: null,
       currentImage: service.image || ''
     };
+    this.modal.open('EditServiceModal');
     this.cdr.markForCheck();
   }
 
@@ -163,12 +161,7 @@ export class OurServicesComponent implements OnInit {
         }
         
         await this.fetchWebsiteDetails();
-        
-        const modal = document.getElementById('EditServiceModal');
-        if (modal) {
-          (modal as any).querySelector('.btn-close')?.click();
-        }
-        
+        this.modal.close('EditServiceModal');
         swalHelper.showToast('Service updated successfully!', 'success');
       }
     } catch (error) {
@@ -180,8 +173,12 @@ export class OurServicesComponent implements OnInit {
     }
   }
 
-  prepareDeleteService(serviceID: string) {
+  prepareDeleteService=async(serviceID: string)=>{
     this.serviceID = serviceID;
+    const confirm=await swalHelper.delete();
+      if(confirm.isConfirmed){
+        this.confirmDeleteService();
+      }
     this.cdr.markForCheck();
   }
 
@@ -202,13 +199,7 @@ export class OurServicesComponent implements OnInit {
         this.totalItems = this.services.length;
         
         await this.fetchWebsiteDetails();
-        
-        const modal = document.getElementById('deleteServiceModal');
-        if (modal) {
-          (modal as any).querySelector('.btn-close')?.click();
-        }
-        
-        swalHelper.showToast('Service deleted successfully!', 'success');
+        swalHelper.success('Service deleted successfully!');
       }
     } catch (error) {
       console.error('Error deleting service: ', error);
@@ -258,5 +249,10 @@ export class OurServicesComponent implements OnInit {
   resetForm() {
     this.newService = { title: '', description: '', image: null };
     this.cdr.markForCheck();
+  }
+
+  onCloseModal(modal:string){
+    console.log("function called");
+    this.modal.close(modal);
   }
 }

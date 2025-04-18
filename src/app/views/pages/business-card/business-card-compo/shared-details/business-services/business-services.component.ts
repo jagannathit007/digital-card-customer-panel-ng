@@ -145,13 +145,9 @@ export class BusinessServicesComponent implements OnInit{
   
   _deleteServices=async(id:string)=>{
     try {
-      let confirm = await swalHelper.confirmation(
-        'Are You really want to Delete',
-        'permanently delete',
-        'warning'
-      );
-      if (confirm.isConfirmed) {
-      await this.businessCardService.deleteServices({businessCardId:this.businessCardId,id:id})
+      const confirm=await swalHelper.delete();
+      if(confirm.isConfirmed){
+        await this.businessCardService.deleteServices({businessCardId:this.businessCardId,id:id})
       }
       this._reset()
     } catch (error) {

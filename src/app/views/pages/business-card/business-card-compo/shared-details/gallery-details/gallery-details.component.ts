@@ -4,6 +4,7 @@ import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { common } from 'src/app/core/constants/common';
 import { environment } from 'src/env/env.local';
+import { ModalService } from 'src/app/core/utilities/modal';
 
 @Component({
   selector: 'app-gallery-details',
@@ -17,7 +18,7 @@ export class GalleryDetailsComponent implements OnInit{
   actualImageToDeleteIndex: number | null = null;
   imageToDeleteIndex: number | null = null; // Track index for deletion
 
-  constructor(private storage: AppStorage, public authService: AuthService) { }
+  constructor(private storage: AppStorage, public authService: AuthService,public modal:ModalService) { }
 
   ngOnInit() {
     this.selectedImagesLength = 0;
@@ -67,6 +68,7 @@ export class GalleryDetailsComponent implements OnInit{
     confirmDeleteByIndex(index: number): void {
       this.actualImageToDeleteIndex = null;
       this.imageToDeleteIndex = index;
+      this.modal.open('deleteModal')
     }
 
     deleteImage = async () => {
@@ -154,4 +156,5 @@ export class GalleryDetailsComponent implements OnInit{
     }
     return byteArray;
   }
+
 }

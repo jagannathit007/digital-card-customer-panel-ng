@@ -4,6 +4,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { common } from 'src/app/core/constants/common';
 import { environment } from 'src/env/env.local';
+import { ModalService } from 'src/app/core/utilities/modal';
 declare var $: any;
 
 @Component({
@@ -17,7 +18,11 @@ export class PersonalDetailsComponent implements OnInit {
 
   personalDetails: any;
 
-  constructor(private authService: AuthService, private storage: AppStorage) {}
+  constructor(
+    private authService: AuthService, 
+    private storage: AppStorage,
+    private modal:ModalService
+  ) {}
 
   ngOnInit() {
     this.getCards();
@@ -56,7 +61,7 @@ export class PersonalDetailsComponent implements OnInit {
       if (result) {
         this.personalDetails.personalSocialMedia = result;
         this.socialMediaImage = undefined;
-        $('#addSocialMediaModal').modal('hide');
+        this.modal.close('addSocialMediaModal');
         $('#platformImage').val(null);
         this.newSocialMedia = {
           name: '',
@@ -93,6 +98,16 @@ export class PersonalDetailsComponent implements OnInit {
     );
     if (result) {
       swalHelper.showToast('Personal Details Updated Successfully!', 'success');
+      
     }
   };
+
+  onOpneSocialMediaModel(){
+    this.modal.open('addSocialMediaModal');
+  }
+
+  onCloseSocialMediaModal(){
+    this.modal.close('addSocialMediaModal');
+    this.newSocialMedia = { name: '', link: '' };
+  }
 }

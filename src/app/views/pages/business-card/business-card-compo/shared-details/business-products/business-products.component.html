@@ -73,13 +73,13 @@
 
 
 <div class="modal fade" id="create-products" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
-    role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    role="dialog" aria-labelledby="modalTitleId" >
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="modalTitleId">
+                <h3 class="modal-title fw-medium" id="modalTitleId">
                     {{selectedProducts._id!=null ?'Update':'Add'}} products
-                </h4>
+                </h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                     (click)="onCloseModal('create-products')"></button>
             </div>

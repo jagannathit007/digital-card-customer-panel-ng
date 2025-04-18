@@ -239,12 +239,8 @@ export class OurProductsComponent implements OnInit {
 
   _deleteProducts = async (id: string) => {
     try {
-      let confirm = await swalHelper.confirmation(
-        'Are You really want to Delete',
-        'permanently delete',
-        'warning'
-      );
-      if (confirm.isConfirmed) {
+      const confirm=await swalHelper.delete();
+      if(confirm.isConfirmed){
         await this.websiteService.deleteProducts({ productId: id ,businessCardId:this.storage.get(common.BUSINESS_CARD)})
       }
       this._reset()

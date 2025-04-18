@@ -7,6 +7,7 @@ import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { AuthService } from 'src/app/services/auth.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
+import { ModalService } from 'src/app/core/utilities/modal';
 
 
 @Component({
@@ -46,7 +47,7 @@ export class TestimonialsComponent implements OnInit {
   };
 
   
-  constructor(private storage: AppStorage, public authService: AuthService) {}
+  constructor(private storage: AppStorage, public authService: AuthService,public modal:ModalService) {}
   
   async ngOnInit() {
     await this.fetchWebsiteDetails();
@@ -101,12 +102,7 @@ export class TestimonialsComponent implements OnInit {
         
         await this.fetchWebsiteDetails();
         this.resetForm();
-        
-        const modal = document.getElementById('AddTestimonialModal');
-        if (modal) {
-          (modal as any).querySelector('.btn-close')?.click(); 
-        }
-        
+        this.modal.close('AddTestimonialModal');
         swalHelper.showToast('Testimonial added successfully!', 'success');
       }
     } catch (error) {
@@ -149,6 +145,7 @@ export class TestimonialsComponent implements OnInit {
       image: null,
       currentImage: testimonial.image || []
     };
+    this.modal.open('EditTestimonialsModal');
   }
 
   async updateTestimonial() {
@@ -185,12 +182,7 @@ export class TestimonialsComponent implements OnInit {
 
         await this.fetchWebsiteDetails();
         this.resetForm();
-        
-        const modal = document.getElementById('EditTestimonialsModal');
-        if (modal) {
-          (modal as any).querySelector('.btn-close')?.click(); 
-        }
-        
+        this.modal.close('EditTestimonialsModal');
         swalHelper.showToast('Testimonial updated successfully!', 'success');
       }
     } catch (error) {
@@ -221,13 +213,7 @@ export class TestimonialsComponent implements OnInit {
         
         await this.fetchWebsiteDetails();
         this.resetForm();
-        
-        const modal = document.getElementById('deleteTestimonialsModal');
-        if (modal) {
-          (modal as any).querySelector('.btn-close')?.click(); 
-        }
-        
-        swalHelper.showToast('Testimonial deleted successfully!', 'success');
+        swalHelper.success('Testimonial deleted successfully!');
       }
     } catch (error) {
       console.error('Error deleting testimonial: ', error);
@@ -238,8 +224,12 @@ export class TestimonialsComponent implements OnInit {
   }
 
   // Store testimonial ID for deletion
-  deleteTestimonials(testimonialID: string) {
+  deleteTestimonials=async(testimonialID: string)=>{
     this.testimonialID = testimonialID;
+    const confirm=await swalHelper.delete();
+      if(confirm.isConfirmed){
+        this.confirmDeleteTestimonial();
+      }
   }
 
   // Validate testimonial data
@@ -280,5 +270,9 @@ export class TestimonialsComponent implements OnInit {
 
   pageChangeEvent(event: number) {
     this.p = event;
+  }
+
+  onCloseModal(modal:string){
+    this.modal.close(modal)
   }
 }

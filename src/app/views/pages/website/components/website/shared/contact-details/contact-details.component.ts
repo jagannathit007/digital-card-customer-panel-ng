@@ -7,6 +7,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { common } from 'src/app/core/constants/common';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { RegularRegex } from 'src/app/core/constants/regular-regex';
+import { ModalService } from 'src/app/core/utilities/modal';
 
 @Component({
   selector: 'app-contact-details',
@@ -40,9 +41,16 @@ export class ContactDetailsComponent implements OnInit {
     address: ''
   };
 
+  reset(){
+    this.newContact = {
+      email: '',
+      phone: '',
+      address: ''
+    };
+    this.fetchContacts()
+  }
 
-
-  constructor(private storage: AppStorage, public authService: AuthService) { }
+  constructor(private storage: AppStorage, public authService: AuthService,public modal:ModalService) { }
 
   async ngOnInit() {
     await this.fetchContacts();
@@ -190,14 +198,8 @@ export class ContactDetailsComponent implements OnInit {
         if (response) {
             swalHelper.showToast("Contact Added Successfully!", "success");
             await this.fetchContacts();
-
-            const closeButton = document.querySelector('#AddContactModal .btn-close');
-            if (closeButton) {
-                (closeButton as HTMLButtonElement).click();
-                (document.getElementById('contactEmail') as HTMLInputElement).value = '';
-                (document.getElementById('contactPhone') as HTMLInputElement).value = '';
-                (document.getElementById('contactAddress') as HTMLTextAreaElement).value = '';
-            }
+            this.modal.close('AddContactModal');
+            this.reset();
         } else {
             swalHelper.showToast("Failed to add contact!", "warning");
         }
@@ -235,13 +237,8 @@ export class ContactDetailsComponent implements OnInit {
 
       if (response) {
         swalHelper.showToast('Contact Updated Successfully!', 'success');
-        await this.fetchContacts();
-
-        // Close modal and reset form
-        const closeButton = document.querySelector('#AddContactModal .btn-close');
-        if (closeButton) {
-          (closeButton as HTMLButtonElement).click();
-        }
+        this.reset();
+        this.modal.close('AddContactModal');
         // this.contactForm.reset();
         this.selectedContactId = "";
       } else {
@@ -254,8 +251,12 @@ export class ContactDetailsComponent implements OnInit {
   }
 
 
-  setSelectedContact(contact: any) {
+  setSelectedContact=async(contact: any) =>{
     this.selectedContact = contact;
+    const confirm=await swalHelper.delete();
+      if(confirm.isConfirmed){
+        this.confirmDelete()
+      }
   }
   
   async confirmDelete() {
@@ -273,7 +274,7 @@ export class ContactDetailsComponent implements OnInit {
       let response = await this.authService.deleteContactData(businessCardId, contactId);
   
       if (response) {
-        swalHelper.showToast('Contact Deleted Successfully!', 'success');
+        swalHelper.success('Contact Deleted Successfully!');
         await this.fetchContacts();
       } else {
         swalHelper.showToast('Failed to delete contact!', 'warning');
@@ -283,10 +284,8 @@ export class ContactDetailsComponent implements OnInit {
       console.error(err);
     }
   
-    // Reset selected contact
   this.selectedContact = null;
 
-  // Close modal
   let modalElement = document.getElementById('deleteContactModal');
   if (modalElement) {
     (modalElement as any).classList.remove('show');
@@ -309,5 +308,9 @@ export class ContactDetailsComponent implements OnInit {
 
   pageChangeEvent(event: number) {
     this.p = event;
+  }
+
+  onCloseModal(modal:string){
+    this.modal.close(modal)
   }
 }

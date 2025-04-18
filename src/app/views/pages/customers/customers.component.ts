@@ -134,17 +134,13 @@ export class CustomersComponent implements OnInit {
   }
 
   _deleteCustomer = async (id: string) => {
-    let conn = await swalHelper.confirmation(
-      'Delete',
-      'Do you really want to delete?',
-      'warning'
-    );
-    if (conn.isConfirmed) {
-      await this.customerService.deletCustomer({
-        businessCardId: this.businessCardId,
-        _id: id,
-      });
-    }
+    const confirm=await swalHelper.delete();
+      if(confirm.isConfirmed){
+        await this.customerService.deletCustomer({
+          businessCardId: this.businessCardId,
+          _id: id,
+        });
+      }
     this.reset();
   };
 

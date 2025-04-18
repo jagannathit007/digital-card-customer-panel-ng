@@ -7,7 +7,7 @@
           <span class="fs-3 fw-bold">SCANNED CARDS</span>
         </div>
         <div class="col-auto">
-          <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exportModal">
+          <button class="btn btn-info" (click)="modal.open('exportModal')">
             <i class="ri-file-excel-2-line"></i> Export to Excel
           </button>
         </div>
@@ -39,7 +39,7 @@
             <tr>
               <th class="text-center" [width]="'5%'">#</th>
               <th>Name</th>
-              <th class="text-center">Contact</th>
+              <th >Contact</th>
               <th>Address</th>
               <th>Keywords</th>
               <th>Notes</th>
@@ -64,10 +64,10 @@
                 <div class="fw-bold">{{ card.name }}</div>
                 <div class="text-muted" style="font-size: 12px;">{{ card.companyName }}</div>
               </td>
-              <td class="text-center">
+              <td >
                 <div>{{ card.companyEmailId }}</div>
                 <div class="text-muted" style="font-size: 12px;">{{ card.mobile }}, {{ card.businessMobile }}</div>
-              </td>
+              </td> 
               <td>{{ card.address || ':: NA ::'}}</td>
               <td>{{ card.keywords || ':: NA ::'}}</td>
               <td>{{ card.notes || ':: NA ::' }}</td>
@@ -98,11 +98,11 @@
 </div>
 
 <!-- Edit Modal -->
-<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" >
   <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="editModalLabel">Edit Scanned Card</h5>
+        <h4 class="modal-title fw-medium" id="editModalLabel">Edit Scanned Card</h4>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -145,20 +145,19 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" (click)="updateScannedCard()">Save changes</button>
+        <button type="button" class="btn btn-success" (click)="updateScannedCard()"><i class="ri-save-3-line"></i> Save</button>
       </div>
     </div>
   </div>
 </div>
 
 <!-- Export Modal -->
-<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" >
   <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exportModalLabel">Export to Excel</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h4 class="modal-title fw-medium" id="exportModalLabel">Export to Excel</h4>
+        <button type="button" class="btn-close" (click)="modal.close('exportModal')"></button>
       </div>
       <div class="modal-body">
         <form>
@@ -176,7 +175,6 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         <button type="button" class="btn btn-success" (click)="exportExcel()">
           <i class="ri-file-excel-2-line"></i> Export
         </button>
@@ -186,14 +184,14 @@
 </div>
 
 <div class="modal fade" id="add-customer" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog"
-  aria-labelledby="modalTitleId" aria-hidden="true">
+  aria-labelledby="modalTitleId" >
   <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="modalTitleId">
+        <h4 class="modal-title fw-medium" id="modalTitleId">
           Add to Customer
         </h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="onCloseCustomerModal()"></button>
+        <button type="button" class="btn-close"  (click)="onCloseCustomerModal()"></button>
       </div>
       <div class="modal-body">
         <div class="row">

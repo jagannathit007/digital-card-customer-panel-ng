@@ -2,7 +2,7 @@
   <div class="row">
     <div class="d-flex justify-content-between">
       <label class="text-first fw-bold text-uppercase fs-3">Personal Details</label>
-      <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#addSocialMediaModal">
+      <button type="button" class="btn btn-info"(click)="onOpneSocialMediaModel()">
         <i class="ri-links-line"></i> Add Social Media Link
       </button>
     </div>
@@ -22,8 +22,6 @@
 
         <!-- Social Media Links -->
         <div class="col-12 mt-4">
-
-
           <!-- Display added social media links -->
           <div class="row gy-4">
             @for (item of personalDetails.personalSocialMedia; track $index) {
@@ -60,13 +58,13 @@
 </div>
 
 
-<div class="modal fade" id="addSocialMediaModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true"
+<div class="modal fade" id="addSocialMediaModal" tabindex="-1" aria-labelledby="modalLabel" 
   data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="modalLabel">Add Social Media Link</h4>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <h4 class="modal-title fw-medium" id="modalLabel">Add Social Media Link</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="onCloseSocialMediaModal()"></button>
       </div>
       <form ngNativeValidate (ngSubmit)="addSocialMedia()">
         <div class="modal-body">

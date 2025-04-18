@@ -28,9 +28,15 @@ export class ModalService {
   }
 
   close(modalId: string): void {
+    modalId = modalId.replace('#', '');
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
     if (this.modalInstances[modalId]) {
       this.modalInstances[modalId].hide();
-      delete this.modalInstances[modalId];
+      setTimeout(() => {
+        delete this.modalInstances[modalId];
+      }, 500);
     }
   }
 }

@@ -123,6 +123,19 @@ class SwalHelper {
   };
 
 
+  public delete=async()=>{
+   return Swal.fire({
+      title: "De You really want to delete?",
+      text: "You won't be able to revert this!",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#1cbb8c",
+      cancelButtonColor: "#d64343",
+      confirmButtonText: "Yes, delete it!"
+    })
+  }
+
+
   public onConfirmOrder = async (data: any) => {
     let question = `<div style="font-size:20px; font-weight: 600;">${data.sectionCount} New Requests</div>
     <div style="font-size:15px; font-weight: 400;">${data.message}.`;

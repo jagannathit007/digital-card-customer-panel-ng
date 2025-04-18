@@ -104,4 +104,8 @@ export class DocumentDetailsComponent {
     this.documentDetails.otherDocuments.splice(index, 1);
   }
 
+  onCloseDocumentModal(){
+    this.modal.close('addOtherDocuments')
+  }
+
 }

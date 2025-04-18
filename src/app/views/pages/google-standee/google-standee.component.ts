@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@
 import { FormsModule } from '@angular/forms';
 import { common } from 'src/app/core/constants/common';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
+import { ModalService } from 'src/app/core/utilities/modal';
 import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
@@ -30,7 +31,7 @@ export class GoogleStandeeComponent implements OnInit {
   isQrLoading = false;
   qrData: any = null;
 
-  constructor(private cdRef: ChangeDetectorRef, private storage: AppStorage, public authService: AuthService,) {
+  constructor(private cdRef: ChangeDetectorRef, private storage: AppStorage, public authService: AuthService,public modal:ModalService) {
     this.currentBcardId = this.storage.get(common.BUSINESS_CARD);
   }
 
