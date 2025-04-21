@@ -43,10 +43,13 @@
               <tr
                   *ngFor="let item of historyDetails.docs || [] | paginate: {itemsPerPage: payload.limit, currentPage: payload.page, totalItems: historyDetails.totalDocs}; let i = index">
                   <td [width]="'5%'" class="text-center">{{ (payload.page - 1) * payload.limit + i + 1 }}</td>
-                <td >{{item.name | titlecase}}</td>
+                <td >{{item.name | titlecase}} <span class="badge bg-info ms-2" *ngIf="item.isCustomer">Customer</span></td>
                 <td class="text-center" [width]="'15%'">{{item.createdAt | date:'dd-MM-yyyy'}} {{item.createdAt | date:'hh:MM a'}}</td>
                 <td class="text-center" [width]="'15%'">{{item.mobile}}</td>
                 <td class="text-center" [width]="'15%'">
+                  <button class="btn btn-sm btn-success me-1" (click)="onOpenAddToCustomerModal(item)" [disabled]="item.isCustomer">
+                    <i class="ri-add-circle-line"></i>
+                  </button>
                   <a [href]="'tel:' + item.mobile" class="btn btn-info btn-sm">
                     <i class="ri-phone-fill"></i>
                   </a>

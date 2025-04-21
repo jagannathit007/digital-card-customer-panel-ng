@@ -1,4 +1,4 @@
-<!-- src/app/scanned-cards/scanned-cards.component.html -->
+
 <div>
   <div class="card">
     <div class="card-body">
@@ -38,7 +38,7 @@
           <thead class="table-light text-uppercase">
             <tr>
               <th class="text-center" [width]="'5%'">#</th>
-              <th>Name</th>
+              <th [width]="'20%'">Name</th>
               <th >Contact</th>
               <th>Address</th>
               <th>Keywords</th>
@@ -61,7 +61,10 @@
               *ngFor="let card of scannedCards.docs | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems };let i=index">
               <td class="text-center">{{ (p - 1) * itemsPerPage + i + 1 }}</td>
               <td>
-                <div class="fw-bold">{{ card.name }}</div>
+                <div class="d-flex gap-2">
+                  <div class="fw-bold">{{ card.name }}</div>
+                  <div *ngIf="card.isCustomer" class="badge bg-info">Customer</div>
+                </div>
                 <div class="text-muted" style="font-size: 12px;">{{ card.companyName }}</div>
               </td>
               <td >
@@ -72,7 +75,7 @@
               <td>{{ card.keywords || ':: NA ::'}}</td>
               <td>{{ card.notes || ':: NA ::' }}</td>
               <td class="text-center">
-                <button class="btn btn-sm btn-success me-1" (click)="onOpenAddToCustomerModal(card)">
+                <button class="btn btn-sm btn-success me-1" [disabled]="card.isCustomer" (click)="onOpenAddToCustomerModal(card)">
                   <i class="ri-add-circle-line"></i>
                 </button>
                 <button class="btn btn-sm btn-info me-1" (click)="openEditModal(card)">

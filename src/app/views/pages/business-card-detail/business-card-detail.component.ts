@@ -141,6 +141,7 @@ export class BusinessCardDetailComponent {
       spouse_relation: '',
       spouse_DOB: '',
       spouse_name: '',
+      userId:null,
     },
       this._getScannedCards()
   }
@@ -160,7 +161,7 @@ export class BusinessCardDetailComponent {
       this.customer.countryCode = null;
       this.customer.mobile = digitsOnly;
     }
-
+    this.customer.userId=data.userId
     this.customer.name = data.name;
     this.modal.open('add-customer');
   }

@@ -121,6 +121,7 @@ export class SharedHistoryComponent {
     spouse_relation: '',
     spouse_DOB: '',
     spouse_name: '',
+    userId:null,
   }
   onOpenAddToCustomerModal(data: any) {
     this.customer.name = data.name
@@ -136,7 +137,7 @@ export class SharedHistoryComponent {
       this.customer.countryCode = null;
       this.customer.mobile = digitsOnly;
     }
-    // this.customer.mobile=data.mobile
+    this.customer.userId=data.userId
     this.customer.businessCardId = this.businessCard
     this.modal.open('add-customer');
   }

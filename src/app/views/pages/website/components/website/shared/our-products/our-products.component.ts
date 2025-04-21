@@ -126,7 +126,7 @@ export class OurProductsComponent implements OnInit {
       this.selectedProducts.images = [];
     }
   
-    const totalImages = this.selectedProducts.images.length + newFiles.length;
+    const totalImages = this.selectedProducts.images?.length + newFiles.length;
   
     if (totalImages > 5) {
       swalHelper.warning('You can upload a maximum of 5 images.');
@@ -160,7 +160,7 @@ export class OurProductsComponent implements OnInit {
   
           processed++;
           if (processed === newFiles.length) {
-            this.selectedProducts.images.push(...validImages);
+            this.selectedProducts.images?.push(...validImages);
           }
         };
         img.src = e.target.result;
@@ -192,7 +192,7 @@ export class OurProductsComponent implements OnInit {
 
   removeImage(index: number) {
     this.selectedProducts.images.splice(index, 1);
-    if (this.selectedProducts.images.length == 0) {
+    if (this.selectedProducts.images?.length == 0) {
       this.selectedProducts.images = [] as File[]
       this.fileInputRef.nativeElement.value = '';
     }
@@ -200,7 +200,7 @@ export class OurProductsComponent implements OnInit {
 
 
   onCreateProducts() {
-    this.selectedProducts.images = this.selectedProducts.images.filter((item: any) => {
+    this.selectedProducts.images = this.selectedProducts.images?.filter((item: any) => {
       if (typeof item === 'string') {
         this.selectedProducts.existingImages = this.selectedProducts.existingImages || [];
         this.selectedProducts.existingImages?.push(item);
@@ -214,7 +214,7 @@ export class OurProductsComponent implements OnInit {
     formdata.append('price', this.selectedProducts.price)
     formdata.append('description', this.selectedProducts.description)
     formdata.append('businessCardId', this.businessCardId)
-    this.selectedProducts.images.forEach((file: File, index: number) => {
+    this.selectedProducts.images?.forEach((file: File, index: number) => {
       formdata.append('images', file);
     });
     if(this.selectedProducts._id){
