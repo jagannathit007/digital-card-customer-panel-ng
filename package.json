@@ -5,8 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "npm run build:godigital && npm run build:digitalcard",
-    "build:godigital": "ng build --configuration=godigital && cd dist && zip -r ../godigital.zip .",
-    "build:digitalcard": "ng build --configuration=production && cd dist && zip -r ../digitalcard.zip .",
+    "build:godigital": "ng build --configuration=godigital && powershell Compress-Archive -Path dist/* -DestinationPath godigital.zip -Force",
+    "build:digitalcard": "ng build --configuration=production && powershell Compress-Archive -Path dist/* -DestinationPath digitalcard.zip -Force",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
