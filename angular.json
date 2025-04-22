@@ -72,6 +72,27 @@
               ],
               "outputHashing": "all"
             },
+            "godigital": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "10mb",
+                  "maximumError": "10mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "10mb",
+                  "maximumError": "10mb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/env/env.local.ts",
+                  "with": "src/env/env.godigital.prod.ts"
+                }
+              ],
+              "outputHashing": "all"
+            },
             "development": {
               "buildOptimizer": false,
               "optimization": false,
