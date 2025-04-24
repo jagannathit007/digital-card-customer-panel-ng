@@ -16,5 +16,14 @@ body{
     width: 1.5rem;
     height: 0.7rem;
     transform: scale(1.5);
-  }
+}
 
+.form-check-input:checked {
+    background-color: #27a544 !important;
+    border-color: #27a544 !important;
+  }
+  
+  /* Optional: remove blue box-shadow on focus */
+  .form-check-input:focus {
+    box-shadow: none !important;
+  }

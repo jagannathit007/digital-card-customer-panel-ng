@@ -14,71 +14,95 @@ import { ModalService } from 'src/app/core/utilities/modal';
   styleUrl: './about-section.component.scss',
 })
 export class AboutSectionComponent implements OnInit {
- 
+
   isLoading: boolean = false;
   aboutCompanyList: any
 
   constructor(
-    private storage: AppStorage, 
+    private storage: AppStorage,
     public authService: AuthService,
-    private websiteService:WebsiteBuilderService,
-    public modal:ModalService
-  ) {}
+    private websiteService: WebsiteBuilderService,
+    public modal: ModalService
+  ) { }
 
-  businessCardId:any
+  businessCardId: any
   ngOnInit() {
-    this.businessCardId=this.storage.get(common.BUSINESS_CARD)
+    this.businessCardId = this.storage.get(common.BUSINESS_CARD)
     this.fetchWebsiteDetails();
   }
 
   async fetchWebsiteDetails() {
-    this.isLoading = true; 
+    this.isLoading = true;
     try {
       let businessCardId = this.storage.get(common.BUSINESS_CARD);
       let results = await this.authService.getWebsiteDetails(businessCardId);
 
       if (results && results.aboutCompany) {
         this.aboutCompanyList = results.aboutCompany
-        this.aboutCompanyVisible=results.aboutCompany.visible
+        this.aboutCompanyVisible = results.aboutCompanyVisible
       }
     } catch (error) {
       console.error('Error fetching company information: ', error);
       swalHelper.showToast('Error fetching company information!', 'error');
     } finally {
-      this.isLoading = false; 
+      this.isLoading = false;
     }
   }
 
-  aboutCompanyVisible:boolean=false
-_updateVisibility=async()=>{
-  await this.websiteService.updateVisibility({'aboutCompany.visible':this.aboutCompanyVisible,businessCardId:this.businessCardId})
-}
+  aboutCompanyVisible: boolean = false
+  _updateVisibility = async () => {
+    await this.websiteService.updateVisibility({ aboutCompanyVisible: this.aboutCompanyVisible, businessCardId: this.businessCardId })
+  }
 
-payload={
-  businessCardId:'',
-  addAboutData:[{title:'',description:'',visible:true}]
-}
-onOpenaddAboutDetails(){
-  this.payload.businessCardId=this.businessCardId
-  this.modal.open('add-about')
-}
+  payload: any = {
+    businessCardId: '',
+    addAboutData: [],
+    _id: null
+  }
+  onOpenaddAboutDetails() {
+    this.payload.addAboutData.push({ title: '', description: '', visible: true })
+    this.payload.businessCardId = this.businessCardId
+    this.modal.open('add-about')
+  }
 
-onAddAboutData(){
-  this.payload.addAboutData.push({title:'',description:'',visible:true})
-}
+  onAddAboutData() {
+    this.payload.addAboutData.push({ title: '', description: '', visible: true })
+  }
 
-onDelete(index: number) {
-  this.payload.addAboutData.splice(index, 1);
-}
+  onDelete(index: number) {
+    this.payload.addAboutData.splice(index, 1);
+  }
 
-reset(){
-  addAboutData:[{title:'',description:''}]
-  this.fetchWebsiteDetails();
-}
+  reset() {
+    this.payload = {
+      businessCardId: this.businessCardId,
+      addAboutData: [],
+      _id: null
+    }
+    this.fetchWebsiteDetails();
+  }
 
-_saveAboutData=async()=>{
-  await this.websiteService.updateAboutSectionData(this.payload.addAboutData)
-  this.reset()
-}
+  _saveAboutData = async () => {
+    await this.websiteService.updateAboutSectionData(this.payload)
+    this.reset()
+    this.modal.close('add-about')
+  }
 
+  onOpenUpdateModal(data: any) {
+    this.payload.addAboutData.push({ title: data.title, description: data.description, visible: data.visible })
+    this.payload._id = data._id
+    this.payload.businessCardId = this.businessCardId
+    this.modal.open('add-about')
+  }
+
+  _deleteAboutData = async (id: string) => {
+    const confirm = await swalHelper.delete();
+    if (confirm.isConfirmed) {
+      let response = await this.websiteService.deleteAboutData({ _id: id ,businessCardId:this.businessCardId})
+      if (response) {
+        swalHelper.success('Data Deleted Successfully')
+      }
+      this.reset()
+    }
+  }
 }
