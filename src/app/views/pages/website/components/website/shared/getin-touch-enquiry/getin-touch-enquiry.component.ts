@@ -1,22 +1,3 @@
-// import { Component, OnInit } from '@angular/core';
-// import { FormsModule } from '@angular/forms';
-// import { CommonModule } from '@angular/common';
-// import { NgxPaginationModule } from 'ngx-pagination';
-// import { common } from 'src/app/core/constants/common';
-// import { AppStorage } from 'src/app/core/utilities/app-storage';
-// import { AuthService } from 'src/app/services/auth.service';
-// import { swalHelper } from 'src/app/core/constants/swal-helper';
-// import { ModalService } from 'src/app/core/utilities/modal';
-
-// @Component({
-//   selector: 'app-getin-touch-enquiry',
-//   templateUrl: './getin-touch-enquiry.component.html',
-//   styleUrl: './getin-touch-enquiry.component.scss'
-// })
-// export class GetinTouchEnquiryComponent {
-
-// }
-
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -74,11 +55,15 @@ export class GetinTouchEnquiryComponent implements OnInit {
     if (!this.searchTerm.trim()) {
       this.filteredgetIntouchContact = [...this.getIntouchContact];
     } else {
-      this.filteredgetIntouchContact = this.getIntouchContact.filter(order =>
-        order.customer.email.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        order.customer.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+      const searchTermLower = this.searchTerm.toLowerCase();
+      this.filteredgetIntouchContact = this.getIntouchContact.filter(contact =>
+        contact.email?.toLowerCase().includes(searchTermLower) ||
+        contact.name?.toLowerCase().includes(searchTermLower) ||
+        contact.message?.toLowerCase().includes(searchTermLower)
       );
     }
+    this.totalItems = this.filteredgetIntouchContact.length;
+    this.p = 1; 
   }
 
 
