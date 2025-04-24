@@ -82,6 +82,11 @@ export class WebsiteComponent{
         href: "contact-details",
         icon:'ri-phone-fill'
       },
+      {
+        title: "products-enquiry",
+        href: "products-enquiry",
+        icon:'ri-instance-fill'
+      },
     ]
    
      isActive(href: string): boolean {
