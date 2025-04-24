@@ -5,6 +5,8 @@ import { common } from 'src/app/core/constants/common';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { AuthService } from 'src/app/services/auth.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
+import { WebsiteBuilderService } from 'src/app/services/website-builder.service';
+import { ModalService } from 'src/app/core/utilities/modal';
 
 @Component({
   selector: 'app-about-section',
@@ -14,15 +16,18 @@ import { swalHelper } from 'src/app/core/constants/swal-helper';
 export class AboutSectionComponent implements OnInit {
  
   isLoading: boolean = false;
-  aboutCompanyList: any = {
-    mission: '',
-    vision: '',
-    history: ''
-  };
+  aboutCompanyList: any
 
-  constructor(private storage: AppStorage, public authService: AuthService) {}
+  constructor(
+    private storage: AppStorage, 
+    public authService: AuthService,
+    private websiteService:WebsiteBuilderService,
+    public modal:ModalService
+  ) {}
 
+  businessCardId:any
   ngOnInit() {
+    this.businessCardId=this.storage.get(common.BUSINESS_CARD)
     this.fetchWebsiteDetails();
   }
 
@@ -33,14 +38,8 @@ export class AboutSectionComponent implements OnInit {
       let results = await this.authService.getWebsiteDetails(businessCardId);
 
       if (results && results.aboutCompany) {
-        this.aboutCompanyList = {
-          mission: results.aboutCompany.mission || '',
-          vision: results.aboutCompany.vision || '',
-          history: results.aboutCompany.history || ''
-        };
-
-      } else {
-        swalHelper.showToast('Company information not found!', 'warning');
+        this.aboutCompanyList = results.aboutCompany
+        this.aboutCompanyVisible=results.aboutCompany.visible
       }
     } catch (error) {
       console.error('Error fetching company information: ', error);
@@ -50,25 +49,36 @@ export class AboutSectionComponent implements OnInit {
     }
   }
 
-  async saveAboutUs() {
-    this.isLoading = true; 
-    try {
-      let response = await this.authService.updateAboutUs(this.aboutCompanyList);
-      
-      if (response) {
-        swalHelper.showToast('Company information updated successfully!', 'success');
-      } else {
-        swalHelper.showToast('Failed to update company information!', 'warning');
-      }
-    } catch (error) {
-      console.error('Error updating company information:', error);
-      swalHelper.showToast('Something went wrong!', 'error');
-    } finally {
-      this.isLoading = false; 
-    }
-  }
+  aboutCompanyVisible:boolean=false
+_updateVisibility=async()=>{
+  await this.websiteService.updateVisibility({'aboutCompany.visible':this.aboutCompanyVisible,businessCardId:this.businessCardId})
+}
 
+payload={
+  businessCardId:'',
+  addAboutData:[{title:'',description:'',visible:true}]
+}
+onOpenaddAboutDetails(){
+  this.payload.businessCardId=this.businessCardId
+  this.modal.open('add-about')
+}
 
+onAddAboutData(){
+  this.payload.addAboutData.push({title:'',description:'',visible:true})
+}
 
+onDelete(index: number) {
+  this.payload.addAboutData.splice(index, 1);
+}
+
+reset(){
+  addAboutData:[{title:'',description:''}]
+  this.fetchWebsiteDetails();
+}
+
+_saveAboutData=async()=>{
+  await this.websiteService.updateAboutSectionData(this.payload.addAboutData)
+  this.reset()
+}
 
 }

@@ -33,6 +33,7 @@ export class OurProductsComponent implements OnInit {
   ) { }
 
   businessCardId:any
+  productVisible:boolean=false
   ngOnInit() {
     this.businessCardId=this.storage.get(common.BUSINESS_CARD)
     this._getProducts()
@@ -82,6 +83,7 @@ export class OurProductsComponent implements OnInit {
           this.products = results.products ? [...results.products] : [];
           this.products = [...this.products];
           this.cdr.markForCheck();
+          this.productVisible=results.productVisible
         } else {
           swalHelper.showToast('Failed to fetch team members!', 'warning');
         }
@@ -99,7 +101,8 @@ export class OurProductsComponent implements OnInit {
     name: '',
     images: [] as File[],
     description: '',
-    price:''
+    price:'',
+    visible:true
   }
   imageBaseURL = environment.baseURL + '/';
 
@@ -220,6 +223,7 @@ export class OurProductsComponent implements OnInit {
     if(this.selectedProducts._id){
       formdata.append('id', this.selectedProducts._id);
     }
+    formdata.append('visible',this.selectedProducts.visible.toString())
     if(this.selectedProducts.existingImages){
       formdata.append('existingImages', JSON.stringify(this.selectedProducts.existingImages));
     }
@@ -253,6 +257,10 @@ export class OurProductsComponent implements OnInit {
   onOpenImageModal(image:any){
     this.imageForCarousel=image
     this.modal.open('image-carousel');
+  }
+
+  _updateVisibility=async()=>{
+    await this.websiteService.updateVisibility({productVisible:this.productVisible,businessCardId:this.businessCardId})
   }
 
 }

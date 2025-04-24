@@ -69,4 +69,52 @@ export class WebsiteBuilderService {
         return false;
       }
     }
+
+    async updateVisibility(data:any){
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.UPDATE_VISIBILITY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.showToast(response.message, 'success');
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (error) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+
+    async updateAboutSectionData(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_ABOUT_UPDATE,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        
+        if (response.status == 200 && response.data != null) {
+          return response.data;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return null;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return null;
+      }
+    }
 }

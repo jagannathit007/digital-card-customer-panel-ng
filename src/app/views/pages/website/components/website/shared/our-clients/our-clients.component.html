@@ -1,7 +1,13 @@
 <div >
     <div class="row">
         <div class="col-md">
-            <label class="fw-bold text-uppercase fs-3">Our Clients</label>
+            <div class="d-flex">
+                <label class="fw-bold text-uppercase fs-3">Our Clients</label>
+                <div class="form-check form-switch switch-lg ms-3 mt-2">
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="clientVisible" (change)="_updateVisibility()">
+                  </div>
+            </div>
+            
         </div>
         <div class="col-md-auto">
             <button class="btn btn-info" (click)="modal.open('AddClientModal')">
@@ -97,7 +103,12 @@
                             Client name is required!
                         </div>
                     </div>
-
+                    <div class="mb-3">
+                        <label for="editClientName" class="form-label">Visible</label>
+                        <div class="form-check form-switch switch-lg ms-3 mt-2">
+                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="newClient.visible" [ngModelOptions]="{standalone: true}">
+                        </div>
+                    </div>
                     <div class="mb-3">
                         <label for="clientUrl" class="form-label">Website URL</label>
                         <input type="text" class="form-control" id="clientUrl" placeholder="Enter website URL" 
@@ -134,6 +145,12 @@
                         <label for="editClientName" class="form-label">Client Name</label>
                         <input type="text" class="form-control" id="editClientName" placeholder="Enter client name" 
                             [(ngModel)]="editingClient.name" name="editClientName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editClientName" class="form-label">Visible</label>
+                        <div class="form-check form-switch switch-lg ms-3 mt-2">
+                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="editingClient.visible" [ngModelOptions]="{standalone: true}">
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="editClientUrl" class="form-label">Website URL</label>
