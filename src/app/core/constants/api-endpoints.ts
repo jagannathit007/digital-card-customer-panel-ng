@@ -57,8 +57,10 @@ class ApiEndpoints {
   public WEBSITE_OUR_PRODUCTS_UPDATE: string = `${this.PATH}/website/product/update`;
   public WEBSITE_OUR_PRODUCTS_DELETE: string = `${this.PATH}/website/product/delete`;
   public UPDATE_VISIBILITY: string = `${this.PATH}/website/update-visibility`;
+  
   // website_ABOUT-SECTION_apis
-  public WEBSITE_ABOUT_UPDATE: string = `${this.PATH}/website/about/update`;
+public WEBSITE_ABOUT_UPDATE: string = `${this.PATH}/website/about/update`;
+public DELETE_ABOUT_DATA: string = `${this.PATH}/website/about/delete`;
 
   // website_ABOUT-SECTION_apis
   public WEBSITE_HOME_UPDATE: string = `${this.PATH}/website/home/update`;
