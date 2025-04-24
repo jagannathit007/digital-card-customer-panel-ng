@@ -1,7 +1,13 @@
 <div>
     <div class="row">
         <div class="col-md">
-            <label class="fw-bold text-uppercase fs-3">Service List</label>
+            <div class="d-flex">
+                <label class="fw-bold text-uppercase fs-3">Service List</label>
+                <div class="form-check form-switch switch-lg ms-3 mt-2">
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="serviceVisible" (change)="_updateVisibility()">
+                  </div>
+            </div>
+            
         </div>
         <div class="col-md-auto">
             <button class="btn btn-info" (click)="modal.open('AddServiceModal')">
@@ -106,8 +112,12 @@
                             Service title is required!
                         </div>
                     </div>
-
-                    <!-- Service Description -->
+                    <div class="mb-3">
+                        <label for="editServiceTitle" class="form-label">Visible</label>
+                        <div class="form-check form-switch switch-lg ms-3 mt-2">
+                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="newService.visible" [ngModelOptions]="{standalone: true}">
+                        </div>
+                    </div>
                     <div class="mb-3">
                         <label for="serviceDescription" class="form-label">Description</label>
                         <textarea class="form-control" id="serviceDescription" rows="3" placeholder="Enter description"
@@ -150,6 +160,13 @@
                         <label for="editServiceTitle" class="form-label">Service Title</label>
                         <input type="text" class="form-control" id="editServiceTitle" placeholder="Enter service title"
                             [(ngModel)]="editingService.title" name="editServiceTitle" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editServiceTitle" class="form-label">Visible</label>
+                        <div class="form-check form-switch switch-lg ms-3 mt-2">
+                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="editingService.visible" [ngModelOptions]="{standalone: true}">
+                        </div>
                     </div>
 
                     <div class="mb-3">

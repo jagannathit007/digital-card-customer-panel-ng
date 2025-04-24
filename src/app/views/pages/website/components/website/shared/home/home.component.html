@@ -16,12 +16,22 @@
         </div>
 
         <div class="col-md-6 col-12">
-            <label for="slogan" class="form-label fw-bold">Slogan</label>
+            <div class="d-flex">
+                <label for="slogan" class="form-label fw-bold">Slogan</label>
+                <span class="form-check form-switch ms-3 ">
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="sloganVisible" (change)="_updateVisibility()">
+                </span>
+            </div>
             <input type="text" id="slogan" class="form-control" [(ngModel)]="home.slogan" required />
         </div>
 
         <div class="col-md-6 col-12">
-            <label for="bannerImage" class="form-label fw-bold">Banner Image</label>
+            <div class="d-flex">
+                <label for="bannerImage" class="form-label fw-bold">Banner Image</label>
+                <span class="form-check form-switch ms-3 ">
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="bannerImageVisible" (change)="_updateVisibility()">
+                </span>
+            </div>
             <input type="file" id="bannerImage" class="form-control" (change)="onBannerImageSelected($event)" />
             <div *ngIf="bannerImagePreview" class="mt-2">
                 <img [src]="bannerImagePreview" alt="Banner Preview" class="img-thumbnail" width="200" />
@@ -29,7 +39,13 @@
         </div>
 
         <div class="col-md-6 col-12">
-            <label for="logoImage" class="form-label fw-bold">Logo Image</label>
+            <div class="d-flex">
+                <label for="logoImage" class="form-label fw-bold">Logo Image</label>
+                <span class="form-check form-switch ms-3 ">
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="logoImageVisible" (change)="_updateVisibility()">
+                </span>
+            </div>
+            
             <input type="file" id="logoImage" class="form-control" (change)="onLogoImageSelected($event)" />
             <div *ngIf="logoImagePreview" class="mt-2">
                 <img [src]="logoImagePreview" alt="Logo Preview" class="img-thumbnail" width="150" />

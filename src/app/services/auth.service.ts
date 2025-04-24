@@ -996,33 +996,6 @@ export class AuthService {
     }
   }
 
-  // about section /UPDATE/
-  async updateAboutUs(data: any) {
-    try {
-      this.getHeaders();
-      data = this.addBusinessCardId(data); 
-      
-      let response = await this.apiManager.request(
-        {
-          url: apiEndpoints.WEBSITE_ABOUT_UPDATE,
-          method: 'POST',
-        },
-        data,
-        this.headers
-      );
-      
-      if (response.status == 200 && response.data != null) {
-        return response.data;
-      } else {
-        swalHelper.showToast(response.message, 'warning');
-        return null;
-      }
-    } catch (err) {
-      swalHelper.showToast('Something went wrong!', 'error');
-      return null;
-    }
-  }
-
   // testimonials services ADD/UPDATE/DELETE
   async addTestimonials(data: any) {
     try {

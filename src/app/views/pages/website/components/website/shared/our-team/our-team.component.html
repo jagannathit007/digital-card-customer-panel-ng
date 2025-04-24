@@ -1,7 +1,13 @@
 <div >
     <div class="row">
         <div class="col">
-            <label class="fw-bold text-uppercase fs-3">Team Members</label>
+            <div class="d-flex">
+                <label class="fw-bold text-uppercase fs-3">Team Members</label>
+                <div class="form-check form-switch switch-lg ms-3 mt-2">
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="teamVisible" (change)="_updateVisibility()">
+                  </div>
+            </div>
+            
         </div>
         <div class="col-md-auto">
             <button class="btn btn-info" (click)="modal.open('AddTeamMemberModal')">
@@ -117,7 +123,12 @@
                                name="memberRole" 
                                #memberRole="ngModel">
                     </div>
-
+                    <div class="mb-3">
+                        <label for="editMemberRole" class="form-label">Visible</label>
+                        <div class="form-check form-switch switch-lg ms-3 mt-2">
+                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="newMember.visible" [ngModelOptions]="{standalone: true}">
+                        </div>
+                    </div>
                     <!-- Image Upload -->
                     <div class="mb-3">
                         <label for="memberImage" class="form-label">Upload Profile Picture</label>
@@ -162,6 +173,13 @@
                               name="editMemberRole">
                     </div>
                     
+                    <div class="mb-3">
+                        <label for="editMemberRole" class="form-label">Visible</label>
+                        <div class="form-check form-switch switch-lg ms-3 mt-2">
+                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="editingMember.visible" [ngModelOptions]="{standalone: true}">
+                        </div>
+                    </div>
+
                     <div class="mb-3">
                         <label for="editMemberImage" class="form-label">Current Image</label>
                         <div *ngIf="editingMember.currentPhoto && editingMember.currentPhoto.length" class="mb-2">

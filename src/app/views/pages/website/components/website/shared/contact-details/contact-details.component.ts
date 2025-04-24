@@ -8,6 +8,7 @@ import { common } from 'src/app/core/constants/common';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { RegularRegex } from 'src/app/core/constants/regular-regex';
 import { ModalService } from 'src/app/core/utilities/modal';
+import { WebsiteBuilderService } from 'src/app/services/website-builder.service';
 
 @Component({
   selector: 'app-contact-details',
@@ -50,9 +51,11 @@ export class ContactDetailsComponent implements OnInit {
     this.fetchContacts()
   }
 
-  constructor(private storage: AppStorage, public authService: AuthService,public modal:ModalService) { }
+  constructor(private storage: AppStorage, public authService: AuthService,public modal:ModalService,private websiteService:WebsiteBuilderService) { }
 
+  businessCardId:any
   async ngOnInit() {
+    this.businessCardId=this.storage.get(common.BUSINESS_CARD)
     await this.fetchContacts();
   }
 
@@ -71,6 +74,7 @@ export class ContactDetailsComponent implements OnInit {
         };
 
         this.contacts = results.contact ? [...results.contact] : [];
+        this.contactVisible=results.contactVisible
       }
       this.filteredContacts = [...this.contacts];
       this.totalItems = this.contacts.length;
@@ -300,8 +304,6 @@ export class ContactDetailsComponent implements OnInit {
 
   }
 
-
-
   onItemsPerPageChange() {
     this.p = 1;
   }
@@ -312,5 +314,10 @@ export class ContactDetailsComponent implements OnInit {
 
   onCloseModal(modal:string){
     this.modal.close(modal)
+  }
+
+  contactVisible:boolean=false
+  _updateVisibility=async()=>{
+    await this.websiteService.updateVisibility({contactVisible:this.contactVisible,businessCardId:this.businessCardId})
   }
 }

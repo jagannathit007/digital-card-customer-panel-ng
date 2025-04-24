@@ -1,7 +1,12 @@
 <div class="row">
     <div class="row pe-0">
         <div class="col-md">
-            <label class="fw-bold text-uppercase fs-3">Our Products</label>
+            <div class="d-flex">
+                <label class="fw-bold text-uppercase fs-3">Our Products</label>
+                <div class="form-check form-switch switch-lg ms-3 mt-2">
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="productVisible" (change)="_updateVisibility()">
+                  </div>
+            </div>
         </div>
         <div class="col-md-auto pe-0">
             <button class="btn btn-info" (click)="onOpenCraeteModal()"><i class="ri-add-circle-line"></i> Add
@@ -92,9 +97,15 @@
                             <input type="text" [(ngModel)]="selectedProducts.name" [ngModelOptions]="{standalone:true}"
                                 required class="form-control mt-1" placeholder="Please Enter Product Name">
                         </div>
-                        <div class="col-md-12 mt-4">
+                        <div class="col-md-6 mt-4">
                             <span class="fw-bold">Price </span>
                             <input type="text" [(ngModel)]="selectedProducts.price" [ngModelOptions]="{standalone:true}" class="form-control mt-1" placeholder="Please Enter price">
+                        </div>
+                        <div class="col-md-6 mt-4">
+                            <span class="fw-bold">Visible </span>
+                            <div class="form-check form-switch switch-lg ms-3 mt-2">
+                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="selectedProducts.visible" [ngModelOptions]="{standalone: true}">
+                            </div>
                         </div>
                         <div class="col-md-12 mt-4">
                             <span class="fw-bold">Upload Images <code class="text-danger">* (Upload Upto 15 Images & Image size should be 1250 X 720 or 1600 X 900)</code></span>

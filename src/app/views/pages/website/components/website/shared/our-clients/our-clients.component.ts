@@ -8,6 +8,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
 import { ModalService } from 'src/app/core/utilities/modal';
+import { WebsiteBuilderService } from 'src/app/services/website-builder.service';
 
 @Component({
   selector: 'app-our-clients',
@@ -27,10 +28,11 @@ export class OurClientsComponent implements OnInit {
   clientID: string = '';
   selectedImage: string = '';
 
-  newClient = {
+  newClient:any = {
     name: '',
     url: '',
     image: null as File | null,
+    visible:true
   };
 
   editingClient = {
@@ -38,12 +40,15 @@ export class OurClientsComponent implements OnInit {
     name: '',
     url: '',
     image: null as File | null,
-    currentImage: ''
+    currentImage: '',
+    visible:true
   };
 
-  constructor(private storage: AppStorage, public authService: AuthService,public modal:ModalService) {}
+  constructor(private storage: AppStorage, public authService: AuthService,public modal:ModalService,private websiteService:WebsiteBuilderService) {}
 
+  businessCardId:any
   async ngOnInit() {
+    this.businessCardId=this.storage.get(common.BUSINESS_CARD)
     await this.fetchWebsiteDetails();
   }
 
@@ -56,6 +61,7 @@ export class OurClientsComponent implements OnInit {
         this.clientsList = results.clients ? [...results.clients] : [];
         this.filteredClients = [...this.clientsList];
         this.totalItems = this.clientsList.length;
+        this.clientVisible=results.clientVisible
       } else {
         swalHelper.showToast('Failed to fetch clients!', 'warning');
       }
@@ -82,7 +88,7 @@ export class OurClientsComponent implements OnInit {
       if (this.newClient.image) {
         formData.append('file', this.newClient.image);
       }
-
+      formData.append('visible', this.newClient.visible.toString());
       const result = await this.authService.addClients(formData);
       if (result) {
         this.clientsList = [result, ...this.clientsList];
@@ -120,7 +126,8 @@ export class OurClientsComponent implements OnInit {
       name: client.name,
       url: client.url || '',
       image: null,
-      currentImage: client.image || ''
+      currentImage: client.image || '',
+      visible:client.visible
     };
     this.modal.open('EditClientModal');
   }
@@ -141,7 +148,7 @@ export class OurClientsComponent implements OnInit {
       if (this.editingClient.image) {
         formData.append('file', this.editingClient.image);
       }
-      
+      formData.append('visible', this.editingClient.visible.toString());
       const result = await this.authService.updateClients(formData);
       if (result) {
         const index = this.clientsList.findIndex(c => c._id === this.editingClient._id);
@@ -232,5 +239,10 @@ export class OurClientsComponent implements OnInit {
 
   OnCloseModal(modal:string){
     this.modal.close(modal)
+  }
+
+  clientVisible:boolean=false
+  _updateVisibility=async()=>{
+    await this.websiteService.updateVisibility({clientVisible:this.clientVisible,businessCardId:this.businessCardId})
   }
 }

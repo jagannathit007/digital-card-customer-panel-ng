@@ -8,6 +8,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
 import { ModalService } from 'src/app/core/utilities/modal';
+import { WebsiteBuilderService } from 'src/app/services/website-builder.service';
 
 @Component({
   selector: 'app-our-services',
@@ -27,10 +28,11 @@ export class OurServicesComponent implements OnInit {
   serviceID: string = '';
   selectedImage: string = '';
 
-  newService = {
+  newService:any = {
     title: '',
     description: '',
     image: null as File | null,
+    visible:true
   };
 
   editingService = {
@@ -38,17 +40,21 @@ export class OurServicesComponent implements OnInit {
     title: '',
     description: '',
     image: null as File | null,
-    currentImage: ''
+    currentImage: '',
+    visible:true
   };
 
   constructor(
     private storage: AppStorage, 
     public authService: AuthService,
     private cdr: ChangeDetectorRef,
-    public modal:ModalService
+    public modal:ModalService,
+    private websiteService:WebsiteBuilderService
   ) {}
 
+  businessCardId:any
   async ngOnInit() {
+    this.businessCardId=this.storage.get(common.BUSINESS_CARD)
     await this.fetchWebsiteDetails();
   }
 
@@ -62,6 +68,7 @@ export class OurServicesComponent implements OnInit {
         this.services = results.services ? [...results.services] : [];
         this.filteredServices = [...this.services];
         this.totalItems = this.services.length;
+        this.serviceVisible=results.serviceVisible
         this.cdr.markForCheck();
       } else {
         swalHelper.showToast('Failed to fetch services!', 'warning');
@@ -90,7 +97,7 @@ export class OurServicesComponent implements OnInit {
       if (this.newService.image) {
         formData.append('file', this.newService.image);
       }
-
+      formData.append('visible',this.newService.visible.toString())
       const result = await this.authService.addServices(formData);
       if (result) {
         this.services = [result, ...this.services];
@@ -129,7 +136,8 @@ export class OurServicesComponent implements OnInit {
       title: service.title,
       description: service.description || '',
       image: null,
-      currentImage: service.image || ''
+      currentImage: service.image || '',
+      visible:service.visible
     };
     this.modal.open('EditServiceModal');
     this.cdr.markForCheck();
@@ -151,7 +159,7 @@ export class OurServicesComponent implements OnInit {
       if (this.editingService.image) {
         formData.append('file', this.editingService.image);
       }
-      
+      formData.append('visible',this.editingService.visible.toString())
       const result = await this.authService.updateServices(formData);
       if (result) {
         const index = this.services.findIndex(s => s._id === this.editingService._id);
@@ -254,5 +262,10 @@ export class OurServicesComponent implements OnInit {
   onCloseModal(modal:string){
     console.log("function called");
     this.modal.close(modal);
+  }
+
+  serviceVisible:boolean=false
+  _updateVisibility=async()=>{
+    await this.websiteService.updateVisibility({serviceVisible:this.serviceVisible,businessCardId:this.businessCardId})
   }
 }

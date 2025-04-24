@@ -8,6 +8,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
 import { ModalService } from 'src/app/core/utilities/modal';
+import { WebsiteBuilderService } from 'src/app/services/website-builder.service';
 
 @Component({
   selector: 'app-our-team',
@@ -27,10 +28,11 @@ export class OurTeamComponent implements OnInit {
   memberId: string = '';
   selectedImage: string = '';
 
-  newMember = {
+  newMember :any= {
     name: '',
     role: '',
     photo: null as File | null,
+    visible:true
   };
 
   editingMember = {
@@ -38,17 +40,21 @@ export class OurTeamComponent implements OnInit {
     name: '',
     role: '',
     photo: null as File | null,
-    currentPhoto: ''
+    currentPhoto: '',
+    visible:true
   };
 
   constructor(
     private storage: AppStorage, 
     public authService: AuthService,
     private cdr: ChangeDetectorRef,
-    public modal:ModalService
+    public modal:ModalService,
+    private websiteService:WebsiteBuilderService
   ) {}
 
+  businessCardId:any
   async ngOnInit() {
+    this.businessCardId=this.storage.get(common.BUSINESS_CARD)
     await this.fetchTeamMembers();
   }
 
@@ -62,6 +68,7 @@ export class OurTeamComponent implements OnInit {
         this.members = results.teams ? [...results.teams] : [];
         this.filteredMembers = [...this.members];
         this.totalItems = this.members.length;
+        this.teamVisible=results.teamVisible
         this.cdr.markForCheck();
       } else {
         swalHelper.showToast('Failed to fetch team members!', 'warning');
@@ -87,6 +94,7 @@ export class OurTeamComponent implements OnInit {
       formData.append('businessCardId', businessCardId);
       formData.append('name', this.newMember.name);
       formData.append('role', this.newMember.role || '');
+      formData.append('visible',this.newMember.visible.toString())
       if (this.newMember.photo) {
         formData.append('file', this.newMember.photo);
       }
@@ -129,7 +137,8 @@ export class OurTeamComponent implements OnInit {
       name: member.name,
       role: member.role || '',
       photo: null,
-      currentPhoto: member.photo || ''
+      currentPhoto: member.photo || '',
+      visible:member.visible
     };
     this.modal.open('EditTeamMemberModal');
     this.cdr.markForCheck();
@@ -148,6 +157,7 @@ export class OurTeamComponent implements OnInit {
       formData.append('teamId', this.editingMember._id);
       formData.append('name', this.editingMember.name);
       formData.append('role', this.editingMember.role || '');
+      formData.append('visible',this.editingMember.visible.toString())
       if (this.editingMember.photo) {
         formData.append('file', this.editingMember.photo);
       }
@@ -246,5 +256,10 @@ export class OurTeamComponent implements OnInit {
 
   onCloseEditMemberModal(){
     this.modal.close('EditTeamMemberModal');
+  }
+
+  teamVisible:boolean=false
+  _updateVisibility=async()=>{
+    await this.websiteService.updateVisibility({teamVisible:this.teamVisible,businessCardId:this.businessCardId})
   }
 }

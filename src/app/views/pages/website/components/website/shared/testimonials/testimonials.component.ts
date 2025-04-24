@@ -8,6 +8,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
 import { ModalService } from 'src/app/core/utilities/modal';
+import { WebsiteBuilderService } from 'src/app/services/website-builder.service';
 
 
 @Component({
@@ -34,7 +35,8 @@ export class TestimonialsComponent implements OnInit {
     clientName: '',
     rating: null,
     feedback: '',
-    image: null as File | null 
+    image: null as File | null ,
+    visible:true
   };
 
   editingTestimonial = {
@@ -43,13 +45,16 @@ export class TestimonialsComponent implements OnInit {
     rating: null,
     feedback: '',
     image: null as File | null,
-    currentImage: [] as string[]
+    currentImage: [] as string[],
+    visible:true
   };
 
   
-  constructor(private storage: AppStorage, public authService: AuthService,public modal:ModalService) {}
+  constructor(private storage: AppStorage, public authService: AuthService,public modal:ModalService,private websiteService:WebsiteBuilderService) {}
   
+  businessCardId:any
   async ngOnInit() {
+    this.businessCardId=this.storage.get(common.BUSINESS_CARD)
     await this.fetchWebsiteDetails();
   }
 
@@ -63,6 +68,7 @@ export class TestimonialsComponent implements OnInit {
         this.testimonialList = results.testimonials ? [...results.testimonials] : [];
         this.filteredTestimonialList = [...this.testimonialList];
         this.totalItems = this.testimonialList.length;
+        this.testimonialsVisible=results.testimonialsVisible
       } else {
         swalHelper.showToast('Failed to fetch testimonials!', 'warning');
       }
@@ -88,7 +94,7 @@ export class TestimonialsComponent implements OnInit {
       formData.append('clientName', this.newTestimonial.clientName);
       formData.append('rating', String(this.newTestimonial.rating));
       formData.append('feedback', this.newTestimonial.feedback);
-      
+      formData.append('visible', this.editingTestimonial.visible.toString());
       if (this.newTestimonial.image) {
         formData.append('file', this.newTestimonial.image);
       }
@@ -132,7 +138,8 @@ export class TestimonialsComponent implements OnInit {
       clientName: '',
       rating: null,
       feedback: '',
-      image: null
+      image: null,
+      visible:true
     };
   }
 
@@ -143,7 +150,8 @@ export class TestimonialsComponent implements OnInit {
       rating: testimonial.rating,
       feedback: testimonial.feedback,
       image: null,
-      currentImage: testimonial.image || []
+      currentImage: testimonial.image || [],
+      visible:testimonial.visible
     };
     this.modal.open('EditTestimonialsModal');
   }
@@ -164,7 +172,7 @@ export class TestimonialsComponent implements OnInit {
       formData.append('clientName', this.editingTestimonial.clientName);
       formData.append('rating', String(this.editingTestimonial.rating));
       formData.append('feedback', this.editingTestimonial.feedback);
-      
+      formData.append('visible', this.editingTestimonial.visible.toString());
       if (this.editingTestimonial.image) {
         formData.append('file', this.editingTestimonial.image);
       }
@@ -274,5 +282,10 @@ export class TestimonialsComponent implements OnInit {
 
   onCloseModal(modal:string){
     this.modal.close(modal)
+  }
+
+  testimonialsVisible:boolean=false
+  _updateVisibility=async()=>{
+    await this.websiteService.updateVisibility({testimonialsVisible:this.testimonialsVisible,businessCardId:this.businessCardId})
   }
 }

@@ -6,6 +6,7 @@ import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { AuthService } from 'src/app/services/auth.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
+import { WebsiteBuilderService } from 'src/app/services/website-builder.service';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -25,9 +26,11 @@ export class HomeComponent {
   bannerImagePreview: string | ArrayBuffer | null = null;
   logoImagePreview: string | ArrayBuffer | null = null;
 
+  constructor(private storage: AppStorage, public authService: AuthService,private websiteService:WebsiteBuilderService) {}
 
-  constructor(private storage: AppStorage, public authService: AuthService) {}
+  businessCardId:any
   ngOnInit() {
+    this.businessCardId=this.storage.get(common.BUSINESS_CARD)
     this.fetchWebsiteDetails();
 
   }
@@ -45,6 +48,10 @@ export class HomeComponent {
           bannerImage: results.home.bannerImage ? this.baseURL +"/"+ results.home.bannerImage : null,
           logoImage: results.home.logoImage ? this.baseURL +"/"+ results.home.logoImage : null,
         };
+        this.sloganVisible=results.home.sloganVisible
+        this.bannerImageVisible=results.home.bannerImageVisible
+        this.logoImageVisible=results.home.logoImageVisible
+
         if (this.home.bannerImage) {
           this.bannerImagePreview = this.home.bannerImage;
         }
@@ -120,6 +127,13 @@ export class HomeComponent {
     } finally {
       this.isLoading = false;
     }
+  }
+
+  sloganVisible:boolean=true
+  bannerImageVisible:boolean=true
+  logoImageVisible:boolean=true
+  _updateVisibility=async()=>{
+    await this.websiteService.updateVisibility({'home.sloganVisible':this.sloganVisible,'home.bannerImageVisible':this.bannerImageVisible,'home.logoImageVisible':this.logoImageVisible,businessCardId:this.businessCardId})
   }
 
 
