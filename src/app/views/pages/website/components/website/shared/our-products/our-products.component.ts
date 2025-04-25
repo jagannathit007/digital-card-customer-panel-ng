@@ -131,8 +131,8 @@ export class OurProductsComponent implements OnInit {
   
     const totalImages = this.selectedProducts.images?.length + newFiles.length;
   
-    if (totalImages > 5) {
-      swalHelper.warning('You can upload a maximum of 5 images.');
+    if (totalImages > 15) {
+      swalHelper.warning('You can upload a maximum of 15 images.');
       this.selectedProducts.images = [];
       this.fileInputRef.nativeElement.value = '';
       return;

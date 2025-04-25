@@ -80,7 +80,6 @@ export class BusinessDetailsComponent {
     const input = event.target as HTMLInputElement;
     if (input.files) {
       this.profileImage = input.files[0];
-      console.log(this.profileImage);
     }
   }
 

@@ -19,7 +19,8 @@
             <div class="d-flex">
                 <label for="slogan" class="form-label fw-bold">Slogan</label>
                 <span class="form-check form-switch ms-3 ">
-                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="sloganVisible" (change)="_updateVisibility()">
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+                        [(ngModel)]="sloganVisible" (change)="_updateVisibility()">
                 </span>
             </div>
             <input type="text" id="slogan" class="form-control" [(ngModel)]="home.slogan" required />
@@ -27,34 +28,45 @@
 
         <div class="col-md-6 col-12">
             <div class="d-flex">
-                <label for="bannerImage" class="form-label fw-bold">Banner Image</label>
+                <label for="bannerImage" class="form-label fw-bold">Banner Image <code class="text-danger">(After upload the existing images will be replace)</code></label>
                 <span class="form-check form-switch ms-3 ">
-                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="bannerImageVisible" (change)="_updateVisibility()">
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+                        [(ngModel)]="bannerImageVisible" (change)="_updateVisibility()">
                 </span>
             </div>
-            <input type="file" id="bannerImage" class="form-control" (change)="onBannerImageSelected($event)" />
-            <div *ngIf="bannerImagePreview" class="mt-2">
-                <img [src]="bannerImagePreview" alt="Banner Preview" class="img-thumbnail" width="200" />
+            <input type="file" #fileInput id="bannerImage" class="form-control" (change)="onBannerImageSelected($event)" multiple 
+                accept="image/*" />
+            <div *ngIf="bannerImagePreviews?.length" class="mt-3 d-flex flex-wrap gap-2">
+                <div *ngFor="let img of bannerImagePreviews; let i = index" class="position-relative">
+                    <img [src]="img" alt="Banner Preview" class="img-thumbnail" width="100" height="70" />
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                        style="cursor: pointer; font-size: 10px;" (click)="removeImage(i)">
+                        ✖
+                    </span>
+                </div>
             </div>
+
         </div>
 
         <div class="col-md-6 col-12">
             <div class="d-flex">
                 <label for="logoImage" class="form-label fw-bold">Logo Image</label>
                 <span class="form-check form-switch ms-3 ">
-                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="logoImageVisible" (change)="_updateVisibility()">
+                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+                        [(ngModel)]="logoImageVisible" (change)="_updateVisibility()">
                 </span>
             </div>
-            
+
             <input type="file" id="logoImage" class="form-control" (change)="onLogoImageSelected($event)" />
-            <div *ngIf="logoImagePreview" class="mt-2">
-                <img [src]="logoImagePreview" alt="Logo Preview" class="img-thumbnail" width="150" />
+            <div *ngIf="logoImagePreview" class="mt-3">
+                <img [src]="logoImagePreview" alt="Logo Preview" class="img-thumbnail" width="100" height="70"/>
             </div>
         </div>
     </div>
 
     <!-- Save Button -->
     <div class="mt-3 d-flex justify-content-end">
-        <button type="button" class="btn btn-success me-2" (click)="savehomeDetails()"><i class="ri-save-fill"></i> Save</button>
+        <button type="button" class="btn btn-success me-2" (click)="savehomeDetails()"><i class="ri-save-fill"></i>
+            Save</button>
     </div>
 </div>

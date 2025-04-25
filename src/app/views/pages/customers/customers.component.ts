@@ -115,8 +115,6 @@ export class CustomersComponent implements OnInit {
   }
 
   _SaveCustomer = async () => {
-    console.log('customer', this.customer);
-
     let response=await this.customerService.addCustomer(this.customer);
     if(response){
       this.modal.close('add-customer');
