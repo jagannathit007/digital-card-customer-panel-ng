@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { common } from 'src/app/core/constants/common';
@@ -13,7 +13,7 @@ import { WebsiteBuilderService } from 'src/app/services/website-builder.service'
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
-
+  @ViewChild('fileInput') fileInput!: ElementRef;
   baseURL = environment.baseURL;
   isLoading: boolean = false;
 
@@ -23,7 +23,6 @@ export class HomeComponent {
     bannerImage: null,
     logoImage: null,
   };
-  bannerImagePreview: string | ArrayBuffer | null = null;
   logoImagePreview: string | ArrayBuffer | null = null;
 
   constructor(private storage: AppStorage, public authService: AuthService,private websiteService:WebsiteBuilderService) {}
@@ -45,16 +44,17 @@ export class HomeComponent {
         this.home = {
           heading: results.home.heading || '',
           slogan: results.home.slogan || '',
-          bannerImage: results.home.bannerImage ? this.baseURL +"/"+ results.home.bannerImage : null,
           logoImage: results.home.logoImage ? this.baseURL +"/"+ results.home.logoImage : null,
         };
+        if (results.home.bannerImages && results.home.bannerImages.length > 0) {
+          results.home.bannerImages.forEach((image: string) => {
+            const previewUrl = `${this.baseURL}/${image}`;
+            this.bannerImagePreviews.push(previewUrl );
+          });
+        }
         this.sloganVisible=results.home.sloganVisible
         this.bannerImageVisible=results.home.bannerImageVisible
         this.logoImageVisible=results.home.logoImageVisible
-
-        if (this.home.bannerImage) {
-          this.bannerImagePreview = this.home.bannerImage;
-        }
 
         if (this.home.logoImage) {
           this.logoImagePreview = this.home.logoImage;
@@ -70,17 +70,37 @@ export class HomeComponent {
     }
   }
 
+  
+  bannerImages: File[] = [];
+  bannerImagePreviews: string[] = [];
+  maxImageCount = 15;
 
-    onBannerImageSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.bannerImagePreview = e.target?.result ?? null;
-      };
-      reader.readAsDataURL(file);
-      this.home.bannerImage = file;
+  onBannerImageSelected(event: any): void {
+    const files: FileList = event.target.files;
+
+    if (this.bannerImages.length + files.length > this.maxImageCount) {
+      alert(`You can select a maximum of ${this.maxImageCount} images.`);
+      this.fileInput.nativeElement.value = ''; // Clear the file input
+      return;
     }
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files.item(i);
+      if (file) {
+        this.bannerImages.push(file);
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.bannerImagePreviews.push(e.target.result);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    this.fileInput.nativeElement.value = '';
+  }
+
+  removeImage(index: number): void {
+    this.bannerImages.splice(index, 1);
+    this.bannerImagePreviews.splice(index, 1);
   }
 
   onLogoImageSelected(event: any) {
@@ -105,8 +125,10 @@ export class HomeComponent {
       formData.append('heading', this.home.heading);
       formData.append('slogan', this.home.slogan);
       
-      if (this.home.bannerImage && this.home.bannerImage instanceof File) {
-        formData.append('bannerImage', this.home.bannerImage);
+      if (this.bannerImages && this.bannerImages.length > 0) {
+        this.bannerImages.forEach(file => {
+          formData.append('bannerImages', file, file.name); 
+        })
       }
 
       if (this.home.logoImage && this.home.logoImage instanceof File) {
@@ -117,6 +139,8 @@ export class HomeComponent {
       
       if (response) {
         swalHelper.showToast('home details updated successfully!', 'success');
+        this.bannerImages=[]
+        this.bannerImagePreviews=[]
         this.fetchWebsiteDetails(); 
       } else {
         swalHelper.showToast('Failed to update home details!', 'warning');

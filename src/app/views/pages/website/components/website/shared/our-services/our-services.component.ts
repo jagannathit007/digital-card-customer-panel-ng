@@ -260,7 +260,6 @@ export class OurServicesComponent implements OnInit {
   }
 
   onCloseModal(modal:string){
-    console.log("function called");
     this.modal.close(modal);
   }
 
