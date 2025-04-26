@@ -14,6 +14,7 @@ import { WebsiteBuilderService } from 'src/app/services/website-builder.service'
 })
 export class HomeComponent {
   @ViewChild('fileInput') fileInput!: ElementRef;
+  private objectURLCache = new Map<File, string>();
   baseURL = environment.baseURL;
   isLoading: boolean = false;
 
@@ -48,8 +49,8 @@ export class HomeComponent {
         };
         if (results.home.bannerImages && results.home.bannerImages.length > 0) {
           results.home.bannerImages.forEach((image: string) => {
-            const previewUrl = `${this.baseURL}/${image}`;
-            this.bannerImagePreviews.push(previewUrl );
+            // const previewUrl = `${this.baseURL}/${image}`;
+            this.bannerImages.push(image );
           });
         }
         this.sloganVisible=results.home.sloganVisible
@@ -71,36 +72,56 @@ export class HomeComponent {
   }
 
   
-  bannerImages: File[] = [];
-  bannerImagePreviews: string[] = [];
-  maxImageCount = 15;
-
+  bannerImages: any[] = [];
+  existingImages:any
   onBannerImageSelected(event: any): void {
     const files: FileList = event.target.files;
+    const newFiles: File[] = Array.from(files);
 
-    if (this.bannerImages.length + files.length > this.maxImageCount) {
-      alert(`You can select a maximum of ${this.maxImageCount} images.`);
-      this.fileInput.nativeElement.value = ''; // Clear the file input
+    if(!this.bannerImages){
+      this.bannerImages=[]
+    }
+
+    const totalImages = this.bannerImages?.length + newFiles.length;
+
+    if (totalImages>15) {
+      swalHelper.warning('You can upload a maximum of 15 images.');
+      this.bannerImages = [];
+      this.fileInput.nativeElement.value = '';
       return;
     }
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files.item(i);
-      if (file) {
-        this.bannerImages.push(file);
-        const reader = new FileReader();
+    
+    for (let file of newFiles) {
+      const reader = new FileReader();
         reader.onload = (e: any) => {
-          this.bannerImagePreviews.push(e.target.result);
+          this.bannerImages.push(file);
         };
         reader.readAsDataURL(file);
-      }
     }
     this.fileInput.nativeElement.value = '';
+    console.log("bannerImages",this.bannerImages);
+    
+  }
+
+  imageBaseURL = environment.baseURL + '/';
+  getImagePreview(img: any): string {
+    if (img instanceof File) {
+      if (!this.objectURLCache.has(img)) {
+        const url = URL.createObjectURL(img);
+        this.objectURLCache.set(img, url);
+      }
+      return this.objectURLCache.get(img)!;
+    }
+    return this.imageBaseURL + (typeof img === 'string' ? img : img.images);
   }
 
   removeImage(index: number): void {
     this.bannerImages.splice(index, 1);
-    this.bannerImagePreviews.splice(index, 1);
+    if (this.bannerImages?.length == 0) {
+      this.bannerImages = [] as File[]
+      this.fileInput.nativeElement.value = '';
+    }
   }
 
   onLogoImageSelected(event: any) {
@@ -117,18 +138,31 @@ export class HomeComponent {
 
   async savehomeDetails() {
     this.isLoading = true;
-    try {
+    try { 
       let businessCardId = this.storage.get(common.BUSINESS_CARD);
+      this.bannerImages = this.bannerImages?.filter((item: any) => {
+        if (typeof item === 'string') {
+          this.existingImages = this.existingImages || [];
+          this.existingImages?.push(item);
+          return false;
+        }
+        return true;
+      });
+      
+      console.log("existing images",this.existingImages);
       let formData = new FormData();
       
       formData.append('businessCardId', businessCardId);
       formData.append('heading', this.home.heading);
       formData.append('slogan', this.home.slogan);
-      
+      console.log("bannerimages after add",this.bannerImages);
       if (this.bannerImages && this.bannerImages.length > 0) {
         this.bannerImages.forEach(file => {
           formData.append('bannerImages', file, file.name); 
         })
+      }
+      if(this.existingImages){
+        formData.append('existingImages', JSON.stringify(this.existingImages));
       }
 
       if (this.home.logoImage && this.home.logoImage instanceof File) {
@@ -140,7 +174,6 @@ export class HomeComponent {
       if (response) {
         swalHelper.showToast('home details updated successfully!', 'success');
         this.bannerImages=[]
-        this.bannerImagePreviews=[]
         this.fetchWebsiteDetails(); 
       } else {
         swalHelper.showToast('Failed to update home details!', 'warning');
