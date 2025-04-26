@@ -100,8 +100,6 @@ export class HomeComponent {
         reader.readAsDataURL(file);
     }
     this.fileInput.nativeElement.value = '';
-    console.log("bannerImages",this.bannerImages);
-    
   }
 
   imageBaseURL = environment.baseURL + '/';
@@ -148,14 +146,10 @@ export class HomeComponent {
         }
         return true;
       });
-      
-      console.log("existing images",this.existingImages);
       let formData = new FormData();
-      
       formData.append('businessCardId', businessCardId);
       formData.append('heading', this.home.heading);
       formData.append('slogan', this.home.slogan);
-      console.log("bannerimages after add",this.bannerImages);
       if (this.bannerImages && this.bannerImages.length > 0) {
         this.bannerImages.forEach(file => {
           formData.append('bannerImages', file, file.name); 
@@ -174,6 +168,7 @@ export class HomeComponent {
       if (response) {
         swalHelper.showToast('home details updated successfully!', 'success');
         this.bannerImages=[]
+        this.existingImages=null
         this.fetchWebsiteDetails(); 
       } else {
         swalHelper.showToast('Failed to update home details!', 'warning');
