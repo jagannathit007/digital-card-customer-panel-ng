@@ -12,6 +12,9 @@ import { ThemesComponent } from './components/website/shared/themes/themes.compo
 import { SeoDetailsComponent } from './components/website/shared/seo-details/seo-details.component';
 import { ContactDetailsComponent } from './components/website/shared/contact-details/contact-details.component';
 
+import { ProductsEnquiryComponent } from './components/website/shared/products-enquiry/products-enquiry.component';
+import { GetinTouchEnquiryComponent } from './components/website/shared/getin-touch-enquiry/getin-touch-enquiry.component';
+
 const routes: Routes = [
   {
       path: '',
@@ -28,6 +31,11 @@ const routes: Routes = [
         { path: 'themes', component: ThemesComponent },
         { path: 'seo-details', component: SeoDetailsComponent },
         { path: 'contact-details', component: ContactDetailsComponent },
+        
+        { path: 'products-enquiry', component: ProductsEnquiryComponent },
+        { path: 'getintouch-enquiry', component: GetinTouchEnquiryComponent },
+        
+
       ],
     },
 ];

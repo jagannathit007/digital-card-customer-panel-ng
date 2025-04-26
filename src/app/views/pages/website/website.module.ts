@@ -13,6 +13,10 @@ import { TestimonialsComponent } from './components/website/shared/testimonials/
 import { ThemesComponent } from './components/website/shared/themes/themes.component';
 import { SeoDetailsComponent } from './components/website/shared/seo-details/seo-details.component';
 import { ContactDetailsComponent } from './components/website/shared/contact-details/contact-details.component';
+
+import { ProductsEnquiryComponent } from './components/website/shared/products-enquiry/products-enquiry.component';
+import { GetinTouchEnquiryComponent } from './components/website/shared/getin-touch-enquiry/getin-touch-enquiry.component';
+
 import { RouterModule } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { FormsModule } from '@angular/forms';
@@ -30,7 +34,9 @@ import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
     TestimonialsComponent,
     ThemesComponent,
     SeoDetailsComponent,
-    ContactDetailsComponent
+    ContactDetailsComponent,
+    ProductsEnquiryComponent,
+    GetinTouchEnquiryComponent,
   ],
   imports: [
     CommonModule,

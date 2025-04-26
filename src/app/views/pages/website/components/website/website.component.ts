@@ -82,6 +82,16 @@ export class WebsiteComponent{
         href: "contact-details",
         icon:'ri-phone-fill'
       },
+      {
+        title: "products enquiry",
+        href: "products-enquiry",
+        icon:'ri-instance-fill'
+      },
+      {
+        title: "GetInTouch enquiry",
+        href: "getintouch-enquiry",
+        icon:'ri-chat-3-line'
+      },
     ]
    
      isActive(href: string): boolean {
