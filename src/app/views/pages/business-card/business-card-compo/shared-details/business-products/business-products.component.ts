@@ -198,6 +198,7 @@ export class BusinessProductsComponent implements OnInit {
     if(this.selectedProducts.businesscardId){
       formdata.append('businesscardId', this.selectedProducts.businesscardId)
     }
+    
     this.selectedProducts.images?.forEach((file: File, index: number) => {
       formdata.append('images', file);
     });
