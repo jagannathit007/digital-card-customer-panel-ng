@@ -15,6 +15,7 @@ import { BusinessCardComponent } from './business-card-compo/business-card.compo
 import { NgxPaginationModule } from 'ngx-pagination';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
+import { OffersComponent } from './business-card-compo/shared-details/offers/offers.component';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
     DocumentDetailsComponent,
     GalleryDetailsComponent,
     PersonalDetailsComponent,
-    ThemeComponent
+    ThemeComponent,
+    OffersComponent
   ],
   imports: [
     CommonModule,

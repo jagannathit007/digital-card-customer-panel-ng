@@ -90,6 +90,11 @@ public DELETE_CONTACT_ENQUIRY: string = `${this.PATH}/website/contact-enquiry/de
   public CREATE_BUSINESS_CARD_PRODUCTS: string = `${this.PATH}/businessCard/createProducts`;
   public DELETE_BUSINESS_CARD_PRODUCTS: string = `${this.PATH}/businessCard/deleteProducts`;
 
+  //offers
+  public GET_BUSINESS_CARD_OFFERS: string = `${this.PATH}/businessCard/getOffers`;
+  public UPDATE_BUSINESS_CARD_OFFERS: string = `${this.PATH}/businessCard/updateOffers`;
+  public DELETE_BUSINESS_CARD_OFFERS: string = `${this.PATH}/businessCard/deleteOffers`;
+
 
   //share history
   public SHARED_HISTORY: string = `${this.PATH}/shared/history`;

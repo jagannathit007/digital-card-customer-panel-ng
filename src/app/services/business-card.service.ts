@@ -164,4 +164,77 @@ export class BusinessCardService {
         return false;
       }
     }
+
+
+    async getOffers(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.GET_BUSINESS_CARD_OFFERS,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.data && response.data != null) {
+          return response.data;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return null;
+        }
+      } catch (err) {
+        console.log(err);
+        swalHelper.showToast('Something went wrong!', 'error');
+        return null;
+      }
+    }
+    
+    async createOffer(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.UPDATE_BUSINESS_CARD_OFFERS,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.showToast(response.message, 'success');
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+    
+    async deleteOffer(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.DELETE_BUSINESS_CARD_OFFERS,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
 }
