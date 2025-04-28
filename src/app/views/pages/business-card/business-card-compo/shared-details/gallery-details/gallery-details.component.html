@@ -1,64 +1,125 @@
 <div class="my-3">
-  <div class="row">
-    <label for="" class="fw-bold text-uppercase fs-3">Galleries</label>
+  <div class="row p-2">
+    <div class="col-12">
+      <ul class="nav nav-tabs custom-tabs" id="mediaTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link custom-tab-link" [ngClass]="{'active': activeTab === 'images'}" id="images-tab"
+            (click)="switchTab('images')">
+            <i class="ri-image-fill me-2"></i> Images
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link custom-tab-link" [ngClass]="{'active': activeTab === 'videos'}" id="videos-tab"
+            (click)="switchTab('videos')">
+            <i class="ri-video-fill me-2"></i> Videos
+          </button>
+        </li>
+      </ul>
+
+      <!-- Rest of your content remains the same... -->
+    </div>
   </div>
+  <div *ngIf="activeTab === 'images'">
+    <div class="row mt-4">
+      <div class="col-md-8 col-12">
+        <input type="file" class="form-control" (change)="onFileSelected($event)" multiple accept="image/*"
+          [disabled]="galleries.length >= 10" #fileInput />
+        <small class="text-muted mb-1 mt-2">You can upload up-to 10 Images only</small>
+      </div>
+
+      <div class="col-md-4 mt-0">
+        <button class="btn btn-info" (click)="uploadImages()" [disabled]="galleries.length >= 10 || isUploading">
+          <span *ngIf="isUploading">
+            <i class="spinner-border spinner-border-sm me-2"></i>
+            Uploading...
+          </span>
+          <span *ngIf="!isUploading"><i class="ri-folder-upload-fill"></i> Upload Images</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="row mt-4">
+      @for (image of galleries; track $index) {
+      <div class="col-lg-2 col-md-3 col-sm-6 mb-2">
+        <div class="card position-relative">
+          <img [src]="image" class="card-img-top" alt="Uploaded Image" />
+          <div class="delete-icon position-absolute top-0 end-0 m-2" (click)="confirmDeleteByActualIndex($index)"
+            data-bs-toggle="modal" data-bs-target="#deleteModal">
+            <i class="ri-delete-bin-6-line"></i>
+          </div>
+        </div>
+      </div>
+      } @for (image of selectedImages; track $index) {
+      <div class="col-lg-2 col-md-3 col-sm-6 mb-2">
+        <div class="card position-relative">
+          <img [src]="image" class="card-img-top" alt="Uploaded Image" />
+          <div class="delete-icon position-absolute top-0 end-0 m-2" (click)="confirmDeleteByIndex($index)">
+            <i class="ri-delete-bin-6-line"></i>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+
+  <div *ngIf="activeTab === 'videos'">
   <div class="row mt-4">
     <div class="col-md-8 col-12">
-      <input type="file" class="form-control" (change)="onFileSelected($event)" multiple accept="image/*"
-        [disabled]="galleries.length >= 10" #fileInput/>
-      <small class="text-muted mb-1 mt-2">You can upload up-to 10 Images only</small>
+      <input type="file" class="form-control" (change)="onVideoSelected($event)" multiple accept="video/*"
+        [disabled]="videos.length >= 10" #videoInput />
+      <small class="text-muted mb-1 mt-2">You can upload up to 10 Videos only</small>
     </div>
 
     <div class="col-md-4 mt-0">
-      <button class="btn btn-info" (click)="uploadImages()" [disabled]="galleries.length >= 10 || isUploading">
-        <span *ngIf="isUploading">
-          <i class="spinner-border spinner-border-sm me-2"></i>
-          Uploading...
+      <button class="btn btn-info" (click)="uploadVideos()" [disabled]="videos.length >= 10 || isUploading">
+        <span *ngIf="isVideoUploading">
+          <i class="spinner-border spinner-border-sm me-2"></i> Uploading...
         </span>
-        <span *ngIf="!isUploading"><i class="ri-folder-upload-fill"></i> Upload Images</span>
+        <span *ngIf="!isVideoUploading">
+          <i class="ri-folder-upload-fill"></i> Upload Videos
+        </span>
       </button>
     </div>
   </div>
 
   <div class="row mt-4">
-    @for (image of galleries; track $index) {
-    <div class="col-lg-3 col-md-4 col-sm-6 mb-2">
+    @for (video of videos; track $index) {
+    <div class="col-lg-2 col-md-3 col-sm-6 mb-2">
       <div class="card position-relative">
-        <img [src]="image" class="card-img-top" alt="Uploaded Image">
-        <div class="delete-icon position-absolute top-0 end-0 m-2" (click)="confirmDeleteByActualIndex($index)"
-          data-bs-toggle="modal" data-bs-target="#deleteModal">
+        <video [src]="video" class="card-img-top" controls></video>
+        <div class="delete-icon position-absolute top-0 end-0 m-2" (click)="confirmDeleteVideoByActualIndex($index)">
           <i class="ri-delete-bin-6-line"></i>
         </div>
       </div>
     </div>
     }
-    @for (image of selectedImages; track $index) {
-    <div class="col-lg-3 col-md-4 col-sm-6 mb-2">
+    @for (video of selectedVideos; track $index) {
+    <div class="col-lg-2 col-md-3 col-sm-6 mb-2">
       <div class="card position-relative">
-        <img [src]="image" class="card-img-top" alt="Uploaded Image">
-        <div class="delete-icon position-absolute top-0 end-0 m-2" (click)="confirmDeleteByIndex($index)">
+        <video [src]="video" class="card-img-top" controls></video>
+        <div class="delete-icon position-absolute top-0 end-0 m-2" (click)="confirmDeleteVideoByIndex($index)">
           <i class="ri-delete-bin-6-line"></i>
         </div>
       </div>
     </div>
     }
   </div>
+</div>
 
-  <!-- Delete Confirmation Modal -->
-
-  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" 
-    data-bs-backdrop="static">
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body text-center">
           Are you sure you want to delete this image?
         </div>
         <div class="modal-footer justify-content-center">
-          <button type="button" class="btn btn-danger" (click)="deleteImage()" data-bs-dismiss="modal">Delete</button>
+          <button type="button" class="btn btn-danger" (click)="deleteImage()" data-bs-dismiss="modal">
+            Delete
+          </button>
         </div>
       </div>
     </div>

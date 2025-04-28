@@ -31,6 +31,7 @@
                     <th>Email</th>
                     <th>Message</th>
                     <th>Contact Date</th>
+                    <th class="text-center"><i class="ri-tools-fill"></i></th>
                 </tr>
             </thead>
             <tbody>
@@ -49,6 +50,7 @@
                     <td>{{ order.email }}</td>
                     <td>{{ order.message }}</td>
                     <td>{{ order.submittedAt | date: 'dd/MM/yyyy' }}</td>
+                    <td class="text-center"><button class="btn btn-danger btn-sm" (click)="_deleteEnquiry(order)"><i class="ri-delete-bin-line"></i></button></td>
                 </tr>
 
                 <!-- No getintouch-contacts Message -->

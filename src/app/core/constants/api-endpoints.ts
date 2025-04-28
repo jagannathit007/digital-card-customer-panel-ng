@@ -62,6 +62,9 @@ class ApiEndpoints {
 public WEBSITE_ABOUT_UPDATE: string = `${this.PATH}/website/about/update`;
 public DELETE_ABOUT_DATA: string = `${this.PATH}/website/about/delete`;
 
+//webiste product enquiry
+public DELETE_PRODUCT_ENQUIRY: string = `${this.PATH}/website/product-enquiry/delete`;
+public DELETE_CONTACT_ENQUIRY: string = `${this.PATH}/website/contact-enquiry/delete`;
   // website_ABOUT-SECTION_apis
   public WEBSITE_HOME_UPDATE: string = `${this.PATH}/website/home/update`;
 

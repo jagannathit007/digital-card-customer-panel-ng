@@ -39,6 +39,7 @@ export class BusinessDetailsComponent {
           companyAddress: card.companyAddress,
           message: card.message,
           companySocialMedia: card.companySocialMedia,
+          businessKeyword:card.businessKeyword
         };
       }
     }
@@ -52,6 +53,7 @@ export class BusinessDetailsComponent {
       formData.append('link', this.newSocialMedia.link);
       formData.append('type', 'business');
       formData.append('businessCardId', this.storage.get(common.BUSINESS_CARD));
+      
       formData.append('file', this.socialMediaImage, this.socialMediaImage.name);
       
       let result = await this.authService.updateBusinessSocialDetails(formData);
@@ -100,6 +102,7 @@ export class BusinessDetailsComponent {
     formData.append('aboutCompany', this.businessProfile.aboutCompany);
     formData.append('companyAddress', this.businessProfile.companyAddress);
     formData.append('businessCardId', this.storage.get(common.BUSINESS_CARD));
+    formData.append('businessKeyword',this.businessProfile.businessKeyword);
     formData.append(
       'companySocialMedia',
       JSON.stringify(this.businessProfile.companySocialMedia)

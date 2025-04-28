@@ -33,6 +33,7 @@
                     <th>Product Name</th>
                     <th>Product Price</th>
                     <th>Order Date</th>
+                    <th class="text-center"><i class="ri-tools-fill"></i></th>
                 </tr>
             </thead>
             <tbody>
@@ -53,6 +54,7 @@
                     <td>{{ order.product.name }}</td>
                     <td>{{ order.product.price }}</td>
                     <td>{{ order.orderDate | date: 'dd/MM/yyyy' }}</td>
+                    <td class="text-center"><button class="btn btn-danger btn-sm" (click)="_deleteEnquiry(order._id)"><i class="ri-delete-bin-line"></i></button></td>
                 </tr>
 
                 <!-- No Orders Message -->

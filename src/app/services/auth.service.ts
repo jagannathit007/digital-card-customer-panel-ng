@@ -141,7 +141,7 @@ export class AuthService {
       if (response.status == 200 && response.data != null) {
         return response.data;
       } else {
-        swalHelper.showToast(response.message, 'warning');
+        swalHelper.warning(response.message);
         return null;
       }
     } catch (err) {
@@ -201,29 +201,34 @@ export class AuthService {
     }
   }
 
-  async deleteGalleryDetails(data: any) {
+  async deleteGalleryDetails(data: { fileURL: string; type: 'image' | 'video' }): Promise<boolean> {
     try {
       this.getHeaders();
-      data = this.addBusinessCardId(data);
+      const requestData = {
+        ...this.addBusinessCardId({}),
+        fileURL: data.fileURL,
+        type: data.type
+      };
 
-      let response = await this.apiManager.request(
+      const response = await this.apiManager.request(
         {
           url: apiEndpoints.DELETE_GALLERY,
           method: 'POST',
         },
-        data,
+        requestData,
         this.headers
       );
 
-      if (response.status == 200 && response.data != null) {
-        return response.data;
+      if (response.status === 200 && response.data) {
+        return true;
       } else {
-        swalHelper.showToast(response.message, 'warning');
-        return null;
+        swalHelper.showToast(response.message || 'Failed to delete media', 'warning');
+        return false;
       }
     } catch (err) {
-      swalHelper.showToast('Something went wrong!', 'error');
-      return null;
+      console.error('Delete gallery error:', err);
+      swalHelper.showToast('Something went wrong while deleting media', 'error');
+      return false;
     }
   }
 

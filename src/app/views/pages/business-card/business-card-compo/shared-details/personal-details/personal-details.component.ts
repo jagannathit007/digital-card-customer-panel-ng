@@ -38,6 +38,7 @@ export class PersonalDetailsComponent implements OnInit {
           name: card.name,
           businessCardId: card._id,
           personalSocialMedia: card.personalSocialMedia,
+          userName:card.userName?card.userName:''
         };
       }
     }

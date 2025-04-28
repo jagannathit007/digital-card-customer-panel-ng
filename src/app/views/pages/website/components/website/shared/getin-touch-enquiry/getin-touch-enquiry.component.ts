@@ -7,6 +7,7 @@ import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { AuthService } from 'src/app/services/auth.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { ModalService } from 'src/app/core/utilities/modal';
+import { WebsiteBuilderService } from 'src/app/services/website-builder.service';
 
 @Component({
   selector: 'app-getin-touch-enquiry',
@@ -25,9 +26,10 @@ export class GetinTouchEnquiryComponent implements OnInit {
   selectedOrderId: string = '';
   selectedOrder: any = null;
 
-  constructor(private storage: AppStorage, public authService: AuthService, public modal: ModalService) {}
-
+  constructor(private storage: AppStorage, public authService: AuthService, public modal: ModalService,private websiteService:WebsiteBuilderService) {}
+businessCardId:any
   async ngOnInit() {
+    this.businessCardId=this.storage.get(common.BUSINESS_CARD)
     await this._fetchgetIntouchContact();
 
   }
@@ -73,5 +75,18 @@ export class GetinTouchEnquiryComponent implements OnInit {
 
   pageChangeEvent(event: number) {
     this.p = event;
+  }
+
+  _deleteEnquiry=async(data:any)=>{
+    console.log(data);
+    
+    const confirm=await swalHelper.delete();
+      if(confirm.isConfirmed){
+       let result= await this.websiteService.deleteProductEnquiry({businessCardId:this.businessCardId, _id: data._id })
+       if(result){
+        swalHelper.success('Enquiry deleted');
+       }
+       this._fetchgetIntouchContact();
+      }
   }
 }
