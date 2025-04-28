@@ -82,7 +82,7 @@ businessCardId:any
     
     const confirm=await swalHelper.delete();
       if(confirm.isConfirmed){
-       let result= await this.websiteService.deleteProductEnquiry({businessCardId:this.businessCardId, _id: data._id })
+       let result= await this.websiteService.deleteContactEnquiry({businessCardId:this.businessCardId, _id: data._id })
        if(result){
         swalHelper.success('Enquiry deleted');
        }
