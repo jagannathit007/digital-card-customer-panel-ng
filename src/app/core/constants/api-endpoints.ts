@@ -98,6 +98,9 @@ public DELETE_ABOUT_DATA: string = `${this.PATH}/website/about/delete`;
   public GET_CUSTOMER: string = `${this.PATH}/customer/getCustomer`;
   public DELETE_CUSTOMER: string = `${this.PATH}/customer/deleteCustomer`;
   public SAVE_EXCEL_CUSTOMER: string = `${this.PATH}/customer/saveExcelCustomer`;
+
+  // our Certificates
+  public WEBSITE_CERTIFICATES_ADD: string = `${this.PATH}/website/certificate/otherimages`;
   
 }
 
