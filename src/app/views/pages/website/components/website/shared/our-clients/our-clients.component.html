@@ -41,6 +41,7 @@
                     <th>Client Name</th>
                     <th>Website</th>
                     <th class="text-center">Logo</th>
+                    <th class="text-center">Visible</th>
                     <th width="10%" class="text-center">Actions</th>
                 </tr>
             </thead>
@@ -67,6 +68,7 @@
                             (click)="selectedImage = baseURL + '/' + client.image">
                         <span *ngIf="!client.image || client.image.length === 0">No Image</span>
                     </td>
+                    <td class="text-center"> <span class="badge bg-{{client.visible?'success':'warning'}}">{{(client.visible?'visible':'invisible') | uppercase}}</span></td>
                     <td class="text-center">
                         <button class="btn btn-sm btn-info me-1" (click)="editClient(client)">
                             <i class="ri-edit-box-line"></i>

@@ -22,7 +22,7 @@
     </div>
     
 
-    <div class="table-responsive mt-4">
+    <div class="table-responsive ">
         <table class="table table-bordered">
             <thead class="text-uppercase bg-light">
                 <tr>
@@ -33,6 +33,7 @@
                     <th class="text-center" [width]="'20%'">Image</th>
                     <th [width]="'25%'">Description</th>
                     <th>Terms</th>
+                    <th class="text-center">Visible</th>
                     <th class="text-center" [width]="'15%'"><i class="ri-tools-fill"></i></th>
                 </tr>
             </thead>
@@ -66,6 +67,7 @@
                     </td>
                     <td>{{item.description}}</td>
                     <td>{{item.terms}}</td>
+                    <td class="text-center"> <span class="badge bg-{{item.visible?'success':'warning'}}">{{(item.visible?'visible':'invisible') | uppercase}}</span></td>
                     <td class="text-center">
                         <button class="btn btn-sm btn-info" (click)="onOpenUpdateModal(item)"><i class="ri-edit-fill"></i></button>
                         <button class="btn btn-danger btn-sm ms-1" (click)="_deleteOffer(item._id)"><i class="ri-delete-bin-6-fill"></i></button>
@@ -112,7 +114,7 @@
                                 class="form-control mt-1" required>
                         </div>
                         
-                        <div class="col-md-12 mt-4">
+                        <div class="col-md-8 mt-4">
                             <span class="fw-bold">Upload Image</span>
                             <input type="file" name="" id="" class="form-control mt-1" (change)="onUploadImage($event)">
                             <div class="d-flex flex-wrap gap-2 mt-2" *ngIf="selectedOffer.image || existingImage">
@@ -121,13 +123,14 @@
                                 alt="preview"
                                 style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;"
                               />
-                              <button
-                                type="button"
-                                class="btn-close position-absolute top-0 end-0 bg-white rounded-circle"
-                                (click)="removeImage()"
-                                style="position: absolute; top: -4px; right: -4px; font-size: 10px; color: red; cursor: pointer;"
-                                aria-label="Close"
-                              ></button>
+                            </div>
+                          </div>
+                          <div class="col-md-4 mt-4">
+                            <span class="fw-bold">Visibility</span>
+                            <div class="form-check form-switch switch-lg ms-3 mt-2">
+                                <input class="form-check-input" type="checkbox" role="switch" 
+                                       id="offersVisibilitySwitch" 
+                                       [(ngModel)]="selectedOffer.visible">
                             </div>
                           </div>
                         

@@ -40,6 +40,7 @@
                     <th class="text-center" style="width: 10%;">Image</th>
                     <th style="width: 30%;">Name</th>
                     <th style="width: 45%;">Role</th>
+                    <th class="text-center">Visible</th>
                     <th width="10%" class="text-center">Actions</th>
                 </tr>
             </thead>
@@ -70,6 +71,7 @@
                     </td>
                     <td>{{ member.name }}</td>
                     <td>{{ member.role }}</td>
+                    <td class="text-center"> <span class="badge bg-{{member.visible?'success':'warning'}}">{{(member.visible?'visible':'invisible') | uppercase}}</span></td>
                     <td class="text-center">
                         <button class="btn btn-sm btn-info me-1" (click)="editMember(member)">
                             <i class="ri-edit-box-line"></i>

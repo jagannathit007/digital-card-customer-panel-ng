@@ -41,6 +41,7 @@
                     <th>Rating</th>
                     <th>Client Name</th>
                     <th>Feedback</th>
+                    <th class="text-center">Visible</th>
                     <th width="10%" class="text-center">Action</th>
                 </tr>
             </thead>
@@ -70,6 +71,7 @@
                     <td>{{ testimonial.rating }}/5</td>
                     <td>{{ testimonial.clientName }}</td>
                     <td>{{ testimonial.feedback }}</td>
+                    <td class="text-center"> <span class="badge bg-{{testimonial.visible?'success':'warning'}}">{{(testimonial.visible?'visible':'invisible') | uppercase}}</span></td>
                     <td class="text-center">
                         <button class="btn btn-sm btn-info me-1" (click)="editTestimonial(testimonial)">
                           <i class="ri-edit-box-line"></i>

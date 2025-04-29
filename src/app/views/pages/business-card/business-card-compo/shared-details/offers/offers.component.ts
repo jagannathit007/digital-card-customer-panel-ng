@@ -90,7 +90,8 @@ export class OffersComponent {
     image: null as File | null,
     description: '',
     terms: '',
-    businessCardId: ''
+    businessCardId: '',
+    visible:true
   }
   imageBaseURL = environment.baseURL + '/';
 
@@ -103,7 +104,8 @@ export class OffersComponent {
       image: null,
       description: '',
       terms: '',
-      businessCardId: this.businessCardId
+      businessCardId: this.businessCardId,
+      visible:true
     };
     this.modal.open('create-offer');
   }
@@ -143,7 +145,7 @@ export class OffersComponent {
     formdata.append('discount', this.selectedOffer.discount);
     formdata.append('validUntil', this.selectedOffer.validUntil);
     formdata.append('terms', this.selectedOffer.terms);
-    
+    formdata.append('visible', this.selectedOffer.visible);
     if (this.selectedOffer.businessCardId) {
       formdata.append('businessCardId', this.selectedOffer.businessCardId);
     }
