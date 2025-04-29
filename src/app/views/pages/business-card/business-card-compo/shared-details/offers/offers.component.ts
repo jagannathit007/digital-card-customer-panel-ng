@@ -65,6 +65,7 @@ export class OffersComponent {
   }
 
   offers: any;
+  offersVisible:boolean=true
   isLoading: boolean = false;
   _getOffers = async () => {
     try {
@@ -72,6 +73,7 @@ export class OffersComponent {
       let response = await this.businessCardService.getOffers(this.payLoad);
       if (response) {
         this.offers = response;
+        this.offersVisible = response?.offersVisible;
       }
       this.isLoading = false;
     } catch (error) {
@@ -191,5 +193,23 @@ export class OffersComponent {
     this.selectedOffer.image = null;
     this.existingImage = '';
   }
+
+  // Add this new method
+  async _updateOffersVisibility() {
+    try {
+      await this.businessCardService.updateVisibility({
+        offersVisible: this.offersVisible,
+        businessCardId: this.businessCardId
+      });
+      swalHelper.showToast('Visibility updated successfully!', 'success');
+      this._getOffers()
+    } catch (error) {
+      console.error('Error updating visibility:', error);
+      swalHelper.showToast('Error updating visibility!', 'error');
+      // Revert the toggle if the update fails
+      this.offersVisible = !this.offersVisible;
+    }
+  }
+
 
 }

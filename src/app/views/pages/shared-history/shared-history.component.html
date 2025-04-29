@@ -36,6 +36,7 @@
               <th>Name</th>
               <th class="text-center">Date</th>
               <th class="text-center">Mobile</th>
+              <th>Notes</th>
               <th class="text-center"><i class="ri-tools-fill"></i></th>
             </tr>
           </thead>
@@ -46,6 +47,7 @@
                 <td >{{item.name | titlecase}} <span class="badge bg-info ms-2" *ngIf="item.isCustomer">Customer</span></td>
                 <td class="text-center" [width]="'15%'">{{item.createdAt | date:'dd-MM-yyyy'}} {{item.createdAt | date:'hh:MM a'}}</td>
                 <td class="text-center" [width]="'15%'">{{item.mobile}}</td>
+                <td>{{item.notes || 'NA'}}</td>
                 <td class="text-center" [width]="'15%'">
                   <button class="btn btn-sm btn-success me-1" (click)="onOpenAddToCustomerModal(item)" [disabled]="item.isCustomer">
                     <i class="ri-add-circle-line"></i>

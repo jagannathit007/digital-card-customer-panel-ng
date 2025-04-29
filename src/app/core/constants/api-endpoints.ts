@@ -94,7 +94,8 @@ public DELETE_CONTACT_ENQUIRY: string = `${this.PATH}/website/contact-enquiry/de
   public GET_BUSINESS_CARD_OFFERS: string = `${this.PATH}/businessCard/getOffers`;
   public UPDATE_BUSINESS_CARD_OFFERS: string = `${this.PATH}/businessCard/updateOffers`;
   public DELETE_BUSINESS_CARD_OFFERS: string = `${this.PATH}/businessCard/deleteOffers`;
-
+  public UPDATE_BUSINESSCARD_VISIBILITY: string = `${this.PATH}/businessCard/update-visibility`;
+  
 
   //share history
   public SHARED_HISTORY: string = `${this.PATH}/shared/history`;

@@ -1,13 +1,26 @@
 <div class="row py-4">
-    <div class="col-md">
-        <span class="fs-3 fw-bold">OUR OFFERS</span>
+    <div class="row py-4">
+        <div class="col-md">
+            <div class="d-flex">
+                <span class="fs-3 fw-bold">OUR OFFERS</span>
+                <div class="form-check form-switch switch-lg ms-3 mt-2">
+                    <input class="form-check-input" type="checkbox" role="switch" 
+                           id="offersVisibilitySwitch" 
+                           [(ngModel)]="offersVisible" 
+                           (change)="_updateOffersVisibility()">
+                </div>
+            </div>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-info" (click)="onOpenCreateModal()">
+                <i class="ri-add-circle-line"></i> Add Offer
+            </button>
+        </div>
+        <div class="col-auto" *ngIf="offers && offers.docs">
+            <ng-select [items]="[10,20,50,100,200,500]" [(ngModel)]="payLoad.limit" placeholder="Items per page" (change)="onChange()"></ng-select>
+        </div>
     </div>
-    <div class="col-auto">
-        <button class="btn btn-info" (click)="onOpenCreateModal()"><i class="ri-add-circle-line"></i> Add Offer</button>
-    </div>
-    <div class="col-auto" *ngIf="offers && offers.docs">
-        <ng-select [items]="[10,20,50,100,200,500]" [(ngModel)]="payLoad.limit" placeholder="Items per page" (change)="onChange()"></ng-select>
-    </div>
+    
 
     <div class="table-responsive mt-4">
         <table class="table table-bordered">
@@ -42,7 +55,7 @@
             </tbody>
             <tbody *ngIf="!isLoading && offers && offers.docs && offers.docs.length>0">
                 <tr
-                    *ngFor="let item of offers?.docs || [] | paginate: {id:'bulkMapping', itemsPerPage: payLoad.limit, currentPage: payLoad.page, totalItems: offers.totalDocs}; let i = index">
+                    *ngFor="let item of offers?.docs || [] | paginate: {itemsPerPage: payLoad.limit, currentPage: payLoad.page, totalItems: offers.totalDocs}; let i = index">
                     <td class="text-center">{{ (payLoad.page - 1) * payLoad.limit + i + 1 }}</td>
                     <td>{{item.title}}</td>
                     <td>{{item.discount}}%</td>
@@ -61,7 +74,7 @@
             </tbody>
         </table>
         <div class="d-flex justify-content-end" *ngIf="offers && offers.docs">
-            <pagination-controls id="bulkMapping" class="pagination" (pageChange)="onPageChange($event)">
+            <pagination-controls class="pagination" (pageChange)="onPageChange($event)">
             </pagination-controls>
         </div>
     </div>
