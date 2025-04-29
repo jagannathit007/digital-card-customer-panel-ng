@@ -238,7 +238,6 @@ export class BusinessCardService {
       }
     }
 
-    // In website-builder.service.ts
 async updateVisibility(data: any) {
   try {
     this.getHeaders();
@@ -252,6 +251,55 @@ async updateVisibility(data: any) {
     );
     if (response.status == 200 && response.data != 0) {
       return response.data;
+    } else {
+      swalHelper.showToast(response.message, 'warning');
+      return false;
+    }
+  } catch (err) {
+    swalHelper.showToast('Something went wrong!', 'error');
+    return false;
+  }
+}
+
+
+async getContactRequest(data: any) {
+  try {
+    this.getHeaders();
+    let response = await this.apiManager.request(
+      {
+        url: apiEndpoints.GET_CONTACT_REQUEST,
+        method: 'POST',
+      },
+      data,
+      this.headers
+    );
+    if (response.data && response.data != null) {
+      return response.data;
+    } else {
+      swalHelper.showToast(response.message, 'warning');
+      return null;
+    }
+  } catch (err) {
+    console.log(err);
+    swalHelper.showToast('Something went wrong!', 'error');
+    return null;
+  }
+}
+
+async deleteContactRequest(data: any) {
+  try {
+    this.getHeaders();
+    let response = await this.apiManager.request(
+      {
+        url: apiEndpoints.DELETE_CONTACT_REQUEST,
+        method: 'POST',
+      },
+      data,
+      this.headers
+    );
+    if (response.status == 200 && response.data != 0) {
+      swalHelper.success(response.message);
+      return true;
     } else {
       swalHelper.showToast(response.message, 'warning');
       return false;

@@ -57,14 +57,14 @@ class ApiEndpoints {
   public WEBSITE_OUR_PRODUCTS_UPDATE: string = `${this.PATH}/website/product/update`;
   public WEBSITE_OUR_PRODUCTS_DELETE: string = `${this.PATH}/website/product/delete`;
   public UPDATE_VISIBILITY: string = `${this.PATH}/website/update-visibility`;
-  
-  // website_ABOUT-SECTION_apis
-public WEBSITE_ABOUT_UPDATE: string = `${this.PATH}/website/about/update`;
-public DELETE_ABOUT_DATA: string = `${this.PATH}/website/about/delete`;
 
-//webiste product enquiry
-public DELETE_PRODUCT_ENQUIRY: string = `${this.PATH}/website/product-enquiry/delete`;
-public DELETE_CONTACT_ENQUIRY: string = `${this.PATH}/website/contact-enquiry/delete`;
+  // website_ABOUT-SECTION_apis
+  public WEBSITE_ABOUT_UPDATE: string = `${this.PATH}/website/about/update`;
+  public DELETE_ABOUT_DATA: string = `${this.PATH}/website/about/delete`;
+
+  //webiste product enquiry
+  public DELETE_PRODUCT_ENQUIRY: string = `${this.PATH}/website/product-enquiry/delete`;
+  public DELETE_CONTACT_ENQUIRY: string = `${this.PATH}/website/contact-enquiry/delete`;
   // website_ABOUT-SECTION_apis
   public WEBSITE_HOME_UPDATE: string = `${this.PATH}/website/home/update`;
 
@@ -79,8 +79,8 @@ public DELETE_CONTACT_ENQUIRY: string = `${this.PATH}/website/contact-enquiry/de
   public WEBSITE_CONTACT_DELETE: string = `${this.PATH}/website/contact/delete`;
 
 
-// businessCard
-   //SERVICES 
+  // businessCard
+  //SERVICES 
   public GET_BUSINESS_CARD_SERVICES: string = `${this.PATH}/businessCard/getServices`;
   public CREATE_BUSINESS_CARD_SERVICES: string = `${this.PATH}/businessCard/createServices`;
   public DELETE_BUSINESS_CARD_SERVICES: string = `${this.PATH}/businessCard/deleteServices`;
@@ -95,7 +95,10 @@ public DELETE_CONTACT_ENQUIRY: string = `${this.PATH}/website/contact-enquiry/de
   public UPDATE_BUSINESS_CARD_OFFERS: string = `${this.PATH}/businessCard/updateOffers`;
   public DELETE_BUSINESS_CARD_OFFERS: string = `${this.PATH}/businessCard/deleteOffers`;
   public UPDATE_BUSINESSCARD_VISIBILITY: string = `${this.PATH}/businessCard/update-visibility`;
-  
+
+  //get in touch 
+  public GET_CONTACT_REQUEST: string = `${this.PATH}/businessCard/getContactRequest`;
+  public DELETE_CONTACT_REQUEST: string = `${this.PATH}/businessCard/deleteContactRequest`;
 
   //share history
   public SHARED_HISTORY: string = `${this.PATH}/shared/history`;
@@ -107,7 +110,7 @@ public DELETE_CONTACT_ENQUIRY: string = `${this.PATH}/website/contact-enquiry/de
   public GET_CUSTOMER: string = `${this.PATH}/customer/getCustomer`;
   public DELETE_CUSTOMER: string = `${this.PATH}/customer/deleteCustomer`;
   public SAVE_EXCEL_CUSTOMER: string = `${this.PATH}/customer/saveExcelCustomer`;
-  
+
 }
 
 export let apiEndpoints = new ApiEndpoints();

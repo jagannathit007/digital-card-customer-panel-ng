@@ -16,6 +16,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
 import { OffersComponent } from './business-card-compo/shared-details/offers/offers.component';
+import { GetInTouchComponent } from './business-card-compo/shared-details/get-in-touch/get-in-touch.component';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { OffersComponent } from './business-card-compo/shared-details/offers/off
     GalleryDetailsComponent,
     PersonalDetailsComponent,
     ThemeComponent,
-    OffersComponent
+    OffersComponent,
+    GetInTouchComponent
   ],
   imports: [
     CommonModule,

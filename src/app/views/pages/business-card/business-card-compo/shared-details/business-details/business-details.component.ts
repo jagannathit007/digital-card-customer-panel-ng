@@ -42,8 +42,11 @@ export class BusinessDetailsComponent {
           businessKeyword:card.businessKeyword
         };
       }
+      
     }
+    console.log(this.businessProfile.message.whatsApp)
   };
+
 
   socialMediaImage: File | undefined;
   addSocialMedia = async () => {

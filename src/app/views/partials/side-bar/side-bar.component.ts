@@ -9,6 +9,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { common } from 'src/app/core/constants/common';
 import * as featherIcons from 'feather-icons'; 
 import { environment } from 'src/env/env.local';
+import { AppWorker } from 'src/app/core/workers/app.worker';
 
 @Component({
   selector: 'app-side-bar',
@@ -29,7 +30,8 @@ export class SideBarComponent implements OnInit, AfterViewInit {
     private router: Router,
     private storage: AppStorage,
     public authService: AuthService,
-    public sideBarService: SideBarService
+    public sideBarService: SideBarService,
+    public appWorker: AppWorker
   ) {
     this.currentBcardId = this.storage.get(common.BUSINESS_CARD);
   }
