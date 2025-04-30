@@ -63,10 +63,18 @@ export class GetInTouchComponent {
 
   contactRequestVisible:boolean=false
   async _updateVisibility() {
-      await this.businessCardService.updateVisibility({
+     let response= await this.businessCardService.updateVisibility({
         contactRequestVisible: this.contactRequestVisible,
         businessCardId: this.businessCardId
       });
+      if(response){
+        swalHelper.showToast('Visibility successfully updated','success')
+      }
       this._getContactRequests()
+  }
+
+  onVisibilityChanged(){
+    this.contactRequestVisible=!this.contactRequestVisible
+    this._updateVisibility();
   }
 }

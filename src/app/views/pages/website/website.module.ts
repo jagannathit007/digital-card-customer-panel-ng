@@ -21,6 +21,7 @@ import { RouterModule } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { FormsModule } from '@angular/forms';
 import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
+import { ToggleComponent } from '../../partials/toggle/toggle.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
     ContactDetailsComponent,
     ProductsEnquiryComponent,
     GetinTouchEnquiryComponent,
+    
   ],
   imports: [
     CommonModule,
@@ -45,6 +47,7 @@ import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
     NgxPaginationModule,
     FormsModule,
     TooltipDirective,
+    ToggleComponent
   ]
 })
 export class WebsiteModule { }

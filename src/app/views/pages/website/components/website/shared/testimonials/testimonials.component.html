@@ -3,9 +3,9 @@
         <div class="col-md">
             <div class="d-flex">
                 <label class="fw-bold text-uppercase fs-3">Testimonials</label>
-                <div class="form-check form-switch switch-lg ms-3 mt-2">
-                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="testimonialsVisible" (change)="_updateVisibility()">
-                  </div>
+                <app-toggle [isActive]="testimonialsVisible" [onText]="'Visible'" [offText]="'Hidden'" class="ms-2 mt-2"
+                    (changed)="this.testimonialsVisible=!this.testimonialsVisible;_updateVisibility()">
+                </app-toggle>
             </div>
             
         </div>

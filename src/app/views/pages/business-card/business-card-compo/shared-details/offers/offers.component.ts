@@ -213,5 +213,10 @@ export class OffersComponent {
     }
   }
 
+  onVisibilityChanged(){
+    this.offersVisible=!this.offersVisible
+    this._updateOffersVisibility();
+  }
+
 
 }

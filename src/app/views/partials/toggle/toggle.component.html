@@ -1,0 +1,17 @@
+<div class="toggle-wrapper d-inline-flex align-items-center">
+    <!-- Toggle Switch -->
+    <div class="toggle-switch" 
+         [class.active]="isActive" 
+         [class.inactive]="!isActive" 
+         (click)="toggle()">
+      <span class="toggle-dot">
+        <i *ngIf="isActive" class="ri-check-line"></i>
+        <i *ngIf="!isActive" class="ri-close-line"></i>
+      </span>
+    </div>
+    
+    <!-- Optional Label -->
+    <span *ngIf="showLabel" class="toggle-label ms-2" [class.text-muted]="!isActive">
+      {{ isActive ? onText : offText }}
+    </span>
+  </div>

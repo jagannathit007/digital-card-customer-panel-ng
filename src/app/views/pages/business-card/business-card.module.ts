@@ -18,6 +18,7 @@ import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
 import { OffersComponent } from './business-card-compo/shared-details/offers/offers.component';
 import { GetInTouchComponent } from './business-card-compo/shared-details/get-in-touch/get-in-touch.component';
 import { DebounceDirective } from 'src/app/core/directives/debounce';
+import { ToggleComponent } from '../../partials/toggle/toggle.component';
 
 
 @NgModule({
@@ -31,7 +32,7 @@ import { DebounceDirective } from 'src/app/core/directives/debounce';
     PersonalDetailsComponent,
     ThemeComponent,
     OffersComponent,
-    GetInTouchComponent
+    GetInTouchComponent,
   ],
   imports: [
     CommonModule,
@@ -41,7 +42,8 @@ import { DebounceDirective } from 'src/app/core/directives/debounce';
     NgSelectModule,
     TooltipDirective,
     BusinessCardRoutingModule,
-    DebounceDirective
+    DebounceDirective,
+    ToggleComponent
   ]
 })
 export class BusinessCardModule { }
