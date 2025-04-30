@@ -49,7 +49,7 @@
                     <td class="text-center" [width]="'5%'">{{i+1}}</td>
                     <!-- <td class="text-center">{{ (payload.page - 1) * payload.limit + i + 1 }}</td> -->
                     <td>{{item.name}}</td>
-                    <td [width]="'15%'">{{item.price | currency:'INR'}}</td>
+                    <td [width]="'15%'">{{(item.price | currency:'INR')|| '-'}}</td>
                     <td [width]="'25%'">{{item.description}}</td>
                     <td class="text-center" [width]="'20%'">
                         <div class="tw-flex tw-items-center " style="cursor: pointer;" *ngIf="item.images.length>0"
