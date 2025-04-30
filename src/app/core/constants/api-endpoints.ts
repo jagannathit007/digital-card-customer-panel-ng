@@ -17,6 +17,8 @@ class ApiEndpoints {
 
   public PERSONAL_DETAILS: string = `${this.PATH}/business-cards/personal/update`;
   public BUSINESS_DETAILS: string = `${this.PATH}/business-cards/business/update`;
+  public BUSINESS_USERNAME: string = `${this.PATH}/business-cards/business-userName`;
+  
   public ADD_SOCIAL_MEDIA_LINK: string = `${this.PATH}/business-cards/addSocialLink`;
   public DOCUMENT_DETAILS: string = `${this.PATH}/business-cards/documents/update`;
   public GET_OTHER_DOCUMENTS: string = `${this.PATH}/business-cards/other-documents`;

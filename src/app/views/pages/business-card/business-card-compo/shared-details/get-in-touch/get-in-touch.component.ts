@@ -38,6 +38,7 @@ export class GetInTouchComponent {
     let response = await this.businessCardService.getContactRequest(this.payload)
     if (response) {
       this.contactRequests = response
+      this.contactRequestVisible=response.contactRequestVisible
     }
     this.isLoading = false;
 

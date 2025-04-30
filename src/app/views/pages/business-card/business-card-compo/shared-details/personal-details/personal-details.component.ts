@@ -38,7 +38,6 @@ export class PersonalDetailsComponent implements OnInit {
           name: card.name,
           businessCardId: card._id,
           personalSocialMedia: card.personalSocialMedia,
-          userName:card.userName?card.userName:''
         };
       }
     }
@@ -94,6 +93,8 @@ export class PersonalDetailsComponent implements OnInit {
   }
 
   submitForm = async () => {
+    console.log("i ma calling");
+    
     let result = await this.authService.updatePersonalDetails(
       this.personalDetails
     );

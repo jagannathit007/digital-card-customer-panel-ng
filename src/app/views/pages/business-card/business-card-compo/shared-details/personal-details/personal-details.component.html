@@ -15,19 +15,10 @@
         <div class="row">
           <div class="col-md-4 col-12">
             <label for="name" class="form-label fw-bold">Name</label>
-            <input type="text" id="name" class="form-control form-control-lg" [ngModelOptions]="{standalone: true}"
+            <input type="text" id="name" class="form-control form-control-lg" [ngModelOptions]="{standalone: true}" 
               [(ngModel)]="personalDetails.name" name="name" required />
           </div>
-
-          <div class="col-md-4 col-12">
-            <label for="name" class="form-label fw-bold">User Name <code class="text-danger">(only allows a-z, 0-9, -)</code></label>
-            <input type="text" id="name" class="form-control form-control-lg" [ngModelOptions]="{standalone: true}"
-              [(ngModel)]="personalDetails.userName" name="name" required />
-          </div>
         </div>
-
-        
-
         <!-- Social Media Links -->
         <div class="col-12 mt-4">
           <!-- Display added social media links -->

@@ -309,4 +309,23 @@ async deleteContactRequest(data: any) {
     return false;
   }
 }
+
+async getUserName(data: any) {
+  try {
+    this.getHeaders();
+    let response= await this.apiManager.request(
+      {
+        url: apiEndpoints.BUSINESS_USERNAME,
+        method: 'POST',
+      },
+      data,
+      this.headers
+    );
+    return response
+  } catch (err) {
+    console.log(err);
+    swalHelper.showToast('Something went wrong!', 'error');
+    return null;
+  }
+}
 }

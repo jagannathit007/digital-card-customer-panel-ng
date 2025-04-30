@@ -17,6 +17,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
 import { OffersComponent } from './business-card-compo/shared-details/offers/offers.component';
 import { GetInTouchComponent } from './business-card-compo/shared-details/get-in-touch/get-in-touch.component';
+import { DebounceDirective } from 'src/app/core/directives/debounce';
 
 
 @NgModule({
@@ -39,7 +40,8 @@ import { GetInTouchComponent } from './business-card-compo/shared-details/get-in
     NgxPaginationModule,
     NgSelectModule,
     TooltipDirective,
-    BusinessCardRoutingModule
+    BusinessCardRoutingModule,
+    DebounceDirective
   ]
 })
 export class BusinessCardModule { }
