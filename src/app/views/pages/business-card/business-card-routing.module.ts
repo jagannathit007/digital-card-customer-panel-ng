@@ -8,6 +8,8 @@ import { ThemeComponent } from './business-card-compo/shared-details/themes/them
 import { GalleryDetailsComponent } from './business-card-compo/shared-details/gallery-details/gallery-details.component';
 import { BusinessProductsComponent } from './business-card-compo/shared-details/business-products/business-products.component';
 import { BusinessServicesComponent } from './business-card-compo/shared-details/business-services/business-services.component';
+import { OffersComponent } from './business-card-compo/shared-details/offers/offers.component';
+import { GetInTouchComponent } from './business-card-compo/shared-details/get-in-touch/get-in-touch.component';
 
 const routes: Routes = [
   {
@@ -22,6 +24,8 @@ const routes: Routes = [
       { path: 'gallery-details', component: GalleryDetailsComponent },
       { path: 'products', component: BusinessProductsComponent },
       { path: 'services', component: BusinessServicesComponent },
+      { path: 'offers', component: OffersComponent },
+      { path: 'get-in-touch', component: GetInTouchComponent },
     ],
   },
 ];

@@ -17,7 +17,7 @@ declare var bootstrap: any;
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, FormsModule, AsyncPipe,AvatarComponent],
+  imports: [CommonModule, FormsModule, AsyncPipe, AvatarComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
@@ -25,16 +25,24 @@ export class HeaderComponent implements OnInit {
   private deferredPrompt: any;
   private installModal: any;
   showInstallButton: boolean = false;
-
+  userName: string = ''
   constructor(
     public appWorker: AppWorker,
     private storage: AppStorage,
     public authService: AuthService,
-    public modal:ModalService,
-    private cdr:ChangeDetectorRef
+    public modal: ModalService,
+    private cdr: ChangeDetectorRef
   ) {
     this.authService.selectedBusinessCard =
       this.storage.get(common.BUSINESS_CARD) ?? '';
+
+    let userData = this.storage.get(common.USER_DATA)
+    console.log(userData);
+
+    const matchedCard = userData.businessCards.find((e: any) => e._id === this.authService.selectedBusinessCard);
+    this.userName = matchedCard?.userName || '';
+    console.log(this.userName);
+
     this.selectedTab = {
       title: 'Personal Details',
       href: 'personal-details',
@@ -51,7 +59,7 @@ export class HeaderComponent implements OnInit {
   }
 
   copyToClipboard() {
-    const fullUrl = `${environment.baseURL}/${this.authService.selectedBusinessCard}`;
+    const fullUrl = `${environment.baseURL}/${this.userName}`;
     navigator.clipboard
       .writeText(fullUrl)
       .then(() => {
@@ -63,8 +71,8 @@ export class HeaderComponent implements OnInit {
       });
   }
 
-  businessDetails:any=null
-  imageUrl=environment.baseURL + '/'
+  businessDetails: any = null
+  imageUrl = environment.baseURL + '/'
   getCards = async () => {
     let results = await this.authService.getBusinessCards();
     const selectedBusinessId = this.authService.selectedBusinessCard;
@@ -72,10 +80,10 @@ export class HeaderComponent implements OnInit {
       (business: any) => business._id === selectedBusinessId
     );
     this.message = selectedBusinessDetails[0]?.message?.whatsApp
-    ? selectedBusinessDetails[0].message.whatsApp
-    : 'hi';
-    this.businessDetails=selectedBusinessDetails[0]
-      this.cdr.detectChanges();
+      ? selectedBusinessDetails[0].message.whatsApp
+      : 'hi';
+    this.businessDetails = selectedBusinessDetails[0]
+    this.cdr.detectChanges();
   };
 
   selectedCountryCode: string = '91';
@@ -111,7 +119,7 @@ export class HeaderComponent implements OnInit {
     const isStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as any).standalone;
-      const alreadyDenied = localStorage.getItem('pwaDenied') === 'true';
+    const alreadyDenied = localStorage.getItem('pwaDenied') === 'true';
 
     // Handle beforeinstallprompt event (Chrome-only)
     if (this.isAndroid()) {
@@ -122,7 +130,7 @@ export class HeaderComponent implements OnInit {
 
         if (!alreadyDenied) {
           setTimeout(() => {
-            
+
             this.installModal = bootstrap.Modal.getOrCreateInstance(
               document.getElementById('installPwaModal')
             );
@@ -135,7 +143,7 @@ export class HeaderComponent implements OnInit {
     // For Safari/iOS users who don't get the beforeinstallprompt event
     if (this.isIos() && !isStandalone) {
       this.showInstallButton = true;
-      if(!alreadyDenied){
+      if (!alreadyDenied) {
         setTimeout(() => {
           this.installModal = bootstrap.Modal.getOrCreateInstance(
             document.getElementById('installGuideModal')
@@ -143,7 +151,7 @@ export class HeaderComponent implements OnInit {
           this.installModal.show();
         }, 1000);
       }
-      
+
     }
   }
 
@@ -153,10 +161,10 @@ export class HeaderComponent implements OnInit {
   }
 
   isAndroid(): boolean {
-    const userAgent = window.navigator.userAgent.toLowerCase();    
+    const userAgent = window.navigator.userAgent.toLowerCase();
     return /android/.test(userAgent);
   }
-  
+
 
   openInstallModal() {
     const isStandalone =

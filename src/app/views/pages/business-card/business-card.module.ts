@@ -15,6 +15,10 @@ import { BusinessCardComponent } from './business-card-compo/business-card.compo
 import { NgxPaginationModule } from 'ngx-pagination';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
+import { OffersComponent } from './business-card-compo/shared-details/offers/offers.component';
+import { GetInTouchComponent } from './business-card-compo/shared-details/get-in-touch/get-in-touch.component';
+import { DebounceDirective } from 'src/app/core/directives/debounce';
+import { ToggleComponent } from '../../partials/toggle/toggle.component';
 
 
 @NgModule({
@@ -26,7 +30,9 @@ import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
     DocumentDetailsComponent,
     GalleryDetailsComponent,
     PersonalDetailsComponent,
-    ThemeComponent
+    ThemeComponent,
+    OffersComponent,
+    GetInTouchComponent,
   ],
   imports: [
     CommonModule,
@@ -35,7 +41,9 @@ import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
     NgxPaginationModule,
     NgSelectModule,
     TooltipDirective,
-    BusinessCardRoutingModule
+    BusinessCardRoutingModule,
+    DebounceDirective,
+    ToggleComponent
   ]
 })
 export class BusinessCardModule { }

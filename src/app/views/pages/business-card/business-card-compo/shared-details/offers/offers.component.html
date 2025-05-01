@@ -1,0 +1,156 @@
+<div class="row py-4">
+    <div class="col-md">
+        <div class="d-flex">
+            <span class="fs-3 fw-bold">OUR OFFERS</span>
+            <app-toggle [isActive]="offersVisible" [onText]="'Visible'" [offText]="'Hidden'" class="ms-2 mt-2"
+                (changed)="onVisibilityChanged()">
+            </app-toggle>
+        </div>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-info" (click)="onOpenCreateModal()">
+            <i class="ri-add-circle-line"></i> Add Offer
+        </button>
+    </div>
+    <div class="col-auto" *ngIf="offers && offers.docs">
+        <ng-select [items]="[10,20,50,100,200,500]" [(ngModel)]="payLoad.limit" placeholder="Items per page"
+            (change)="onChange()"></ng-select>
+    </div>
+</div>
+
+
+<div class="table-responsive ">
+    <table class="table table-bordered">
+        <thead class="text-uppercase bg-light">
+            <tr>
+                <th class="text-center" [width]="'5%'">#</th>
+                <th>Title</th>
+                <th>Discount</th>
+                <th>Valid Until</th>
+                <th class="text-center" [width]="'20%'">Image</th>
+                <th [width]="'25%'">Description</th>
+                <th>Terms</th>
+                <th class="text-center">Visible</th>
+                <th class="text-center" [width]="'15%'"><i class="ri-tools-fill"></i></th>
+            </tr>
+        </thead>
+        <tbody *ngIf="isLoading">
+            <tr>
+                <td class="text-center" colspan="8">
+                    <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+        <tbody *ngIf="!isLoading && offers && offers.docs && offers.docs.length==0">
+            <tr>
+                <td class="text-center" colspan="8">
+                    <img src="../../../../../../../assets/images/NoRecordFound.png" alt="" style="width: 90px;">
+                    <div class="fw-bold"> No Records Found </div>
+                </td>
+            </tr>
+        </tbody>
+        <tbody *ngIf="!isLoading && offers && offers.docs && offers.docs.length>0">
+            <tr
+                *ngFor="let item of offers?.docs || [] | paginate: {itemsPerPage: payLoad.limit, currentPage: payLoad.page, totalItems: offers.totalDocs}; let i = index">
+                <td class="text-center">{{ (payLoad.page - 1) * payLoad.limit + i + 1 }}</td>
+                <td>{{item.title}}</td>
+                <td>{{item.discount}}%</td>
+                <td>{{item.validUntil | date:'mediumDate'}}</td>
+                <td class="text-center">
+                    <img src="{{imageBaseURL}}{{item.image}}" alt="" style="width: 10%;height: 10%;cursor: pointer;"
+                        *ngIf="item.image!=''" (click)="showImage(item.image)">
+                    <span *ngIf="item.image==''"> :: NA :: </span>
+                </td>
+                <td>{{item.description}}</td>
+                <td>{{item.terms}}</td>
+                <td class="text-center"> <span
+                        class="badge bg-{{item.visible?'success':'warning'}}">{{(item.visible?'visible':'invisible') |
+                        uppercase}}</span></td>
+                <td class="text-center">
+                    <button class="btn btn-sm btn-info" (click)="onOpenUpdateModal(item)"><i
+                            class="ri-edit-fill"></i></button>
+                    <button class="btn btn-danger btn-sm ms-1" (click)="_deleteOffer(item._id)"><i
+                            class="ri-delete-bin-6-fill"></i></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-end" *ngIf="offers && offers.docs">
+        <pagination-controls class="pagination" (pageChange)="onPageChange($event)">
+        </pagination-controls>
+    </div>
+</div>
+
+<div class="modal fade" id="create-offer" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog"
+    aria-labelledby="modalTitleId">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title fw-medium" id="modalTitleId">
+                    {{selectedOffer._id!=null ?'Update':'Add'}} Offer
+                </h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    (click)="onCloseModal('create-offer')"></button>
+            </div>
+            <form action="" (ngSubmit)="onCreateOffer()" ngNativeValidate>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span class="fw-bold">Offer title</span>
+                            <input type="text" [(ngModel)]="selectedOffer.title" [ngModelOptions]="{standalone:true}"
+                                class="form-control mt-1" placeholder="Enter Offer Title" required>
+                        </div>
+
+                        <div class="col-md-6 mt-4">
+                            <span class="fw-bold">Discount (%)</span>
+                            <input type="number" [(ngModel)]="selectedOffer.discount"
+                                [ngModelOptions]="{standalone:true}" class="form-control mt-1"
+                                placeholder="Enter discount percentage" min="1" max="100" required>
+                        </div>
+
+                        <div class="col-md-6 mt-4">
+                            <span class="fw-bold">Valid Until</span>
+                            <input type="date" [(ngModel)]="selectedOffer.validUntil"
+                                [ngModelOptions]="{standalone:true}" class="form-control mt-1" required>
+                        </div>
+
+                        <div class="col-md-8 mt-4">
+                            <span class="fw-bold">Upload Image</span>
+                            <input type="file" name="" id="" class="form-control mt-1" (change)="onUploadImage($event)">
+                            <div class="d-flex flex-wrap gap-2 mt-2" *ngIf="selectedOffer.image || existingImage">
+                                <img [src]="getImagePreview(selectedOffer.image || existingImage)" alt="preview"
+                                    style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;" />
+                            </div>
+                        </div>
+                        <div class="col-md-4 mt-4">
+                            <span class="fw-bold">Visibility</span>
+                            <div class="form-check form-switch switch-lg ms-3 mt-2">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                    id="offersVisibilitySwitch" [(ngModel)]="selectedOffer.visible">
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mt-4">
+                            <span class="fw-bold">Description</span>
+                            <textarea name="" id="" rows="3" [(ngModel)]="selectedOffer.description"
+                                [ngModelOptions]="{standalone:true}" class="form-control mt-1"
+                                placeholder="Enter Description" required></textarea>
+                        </div>
+
+                        <div class="col-md-12 mt-4">
+                            <span class="fw-bold">Terms & Conditions</span>
+                            <textarea name="" id="" rows="2" [(ngModel)]="selectedOffer.terms"
+                                [ngModelOptions]="{standalone:true}" class="form-control mt-1"
+                                placeholder="Enter terms and conditions"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success"><i class="ri-save-fill"></i> Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

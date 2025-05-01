@@ -1,5 +1,5 @@
 .card {
-    height: 200px;
+    height: 150px;
     overflow: hidden;
   }
   
@@ -37,3 +37,135 @@
     color: white;
   }
   
+
+  // Add this to your component's SCSS file
+
+.custom-tabs {
+  border-bottom: 2px solid #f0f0f0;
+  margin-bottom: 20px;
+  
+  .nav-item {
+    margin-right: 5px;
+    
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+  
+  .custom-tab-link {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px 8px 0 0;
+    font-weight: 600;
+    color: #6c757d;
+    transition: all 0.3s ease;
+    position: relative;
+    
+    i {
+      font-size: 18px;
+      vertical-align: middle;
+      margin-right: 5px;
+    }
+    
+    &:hover {
+      background-color: rgba(0, 123, 255, 0.05);
+      color: #495057;
+    }
+    
+    &.active {
+      color: #042c68;
+      background-color: white;
+      border-bottom: 3px solid #042c68;
+      
+      &:after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+      }
+    }
+  }
+}
+
+// Animation for tab transitions
+.tab-content {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// Enhanced card styling
+.card {
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
+  }
+  
+  img, video {
+    object-fit: cover;
+    height: 200px;
+  }
+}
+
+// Enhanced delete icon
+.delete-icon {
+  background-color: white;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  opacity: 0.7;
+  
+  &:hover {
+    opacity: 1;
+    background-color: #f8d7da;
+    transform: scale(1.1);
+    
+    i {
+      color: #dc3545;
+    }
+  }
+  
+  i {
+    font-size: 18px;
+    color: #6c757d;
+  }
+}
+
+// Improved buttons
+.btn-info {
+  background: linear-gradient(45deg, #042c68, #0dcaf0);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  padding: 8px 20px;
+  transition: all 0.3s ease;
+  
+  &:hover:not(:disabled) {
+    background: linear-gradient(45deg, #042c68, #0aa2c0);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+  }
+  
+  &:disabled {
+    background: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+  }
+}

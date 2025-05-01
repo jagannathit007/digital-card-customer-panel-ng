@@ -93,6 +93,8 @@ export class PersonalDetailsComponent implements OnInit {
   }
 
   submitForm = async () => {
+    console.log("i ma calling");
+    
     let result = await this.authService.updatePersonalDetails(
       this.personalDetails
     );

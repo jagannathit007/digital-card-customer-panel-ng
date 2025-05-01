@@ -76,6 +76,18 @@ export class BusinessCardComponent implements OnInit{
       icon:"ri-shake-hands-fill"
       
     },
+    {
+      title: "Offers",
+      href: "offers",
+      icon:"ri-discount-percent-line"
+      
+    },
+    {
+      title: "Contact Request",
+      href: "get-in-touch",
+      icon:"ri-contacts-fill"
+      
+    },
   ]
 
   isActive(href: string): boolean {

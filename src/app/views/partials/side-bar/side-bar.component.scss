@@ -35,3 +35,12 @@ ol, ul {
     transform: translateY(0);
   }
 }
+
+.sidebar {
+  transition: all 0.3s ease;
+  width: 250px;
+}
+
+.sidebar.collapsed {
+  margin-left: -250px;
+}

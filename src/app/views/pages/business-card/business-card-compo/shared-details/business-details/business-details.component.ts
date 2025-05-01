@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { common } from 'src/app/core/constants/common';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { AuthService } from 'src/app/services/auth.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
 import { ModalService } from 'src/app/core/utilities/modal';
+import { BusinessCardService } from 'src/app/services/business-card.service';
 declare var $:any;
 
 @Component({
@@ -12,15 +13,20 @@ declare var $:any;
   templateUrl: './business-details.component.html',
   styleUrl: './business-details.component.scss',
 })
-export class BusinessDetailsComponent {
+export class BusinessDetailsComponent implements OnInit{
   baseURL = environment.baseURL;
   newSocialMedia = { name: '', link: '' };
   constructor(
     private storage: AppStorage, 
     public authService: AuthService,
-    private modal:ModalService
+    private modal:ModalService,
+    private businessService:BusinessCardService
   ) {
     this.getCards();
+  }
+  businessCardID:any
+  ngOnInit(): void {
+      this.businessCardID=this.storage.get(common.BUSINESS_CARD)
   }
 
   profileImage: File | undefined;
@@ -39,10 +45,15 @@ export class BusinessDetailsComponent {
           companyAddress: card.companyAddress,
           message: card.message,
           companySocialMedia: card.companySocialMedia,
+          businessKeyword:card.businessKeyword,
+          userName:card.userName?card.userName:''
         };
       }
+      
     }
+    console.log(this.businessProfile.message.whatsApp)
   };
+
 
   socialMediaImage: File | undefined;
   addSocialMedia = async () => {
@@ -52,6 +63,7 @@ export class BusinessDetailsComponent {
       formData.append('link', this.newSocialMedia.link);
       formData.append('type', 'business');
       formData.append('businessCardId', this.storage.get(common.BUSINESS_CARD));
+      
       formData.append('file', this.socialMediaImage, this.socialMediaImage.name);
       
       let result = await this.authService.updateBusinessSocialDetails(formData);
@@ -100,12 +112,13 @@ export class BusinessDetailsComponent {
     formData.append('aboutCompany', this.businessProfile.aboutCompany);
     formData.append('companyAddress', this.businessProfile.companyAddress);
     formData.append('businessCardId', this.storage.get(common.BUSINESS_CARD));
+    formData.append('businessKeyword',this.businessProfile.businessKeyword);
     formData.append(
       'companySocialMedia',
       JSON.stringify(this.businessProfile.companySocialMedia)
     );
     formData.append('message', JSON.stringify(this.businessProfile.message));
-
+    formData.append('userName', this.businessProfile.userName);
     if (this.profileImage) {
       formData.append('profileImage', this.profileImage, this.profileImage.name);
     }
@@ -119,6 +132,17 @@ export class BusinessDetailsComponent {
       swalHelper.showToast('Business Details Updated Successfully!', 'success');
     }
   };
+
+  response:any
+  hasCheckedUserName = false;
+  _uniqueUserName=async()=>{
+    this.hasCheckedUserName=true
+    let response=await this.businessService.getUserName({businessCardId:this.businessCardID,userName:this.businessProfile.userName})
+    if(response ){
+      this.response=response
+      this.hasCheckedUserName=false
+    }
+  }
 
   onOpenSocialMediaModal(){
     this.modal.open('addSocialMediaModal');

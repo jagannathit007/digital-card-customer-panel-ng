@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class AppWorker {
-  isSliderOpen: boolean = false;
+  isSliderOpen: boolean = true;
   toggleSlider() {
     this.isSliderOpen = !this.isSliderOpen;
   }

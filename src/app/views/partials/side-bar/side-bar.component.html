@@ -1,4 +1,4 @@
-<nav id="sidebar" class="sidebar js-sidebar">
+<nav id="sidebar" class="sidebar js-sidebar" [class.collapsed]="!appWorker.isSliderOpen">
   <div class="sidebar-content js-simplebar" style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
     <a class="sidebar-brand" style="color:#126f8a; background: aliceblue; padding: 10px 20px;"
       [routerLink]="'business-cards'">

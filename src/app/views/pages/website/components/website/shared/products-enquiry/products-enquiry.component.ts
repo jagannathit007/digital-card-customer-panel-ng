@@ -7,6 +7,7 @@ import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { AuthService } from 'src/app/services/auth.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { ModalService } from 'src/app/core/utilities/modal';
+import { WebsiteBuilderService } from 'src/app/services/website-builder.service';
 
 @Component({
   selector: 'app-products-enquiry',
@@ -25,11 +26,12 @@ export class ProductsEnquiryComponent implements OnInit {
   selectedOrderId: string = '';
   selectedOrder: any = null;
 
-  constructor(private storage: AppStorage, public authService: AuthService, public modal: ModalService) {}
+  constructor(private storage: AppStorage, private authService: AuthService, public modal: ModalService,private webService:WebsiteBuilderService) {}
 
-  async ngOnInit() {
-    await this._fetchOrders();
-
+  businessCardId:string=''
+  ngOnInit() {
+    this.businessCardId=this.storage.get(common.BUSINESS_CARD);
+    this._fetchOrders();
   }
 
   async _fetchOrders() {
@@ -67,5 +69,16 @@ export class ProductsEnquiryComponent implements OnInit {
 
   pageChangeEvent(event: number) {
     this.p = event;
+  }
+
+  _deleteEnquiry=async(id:any)=>{
+    const confirm=await swalHelper.delete();
+      if(confirm.isConfirmed){
+       let result= await this.webService.deleteProductEnquiry({businessCardId:this.businessCardId, _id: id })
+       if(result){
+        swalHelper.success('Enquiry deleted');
+       }
+       this._fetchOrders();
+      }
   }
 }

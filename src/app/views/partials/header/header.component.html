@@ -2,7 +2,7 @@
    <a class="sidebar-toggle js-sidebar-toggle" (click)="appWorker.toggleSlider()">
    <i class="hamburger align-self-center"></i>
    </a>
-   <div class="d-flex flex-wrap justify-content-end align-items-center gap-3 p-2 ms-auto business-select">
+   <div class="d-none d-md-flex flex-wrap justify-content-end align-items-center gap-3 p-2 ms-auto business-select">
       <div class="icon-container shadow p-2 rounded bg-light" (click)="copyToClipboard()">
         <i class="ri-links-line"></i>
       </div>
@@ -18,6 +18,27 @@
           <option [value]="item._id">{{ item.company }}</option>
         }
       </select>
+    </div>
+    <div class="d-md-none position-sticky bottom-select-container bg-white shadow-sm py-2 px-3">
+      <div class="d-flex gap-3 align-items-center">
+        <div class="d-flex gap-2">
+          <div class="icon-container p-2 rounded bg-light" (click)="copyToClipboard()">
+            <i class="ri-links-line"></i>
+          </div>
+          <div *ngIf="showInstallButton" class="icon-container p-2 rounded bg-light" (click)="openInstallModal()">
+            <i class="ri-download-2-line"></i>
+          </div>
+          <div class="icon-container p-2 rounded bg-light" (click)="modal.open('shareModal')">
+            <i class="ri-whatsapp-fill text-success"></i>
+          </div>
+        </div>
+        <select class="form-select custom-select flex-grow-1" [(ngModel)]="authService.selectedBusinessCard"
+          [ngModelOptions]="{standalone: true}" (change)="onBusinessChange()">
+          @for (item of authService.businessCards$ | async; track item._id) {
+            <option [value]="item._id">{{ item.company }}</option>
+          }
+        </select>
+      </div>
     </div>
   
     <div class="navbar-collapse collapse">
@@ -47,27 +68,7 @@
   </nav>
   
   <!-- Fixed/sticky select container for small screens -->
-  <div class="d-md-none position-sticky bottom-select-container bg-white shadow-sm py-2 px-3">
-    <div class="d-flex gap-3 align-items-center">
-      <div class="d-flex gap-2">
-        <div class="icon-container p-2 rounded bg-light" (click)="copyToClipboard()">
-          <i class="ri-links-line"></i>
-        </div>
-        <div *ngIf="showInstallButton" class="icon-container p-2 rounded bg-light" (click)="openInstallModal()">
-          <i class="ri-download-2-line"></i>
-        </div>
-        <div class="icon-container p-2 rounded bg-light" (click)="modal.open('shareModal')">
-          <i class="ri-whatsapp-fill text-success"></i>
-        </div>
-      </div>
-      <select class="form-select custom-select flex-grow-1" [(ngModel)]="authService.selectedBusinessCard"
-        [ngModelOptions]="{standalone: true}" (change)="onBusinessChange()">
-        @for (item of authService.businessCards$ | async; track item._id) {
-          <option [value]="item._id">{{ item.company }}</option>
-        }
-      </select>
-    </div>
-  </div>
+  
  <!-- Install PWA Bootstrap Modal -->
   <div class="modal fade" id="installPwaModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">

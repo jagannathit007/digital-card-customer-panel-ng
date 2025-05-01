@@ -3,9 +3,9 @@
         <div class="col-md">
             <div class="d-flex">
                 <label class="fw-bold text-uppercase fs-3">Our Clients</label>
-                <div class="form-check form-switch switch-lg ms-3 mt-2">
-                    <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="clientVisible" (change)="_updateVisibility()">
-                  </div>
+                    <app-toggle [isActive]="clientVisible" [onText]="'Visible'" [offText]="'Hidden'" class="ms-2 mt-2"
+                    (changed)="this.clientVisible=!this.clientVisible;_updateVisibility()">
+                </app-toggle>
             </div>
             
         </div>
@@ -41,6 +41,7 @@
                     <th>Client Name</th>
                     <th>Website</th>
                     <th class="text-center">Logo</th>
+                    <th class="text-center">Visible</th>
                     <th width="10%" class="text-center">Actions</th>
                 </tr>
             </thead>
@@ -67,6 +68,7 @@
                             (click)="selectedImage = baseURL + '/' + client.image">
                         <span *ngIf="!client.image || client.image.length === 0">No Image</span>
                     </td>
+                    <td class="text-center"> <span class="badge bg-{{client.visible?'success':'warning'}}">{{(client.visible?'visible':'invisible') | uppercase}}</span></td>
                     <td class="text-center">
                         <button class="btn btn-sm btn-info me-1" (click)="editClient(client)">
                             <i class="ri-edit-box-line"></i>
