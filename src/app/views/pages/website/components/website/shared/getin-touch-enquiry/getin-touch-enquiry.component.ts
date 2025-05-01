@@ -39,7 +39,6 @@ businessCardId:any
     try {
       let businessCardId = this.storage.get(common.BUSINESS_CARD);
       let results = await this.authService.getWebsiteDetails(businessCardId); 
-      console.log(results);
       if (results) {
         this.getIntouchContact = results.contactSubmissions ? [...results.contactSubmissions
         ] : []; 
@@ -78,7 +77,6 @@ businessCardId:any
   }
 
   _deleteEnquiry=async(data:any)=>{
-    console.log(data);
     
     const confirm=await swalHelper.delete();
       if(confirm.isConfirmed){

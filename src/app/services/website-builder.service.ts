@@ -142,6 +142,31 @@ export class WebsiteBuilderService {
       }
     }
 
+    // WebsiteBuilder Our Certificate Services
+    async updateOurCertificates(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_CERTIFICATES_ADD,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        
+        if (response.status == 200 && response.data != null) {
+          return response.data;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return null;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return null;
+      }
+    }
+
     async deleteProductEnquiry(data:any){
       try {
         this.getHeaders();

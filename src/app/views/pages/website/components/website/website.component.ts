@@ -92,6 +92,11 @@ export class WebsiteComponent{
         href: "getintouch-enquiry",
         icon:'ri-chat-3-line'
       },
+      {
+        title: "Our Certificate",
+        href: "our-certificate",
+        icon:'ri-gallery-fill'
+      },
     ]
    
      isActive(href: string): boolean {
