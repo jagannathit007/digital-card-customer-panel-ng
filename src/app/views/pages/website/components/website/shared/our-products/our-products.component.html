@@ -20,11 +20,11 @@
                 <tr>
                     <th class="text-center" [width]="'5%'">#</th>
                     <th>Product Name </th>
-                    <th [width]="'15%'">Price</th>
-                    <th [width]="'25%'">Description</th>
+                    <th [width]="'10%'">Price</th>
+                    <th >Description</th>
                     <th class="text-center" [width]="'20%'">Images</th>
                     <th class="text-center">Visibility</th>
-                    <th class="text-center" [width]="'15%'"><i class="ri-tools-fill"></i></th>
+                    <th class="text-center" [width]="'10%'"><i class="ri-tools-fill"></i></th>
                 </tr>
             </thead>
             <tbody *ngIf="isLoading">
@@ -48,9 +48,9 @@
                 <tr *ngFor="let item of products;let i=index">
                     <td class="text-center" [width]="'5%'">{{i+1}}</td>
                     <!-- <td class="text-center">{{ (payload.page - 1) * payload.limit + i + 1 }}</td> -->
-                    <td>{{item.name}}</td>
-                    <td [width]="'15%'">{{(item.price | currency:'INR')|| '-'}}</td>
-                    <td [width]="'25%'">{{item.description}}</td>
+                    <td [width]="'12%'">{{item.name | titlecase}}</td>
+                    <td [width]="'10%'">{{(item.price | currency:'INR')|| '-'}}</td>
+                    <td >{{item.description}}</td>
                     <td class="text-center" [width]="'20%'">
                         <div class="tw-flex tw-items-center " style="cursor: pointer;" *ngIf="item.images.length>0"
                             (click)="onOpenImageModal(item.images)">
@@ -67,7 +67,7 @@
                     <td class="text-center"> <span
                             class="badge bg-{{item.visible?'success':'warning'}}">{{(item.visible?'visible':'invisible')
                             | uppercase}}</span></td>
-                    <td class="text-center" [width]="'15%'"><button class="btn btn-sm btn-info"
+                    <td class="text-center" [width]="'10%'"><button class="btn btn-sm btn-info"
                             (click)="onOpenUpdateModal(item)"><i class="ri-edit-fill"></i></button>
                         <button class="btn btn-danger btn-sm ms-1" (click)="_deleteProducts(item._id)"><i
                                 class="ri-delete-bin-6-fill"></i></button>
