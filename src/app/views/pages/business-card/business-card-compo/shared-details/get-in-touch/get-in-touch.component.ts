@@ -49,6 +49,7 @@ export class GetInTouchComponent {
     if(confirm.isConfirmed){
       this.businessCardService.deleteContactRequest({businessCardId:this.businessCardId, _id:id})
     }
+    this._getContactRequests();
   }
 
   onChange(): void {
