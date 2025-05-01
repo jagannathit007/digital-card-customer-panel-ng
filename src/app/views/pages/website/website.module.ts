@@ -16,6 +16,7 @@ import { ContactDetailsComponent } from './components/website/shared/contact-det
 
 import { ProductsEnquiryComponent } from './components/website/shared/products-enquiry/products-enquiry.component';
 import { GetinTouchEnquiryComponent } from './components/website/shared/getin-touch-enquiry/getin-touch-enquiry.component';
+import { OurCertificateComponent } from './components/website/shared/our-certificate/our-certificate.component';
 
 import { RouterModule } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
@@ -38,7 +39,7 @@ import { ToggleComponent } from '../../partials/toggle/toggle.component';
     ContactDetailsComponent,
     ProductsEnquiryComponent,
     GetinTouchEnquiryComponent,
-    
+    OurCertificateComponent,
   ],
   imports: [
     CommonModule,

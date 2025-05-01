@@ -113,6 +113,9 @@ class ApiEndpoints {
   public DELETE_CUSTOMER: string = `${this.PATH}/customer/deleteCustomer`;
   public SAVE_EXCEL_CUSTOMER: string = `${this.PATH}/customer/saveExcelCustomer`;
 
+  // our Certificates
+  public WEBSITE_CERTIFICATES_ADD: string = `${this.PATH}/website/certificate/otherimages`;
+  
 }
 
 export let apiEndpoints = new ApiEndpoints();
