@@ -7,16 +7,21 @@
       @if(businessProfile!=null){
       <form ngNativeValidate (ngSubmit)="onSubmit()">
         <div class="row mb-3">
-          <div class="col-md-4 col-12">
-            <label for="name" class="form-label fw-bold">User Name <code class="text-danger">(only allows a-z, 0-9, -)</code></label>
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon3">{{baseURL}}/</span>
+          <div class="col-md-6 col-12">
+            <label for="name" class="form-label fw-bold">User Name <code class="text-danger">(Only lowercase letters, numbers, and hyphens are allowed.)</code></label>
+            <div class="d-flex">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="basic-addon3">{{baseURL}}/</span>
+                </div>
+                <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3" [(ngModel)]="businessProfile.userName" [ngModelOptions]="{standalone: true}" [debounceTime]="1000" (debounceEvent)="_uniqueUserName()">
               </div>
-              <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3" [(ngModel)]="businessProfile.userName" [ngModelOptions]="{standalone: true}" [debounceTime]="1000" (debounceEvent)="_uniqueUserName()">
+              <div class="spinner-border spinner-border-sm text-success ms-2 mt-1" role="status" *ngIf="hasCheckedUserName">
+                <span class="visually-hidden">Loading...</span>
+              </div>
             </div>
           </div>
-          <div *ngIf="response" class="text-{{response?.data==null?'danger':'success'}} mt-2" >{{response.message}}</div>
+          <div *ngIf="response" class="text-{{response?.data==null?'danger':'success'}} mt-2" style="font-size: small;">{{response.message}}</div>
         </div>
         <div class="row g-4 ">
           <div class="col-md-6 col-12">
