@@ -37,11 +37,9 @@ export class HeaderComponent implements OnInit {
       this.storage.get(common.BUSINESS_CARD) ?? '';
 
     let userData = this.storage.get(common.USER_DATA)
-    console.log(userData);
 
     const matchedCard = userData.businessCards.find((e: any) => e._id === this.authService.selectedBusinessCard);
     this.userName = matchedCard?.userName || '';
-    console.log(this.userName);
 
     this.selectedTab = {
       title: 'Personal Details',

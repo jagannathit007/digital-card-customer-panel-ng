@@ -1,16 +1,3 @@
-// import { Component } from '@angular/core';
-
-
-// @Component({
-//   selector: 'app-our-certificate',
-//   templateUrl: './our-certificate.component.html',
-//   styleUrl: './our-certificate.component.scss'
-// })
-
-// export class OurCertificateComponent {
-
-// }
-
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { common } from 'src/app/core/constants/common';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
@@ -50,7 +37,6 @@ export class OurCertificateComponent implements OnInit {
     this.isLoading = true;
     try {
       let results = await this.authService.getWebsiteDetails(this.businessCardId);
-      console.log('Certificate details:', results);
       if (results && results.otherImages) {
         // Set the otherImages from the database
         if (results.otherImages && results.otherImages.length > 0) {
