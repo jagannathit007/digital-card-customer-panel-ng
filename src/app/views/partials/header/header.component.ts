@@ -33,19 +33,6 @@ export class HeaderComponent implements OnInit {
     public modal: ModalService,
     private cdr: ChangeDetectorRef
   ) {
-    this.authService.selectedBusinessCard =
-      this.storage.get(common.BUSINESS_CARD) ?? '';
-
-    let userData = this.storage.get(common.USER_DATA)
-
-    const matchedCard = userData.businessCards.find((e: any) => e._id === this.authService.selectedBusinessCard);
-    this.userName = matchedCard?.userName || '';
-
-    this.selectedTab = {
-      title: 'Personal Details',
-      href: 'personal-details',
-    };
-    this.getCards();
   }
 
   onBusinessChange() {
@@ -109,6 +96,19 @@ export class HeaderComponent implements OnInit {
   };
 
   ngOnInit(): void {
+    this.authService.selectedBusinessCard =
+      this.storage.get(common.BUSINESS_CARD) ?? '';
+
+    let userData = this.storage.get(common.USER_DATA)
+
+    const matchedCard = userData.businessCards.find((e: any) => e._id === this.authService.selectedBusinessCard);
+    this.userName = matchedCard?.userName ;
+
+    this.selectedTab = {
+      title: 'Personal Details',
+      href: 'personal-details',
+    };
+    this.getCards();
     this.checkPwaInstallation();
     this.getProfile();
   }
