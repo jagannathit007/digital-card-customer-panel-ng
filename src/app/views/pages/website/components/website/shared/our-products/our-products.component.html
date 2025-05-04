@@ -1,16 +1,37 @@
 <div class="row">
+    <!-- Header with Toggles -->
     <div class="row pe-0">
         <div class="col-md">
             <div class="d-flex">
                 <label class="fw-bold text-uppercase fs-3">Our Products</label>
                 <app-toggle [isActive]="productVisible" [onText]="'Visible'" [offText]="'Hidden'" class="ms-2 mt-2"
-                    (changed)="this.productVisible=!this.productVisible;_updateVisibility()">
-                </app-toggle>
+                    (changed)="this.productVisible=!this.productVisible;_updateVisibility()"></app-toggle>
+                <app-toggle [isActive]="productcategoryVisible" [onText]="'Category Visible'" [offText]="'Category Hidden'" class="ms-2 mt-2"
+                    (changed)="this.productcategoryVisible=!this.productcategoryVisible;_updateCategoryVisibility()"></app-toggle>
             </div>
         </div>
         <div class="col-md-auto pe-0">
-            <button class="btn btn-info" (click)="onOpenCraeteModal()"><i class="ri-add-circle-line"></i> Add
-                products</button>
+            <button *ngIf="productcategoryVisible" class="btn btn-primary me-2" (click)="onOpenCategoryDropdown()">
+                <i class="ri-add-circle-line"></i> Add Category
+            </button>
+            <button class="btn btn-info" (click)="onOpenCraeteModal()">
+                <i class="ri-add-circle-line"></i> Add Products
+            </button>
+        </div>
+    </div>
+
+    <!-- Category Dropdown -->
+    <div class="row mt-3" *ngIf="showCategoryDropdown">
+        <div class="col-md-12">
+            <ng-select [items]="filteredProducts" bindLabel="name" bindValue="_id" placeholder="Select Product"
+                (change)="onSelectProductForCategory($event)">
+                <ng-template ng-option-tmp let-item="item" let-index="index">
+                    <div class="d-flex justify-content-between">
+                        <span>{{ index + 1 }}</span>
+                        <span>{{ item.name | titlecase }}</span>
+                    </div>
+                </ng-template>
+            </ng-select>
         </div>
     </div>
 
@@ -31,22 +52,24 @@
         </div>
     </div>
 
+    <!-- Products Table -->
     <div class="table-responsive mt-4">
         <table class="table table-bordered table-hover">
-            <thead class="text-uppercase bg-light ">
+            <thead class="text-uppercase bg-light">
                 <tr>
                     <th class="text-center" [width]="'5%'">#</th>
-                    <th>Product Name </th>
+                    <th>Product Name</th>
                     <th [width]="'10%'">Price</th>
-                    <th >Description</th>
+                    <th>Description</th>
                     <th class="text-center" [width]="'20%'">Images</th>
+                    <th class="text-center" *ngIf="productcategoryVisible">Categories</th>
                     <th class="text-center">Visibility</th>
                     <th class="text-center" [width]="'10%'"><i class="ri-tools-fill"></i></th>
                 </tr>
             </thead>
             <tbody *ngIf="isLoading">
                 <tr>
-                    <td class="text-center" colspan="7">
+                    <td class="text-center" colspan="8">
                         <div class="spinner-border spinner-border-sm text-secondary" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
@@ -55,7 +78,7 @@
             </tbody>
             <tbody *ngIf="!isLoading && filteredProducts.length==0">
                 <tr>
-                    <td class="text-center" colspan="7">
+                    <td class="text-center" colspan="8">
                         <img src="../../../../../../../assets/images/NoRecordFound.png" alt="" style="width: 90px;">
                         <div class="fw-bold"> No Records Found </div>
                     </td>
@@ -65,28 +88,51 @@
                 <tr *ngFor="let item of filteredProducts | paginate: { id: 'productPager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems }; let i = index">
                     <td class="text-center" [width]="'5%'">{{ (p - 1) * itemsPerPage + i + 1 }}</td>
                     <td [width]="'12%'">{{item.name | titlecase}}</td>
-                    <td [width]="'10%'">{{(item.price | currency:'INR')|| '-'}}</td>
-                    <td >{{item.description}}</td>
+                    <td [width]="'10%'">{{(item.price | currency:'INR') || '-'}}</td>
+                    <td>{{item.description}}</td>
                     <td class="text-center" [width]="'20%'">
-                        <div class="tw-flex tw-items-center " style="cursor: pointer;" *ngIf="item.images.length>0"
+                        <div class="tw-flex tw-items-center" style="cursor: pointer;" *ngIf="item.images.length>0"
                             (click)="onOpenImageModal(item.images)">
                             <img src="{{imageBaseURL}}{{item.images[0]}}" alt="Product Image"
                                 style="width: 25px;height: 25px;" />
                             <span *ngIf="item.images.length > 1"
                                 [tooltip]="'... +' + (item.images.length - 1) + ' more images'" tooltipPosition="above">
-                                <span class="mx-2 fw-bold text-success "> . . .</span>
+                                <span class="mx-2 fw-bold text-success"> . . .</span>
                                 <span class="badge bg-success">+{{ item.images.length - 1 }}</span>
                             </span>
                         </div>
                         <div *ngIf="item.images.length==0"> :: NA ::</div>
                     </td>
-                    <td class="text-center"> <span
-                            class="badge bg-{{item.visible?'success':'warning'}}">{{(item.visible?'visible':'invisible')
-                            | uppercase}}</span></td>
-                    <td class="text-center" [width]="'10%'"><button class="btn btn-sm btn-info"
-                            (click)="onOpenUpdateModal(item)"><i class="ri-edit-fill"></i></button>
-                        <button class="btn btn-danger btn-sm ms-1" (click)="_deleteProducts(item._id)"><i
-                                class="ri-delete-bin-6-fill"></i></button>
+                    <td class="text-center" *ngIf="productcategoryVisible">
+                        <div *ngIf="item.categories?.length > 0" class="d-flex flex-wrap gap-2">
+                            <ng-container *ngFor="let category of item.categories; let j = index">
+                                <span class="badge bg-info me-1" (click)="onOpenCategoryProductList(category, item)" style="cursor: pointer;">
+                                    {{ category.categoryName | titlecase }}
+                                </span>
+                                <button class="btn btn-sm btn-success" (click)="onOpenAddProductToCategory(category, item)">
+                                    <i class="ri-add-fill"></i>
+                                </button>
+                                <button class="btn btn-sm btn-info ms-1" (click)="onOpenEditCategory(category, item)">
+                                    <i class="ri-edit-fill"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger ms-1" (click)="onDeleteCategory({ category: category, product: item })">
+                                    <i class="ri-delete-bin-6-fill"></i>
+                                </button>
+                            </ng-container>
+                        </div>
+                        <span *ngIf="!item.categories || item.categories.length === 0">No Categories</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-{{item.visible?'success':'warning'}}">{{(item.visible?'visible':'invisible') | uppercase}}</span>
+                    </td>
+                    <td class="text-center" [width]="'10%'">
+                        <button class="btn btn-sm btn-info" (click)="onOpenUpdateModal(item)">
+                            <i class="ri-edit-fill"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm ms-1" (click)="_deleteProducts(item._id)">
+                            <i class="ri-delete-bin-6-fill"></i>
+                        </button>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -97,14 +143,14 @@
     </div>
 </div>
 
-
+<!-- Create/Update Product Modal -->
 <div class="modal fade" id="create-products" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
     role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title fw-medium" id="modalTitleId">
-                    {{selectedProducts._id!=null ?'Update':'Add'}} products
+                    {{selectedProducts._id!=null ?'Update':'Add'}} Products
                 </h4>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                     (click)="onCloseModal('create-products')"></button>
@@ -118,12 +164,12 @@
                                 required class="form-control mt-1" placeholder="Please Enter Product Name">
                         </div>
                         <div class="col-md-6 mt-4">
-                            <span class="fw-bold">Price </span>
+                            <span class="fw-bold">Price</span>
                             <input type="text" [(ngModel)]="selectedProducts.price" [ngModelOptions]="{standalone:true}"
-                                class="form-control mt-1" placeholder="Please Enter price">
+                                class="form-control mt-1" placeholder="Please Enter Price">
                         </div>
                         <div class="col-md-6 mt-4">
-                            <span class="fw-bold">Visible </span>
+                            <span class="fw-bold">Visible</span>
                             <div class="form-check form-switch switch-lg ms-3 mt-2">
                                 <input class="form-check-input" type="checkbox" role="switch"
                                     id="flexSwitchCheckDefault" [(ngModel)]="selectedProducts.visible"
@@ -141,13 +187,12 @@
                                     <img [src]="getImagePreview(img)" alt="preview"
                                         style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;" />
                                     <button type="button"
-                                        class="btn-close position-absolute top-0 end-0 bg-white rounded-circle "
+                                        class="btn-close position-absolute top-0 end-0 bg-white rounded-circle"
                                         (click)="removeImage(i)"
                                         style="position: absolute; top: -4px; right: -4px; font-size: 10px; color: red; cursor: pointer;"
                                         aria-label="Close"></button>
                                 </div>
                             </div>
-
                         </div>
                         <div class="col-md-12 mt-4">
                             <span class="fw-bold">Description <code class="text-danger">*</code></span>
@@ -165,6 +210,71 @@
     </div>
 </div>
 
+
+<!-- Create/Update Category Modal -->
+<div class="modal fade" id="create-category" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fw-medium" id="modalTitleId">
+                    {{ selectedCategory._id ? 'Update' : 'Add' }} Category
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    (click)="onCloseCategoryModal()"></button>
+            </div>
+            <form action="" (ngSubmit)="onSaveCategory()" ngNativeValidate>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span class="fw-bold">Category Name <code class="text-danger">*</code></span>
+                            <input type="text" [(ngModel)]="selectedCategory.categoryName" [ngModelOptions]="{standalone: true}"
+                                required class="form-control mt-1" placeholder="Please Enter Category Name">
+                        </div>
+                        <div class="col-md-6 mt-4">
+                            <span class="fw-bold">Visible</span>
+                            <div class="form-check form-switch switch-lg ms-3 mt-2">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                    [(ngModel)]="selectedCategory.categoryVisible" [ngModelOptions]="{standalone: true}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success"><i class="ri-save-fill"></i> Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Category inProducts Modal -->
+<div class="modal fade" id="category-products" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fw-medium" id="modalTitleId">
+                    Products in {{ selectedCategory.categoryName | titlecase }}
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    (click)="onCloseCategoryProductModal()"></button>
+            </div>
+            <div class="modal-body">
+                <ng-select [items]="selectedCategory.products" bindLabel="name" bindValue="_id" placeholder="Select Product"
+                    (change)="onSelectCategoryProduct($event)">
+                    <ng-template ng-option-tmp let-item="item" let-index="index">
+                        <div class="d-flex justify-content-between">
+                            <span>{{ index + 1 }}</span>
+                            <span>{{ item.name | titlecase }}</span>
+                        </div>
+                    </ng-template>
+                </ng-select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Carousel Modal -->
 <div class="modal fade" id="image-carousel" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
     role="dialog" aria-labelledby="modalTitleId">
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
