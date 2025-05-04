@@ -70,6 +70,123 @@ export class WebsiteBuilderService {
       }
     }
 
+    // Catogery wise product services CRUD
+    async addOrUpdateProductCategory(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.ADD_OR_UPDATE_PRODUCT_CATEGORY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+    async addOrUpdateProductInCategory(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.ADD_OR_UPDATE_PRODUCT_INCATEGORY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+    async deleteProductInCategory(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.DELETE_PRODUCT_INCATEGORY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+    async deleteCategory(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.DELETE_CATEGORY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+    async toggleCategoryVisibility(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.TOGGLE_CATEGORY_VISIBILITY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+
     async updateVisibility(data:any){
       try {
         this.getHeaders();

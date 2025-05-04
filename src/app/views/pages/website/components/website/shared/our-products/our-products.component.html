@@ -14,6 +14,23 @@
         </div>
     </div>
 
+    <!-- Search and Items Per Page -->
+    <div class="row mt-3">
+        <div class="col">
+            <span class="fw-semibold">Search</span>
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm" (input)="onSearch()">
+        </div>
+        <div class="col-md-auto">
+            <span class="fw-semibold">Page</span>
+            <select class="form-select" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+    </div>
+
     <div class="table-responsive mt-4">
         <table class="table table-bordered table-hover">
             <thead class="text-uppercase bg-light ">
@@ -29,25 +46,24 @@
             </thead>
             <tbody *ngIf="isLoading">
                 <tr>
-                    <td class="text-center" colspan="6">
+                    <td class="text-center" colspan="7">
                         <div class="spinner-border spinner-border-sm text-secondary" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
                     </td>
                 </tr>
             </tbody>
-            <tbody *ngIf="!isLoading && products.length==0">
+            <tbody *ngIf="!isLoading && filteredProducts.length==0">
                 <tr>
-                    <td class="text-center" colspan="6">
+                    <td class="text-center" colspan="7">
                         <img src="../../../../../../../assets/images/NoRecordFound.png" alt="" style="width: 90px;">
                         <div class="fw-bold"> No Records Found </div>
                     </td>
                 </tr>
             </tbody>
-            <tbody *ngIf="!isLoading && products.length>0">
-                <tr *ngFor="let item of products;let i=index">
-                    <td class="text-center" [width]="'5%'">{{i+1}}</td>
-                    <!-- <td class="text-center">{{ (payload.page - 1) * payload.limit + i + 1 }}</td> -->
+            <tbody *ngIf="!isLoading && filteredProducts.length>0">
+                <tr *ngFor="let item of filteredProducts | paginate: { id: 'productPager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems }; let i = index">
+                    <td class="text-center" [width]="'5%'">{{ (p - 1) * itemsPerPage + i + 1 }}</td>
                     <td [width]="'12%'">{{item.name | titlecase}}</td>
                     <td [width]="'10%'">{{(item.price | currency:'INR')|| '-'}}</td>
                     <td >{{item.description}}</td>
@@ -74,9 +90,10 @@
                 </tr>
             </tbody>
         </table>
-        <!-- <div class="d-flex justify-content-end">
-            <pagination-controls class="pagination" (pageChange)="onPageChange($event)"></pagination-controls>
-        </div> -->
+        <!-- Pagination Controls -->
+        <div class="d-flex justify-content-end">
+            <pagination-controls id="productPager" (pageChange)="onPageChange($event)"></pagination-controls>
+        </div>
     </div>
 </div>
 
