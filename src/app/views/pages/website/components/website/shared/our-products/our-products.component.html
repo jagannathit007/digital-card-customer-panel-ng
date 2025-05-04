@@ -89,7 +89,7 @@
                     <td class="text-center" [width]="'5%'">{{ (p - 1) * itemsPerPage + i + 1 }}</td>
                     <td [width]="'12%'">{{item.name | titlecase}}</td>
                     <td [width]="'10%'">{{(item.price | currency:'INR') || '-'}}</td>
-                    <td>{{item.description}}</td>
+                    <td class="text-truncate" style="max-width: 200px;">{{item.description}}</td>
                     <td class="text-center" [width]="'20%'">
                         <div class="tw-flex tw-items-center" style="cursor: pointer;" *ngIf="item.images.length>0"
                             (click)="onOpenImageModal(item.images)">
@@ -103,25 +103,29 @@
                         </div>
                         <div *ngIf="item.images.length==0"> :: NA ::</div>
                     </td>
-                    <td class="text-center" *ngIf="productcategoryVisible">
-                        <div *ngIf="item.categories?.length > 0" class="d-flex flex-wrap gap-2">
-                            <ng-container *ngFor="let category of item.categories; let j = index">
-                                <span class="badge bg-info me-1" (click)="onOpenCategoryProductList(category, item)" style="cursor: pointer;">
-                                    {{ category.categoryName | titlecase }}
-                                </span>
-                                <button class="btn btn-sm btn-success" (click)="onOpenAddProductToCategory(category, item)">
-                                    <i class="ri-add-fill"></i>
-                                </button>
-                                <button class="btn btn-sm btn-info ms-1" (click)="onOpenEditCategory(category, item)">
-                                    <i class="ri-edit-fill"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger ms-1" (click)="onDeleteCategory({ category: category, product: item })">
-                                    <i class="ri-delete-bin-6-fill"></i>
-                                </button>
-                            </ng-container>
-                        </div>
-                        <span *ngIf="!item.categories || item.categories.length === 0">No Categories</span>
-                    </td>
+                    <!-- Inside the table's tbody (Categories Column) -->
+<td class="text-center" *ngIf="productcategoryVisible">
+    <div *ngIf="item.categories?.length > 0" class="d-flex flex-column gap-2 ">
+        <ng-container *ngFor="let category of item.categories; let j = index">
+            <div class="d-flex align-items-center gap-2 bg-light p-1 rounded-2">
+                <span class="badge bg-info me-1" (click)="onOpenCategoryProductList(category, item)" style="cursor: pointer;">
+                    {{ category.categoryName | titlecase }}
+                </span>
+                <button class="btn btn-sm btn-success" (click)="onOpenAddCategoryProduct(category, item)">
+                    <i class="ri-add-fill"></i>
+                </button>
+                <button class="btn btn-sm btn-info" (click)="onOpenEditCategory(category, item)">
+                    <i class="ri-edit-fill"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="onDeleteCategory({ category: category, product: item })">
+                    <i class="ri-delete-bin-6-fill"></i>
+                </button>
+            </div>
+        </ng-container>
+    </div>
+    <span *ngIf="!item.categories || item.categories.length === 0">No Categories</span>
+</td>
+
                     <td class="text-center">
                         <span class="badge bg-{{item.visible?'success':'warning'}}">{{(item.visible?'visible':'invisible') | uppercase}}</span>
                     </td>
@@ -142,6 +146,8 @@
         </div>
     </div>
 </div>
+
+
 
 <!-- Create/Update Product Modal -->
 <div class="modal fade" id="create-products" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
@@ -210,6 +216,32 @@
     </div>
 </div>
 
+<!-- Category inProducts Modal -->
+<div class="modal fade" id="category-products" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fw-medium" id="modalTitleId">
+                    Products in {{ selectedCategory.categoryName | titlecase }}
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    (click)="onCloseCategoryProductModal()"></button>
+            </div>
+            <div class="modal-body" style="height: 200px;">
+                <ng-select [items]="selectedCategory.products" bindLabel="name" bindValue="_id" placeholder="Select Product"
+                    (change)="onSelectCategoryProduct($event)">
+                    <ng-template ng-option-tmp let-item="item" let-index="index">
+                        <div class="d-flex justify-content-between">
+                            <span>{{ index + 1 }}</span>
+                            <span>{{ item.name | titlecase }}</span>
+                        </div>
+                    </ng-template>
+                </ng-select>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Create/Update Category Modal -->
 <div class="modal fade" id="create-category" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
@@ -247,33 +279,6 @@
         </div>
     </div>
 </div>
-<!-- Category inProducts Modal -->
-<div class="modal fade" id="category-products" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
-    role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title fw-medium" id="modalTitleId">
-                    Products in {{ selectedCategory.categoryName | titlecase }}
-                </h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                    (click)="onCloseCategoryProductModal()"></button>
-            </div>
-            <div class="modal-body">
-                <ng-select [items]="selectedCategory.products" bindLabel="name" bindValue="_id" placeholder="Select Product"
-                    (change)="onSelectCategoryProduct($event)">
-                    <ng-template ng-option-tmp let-item="item" let-index="index">
-                        <div class="d-flex justify-content-between">
-                            <span>{{ index + 1 }}</span>
-                            <span>{{ item.name | titlecase }}</span>
-                        </div>
-                    </ng-template>
-                </ng-select>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Image Carousel Modal -->
 <div class="modal fade" id="image-carousel" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
     role="dialog" aria-labelledby="modalTitleId">
@@ -308,3 +313,76 @@
         </div>
     </div>
 </div>
+
+
+<!-- New Category Product Modal (Add/Update Category Product) -->
+<div class="modal fade" id="create-category-product" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fw-medium" id="modalTitleId">
+                    {{selectedCategoryProduct._id!=null ?'Update':'Add'}} Category Product
+                </h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                    (click)="onCloseCategoryProductModals('create-category-product')"></button>
+            </div>
+            <form action="" (ngSubmit)="onCreateCategoryProduct()" ngNativeValidate>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <span class="fw-bold">Product Name <code class="text-danger">*</code></span>
+                            <input type="text" [(ngModel)]="selectedCategoryProduct.name" [ngModelOptions]="{standalone:true}"
+                                required class="form-control mt-1" placeholder="Please Enter Product Name">
+                        </div>
+                        <div class="col-md-6 mt-4">
+                            <span class="fw-bold">Price</span>
+                            <input type="text" [(ngModel)]="selectedCategoryProduct.price" [ngModelOptions]="{standalone:true}"
+                                class="form-control mt-1" placeholder="Please Enter Price">
+                        </div>
+                        <div class="col-md-6 mt-4">
+                            <span class="fw-bold">Visible</span>
+                            <div class="form-check form-switch switch-lg ms-3 mt-2">
+                                <input class="form-check-input" type="checkbox" role="switch"
+                                    [(ngModel)]="selectedCategoryProduct.visible" [ngModelOptions]="{standalone: true}">
+                            </div>
+                        </div>
+                        <div class="col-md-12 mt-4">
+                            <span class="fw-bold">Upload Images <code
+                                    class="text-danger">* (Upload Upto 15 Images & Image size should be 1250 X 720 or 1600 X 900)</code></span>
+                            <input type="file" #fileInput name="images" multiple accept="image/*"
+                                (change)="onUploadCategoryProductImage($event)" class="form-control mt-1" />
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                <div *ngFor="let img of selectedCategoryProduct.images; let i = index"
+                                    class="position-relative">
+                                    <img [src]="getImagePreview(img)" alt="preview"
+                                        style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;" />
+                                    <button type="button"
+                                        class="btn-close position-absolute top-0 end-0 bg-white rounded-circle"
+                                        (click)="removeCategoryProductImage(i)"
+                                        style="position: absolute; top: -4px; right: -4px; font-size: 10px; color: red; cursor: pointer;"
+                                        aria-label="Close"></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mt-4">
+                            <span class="fw-bold">Description <code class="text-danger">*</code></span>
+                            <textarea rows="3" [(ngModel)]="selectedCategoryProduct.description"
+                                [ngModelOptions]="{standalone:true}" required class="form-control mt-1"
+                                placeholder="Please Enter Description"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success"><i class="ri-save-fill"></i> Save</button>
+                    <button type="button" class="btn btn-danger" *ngIf="selectedCategoryProduct._id"
+                        (click)="deleteCategoryProduct(selectedCategoryProduct._id)">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
