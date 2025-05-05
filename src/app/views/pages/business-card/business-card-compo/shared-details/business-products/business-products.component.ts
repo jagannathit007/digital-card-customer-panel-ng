@@ -96,6 +96,11 @@ export class BusinessProductsComponent implements OnInit {
     this.modal.open('create-products');
   }
 
+  onChange() {
+    this.payload.page = 1
+    this._getServices();
+  }
+
   onCloseModal(modal: string) {
     this._reset();
     this.fileInputRef.nativeElement.value = '';

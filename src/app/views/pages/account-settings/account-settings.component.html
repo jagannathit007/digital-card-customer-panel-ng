@@ -1,67 +1,87 @@
-<div class="container-fluid mt-4">
-    <div class="row">
-      <!-- Left Section: Profile Information -->
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-header">
-            <h3 class=" fw-bold text-muted">Profile Information</h3>
-          </div>
-          <div class="card-body">
-            <form ngNativeValidate (ngSubmit)="onProfileUpdate()">
-              <!-- Name -->
-              <div class="mb-3">
-                <label for="name" class="form-label fw-bold">Name</label>
-                <input type="text" [(ngModel)]="profile.name" [ngModelOptions]="{standalone: true}" class="form-control" id="name" required/>
-              </div>
-              <!-- Email -->
-              <div class="mb-3">
-                <label for="email" class="form-label fw-bold">Email</label>
-                <input type="email" [(ngModel)]="profile.email" [ngModelOptions]="{standalone: true}" class="form-control" id="email" required />
-              </div>
-              <!-- Mobile Number -->
-              <div class="mb-3">
-                <label for="mobile" class="form-label fw-bold">Mobile Number</label>
-                <input type="text" [(ngModel)]="profile.mobile" [ngModelOptions]="{standalone: true}" class="form-control" id="mobile" disabled/>
-              </div>
-              <!-- Save Button -->
-              <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-success"><i class="ri-save-line"></i> Save</button>
-              </div>
-            </form>
+<div class="container py-5">
+  <div class="row g-4">    
+    <!-- Right Section: Change Password -->
+    <div class="col-lg-6">
+      <div class="card border-0 shadow-sm rounded-4 h-100">
+        <div class="card-header bg-white border-0 pt-4 ps-4">
+          <div class="d-flex align-items-center">
+            <div class="bg-info bg-opacity-10 p-2 rounded-3 me-3">
+              <i class="ri-lock-line text-info fs-4"></i>
+            </div>
+            <h3 class="mb-0 fw-bold text-dark">Change Password</h3>
           </div>
         </div>
-      </div>
-  
-      <!-- Right Section: Change Password -->
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-header">
-            <h3 class=" fw-bold text-muted">Change Password</h3>
-          </div>
-          <div class="card-body">
-            <form ngNativeValidate (ngSubmit)="onPasswordUpdate()">
-              <!-- Old Password -->
-              <div class="mb-3">
-                <label for="oldPassword" class="form-label fw-bold">Old Password</label>
-                <input type="password" class="form-control"  [(ngModel)]="passwordForm.oldPassword" [ngModelOptions]="{standalone: true}" id="oldPassword" required />
+        <div class="card-body p-4">
+          <form ngNativeValidate (ngSubmit)="onPasswordUpdate()">
+            <!-- Old Password -->
+            <div class="mb-4">
+              <label for="oldPassword" class="form-label fw-semibold">Old Password</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                  <i class="ri-key-line text-muted"></i>
+                </span>
+                <input 
+                  type="password" 
+                  [(ngModel)]="passwordForm.oldPassword" 
+                  [ngModelOptions]="{standalone: true}" 
+                  class="form-control form-control-lg border-start-0 ps-0" 
+                  id="oldPassword" 
+                  required
+                  placeholder="Enter current password"
+                />
               </div>
-              <!-- New Password -->
-              <div class="mb-3">
-                <label for="newPassword" class="form-label fw-bold">New Password</label>
-                <input type="password" class="form-control"  [(ngModel)]="passwordForm.newPassword" [ngModelOptions]="{standalone: true}" id="newPassword" required />
+            </div>
+            
+            <!-- New Password -->
+            <div class="mb-4">
+              <label for="newPassword" class="form-label fw-semibold">New Password</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                  <i class="ri-lock-password-line text-muted"></i>
+                </span>
+                <input 
+                  type="password" 
+                  [(ngModel)]="passwordForm.newPassword" 
+                  [ngModelOptions]="{standalone: true}" 
+                  class="form-control form-control-lg border-start-0 ps-0" 
+                  id="newPassword" 
+                  required
+                  placeholder="Enter new password"
+                />
               </div>
-              <!-- Confirm Password -->
-              <div class="mb-3">
-                <label for="confirmPassword" class="form-label fw-bold">Confirm Password</label>
-                <input type="password" class="form-control"  [(ngModel)]="passwordForm.confirmPassword" [ngModelOptions]="{standalone: true}" id="confirmPassword" required />
+            </div>
+            
+            <!-- Confirm Password -->
+            <div class="mb-4">
+              <label for="confirmPassword" class="form-label fw-semibold">Confirm Password</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                  <i class="ri-checkbox-circle-line text-muted"></i>
+                </span>
+                <input 
+                  type="password" 
+                  [(ngModel)]="passwordForm.confirmPassword" 
+                  [ngModelOptions]="{standalone: true}" 
+                  class="form-control form-control-lg border-start-0 ps-0" 
+                  id="confirmPassword" 
+                  required
+                  placeholder="Confirm new password"
+                />
               </div>
-              <!-- Change Password Button -->
-              <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-info"><i class="ri-lock-password-fill"></i> Change Password</button>
-              </div>
-            </form>
-          </div>
+            </div>
+            
+            <!-- Change Password Button -->
+            <div class="d-flex justify-content-end mt-4">
+              <button 
+                type="submit" 
+                class="btn btn-info btn-lg px-4 py-2 text-white d-flex align-items-center"
+              >
+                <i class="ri-lock-password-fill me-2"></i> Update Password
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
+</div>

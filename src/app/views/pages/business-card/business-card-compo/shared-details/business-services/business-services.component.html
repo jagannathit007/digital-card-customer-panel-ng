@@ -1,120 +1,224 @@
 <div class="row py-4">
-    <div class="col-md ">
-        <span class="fs-3 fw-bold">OUR SERVICES</span>
-    </div>
-    <div class="col-auto">
-        <button class="btn btn-info" (click)="onOpenCraeteModal()"><i class="ri-add-circle-line"></i> Add
-            Services</button>
-    </div>
-    <div class="col-auto" *ngIf=" services && services.docs ">
-        <ng-select [items]="[10,20,50,100,200,500]" [(ngModel)]="payLoad.limit" placeholder="Select Page" (change)="onChange()"></ng-select>
-    </div>
+  <div class="col-md">
+    <span class="fs-3 fw-bold">OUR SERVICES</span>
+  </div>
+  <div class="col-auto">
+    <button class="btn btn-info" (click)="onOpenCraeteModal()">
+      <i class="ri-add-circle-line"></i> Add Services
+    </button>
+  </div>
+  <div class="col-auto" *ngIf="services && services.docs">
+    <select
+      [(ngModel)]="payLoad.limit"
+      class="form-select form-select-lg"
+      placeholder="Select Page"
+      (change)="onChange()"
+    >
+      <option value="10">10</option>
+      <option value="20">20</option>
+      <option value="50">50</option>
+      <option value="100">100</option>
+      <option value="200">200</option>
+    </select>
+  </div>
 
-    <div class="table-responsive mt-4">
-        <table class="table table-bordered">
-            <thead class="text-uppercase bg-light">
-                <tr>
-                    <th class="text-center" [width]="'5%'">#</th>
-                    <th>Title</th>
-                    <th class="text-center" [width]="'20%'">Image</th>
-                    <th [width]="'25%'">Description</th>
-                    <th class="text-center" [width]="'15%'"><i class="ri-tools-fill"></i></th>
-                </tr>
-            </thead>
-            <tbody *ngIf="isLoading">
-                <tr>
-                    <td class="text-center" colspan="4">
-                        <div class="spinner-border spinner-border-sm text-secondary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-            <tbody *ngIf="!isLoading && services && services.docs && services.docs.length==0" >
-                <tr >
-                    <td class="text-center" colspan="5">
-                        <img src="../../../../../../../assets/images/NoRecordFound.png" alt="" style="width: 90px;">
-                        <div class="fw-bold"> No Records Found </div>
-                    </td>
-                </tr>
-            </tbody>
-            <tbody *ngIf="!isLoading && services && services.docs && services.docs.length>0">
-                <tr
-                    *ngFor="let item of services?.docs || [] | paginate: {id:'bulkMapping', itemsPerPage: payLoad.limit, currentPage: payLoad.page, totalItems: services.totalDocs}; let i = index">
-                    <td class="text-center">{{ (payLoad.page - 1) * payLoad.limit + i + 1 }}</td>
-                    <td>{{item.title}}</td>
-                    <td class="text-center" >
-                        <img src="{{imageBaseURL}}{{item.image}}" alt="" style="width: 10%;height: 10%;cursor: pointer;" *ngIf="item.image!=''" (click)="showImage(item.image)">
-                        <span *ngIf="item.image==''"> :: NA :: </span>
-                    </td>
-                    <td>{{item.description}}</td>
-                    <td class="text-center"><button class="btn btn-sm btn-info" (click)="onOpenUpdateModal(item)"><i
-                                class="ri-edit-fill"></i></button>
-                        <button class="btn btn-danger btn-sm ms-1" (click)="_deleteServices(item._id)"><i
-                                class="ri-delete-bin-6-fill"></i></button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="d-flex justify-content-end" *ngIf=" services && services.docs">
-            <pagination-controls id="bulkMapping" class="pagination" (pageChange)="onPageChange($event)">
-            </pagination-controls>
-        </div>
+  <div class="table-responsive mt-4">
+    <table class="table table-bordered">
+      <thead class="text-uppercase bg-light">
+        <tr>
+          <th class="text-center" [width]="'5%'">#</th>
+          <th>Title</th>
+          <th class="text-center" [width]="'20%'">Image</th>
+          <th [width]="'25%'">Description</th>
+          <th class="text-center" [width]="'15%'">
+            <i class="ri-tools-fill"></i>
+          </th>
+        </tr>
+      </thead>
+      <tbody *ngIf="isLoading">
+        <tr>
+          <td class="text-center" colspan="4">
+            <div
+              class="spinner-border spinner-border-sm text-secondary"
+              role="status"
+            >
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+      <tbody
+        *ngIf="
+          !isLoading && services && services.docs && services.docs.length == 0
+        "
+      >
+        <tr>
+          <td class="text-center" colspan="5">
+            <img
+              src="../../../../../../../assets/images/NoRecordFound.png"
+              alt=""
+              style="width: 90px"
+            />
+            <div class="fw-bold">No Records Found</div>
+          </td>
+        </tr>
+      </tbody>
+      <tbody
+        *ngIf="
+          !isLoading && services && services.docs && services.docs.length > 0
+        "
+      >
+        <tr
+          *ngFor="
+            let item of services?.docs || []
+              | paginate
+                : {
+                    id: 'bulkMapping',
+                    itemsPerPage: payLoad.limit,
+                    currentPage: payLoad.page,
+                    totalItems: services.totalDocs
+                  };
+            let i = index
+          "
+        >
+          <td class="text-center">
+            {{ (payLoad.page - 1) * payLoad.limit + i + 1 }}
+          </td>
+          <td>{{ item.title }}</td>
+          <td class="text-center">
+            <img
+              src="{{ imageBaseURL }}{{ item.image }}"
+              alt=""
+              style="width: 10%; height: 10%; cursor: pointer"
+              *ngIf="item.image != ''"
+              (click)="showImage(item.image)"
+            />
+            <span *ngIf="item.image == ''"> :: NA :: </span>
+          </td>
+          <td>{{ item.description }}</td>
+          <td class="text-center">
+            <button
+              class="btn btn-sm btn-info"
+              (click)="onOpenUpdateModal(item)"
+            >
+              <i class="ri-edit-fill"></i>
+            </button>
+            <button
+              class="btn btn-danger btn-sm ms-1"
+              (click)="_deleteServices(item._id)"
+            >
+              <i class="ri-delete-bin-6-fill"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="d-flex justify-content-end" *ngIf="services && services.docs">
+      <pagination-controls
+        id="bulkMapping"
+        class="pagination"
+        (pageChange)="onPageChange($event)"
+      >
+      </pagination-controls>
     </div>
+  </div>
 </div>
 
-
-<div class="modal fade" id="create-services" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
-    role="dialog" aria-labelledby="modalTitleId" >
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title fw-medium" id="modalTitleId">
-                    {{selectedServices._id!=null ?'Update':'Add'}} Services
-                </h3>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-                    (click)="onCloseModal('create-services')"></button>
+<div
+  class="modal fade"
+  id="create-services"
+  tabindex="-1"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  role="dialog"
+  aria-labelledby="modalTitleId"
+>
+  <div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md"
+    role="document"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title fw-medium" id="modalTitleId">
+          {{ selectedServices._id != null ? "Update" : "Add" }} Services
+        </h3>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="onCloseModal('create-services')"
+        ></button>
+      </div>
+      <form action="" (ngSubmit)="onCreateService()" ngNativeValidate>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <span class="fw-bold">Service title</span>
+              <input
+                type="text"
+                [(ngModel)]="selectedServices.title"
+                [ngModelOptions]="{ standalone: true }"
+                class="form-control mt-1"
+                placeholder="Enter Service Title"
+                required
+              />
             </div>
-            <form action="" (ngSubmit)="onCreateService()" ngNativeValidate>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <span class="fw-bold">Service title</span>
-                        <input type="text" [(ngModel)]="selectedServices.title" [ngModelOptions]="{standalone:true}"
-                            class="form-control mt-1" placeholder="Enter Service Title" required>
-                    </div>
-                    <div class="col-md-12 mt-4">
-                        <span class="fw-bold">Upload Image</span>
-                        <input type="file" name="" id="" class="form-control mt-1" (change)="onUploadImage($event)">
-                        <div class="d-flex flex-wrap gap-2 mt-2" *ngIf="selectedServices.image!=null">
-                            <!-- <div *ngFor="let img of selectedProducts.images; let i = index" class="position-relative"> -->
-                              <img
-                                [src]="getImagePreview(selectedServices.image)"
-                                alt="preview"
-                                style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;"
-                              />
-                              <!-- <button
+            <div class="col-md-12 mt-4">
+              <span class="fw-bold">Upload Image</span>
+              <input
+                type="file"
+                name=""
+                id=""
+                class="form-control mt-1"
+                (change)="onUploadImage($event)"
+              />
+              <div
+                class="d-flex flex-wrap gap-2 mt-2"
+                *ngIf="selectedServices.image != null"
+              >
+                <!-- <div *ngFor="let img of selectedProducts.images; let i = index" class="position-relative"> -->
+                <img
+                  [src]="getImagePreview(selectedServices.image)"
+                  alt="preview"
+                  style="
+                    width: 50px;
+                    height: 50px;
+                    object-fit: cover;
+                    border-radius: 6px;
+                  "
+                />
+                <!-- <button
                                 type="button"
                                 class="btn-close position-absolute top-0 end-0 bg-white rounded-circle "
                                 (click)="removeImage(i)"
                                 style="position: absolute; top: -4px; right: -4px; font-size: 10px; color: red; cursor: pointer;"
                                 aria-label="Close"
                               ></button> -->
-                            <!-- </div> -->
-                          </div>
-                    </div>
-                    <div class="col-md-12 mt-4">
-                        <span class="fw-bold">Description</span>
-                        <textarea name="" id="" rows="3" [(ngModel)]="selectedServices.description"
-                        [ngModelOptions]="{standalone:true}" class="form-control mt-1" placeholder="Enter Description" required></textarea>
-                    </div>
-                </div>
+                <!-- </div> -->
+              </div>
             </div>
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-success"><i class="ri-save-fill"></i>
-                    Save</button>
+            <div class="col-md-12 mt-4">
+              <span class="fw-bold">Description</span>
+              <textarea
+                name=""
+                id=""
+                rows="3"
+                [(ngModel)]="selectedServices.description"
+                [ngModelOptions]="{ standalone: true }"
+                class="form-control mt-1"
+                placeholder="Enter Description"
+                required
+              ></textarea>
             </div>
-        </form>
+          </div>
         </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">
+            <i class="ri-save-fill"></i> Save
+          </button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>

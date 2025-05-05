@@ -13,7 +13,7 @@
     <div class="row mt-4">
       <div class="col-md">
         <span class="fw-bold">Search</span>
-        <input type="text" [(ngModel)]="payload.search" class="form-control" placeholder="Search by Name or Mobile">
+        <input type="text" [(ngModel)]="payload.search" class="form-control" placeholder="Search by Name or Mobile" [debounceTime]="1000" (debounceEvent)="onSearch()">
       </div>
       <div class="col-md-auto">
         <span class="fw-bold">Page</span>

@@ -17,14 +17,24 @@ export class PersonalDetailsComponent implements OnInit {
   newSocialMedia = { name: '', link: '' };
 
   personalDetails: any;
+  isEditMode: boolean = false;
 
   constructor(
-    private authService: AuthService, 
+    private authService: AuthService,
     private storage: AppStorage,
-    private modal:ModalService
+    private modal: ModalService
   ) {}
 
   ngOnInit() {
+    this.getCards();
+  }
+
+  enableEdit() {
+    this.isEditMode = true;
+  }
+
+  cancelEdit() {
+    this.isEditMode = false;
     this.getCards();
   }
 
@@ -98,15 +108,15 @@ export class PersonalDetailsComponent implements OnInit {
     );
     if (result) {
       swalHelper.showToast('Personal Details Updated Successfully!', 'success');
-      
+      this.isEditMode = false;
     }
   };
 
-  onOpneSocialMediaModel(){
+  onOpneSocialMediaModel() {
     this.modal.open('addSocialMediaModal');
   }
 
-  onCloseSocialMediaModal(){
+  onCloseSocialMediaModal() {
     this.modal.close('addSocialMediaModal');
     this.newSocialMedia = { name: '', link: '' };
   }
