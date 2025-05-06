@@ -125,7 +125,10 @@ class ApiEndpoints {
 
   // our Certificates
   public WEBSITE_CERTIFICATES_ADD: string = `${this.PATH}/website/certificate/otherimages`;
-  
+
+  // Websites and Templates Themes
+  public GETALL_WEBSITE_THEMES: string = `${this.PATH}/website/themes`;
+  public WEBSITE_THEMES_UPDATE: string = `${this.PATH}/website/themes/update`;
 }
 
 export let apiEndpoints = new ApiEndpoints();
