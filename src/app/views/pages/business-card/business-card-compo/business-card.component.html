@@ -1,7 +1,7 @@
 <div class="container-fluid">
   <div class="row d-flex flex-wrap px-1">
     @for (tab of tabs; track tab) {
-    <a style="cursor: pointer; text-decoration: none;"
+    <a style="cursor: pointer; text-decoration: none; white-space: nowrap;"
        class="custom-card px-3"
        [ngClass]="{'active': isActive(tab.href)}"
        (click)="navigateToTab(tab.href)">
