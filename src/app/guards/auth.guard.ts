@@ -41,9 +41,9 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
+
     const subscriptionData = await this.authService.getSubscriptionData(currentBcardId);
     const products = subscriptionData.map(item => item.product);
-
     let hasAccess = false;
     switch(requiredProduct) {
       case 'business-cards':

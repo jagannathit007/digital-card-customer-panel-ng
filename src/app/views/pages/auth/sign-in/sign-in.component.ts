@@ -12,7 +12,8 @@ import { environment } from 'src/env/env.local';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { common } from 'src/app/core/constants/common';
 import { BehaviorSubject } from 'rxjs';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { swalHelper } from 'src/app/core/constants/swal-helper';
 declare var $: any;
 
 @Component({
@@ -26,12 +27,14 @@ export class SignInComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private storage:AppStorage,
-    private router:Router
+    private router:Router,
+    private route: ActivatedRoute,
   ) {
     document.body.style.backgroundColor = '#0e273c';
   }
 
-  ngOnInit(): void {}
+  async ngOnInit(){
+  }
 
   whileLabelName = environment.whiteLabelName;
   isPassword: boolean = false; 
@@ -51,6 +54,13 @@ export class SignInComponent implements OnInit {
 
   isLoading: boolean = false;
 
+  async redirectTologin(){
+    await this.getProfile()
+         setTimeout(() => {
+          this.router.navigate(['/dashboard']);
+        }, 300); 
+          window.location.href = '/business-cards';
+  }
   // Submit function
   onSubmit = async () => {
     this.isLoading = true;
@@ -59,11 +69,7 @@ export class SignInComponent implements OnInit {
         const response = await this.authService.signIn(this.loginForm.value);
         this.isLoading = false;
         if (response) {
-         await this.getProfile()
-         setTimeout(() => {
-          this.router.navigate(['/dashboard']);
-        }, 300); 
-          window.location.href = '/business-cards';
+          this.redirectTologin()
         }
       } catch (error) {
         console.error('Sign-In failed', error);

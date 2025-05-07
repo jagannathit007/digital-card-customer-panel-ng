@@ -532,7 +532,7 @@ export class AuthService {
   async getSubscriptionData(businessCardId: string): Promise<any[]> {
     try {
       const businessCards = await this.getBusinessCards();
-
+      
       if (!businessCards || !businessCardId) {
         return [];
       }
@@ -540,15 +540,15 @@ export class AuthService {
       // Find the matching business card and extract subscription data
       if (Array.isArray(businessCards)) {
         const targetCard = businessCards.find(card => card._id === businessCardId);
-
+        
         if (targetCard?.subscription && Array.isArray(targetCard.subscription)) {
           return targetCard.subscription.map((sub: any) => ({
             _id: sub._id,
             product: sub.product
           }));
+
         }
       }
-
       return [];
     } catch (error) {
       console.error("Error getting subscription data:", error);
@@ -1221,5 +1221,24 @@ export class AuthService {
     }
   }
 
+  async handleTokenLogin(data:any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        { url: apiEndpoints.VERIFY_TOKEN, method: 'POST' },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
 
 }  

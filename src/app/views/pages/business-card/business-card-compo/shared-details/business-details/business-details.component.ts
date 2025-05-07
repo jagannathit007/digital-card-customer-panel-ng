@@ -51,7 +51,6 @@ export class BusinessDetailsComponent implements OnInit{
       }
       
     }
-    console.log(this.businessProfile.message.whatsApp)
   };
 
 

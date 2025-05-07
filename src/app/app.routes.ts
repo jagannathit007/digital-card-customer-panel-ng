@@ -1,17 +1,14 @@
 import { Routes } from '@angular/router';
 import { SignInComponent } from './views/pages/auth/sign-in/sign-in.component';
 import { HomeLayoutComponent } from './views/partials/home-layout/home-layout.component';
-import { AdminComponent } from './views/pages/admin/admin.component';
-import { BusinessCardDetailComponent } from './views/pages/business-card-detail/business-card-detail.component';
-import { AccountSettingsComponent } from './views/pages/account-settings/account-settings.component';
-import { GoogleStandeeComponent } from './views/pages/google-standee/google-standee.component';
 import { AuthGuard } from './guards/auth.guard';
-import { SharedHistoryComponent } from './views/pages/shared-history/shared-history.component';
+import { TokenVerificationComponent } from './views/standalone/token-verification/token-verification.component';
 
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'auth/login' },
   { path: 'auth/login', component: SignInComponent },
+  { path: 'token/authToken', component: TokenVerificationComponent },
   {
     path: '',
     component: HomeLayoutComponent,
@@ -26,7 +23,6 @@ export const routes: Routes = [
       {
         path: 'scanned-cards',
         loadComponent:()=>import('./views/pages/business-card-detail/business-card-detail.component').then(c=>c.BusinessCardDetailComponent),
-        // component: BusinessCardDetailComponent,
         canActivate: [AuthGuard],
         data: { requiredProduct: 'scanned-cards' }
       },

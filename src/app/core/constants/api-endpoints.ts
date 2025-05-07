@@ -116,6 +116,9 @@ class ApiEndpoints {
   // our Certificates
   public WEBSITE_CERTIFICATES_ADD: string = `${this.PATH}/website/certificate/otherimages`;
   
+
+  //veryfy token
+  public VERIFY_TOKEN: string = `${this.PATH}/verify-token`;
 }
 
 export let apiEndpoints = new ApiEndpoints();
