@@ -382,4 +382,45 @@ export class WebsiteBuilderService {
         return false;
       }
     }
+
+    // WebsiteBuilder Uniquename Checking
+    async CheckUniqueWebsiteName(data: any) {
+      try {
+        this.getHeaders();
+        let response= await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_UNIQUE_NAME,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        return response
+      } catch (err) {
+        console.log(err);
+        swalHelper.showToast('Something went wrong!', 'error');
+        return null;
+      }
+    }
+
+    // WebsiteBuilder name Saving
+    async WebsiteNameSaving(data: any) {
+      try {
+        this.getHeaders();
+        let response= await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_NAME_SAVING,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        return response
+      } catch (err) {
+        console.log(err);
+        swalHelper.showToast('Something went wrong!', 'error');
+        return null;
+      }
+    }
+
 }

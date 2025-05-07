@@ -129,6 +129,11 @@ class ApiEndpoints {
   // Websites and Templates Themes
   public GETALL_WEBSITE_THEMES: string = `${this.PATH}/website/themes`;
   public WEBSITE_THEMES_UPDATE: string = `${this.PATH}/website/themes/update`;
+
+  // Website Uniquename
+  public WEBSITE_UNIQUE_NAME: string = `${this.PATH}/website/uniqueName/add`;
+  public WEBSITE_NAME_SAVING: string = `${this.PATH}/website/uniqueName/update`;
+
 }
 
 export let apiEndpoints = new ApiEndpoints();
