@@ -4,15 +4,16 @@ import { AuthService } from 'src/app/services/auth.service';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { common } from 'src/app/core/constants/common';
 import { Subscription } from 'rxjs';
+
 @Injectable({
   providedIn: 'root',
 })
 export class SideBarService {
-  constructor(private router: Router, public authService: AuthService, private storage: AppStorage) {
-  }
+  constructor(private router: Router, public authService: AuthService, private storage: AppStorage) {}
 
-  getMenusByProducts(subscriptionData: any[]): any[] {
+  async getMenusByProducts(subscriptionData: any[]): Promise<any[]> {
     const products = subscriptionData.map(item => item.product);
+    const currentBcardId = this.storage.get(common.BUSINESS_CARD);
 
     const businessCardMenu = {
       title: 'Business Card',
@@ -56,15 +57,15 @@ export class SideBarService {
       icon: 'user',
     };
 
-    const hasDigitalOrNFC = products.some(product =>
+    const hasDigitalOrNFC = products.some(product => 
       product === "digital-card" || product === "nfc-card"
     );
 
-    const hasWebsiteDetails = products.some(product =>
+    const hasWebsiteDetails = products.some(product => 
       product === "website-details"
     );
 
-    const hasGoogleReview = products.some(product =>
+    const hasGoogleReview = products.some(product => 
       product === "google-standee"
     );
 
@@ -72,12 +73,16 @@ export class SideBarService {
 
     menus.push(customerMenu);
     menus.push(accountSettingsMenu);
+
     if (hasDigitalOrNFC) {
-      menus = [businessCardMenu, scannedCardsMenu,SharedHistoryMenu, ...menus];
+      menus = [businessCardMenu, scannedCardsMenu, SharedHistoryMenu, ...menus];
     }
 
-    if (hasWebsiteDetails) {
-      menus.splice(menus.length - 1, 0, websiteDetailsMenu);
+    if (hasWebsiteDetails && currentBcardId) {
+      const websiteDetails = await this.authService.getWebsiteDetails(currentBcardId);
+      if (websiteDetails.websiteVisible === true) {
+        menus.splice(menus.length - 1, 0, websiteDetailsMenu);
+      }
     }
 
     // if (hasGoogleReview) {
@@ -89,7 +94,7 @@ export class SideBarService {
       menus: menus
     }];
   }
-  
+
   isMobile: boolean = false;
   activeSubMenuIndex: number | null = null;
 
@@ -100,13 +105,13 @@ export class SideBarService {
       this.activeSubMenuIndex = index;
     }
   }
+
   navigateWithQueryParams(submenu: any) {
     this.router.navigate([submenu.link], { queryParams: submenu.queryParams });
   }
 
   onNavSwitch(item: string) {
     console.log(item);
-    
     this.router.navigateByUrl(`/${item}`);
   }
 }

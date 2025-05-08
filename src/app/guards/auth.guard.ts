@@ -41,6 +41,8 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
+    let results = await this.authService.getWebsiteDetails(currentBcardId);
+
     const subscriptionData = await this.authService.getSubscriptionData(currentBcardId);
     const products = subscriptionData.map(item => item.product);
 
@@ -53,7 +55,10 @@ export class AuthGuard implements CanActivate {
           product === "digital-card" || product === "nfc-card");
         break;
       case 'website-details':
-        hasAccess = products.some(product => product === "website-details");
+        // hasAccess = products.some(product => product === "website-details");
+        hasAccess = products.some(product => product === "website-details") && 
+                results.websiteVisible === true;
+
         break;
       case 'google-standee':
         hasAccess = products.some(product => product === "google-standee");
