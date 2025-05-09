@@ -7,6 +7,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
 import { WebsiteBuilderService } from 'src/app/services/website-builder.service';
+import { ModalService } from 'src/app/core/utilities/modal';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -26,13 +27,18 @@ export class HomeComponent {
   };
   logoImagePreview: string | ArrayBuffer | null = null;
 
-  constructor(private storage: AppStorage, public authService: AuthService,private websiteService:WebsiteBuilderService) {}
+  constructor(private storage: AppStorage, public modal:ModalService, public authService: AuthService,private websiteService:WebsiteBuilderService) {}
 
   businessCardId:any
+  websiteName:any
+
+  selectedCountryCode: string = '91';
+  mobileNumber: string = '';
+  message: any = ``;
+
   ngOnInit() {
     this.businessCardId=this.storage.get(common.BUSINESS_CARD)
     this.fetchWebsiteDetails();
-
   }
 
   async fetchWebsiteDetails() {
@@ -52,6 +58,10 @@ export class HomeComponent {
             // const previewUrl = `${this.baseURL}/${image}`;
             this.bannerImages.push(image );
           });
+        }
+
+        if (results){
+          this.websiteName=results.websiteName;
         }
         this.sloganVisible=results.home.sloganVisible
         this.bannerImageVisible=results.home.bannerImageVisible
@@ -188,5 +198,58 @@ export class HomeComponent {
     await this.websiteService.updateVisibility({'home.sloganVisible':this.sloganVisible,'home.bannerImageVisible':this.bannerImageVisible,'home.logoImageVisible':this.logoImageVisible,businessCardId:this.businessCardId})
   }
 
+  response:any
+  hasCheckedUserName = false;
+  _uniqueWebsiteName=async()=>{
+    this.hasCheckedUserName=true
+    let response=await this.websiteService.CheckUniqueWebsiteName({businessCardId:this.businessCardId, websiteName:this.websiteName})
+    if(response ){
+      this.response=response
+      this.hasCheckedUserName=false
+    }
+  }
+
+  _saveWebsiteName=async()=>{
+    if(this.response && this.response.status==200){
+      await this.websiteService.WebsiteNameSaving({businessCardId:this.businessCardId, websiteName:this.websiteName})
+      swalHelper.showToast('Website name updated successfully!', 'success');
+    }else{
+      swalHelper.showToast('Website name already exists!', 'warning');
+    }
+  }
+
+  copyToClipboard() {
+    const fullUrl = `${environment.baseURL}/website/${this.websiteName}`;
+    navigator.clipboard
+      .writeText(fullUrl)
+      .then(() => {
+        swalHelper.showToast('Website Link Copied!', 'success');
+      })
+      .catch((err) => {
+        console.error('Failed to copy: ', err);
+        swalHelper.error('Error!');
+      });
+  }
+
+  getWebsiteMessage() {
+    const websiteUrl = `${environment.baseURL}/website/${this.websiteName}`;
+    this.message = `Checkout my website: ${websiteUrl}`;
+  }
+
+
+  shareOnWhatsApp() {
+    if (!this.mobileNumber) {
+      alert('Please enter a WhatsApp number!');
+      return;
+    }
+  
+    const formattedNumber =
+      this.selectedCountryCode + this.mobileNumber.replace(/^0+/, '');
+      
+    let whatsappURL = `https://wa.me/${formattedNumber}?text=${encodeURIComponent(
+      this.message
+    )}`;
+    window.open(whatsappURL, '_blank');
+  }
 
 }

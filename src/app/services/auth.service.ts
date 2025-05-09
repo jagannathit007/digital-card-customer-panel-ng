@@ -686,31 +686,31 @@ export class AuthService {
   }
 
   // our-product ADD/UPDATE/DELETE
-  async addProducts(data: any) {
-    try {
-      this.getHeaders();
-      data = this.addBusinessCardId(data); 
+  // async addProducts(data: any) {
+  //   try {
+  //     this.getHeaders();
+  //     data = this.addBusinessCardId(data); 
       
-      let response = await this.apiManager.request(
-        {
-          url: apiEndpoints.WEBSITE_OUR_PRODUCTS_ADD,
-          method: 'POST',
-        },
-        data,
-        this.headers
-      );
+  //     let response = await this.apiManager.request(
+  //       {
+  //         url: apiEndpoints.WEBSITE_OUR_PRODUCTS_ADD,
+  //         method: 'POST',
+  //       },
+  //       data,
+  //       this.headers
+  //     );
       
-      if (response.status == 200 && response.data != null) {
-        return response.data;
-      } else {
-        swalHelper.showToast(response.message, 'warning');
-        return null;
-      }
-    } catch (err) {
-      swalHelper.showToast('Something went wrong!', 'error');
-      return null;
-    }
-  }
+  //     if (response.status == 200 && response.data != null) {
+  //       return response.data;
+  //     } else {
+  //       swalHelper.showToast(response.message, 'warning');
+  //       return null;
+  //     }
+  //   } catch (err) {
+  //     swalHelper.showToast('Something went wrong!', 'error');
+  //     return null;
+  //   }
+  // }
   
   async updateProducts(data: any) {
     try {

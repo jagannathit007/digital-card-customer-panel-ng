@@ -70,6 +70,124 @@ export class WebsiteBuilderService {
       }
     }
 
+    // Catogery wise product services CRUD
+    async addOrUpdateProductCategory(data: any) {
+      try {
+        this.getHeaders();
+        // console.log("catogrey craete",data);
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.ADD_OR_UPDATE_PRODUCT_CATEGORY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+    async addOrUpdateProductInCategory(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.ADD_OR_UPDATE_PRODUCT_INCATEGORY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+    async deleteProductInCategory(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.DELETE_PRODUCT_INCATEGORY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+    async deleteCategory(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.DELETE_CATEGORY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+    async toggleCategoryVisibility(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.TOGGLE_CATEGORY_VISIBILITY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+
     async updateVisibility(data:any){
       try {
         this.getHeaders();
@@ -214,4 +332,95 @@ export class WebsiteBuilderService {
         return false;
       }
     }
+
+    // WebsiteBuilder GetAll Themes
+    async GetAllWebsiteThemes(){
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          // change it...
+          {
+            url: apiEndpoints.GETALL_WEBSITE_THEMES,
+            method: 'POST'
+          },
+          {},
+          this.headers
+        );
+        if (response.status === 200 && response.data != null) {
+          return response.data;
+        } else {
+          swalHelper.showToast(response.message || 'Failed to fetch themes.', 'warning');
+          return null;
+        }
+      } catch (err) {
+        swalHelper.showToast('Error fetching themes!', 'error');
+        return null;
+      }
+    }
+    
+    // WebsiteBuilder Update Themes 
+    async UpdateWebsiteThemes(data:any){
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_THEMES_UPDATE,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.showToast(response.message, 'success');
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (error) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+
+    // WebsiteBuilder Uniquename Checking
+    async CheckUniqueWebsiteName(data: any) {
+      try {
+        this.getHeaders();
+        let response= await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_UNIQUE_NAME,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        return response
+      } catch (err) {
+        console.log(err);
+        swalHelper.showToast('Something went wrong!', 'error');
+        return null;
+      }
+    }
+
+    // WebsiteBuilder name Saving
+    async WebsiteNameSaving(data: any) {
+      try {
+        this.getHeaders();
+        let response= await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_NAME_SAVING,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        return response
+      } catch (err) {
+        console.log(err);
+        swalHelper.showToast('Something went wrong!', 'error');
+        return null;
+      }
+    }
+
 }

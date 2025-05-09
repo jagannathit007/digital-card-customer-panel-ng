@@ -55,10 +55,20 @@ class ApiEndpoints {
   public WEBSITE_OUR_TEAM_DELETE: string = `${this.PATH}/website/team/delete`;
 
   // our-Products-apis
-  public WEBSITE_OUR_PRODUCTS_ADD: string = `${this.PATH}/website/product/add`;
+  // public WEBSITE_OUR_PRODUCTS_ADD: string = `${this.PATH}/website/product/add`;
   public WEBSITE_OUR_PRODUCTS_UPDATE: string = `${this.PATH}/website/product/update`;
   public WEBSITE_OUR_PRODUCTS_DELETE: string = `${this.PATH}/website/product/delete`;
   public UPDATE_VISIBILITY: string = `${this.PATH}/website/update-visibility`;
+  // Catogrey wise products CRUD
+  public ADD_OR_UPDATE_PRODUCT_CATEGORY: string = `${this.PATH}/website/product/addOrUpdateProductCategory`;
+  public ADD_OR_UPDATE_PRODUCT_INCATEGORY: string = `${this.PATH}/website/product/addOrUpdateProductInCategory`;
+  public DELETE_PRODUCT_INCATEGORY: string = `${this.PATH}/website/product/deleteProductInCategory`;
+  public DELETE_CATEGORY: string = `${this.PATH}/website/product/deleteCategory`;
+  public TOGGLE_CATEGORY_VISIBILITY: string = `${this.PATH}/website/product/toggleCategoryVisibility`;
+
+
+
+
 
   // website_ABOUT-SECTION_apis
   public WEBSITE_ABOUT_UPDATE: string = `${this.PATH}/website/about/update`;
@@ -115,10 +125,18 @@ class ApiEndpoints {
 
   // our Certificates
   public WEBSITE_CERTIFICATES_ADD: string = `${this.PATH}/website/certificate/otherimages`;
-  
 
   //veryfy token
   public VERIFY_TOKEN: string = `${this.PATH}/verify-token`;
+
+  
+  // Websites and Templates Themes
+  public GETALL_WEBSITE_THEMES: string = `${this.PATH}/website/themes`;
+  public WEBSITE_THEMES_UPDATE: string = `${this.PATH}/website/themes/update`;
+
+  // Website Uniquename
+  public WEBSITE_UNIQUE_NAME: string = `${this.PATH}/website/uniqueName/add`;
+  public WEBSITE_NAME_SAVING: string = `${this.PATH}/website/uniqueName/update`;
 }
 
 export let apiEndpoints = new ApiEndpoints();

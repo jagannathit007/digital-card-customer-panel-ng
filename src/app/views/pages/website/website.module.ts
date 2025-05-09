@@ -21,8 +21,10 @@ import { OurCertificateComponent } from './components/website/shared/our-certifi
 import { RouterModule } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { FormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
 import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
 import { ToggleComponent } from '../../partials/toggle/toggle.component';
+import { DebounceDirective } from 'src/app/core/directives/debounce';
 
 @NgModule({
   declarations: [
@@ -46,9 +48,11 @@ import { ToggleComponent } from '../../partials/toggle/toggle.component';
     WebsiteRoutingModule,
     RouterModule,
     NgxPaginationModule,
+    NgSelectModule,
     FormsModule,
     TooltipDirective,
-    ToggleComponent
+    ToggleComponent,
+    DebounceDirective,
   ]
 })
 export class WebsiteModule { }
