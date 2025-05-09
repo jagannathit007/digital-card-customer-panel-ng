@@ -125,7 +125,7 @@ export class OurProductsComponent implements OnInit {
       if (this.selectedCategory._id) {
         categoryData.categoryId = this.selectedCategory._id; // Add categoryId for update
       }
-      console.log('categoryData', categoryData);
+      // console.log('categoryData', categoryData);
       await this.websiteService.addOrUpdateProductCategory(categoryData);
       this.modal.close('create-category');
       this._reset();
@@ -225,6 +225,7 @@ export class OurProductsComponent implements OnInit {
       formdata.append('existingImages', JSON.stringify(this.selectedCategoryProduct.existingImages));
     }
     this._createCategoryProduct(formdata);
+    this._getProducts();
   }
 
   async _createCategoryProduct(data: any) {
@@ -415,7 +416,6 @@ export class OurProductsComponent implements OnInit {
     this.isLoading = true;
     try {
       let results = await this.authService.getWebsiteDetails(this.businessCardId);
-      console.log('results', results)
 
       if (results) {
         this.products = results.products ? [...results.products] : [];

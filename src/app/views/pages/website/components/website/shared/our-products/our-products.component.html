@@ -104,7 +104,7 @@
                         <div *ngIf="item.images.length==0"> :: NA ::</div>
                     </td>
                     <!-- Inside the table's tbody (Categories Column) -->
-<td class="text-center" *ngIf="productcategoryVisible">
+<!-- <td class="text-center" *ngIf="productcategoryVisible">
     <div *ngIf="item.categories?.length > 0" class="d-flex flex-column gap-2 ">
         <ng-container *ngFor="let category of item.categories; let j = index">
             <div class="d-flex align-items-center gap-2 bg-light p-1 rounded-2">
@@ -124,7 +124,47 @@
         </ng-container>
     </div>
     <span *ngIf="!item.categories || item.categories.length === 0">No Categories</span>
-</td>
+</td> -->
+
+<td class="text-center" *ngIf="productcategoryVisible">
+    <div *ngIf="item.categories?.length > 0" class="d-flex flex-column gap-3">
+      <ng-container *ngFor="let category of item.categories; let j = index">
+        <div class="d-flex align-items-center justify-content-center bg-light p-2 rounded-3 shadow-sm">
+          <!-- Category name with better visibility -->
+          <span class="badge bg-info px-3 py-2 me-2 text-white fw-medium fs-6" 
+                (click)="onOpenCategoryProductList(category, item)" 
+                style="cursor: pointer; min-width: 120px;">
+            {{ category.categoryName | titlecase }}
+          </span>
+          
+          <!-- Action buttons with consistent spacing -->
+          <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-sm btn-success" 
+                    (click)="onOpenAddCategoryProduct(category, item)"
+                    title="Add product to category">
+              <i class="ri-add-fill"></i>
+            </button>
+            <button class="btn btn-sm btn-info" 
+                    (click)="onOpenEditCategory(category, item)"
+                    title="Edit category">
+              <i class="ri-edit-fill"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" 
+                    (click)="onDeleteCategory({ category: category, product: item })"
+                    title="Delete category">
+              <i class="ri-delete-bin-6-fill"></i>
+            </button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    
+    <!-- Improved "No Categories" display -->
+    <div *ngIf="!item.categories || item.categories.length === 0" 
+         class="text-muted py-3 bg-light rounded-3">
+      <span class="d-inline-block">No Categories</span>
+    </div>
+  </td>
 
                     <td class="text-center">
                         <span class="badge bg-{{item.visible?'success':'warning'}}">{{(item.visible?'visible':'invisible') | uppercase}}</span>

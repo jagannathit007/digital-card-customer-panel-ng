@@ -157,7 +157,7 @@ export class CustomersComponent implements OnInit {
       const data = <any[]>XLSX.utils.sheet_to_json(ws, { raw: false });
 
       this.previewData = data.map((row) => this.formatRow(row));
-      console.log(this.previewData);
+      // console.log(this.previewData);
       
       this.modal.open('import-excel');
     };

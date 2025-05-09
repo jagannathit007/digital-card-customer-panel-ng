@@ -111,7 +111,7 @@ export class SideBarService {
   }
 
   onNavSwitch(item: string) {
-    console.log(item);
+    // console.log(item);
     this.router.navigateByUrl(`/${item}`);
   }
 }

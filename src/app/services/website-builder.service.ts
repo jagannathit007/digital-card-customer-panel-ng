@@ -74,7 +74,7 @@ export class WebsiteBuilderService {
     async addOrUpdateProductCategory(data: any) {
       try {
         this.getHeaders();
-        console.log("catogrey craete",data);
+        // console.log("catogrey craete",data);
         let response = await this.apiManager.request(
           {
             url: apiEndpoints.ADD_OR_UPDATE_PRODUCT_CATEGORY,
