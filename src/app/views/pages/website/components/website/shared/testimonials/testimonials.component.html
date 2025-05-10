@@ -108,12 +108,21 @@
                             Client name is required!
                         </div>
                     </div>
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="editClientName" class="form-label">Visible</label>
                         <div class="form-check form-switch switch-lg ms-3 mt-2">
                             <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="newTestimonial.visible" [ngModelOptions]="{standalone: true}">
                         </div>
-                    </div>
+                    </div> -->
+<div class="mb-3">
+    <app-toggle 
+        [isActive]="newTestimonial.visible" 
+        [onText]="'Visible'" 
+        [offText]="'Hidden'" 
+        class="ms-3"
+        (changed)="newTestimonial.visible=!newTestimonial.visible">
+    </app-toggle>
+</div>
                     <div class="mb-3">
                         <label for="rating" class="form-label">Rating</label>
                         <input type="number" class="form-control" id="rating" min="1" max="5" placeholder="Enter rating (1-5)" 
@@ -165,12 +174,21 @@
                         <input type="text" class="form-control" id="editClientName" placeholder="Enter client name" 
                             [(ngModel)]="editingTestimonial.clientName" name="editClientName">
                     </div>
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="editClientName" class="form-label">Visible</label>
                         <div class="form-check form-switch switch-lg ms-3">
                             <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="editingTestimonial.visible" [ngModelOptions]="{standalone: true}">
                         </div>
-                    </div>
+                    </div> -->
+                    <div class="mb-3">
+    <app-toggle 
+        [isActive]="editingTestimonial.visible" 
+        [onText]="'Visible'" 
+        [offText]="'Hidden'" 
+        class="ms-3"
+        (changed)="editingTestimonial.visible=!editingTestimonial.visible">
+    </app-toggle>
+</div>
                     
                     <div class="mb-3">
                         <label for="editRating" class="form-label">Rating</label>

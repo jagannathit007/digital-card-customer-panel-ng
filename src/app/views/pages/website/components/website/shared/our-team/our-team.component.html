@@ -125,12 +125,21 @@
                                name="memberRole" 
                                #memberRole="ngModel">
                     </div>
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="editMemberRole" class="form-label">Visible</label>
                         <div class="form-check form-switch switch-lg ms-3 mt-2">
                             <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="newMember.visible" [ngModelOptions]="{standalone: true}">
                         </div>
-                    </div>
+                    </div> -->
+                    <div class="mb-3">
+    <app-toggle 
+        [isActive]="newMember.visible" 
+        [onText]="'Visible'" 
+        [offText]="'Hidden'" 
+        class="ms-3 mt-2"
+        (changed)="newMember.visible=!newMember.visible">
+    </app-toggle>
+</div>
                     <!-- Image Upload -->
                     <div class="mb-3">
                         <label for="memberImage" class="form-label">Upload Profile Picture</label>
@@ -175,12 +184,22 @@
                               name="editMemberRole">
                     </div>
                     
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="editMemberRole" class="form-label">Visible</label>
                         <div class="form-check form-switch switch-lg ms-3 ">
                             <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="editingMember.visible" [ngModelOptions]="{standalone: true}">
                         </div>
-                    </div>
+                    </div> -->
+
+                    <div class="mb-3">
+    <app-toggle 
+        [isActive]="editingMember.visible" 
+        [onText]="'Visible'" 
+        [offText]="'Hidden'" 
+        class="ms-3"
+        (changed)="editingMember.visible=!editingMember.visible">
+    </app-toggle>
+</div>
 
                     <div class="mb-3">
                         <label for="editMemberImage" class="form-label">Current Image</label>

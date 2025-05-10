@@ -214,14 +214,23 @@
                             <input type="text" [(ngModel)]="selectedProducts.price" [ngModelOptions]="{standalone:true}"
                                 class="form-control mt-1" placeholder="Please Enter Price">
                         </div>
-                        <div class="col-md-6 mt-4">
+                        <!-- <div class="col-md-6 mt-4">
                             <span class="fw-bold">Visible</span>
                             <div class="form-check form-switch switch-lg ms-3 mt-2">
                                 <input class="form-check-input" type="checkbox" role="switch"
                                     id="flexSwitchCheckDefault" [(ngModel)]="selectedProducts.visible"
                                     [ngModelOptions]="{standalone: true}">
                             </div>
-                        </div>
+                        </div> -->
+                        <div class="col-md-6 mt-4">
+    <app-toggle 
+        [isActive]="selectedProducts.visible" 
+        [onText]="'Visible'" 
+        [offText]="'Hidden'" 
+        class="ms-3 mt-2"
+        (changed)="selectedProducts.visible=!selectedProducts.visible">
+    </app-toggle>
+</div>
                         <div class="col-md-12 mt-4">
                             <span class="fw-bold">Upload Images <code
                                     class="text-danger">* (Upload Upto 15 Images & Image size should be 1250 X 720 or 1600 X 900)</code></span>
@@ -303,13 +312,22 @@
                             <input type="text" [(ngModel)]="selectedCategory.categoryName" [ngModelOptions]="{standalone: true}"
                                 required class="form-control mt-1" placeholder="Please Enter Category Name">
                         </div>
-                        <div class="col-md-6 mt-4">
+                        <!-- <div class="col-md-6 mt-4">
                             <span class="fw-bold">Visible</span>
                             <div class="form-check form-switch switch-lg ms-3 mt-2">
                                 <input class="form-check-input" type="checkbox" role="switch"
                                     [(ngModel)]="selectedCategory.categoryVisible" [ngModelOptions]="{standalone: true}">
                             </div>
-                        </div>
+                        </div> -->
+                        <div class="col-md-6 mt-4">
+    <app-toggle 
+        [isActive]="selectedCategory.categoryVisible" 
+        [onText]="'Visible'" 
+        [offText]="'Hidden'" 
+        class="ms-3 mt-2"
+        (changed)="selectedCategory.categoryVisible=!selectedCategory.categoryVisible">
+    </app-toggle>
+</div>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -319,6 +337,7 @@
         </div>
     </div>
 </div>
+
 <!-- Image Carousel Modal -->
 <div class="modal fade" id="image-carousel" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
     role="dialog" aria-labelledby="modalTitleId">
@@ -380,13 +399,22 @@
                             <input type="text" [(ngModel)]="selectedCategoryProduct.price" [ngModelOptions]="{standalone:true}"
                                 class="form-control mt-1" placeholder="Please Enter Price">
                         </div>
-                        <div class="col-md-6 mt-4">
+                        <!-- <div class="col-md-6 mt-4">
                             <span class="fw-bold">Visible</span>
                             <div class="form-check form-switch switch-lg ms-3 mt-2">
                                 <input class="form-check-input" type="checkbox" role="switch"
                                     [(ngModel)]="selectedCategoryProduct.visible" [ngModelOptions]="{standalone: true}">
                             </div>
-                        </div>
+                        </div> -->
+ <div class="col-md-6 mt-4">
+    <app-toggle 
+        [isActive]="selectedCategoryProduct.visible" 
+        [onText]="'Visible'" 
+        [offText]="'Hidden'" 
+        class="ms-3 mt-2"
+        (changed)="selectedCategoryProduct.visible=!selectedCategoryProduct.visible">
+    </app-toggle>
+</div>
                         <div class="col-md-12 mt-4">
                             <span class="fw-bold">Upload Images <code
                                     class="text-danger">* (Upload Upto 15 Images & Image size should be 1250 X 720 or 1600 X 900)</code></span>

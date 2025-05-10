@@ -105,12 +105,21 @@
                             Client name is required!
                         </div>
                     </div>
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="editClientName" class="form-label">Visible</label>
                         <div class="form-check form-switch switch-lg ms-3 mt-2">
                             <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="newClient.visible" [ngModelOptions]="{standalone: true}">
                         </div>
-                    </div>
+                    </div> -->
+                    <div class="mb-3">
+    <app-toggle 
+        [isActive]="newClient.visible" 
+        [onText]="'Visible'" 
+        [offText]="'Hidden'" 
+        class="ms-3 mt-2"
+        (changed)="newClient.visible=!newClient.visible">
+    </app-toggle>
+</div>
                     <div class="mb-3">
                         <label for="clientUrl" class="form-label">Website URL</label>
                         <input type="text" class="form-control" id="clientUrl" placeholder="Enter website URL" 
@@ -148,12 +157,21 @@
                         <input type="text" class="form-control" id="editClientName" placeholder="Enter client name" 
                             [(ngModel)]="editingClient.name" name="editClientName" required>
                     </div>
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="editClientName" class="form-label">Visible</label>
                         <div class="form-check form-switch switch-lg ms-3">
                             <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="editingClient.visible" [ngModelOptions]="{standalone: true}">
                         </div>
-                    </div>
+                    </div> -->
+                    <div class="mb-3">
+    <app-toggle 
+        [isActive]="editingClient.visible" 
+        [onText]="'Visible'" 
+        [offText]="'Hidden'" 
+        class="ms-3"
+        (changed)="editingClient.visible=!editingClient.visible">
+    </app-toggle>
+</div>
                     <div class="mb-3">
                         <label for="editClientUrl" class="form-label">Website URL</label>
                         <input type="text" class="form-control" id="editClientUrl" placeholder="Enter website URL"

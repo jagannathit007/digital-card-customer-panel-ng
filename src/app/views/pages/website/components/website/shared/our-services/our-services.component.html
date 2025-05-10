@@ -114,12 +114,21 @@
                             Service title is required!
                         </div>
                     </div>
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="editServiceTitle" class="form-label">Visible</label>
                         <div class="form-check form-switch switch-lg ms-3 mt-2">
                             <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="newService.visible" [ngModelOptions]="{standalone: true}">
                         </div>
-                    </div>
+                    </div> -->
+                    <div class="mb-3">
+    <app-toggle 
+        [isActive]="newService.visible" 
+        [onText]="'Visible'" 
+        [offText]="'Hidden'" 
+        class="ms-3 mt-2"
+        (changed)="newService.visible=!newService.visible">
+    </app-toggle>
+</div>
                     <div class="mb-3">
                         <label for="serviceDescription" class="form-label">Description</label>
                         <textarea class="form-control" id="serviceDescription" rows="3" placeholder="Enter description"
@@ -164,12 +173,22 @@
                             [(ngModel)]="editingService.title" name="editServiceTitle" required>
                     </div>
 
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="editServiceTitle" class="form-label">Visible</label>
                         <div class="form-check form-switch switch-lg ms-3 ">
                             <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="editingService.visible" [ngModelOptions]="{standalone: true}">
                         </div>
-                    </div>
+                    </div> -->
+
+                    <div class="mb-3">
+    <app-toggle 
+        [isActive]="editingService.visible" 
+        [onText]="'Visible'" 
+        [offText]="'Hidden'" 
+        class="ms-3"
+        (changed)="editingService.visible=!editingService.visible">
+    </app-toggle>
+</div>
 
                     <div class="mb-3">
                         <label for="editServiceDescription" class="form-label">Description</label>

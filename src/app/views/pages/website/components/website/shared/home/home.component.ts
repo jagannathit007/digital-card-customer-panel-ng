@@ -36,50 +36,54 @@ export class HomeComponent {
   mobileNumber: string = '';
   message: any = ``;
 
-  ngOnInit() {
-    this.businessCardId=this.storage.get(common.BUSINESS_CARD)
-    this.fetchWebsiteDetails();
-  }
+isEditingWebsiteName: boolean = false;
+originalWebsiteName: string = '';
 
-  async fetchWebsiteDetails() {
-    this.isLoading = true;
-    try {
-      let businessCardId = this.storage.get(common.BUSINESS_CARD);
-      let results = await this.authService.getWebsiteDetails(businessCardId);
+ ngOnInit() {
+  this.businessCardId = this.storage.get(common.BUSINESS_CARD);
+  this.fetchWebsiteDetails();
+}
 
-      if (results && results.home) {
-        this.home = {
-          heading: results.home.heading || '',
-          slogan: results.home.slogan || '',
-          logoImage: results.home.logoImage ? this.baseURL +"/"+ results.home.logoImage : null,
-        };
-        if (results.home.bannerImages && results.home.bannerImages.length > 0) {
-          results.home.bannerImages.forEach((image: string) => {
-            // const previewUrl = `${this.baseURL}/${image}`;
-            this.bannerImages.push(image );
-          });
-        }
+ async fetchWebsiteDetails() {
+  this.isLoading = true;
+  try {
+    let businessCardId = this.storage.get(common.BUSINESS_CARD);
+    let results = await this.authService.getWebsiteDetails(businessCardId);
 
-        if (results){
-          this.websiteName=results.websiteName;
-        }
-        this.sloganVisible=results.home.sloganVisible
-        this.bannerImageVisible=results.home.bannerImageVisible
-        this.logoImageVisible=results.home.logoImageVisible
-
-        if (this.home.logoImage) {
-          this.logoImagePreview = this.home.logoImage;
-        }
-
-      } else {
-        swalHelper.showToast('home details not found!', 'warning');
+    if (results && results.home) {
+      this.home = {
+        heading: results.home.heading || '',
+        slogan: results.home.slogan || '',
+        logoImage: results.home.logoImage ? this.baseURL + "/" + results.home.logoImage : null,
+      };
+      if (results.home.bannerImages && results.home.bannerImages.length > 0) {
+        results.home.bannerImages.forEach((image: string) => {
+          this.bannerImages.push(image);
+        });
       }
-    } catch (error) {
-      swalHelper.showToast('Error fetching home details!', 'error');
-    } finally {
-      this.isLoading = false;
+
+      if (results) {
+        this.websiteName = results.websiteName;
+        this.isEditingWebsiteName = false; 
+      }
+      this.sloganVisible = results.home.sloganVisible;
+      this.bannerImageVisible = results.home.bannerImageVisible;
+      this.logoImageVisible = results.home.logoImageVisible;
+      this.languageVisible = results.home.languageVisible;
+
+      if (this.home.logoImage) {
+        this.logoImagePreview = this.home.logoImage;
+      }
+
+    } else {
+      swalHelper.showToast('home details not found!', 'warning');
     }
+  } catch (error) {
+    swalHelper.showToast('Error fetching home details!', 'error');
+  } finally {
+    this.isLoading = false;
   }
+}
 
   
   bannerImages: any[] = [];
@@ -194,8 +198,9 @@ export class HomeComponent {
   sloganVisible:boolean=true
   bannerImageVisible:boolean=true
   logoImageVisible:boolean=true
+  languageVisible:boolean=true
   _updateVisibility=async()=>{
-    await this.websiteService.updateVisibility({'home.sloganVisible':this.sloganVisible,'home.bannerImageVisible':this.bannerImageVisible,'home.logoImageVisible':this.logoImageVisible,businessCardId:this.businessCardId})
+    await this.websiteService.updateVisibility({'home.sloganVisible':this.sloganVisible,'home.bannerImageVisible':this.bannerImageVisible,'home.logoImageVisible':this.logoImageVisible,'home.languageVisible':this.languageVisible,businessCardId:this.businessCardId})
   }
 
   response:any
@@ -209,14 +214,54 @@ export class HomeComponent {
     }
   }
 
-  _saveWebsiteName=async()=>{
-    if(this.response && this.response.status==200){
-      await this.websiteService.WebsiteNameSaving({businessCardId:this.businessCardId, websiteName:this.websiteName})
+  // _saveWebsiteName=async()=>{
+  //   if(this.response && this.response.status==200){
+  //     await this.websiteService.WebsiteNameSaving({businessCardId:this.businessCardId, websiteName:this.websiteName})
+  //     swalHelper.showToast('Website name updated successfully!', 'success');
+  //   }else{
+  //     swalHelper.showToast('Website name already exists!', 'warning');
+  //   }
+  // }
+
+  // Toggle between edit and save mode
+toggleWebsiteNameEdit = () => {
+  if (this.isEditingWebsiteName) {
+    this._saveWebsiteName();
+  } else {
+    this.originalWebsiteName = this.websiteName;
+    this.isEditingWebsiteName = true;
+  }
+}
+
+_saveWebsiteName = async() => {
+  if (!this.websiteName || this.websiteName.trim() === '' || this.websiteName.includes(' ')) {
+    swalHelper.showToast('Website name cannot be empty or contain spaces!', 'warning');
+    return;
+  }
+  
+  const validNamePattern = /^[a-z0-9-]+$/;
+  if (!validNamePattern.test(this.websiteName)) {
+    swalHelper.showToast('Website name can only contain lowercase letters, numbers, and hyphens!', 'warning');
+    return;
+  }
+
+  try {
+    // Check if name is unique before saving
+    await this._uniqueWebsiteName();
+    
+    if (this.response && this.response.status == 200) {
+      await this.websiteService.WebsiteNameSaving({businessCardId: this.businessCardId, websiteName: this.websiteName});
       swalHelper.showToast('Website name updated successfully!', 'success');
-    }else{
+      this.isEditingWebsiteName = false; 
+    } else {
       swalHelper.showToast('Website name already exists!', 'warning');
     }
+  } catch (error) {
+    console.error('Error saving website name:', error);
+    swalHelper.showToast('Error saving website name!', 'error');
+    this.websiteName = this.originalWebsiteName; 
   }
+}
 
   copyToClipboard() {
     const fullUrl = `${environment.baseURL}/website/${this.websiteName}`;
