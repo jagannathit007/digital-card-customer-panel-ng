@@ -19,7 +19,7 @@ export class ThemeComponent {
     const themesData = await this.authService.getThemes();
     if (themesData) {
       this.themes = themesData.map((theme: any) => ({
-        title: theme.title,
+        title: theme.name,
         code: theme.code,
         id: theme._id,
       }));
