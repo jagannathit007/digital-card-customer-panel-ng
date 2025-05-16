@@ -1,8 +1,14 @@
 <div class="mt-4">
   <div class="row">
     <div class="d-flex justify-content-between">
-      <label class="text-first fw-bold text-uppercase fs-3">Personal Details</label>
-      <button type="button" class="btn btn-info"(click)="onOpneSocialMediaModel()">
+      <label class="text-first fw-bold text-uppercase fs-3"
+        >Personal Details</label
+      >
+      <button
+        type="button"
+        class="btn btn-info"
+        (click)="onOpneSocialMediaModel()"
+      >
         <i class="ri-links-line"></i> Add Social Media Link
       </button>
     </div>
@@ -11,12 +17,20 @@
   <div class="row my-4">
     <div class="col-12">
       @if(personalDetails!=null){
-      <form #personalDetailsForm="ngForm" (ngSubmit)="submitForm()">
+      <form #personalDetailsForm="ngForm" ngNativeValidate  (ngSubmit)="submitForm()">
         <div class="row">
           <div class="col-md-4 col-12">
             <label for="name" class="form-label fw-bold">Name</label>
-            <input type="text" id="name" class="form-control form-control-lg" [ngModelOptions]="{standalone: true}" 
-              [(ngModel)]="personalDetails.name" name="name" required />
+            <input
+              type="text"
+              id="name"
+              class="form-control form-control-lg"
+              [ngModelOptions]="{ standalone: true }"
+              [(ngModel)]="personalDetails.name"
+              name="name"
+              required
+              [disabled]="!isEditMode"
+            />
           </div>
         </div>
         <!-- Social Media Links -->
@@ -26,18 +40,42 @@
             @for (item of personalDetails.personalSocialMedia; track $index) {
             <div class="col-md-4 col-12">
               <div class="d-flex justify-content-between align-items-center">
-                <label for="{{item.name}}" class="form-label">
-                  <img src="{{baseURL}}/{{item.image}}" alt="" height="20"><span class="fw-semibold ms-1"> {{item.name}}</span> 
+                <label for="{{ item.name }}" class="form-label">
+                  <img
+                    src="{{ baseURL }}/{{ item.image }}"
+                    alt=""
+                    height="20"
+                  /><span class="fw-semibold ms-1"> {{ item.name }}</span>
                 </label>
                 <div class="form-check form-switch">
-                  <input class="form-check-input cursor-pointer" [ngModelOptions]="{standalone: true}"
-                    [(ngModel)]="item.visibility" type="checkbox" id="{{item.name}}Toggle">
+                  <input
+                    class="form-check-input cursor-pointer"
+                    [ngModelOptions]="{ standalone: true }"
+                    [(ngModel)]="item.visibility"
+                    type="checkbox"
+                    id="{{ item.name }}Toggle"
+                    [disabled]="!isEditMode"
+                  />
                 </div>
               </div>
-              <input type="text" id="{{item.name}}" class="form-control form-control-lg" [(ngModel)]="item.link"
-                [ngModelOptions]="{standalone: true}" name="{{item.name}}" required />
+              <input
+                type="text"
+                id="{{ item.name }}"
+                class="form-control form-control-lg"
+                [(ngModel)]="item.link"
+                [ngModelOptions]="{ standalone: true }"
+                name="{{ item.name }}"
+                required="{{item.visibility}}"
+                [disabled]="!isEditMode"
+              />
               @if(!item.isDefault){
-              <a class="text-danger" style="font-size: 12px;" (click)="deleteSocial($index)">Delete</a>
+              <a
+                class="text-danger"
+                style="font-size: 12px"
+                (click)="deleteSocial($index)"
+                *ngIf="isEditMode"
+                >Delete</a
+              >
               }
             </div>
             }
@@ -47,44 +85,97 @@
 
         <!-- Submit Button -->
         <div class="mt-3 d-flex justify-content-end">
-          <button type="submit" class="btn btn-success me-2 text-uppercase"><i class="ri-save-line"></i> Save</button>
+          <button
+            type="button"
+            class="btn btn-primary text-uppercase me-2"
+            (click)="enableEdit()"
+            *ngIf="!isEditMode"
+          >
+            <i class="ri-edit-line"></i> Edit
+          </button>
+          <button
+      type="button"
+      class="btn text-uppercase me-2 border border-1 text-secondary-emphasis border-secondary-subtle"
+      (click)="cancelEdit()"
+      *ngIf="isEditMode"
+    >
+      <i class="ri-close-circle-line"></i>
+      Cancel
+    </button>
+          <button
+            type="submit"
+            class="btn btn-success me-2 text-uppercase"
+            *ngIf="isEditMode"
+          >
+            <i class="ri-save-line"></i> Save
+          </button>
         </div>
       </form>
       }
-
     </div>
   </div>
 </div>
 
-
-<div class="modal fade" id="addSocialMediaModal" tabindex="-1" aria-labelledby="modalLabel" 
-  data-bs-backdrop="static">
+<div
+  class="modal fade"
+  id="addSocialMediaModal"
+  tabindex="-1"
+  aria-labelledby="modalLabel"
+  data-bs-backdrop="static"
+>
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title fw-medium" id="modalLabel">Add Social Media Link</h4>
-        <button type="button" class="btn-close" aria-label="Close" (click)="onCloseSocialMediaModal()"></button>
+        <h4 class="modal-title fw-medium" id="modalLabel">
+          Add Social Media Link
+        </h4>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Close"
+          (click)="onCloseSocialMediaModal()"
+        ></button>
       </div>
       <form ngNativeValidate (ngSubmit)="addSocialMedia()">
         <div class="modal-body">
           <div class="mb-3">
             <label class="form-label">Platform Name</label>
-            <input type="text" class="form-control" [(ngModel)]="newSocialMedia.name"
-              [ngModelOptions]="{standalone:true}" name="socialName" required>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="newSocialMedia.name"
+              [ngModelOptions]="{ standalone: true }"
+              name="socialName"
+              required
+            />
           </div>
           <div class="mb-3">
             <label class="form-label">Platform Image</label>
-            <input type="file" class="form-control" name="socialName" id="platformImage"
-              (change)="onSocialMediaIcon($event)" required>
+            <input
+              type="file"
+              class="form-control"
+              name="socialName"
+              id="platformImage"
+              (change)="onSocialMediaIcon($event)"
+              required
+            />
           </div>
           <div class="mb-3">
             <label class="form-label">Link / URL</label>
-            <input type="text" class="form-control" [(ngModel)]="newSocialMedia.link"
-              [ngModelOptions]="{standalone:true}" name="socialLink" required>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="newSocialMedia.link"
+              [ngModelOptions]="{ standalone: true }"
+              name="socialLink"
+              required
+            />
           </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-info"><i class="ri-add-fill"></i> Add</button>
+          <button type="submit" class="btn btn-info">
+            <i class="ri-add-fill"></i> Add
+          </button>
         </div>
       </form>
     </div>

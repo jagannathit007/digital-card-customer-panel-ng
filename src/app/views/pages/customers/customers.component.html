@@ -17,7 +17,7 @@
             <div class="row mt-4">
                 <div class="col-md">
                     <span class="fw-bold">Search</span>
-                    <input type="text" [(ngModel)]="payload.search" class="form-control" (keyup)="onChange()"
+                    <input type="text" [(ngModel)]="payload.search" class="form-control" [debounceTime]="1000" (debounceEvent)="onChange()"
                         placeholder="Search by Name or Mobile">
                 </div>
                 <div class="col-md-auto">

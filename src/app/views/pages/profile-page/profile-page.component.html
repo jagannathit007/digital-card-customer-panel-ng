@@ -1,0 +1,88 @@
+<div class="container py-5">
+  <div class="row g-4">
+    <div class="col-lg-6 mx-auto">
+      <div class="card shadow-sm rounded-4 h-100 border border-1">
+        <div class="card-header bg-white border-0 pt-4 ps-4">
+          <div class="d-flex align-items-center">
+            <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+              <i class="ri-user-line text-primary fs-4"></i>
+            </div>
+            <h3 class="mb-0 fw-bold text-dark">Profile Information</h3>
+          </div>
+        </div>
+        <div class="card-body p-4">
+          <form ngNativeValidate (ngSubmit)="onProfileUpdate()">
+            <!-- Name -->
+            <div class="mb-4">
+              <label for="name" class="form-label fw-semibold">Name</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                  <i class="ri-user-line text-muted"></i>
+                </span>
+                <input
+                  type="text"
+                  [(ngModel)]="profile.name"
+                  [ngModelOptions]="{ standalone: true }"
+                  class="form-control form-control-lg border-start-0 ps-0"
+                  id="name"
+                  required
+                  placeholder="Enter your name"
+                />
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-4">
+              <label for="email" class="form-label fw-semibold">Email</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                  <i class="ri-mail-line text-muted"></i>
+                </span>
+                <input
+                  type="email"
+                  [(ngModel)]="profile.email"
+                  [ngModelOptions]="{ standalone: true }"
+                  class="form-control form-control-lg border-start-0 ps-0"
+                  id="email"
+                  required
+                  placeholder="Enter your email"
+                />
+              </div>
+            </div>
+
+            <!-- Mobile Number -->
+            <div class="mb-4">
+              <label for="mobile" class="form-label fw-semibold"
+                >Mobile Number</label
+              >
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                  <i class="ri-smartphone-line text-muted"></i>
+                </span>
+                <input
+                  type="text"
+                  [(ngModel)]="profile.mobile"
+                  [ngModelOptions]="{ standalone: true }"
+                  class="form-control form-control-lg border-start-0 ps-0 bg-light"
+                  id="mobile"
+                  disabled
+                  placeholder="Your mobile number"
+                />
+              </div>
+            </div>
+
+            <!-- Save Button -->
+            <div class="d-flex justify-content-end mt-4">
+              <button
+                type="submit"
+                class="btn btn-primary btn-lg px-4 py-2 d-flex align-items-center"
+              >
+                <i class="ri-save-line me-2"></i> Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

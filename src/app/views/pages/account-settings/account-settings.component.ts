@@ -13,38 +13,21 @@ import { AuthService } from 'src/app/services/auth.service';
   styleUrl: './account-settings.component.scss',
 })
 export class AccountSettingsComponent {
-
-  constructor(private storage: AppStorage, private authService: AuthService) {
-    let profileData = this.storage.get(common.USER_DATA);
-    if (profileData != null) {
-      this.profile.name = profileData.name;
-      this.profile.email = profileData.emailId;
-      this.profile.mobile = profileData.mobile;
-    }
-  }
-
-  profile = { name: '', email: '', mobile: '' };
   passwordForm = {
     oldPassword: '',
     newPassword: '',
-    confirmPassword: ''
-  }
+    confirmPassword: '',
+  };
 
-  onProfileUpdate = async () => {
-    let result = await this.authService.updateProfile({
-      name: this.profile.name,
-      emailId: this.profile.email
-    });
-    if (result) {
-      swalHelper.showToast("Profile updated successfully!", 'success');
-      setTimeout(() => window.location.reload(), 1000)
-    }
-  }
+  constructor(private authService: AuthService) {}
 
   onPasswordUpdate = async () => {
-    if (this.passwordForm.newPassword.length >= 6 && this.passwordForm.confirmPassword.length >= 6) {
+    if (
+      this.passwordForm.newPassword.length >= 6 &&
+      this.passwordForm.confirmPassword.length >= 6
+    ) {
       if (this.passwordForm.newPassword != this.passwordForm.confirmPassword) {
-        swalHelper.showToast("New & Confirm Password Not Matched", 'warning');
+        swalHelper.showToast('New & Confirm Password Not Matched', 'warning');
       } else {
         let result = await this.authService.changePassword({
           oldPassword: this.passwordForm.oldPassword,
@@ -52,16 +35,19 @@ export class AccountSettingsComponent {
         });
 
         if (result) {
-          swalHelper.showToast("Password updated!", 'success');
+          swalHelper.showToast('Password updated!', 'success');
           this.passwordForm = {
             oldPassword: '',
             newPassword: '',
-            confirmPassword: ''
-          }
+            confirmPassword: '',
+          };
         }
       }
     } else {
-      swalHelper.showToast("New & Confirm Password Must have Minimum 4 Characters", 'warning');
+      swalHelper.showToast(
+        'New & Confirm Password Must have Minimum 4 Characters',
+        'warning'
+      );
     }
-  }
+  };
 }

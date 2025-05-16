@@ -20,7 +20,7 @@
       <div class="row">
         <div class="col">
           <span class="fw-bold">Search</span>
-          <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm" (input)="onSearch()">
+          <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm" [debounceTime]="1000" (debounceEvent)="onSearch()">
         </div>
         <div class="col-auto">
           <span class="fw-bold">Page</span>

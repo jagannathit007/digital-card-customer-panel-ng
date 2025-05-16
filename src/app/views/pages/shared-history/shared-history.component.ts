@@ -5,6 +5,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { common } from 'src/app/core/constants/common';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
+import { DebounceDirective } from 'src/app/core/directives/debounce';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { COUNTRY_CODES } from 'src/app/core/utilities/countryCode';
 import { ModalService } from 'src/app/core/utilities/modal';
@@ -15,7 +16,7 @@ import { ShareHistoryService } from 'src/app/services/share-history.service';
 @Component({
   selector: 'app-shared-history',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgxPaginationModule,NgSelectModule],
+  imports: [CommonModule, FormsModule, NgxPaginationModule,NgSelectModule, DebounceDirective],
   templateUrl: './shared-history.component.html',
   styleUrl: './shared-history.component.scss'
 })
@@ -110,6 +111,11 @@ export class SharedHistoryComponent {
     this.shareHistoryService.downloadExcel({
       businessCardId: this.businessCard
     });
+  }
+
+  onSearch(): void {
+    this.payload.page = 1;
+    this._getShareHistory();
   }
 
   customer :any= {

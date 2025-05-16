@@ -6,6 +6,7 @@ import { NgxIntlTelInputModule } from 'ngx-intl-tel-input';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { common } from 'src/app/core/constants/common';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
+import { DebounceDirective } from 'src/app/core/directives/debounce';
 import { DigitOnlyDirective } from 'src/app/core/directives/digit-only';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { COUNTRY_CODES } from 'src/app/core/utilities/countryCode';
@@ -23,7 +24,8 @@ import * as XLSX from 'xlsx';
     DigitOnlyDirective,
     NgxIntlTelInputModule,
     ReactiveFormsModule,
-    NgSelectModule
+    NgSelectModule,
+    DebounceDirective
   ],
   templateUrl: './customers.component.html',
   styleUrl: './customers.component.scss',

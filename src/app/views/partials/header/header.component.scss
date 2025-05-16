@@ -43,3 +43,57 @@
   position: absolute;
   right: 100px;
 }
+
+
+.icon-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.icon-container[data-tooltip] {
+  position: relative;
+}
+
+.icon-container[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+.icon-container[data-tooltip]:hover::before {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #333 transparent;
+  z-index: 10;
+  opacity: 0;
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+/* Animation keyframes */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px);
+  }
+}

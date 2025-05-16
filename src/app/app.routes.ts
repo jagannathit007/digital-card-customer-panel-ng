@@ -39,6 +39,12 @@ export const routes: Routes = [
         data: { requiredProduct: 'google-standee' }
       },
       {
+        path: 'profile',
+        loadComponent:()=>import('./views/pages/profile-page/profile-page.component').then(m=>m.ProfilePageComponent),
+        canActivate: [AuthGuard],
+        data: { requiredProduct: 'profile' }
+      },
+      {
         path: 'account-settings',
         loadComponent:()=>import('./views/pages/account-settings/account-settings.component').then(m=>m.AccountSettingsComponent),
         canActivate: [AuthGuard],

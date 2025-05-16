@@ -6,6 +6,7 @@ import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
 import { ModalService } from 'src/app/core/utilities/modal';
 import { BusinessCardService } from 'src/app/services/business-card.service';
+import { SharedService } from 'src/app/services/shared.service';
 declare var $:any;
 
 @Component({
@@ -20,7 +21,8 @@ export class BusinessDetailsComponent implements OnInit{
     private storage: AppStorage, 
     public authService: AuthService,
     private modal:ModalService,
-    private businessService:BusinessCardService
+    private businessService:BusinessCardService,
+    private sharedService: SharedService
   ) {
     this.getCards();
   }
@@ -32,6 +34,16 @@ export class BusinessDetailsComponent implements OnInit{
   profileImage: File | undefined;
   coverImage: File | undefined;
   businessProfile: any;
+  isEditMode: boolean = false;
+
+  enableEdit() {
+    this.isEditMode = true;
+  }
+
+  cancelEdit() {
+    this.isEditMode = false;
+    this.getCards();
+  }
 
   getCards = async () => {
     let results = await this.authService.getBusinessCards();
@@ -130,6 +142,8 @@ export class BusinessDetailsComponent implements OnInit{
     let result = await this.authService.updateBusinessDetails(formData);
     if (result) {
       swalHelper.showToast('Business Details Updated Successfully!', 'success');
+      this.sharedService.triggerHeaderRefresh()
+      this.isEditMode = false;
     }
   };
 

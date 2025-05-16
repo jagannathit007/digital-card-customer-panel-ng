@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { environment } from 'src/env/env.local';
 import { AvatarComponent } from '../avatar/avatar.component';
 import { ModalService } from 'src/app/core/utilities/modal';
+import { SharedService } from 'src/app/services/shared.service';
 
 declare var bootstrap: any;
 
@@ -25,15 +26,15 @@ export class HeaderComponent implements OnInit {
   private deferredPrompt: any;
   private installModal: any;
   showInstallButton: boolean = false;
-  userName: string = ''
+  userName: string = '';
   constructor(
     public appWorker: AppWorker,
     private storage: AppStorage,
     public authService: AuthService,
     public modal: ModalService,
-    private cdr: ChangeDetectorRef
-  ) {
-  }
+    private cdr: ChangeDetectorRef,
+    private sharedService: SharedService
+  ) {}
 
   onBusinessChange() {
     this.storage.set(
@@ -56,8 +57,8 @@ export class HeaderComponent implements OnInit {
       });
   }
 
-  businessDetails: any = null
-  imageUrl = environment.baseURL + '/'
+  businessDetails: any = null;
+  imageUrl = environment.baseURL + '/';
   getCards = async () => {
     let results = await this.authService.getBusinessCards();
     const selectedBusinessId = this.authService.selectedBusinessCard;
@@ -67,7 +68,7 @@ export class HeaderComponent implements OnInit {
     this.message = selectedBusinessDetails[0]?.message?.whatsApp
       ? selectedBusinessDetails[0].message.whatsApp
       : 'hi';
-    this.businessDetails = selectedBusinessDetails[0]
+    this.businessDetails = selectedBusinessDetails[0];
     this.cdr.detectChanges();
   };
 
@@ -95,14 +96,17 @@ export class HeaderComponent implements OnInit {
     href: 'personal-details',
   };
 
-  ngOnInit(): void {
+  async onInitFunction() {
+    await this.getProfile();
     this.authService.selectedBusinessCard =
       this.storage.get(common.BUSINESS_CARD) ?? '';
 
-    let userData = this.storage.get(common.USER_DATA)
+    let userData = this.storage.get(common.USER_DATA);
 
-    const matchedCard = userData.businessCards.find((e: any) => e._id === this.authService.selectedBusinessCard);
-    this.userName = matchedCard?.userName ;
+    const matchedCard = userData.businessCards.find(
+      (e: any) => e._id === this.authService.selectedBusinessCard
+    );
+    this.userName = matchedCard?.userName;
 
     this.selectedTab = {
       title: 'Personal Details',
@@ -110,7 +114,14 @@ export class HeaderComponent implements OnInit {
     };
     this.getCards();
     this.checkPwaInstallation();
-    this.getProfile();
+  }
+
+  async ngOnInit() {
+    this.onInitFunction();
+
+    this.sharedService.refreshHeader$.subscribe(() => {
+      this.onInitFunction();
+    });
   }
 
   checkPwaInstallation() {
@@ -128,7 +139,6 @@ export class HeaderComponent implements OnInit {
 
         if (!alreadyDenied) {
           setTimeout(() => {
-
             this.installModal = bootstrap.Modal.getOrCreateInstance(
               document.getElementById('installPwaModal')
             );
@@ -149,7 +159,6 @@ export class HeaderComponent implements OnInit {
           this.installModal.show();
         }, 1000);
       }
-
     }
   }
 
@@ -162,7 +171,6 @@ export class HeaderComponent implements OnInit {
     const userAgent = window.navigator.userAgent.toLowerCase();
     return /android/.test(userAgent);
   }
-
 
   openInstallModal() {
     const isStandalone =

@@ -12,13 +12,14 @@ import { CustomerService } from 'src/app/services/customer.service';
 import { DigitOnlyDirective } from 'src/app/core/directives/digit-only';
 import { COUNTRY_CODES } from 'src/app/core/utilities/countryCode';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { DebounceDirective } from 'src/app/core/directives/debounce';
 
 declare var $: any;
 
 @Component({
   selector: 'app-business-card-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgxPaginationModule, DigitOnlyDirective, NgSelectModule],
+  imports: [CommonModule, FormsModule, NgxPaginationModule, DigitOnlyDirective, NgSelectModule,DebounceDirective],
   templateUrl: './business-card-detail.component.html',
   styleUrl: './business-card-detail.component.scss',
 })
@@ -112,7 +113,7 @@ export class BusinessCardDetailComponent {
 
   onSearch(): void {
     this.p = 1;
-    this._getScannedCards();
+    this._getScannedCards(); 
   }
 
   onItemsPerPageChange(): void {

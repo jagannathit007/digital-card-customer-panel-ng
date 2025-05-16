@@ -37,6 +37,10 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
+    if (requiredProduct === 'profile') {
+      return true;
+    }
+
     if (requiredProduct === 'customers') {
       return true;
     }
