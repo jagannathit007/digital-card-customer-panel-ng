@@ -97,3 +97,24 @@
     transform: translateX(-50%) translateY(-10px);
   }
 }
+
+// Header section profile image
+.profile-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #ddd;
+}
+
+.default-profile-icon {
+  font-size: 40px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+}

@@ -9,9 +9,9 @@ import { BehaviorSubject } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { environment } from 'src/env/env.local';
-import { AvatarComponent } from '../avatar/avatar.component';
 import { ModalService } from 'src/app/core/utilities/modal';
 import { SharedService } from 'src/app/services/shared.service';
+import { AvatarComponent } from '../avatar/avatar.component';
 
 declare var bootstrap: any;
 
@@ -27,6 +27,8 @@ export class HeaderComponent implements OnInit {
   private installModal: any;
   showInstallButton: boolean = false;
   userName: string = '';
+  showDefaultIcon: boolean = false;
+
   constructor(
     public appWorker: AppWorker,
     private storage: AppStorage,
@@ -130,7 +132,6 @@ export class HeaderComponent implements OnInit {
       (window.navigator as any).standalone;
     const alreadyDenied = localStorage.getItem('pwaDenied') === 'true';
 
-    // Handle beforeinstallprompt event (Chrome-only)
     if (this.isAndroid()) {
       window.addEventListener('beforeinstallprompt', (event: any) => {
         event.preventDefault();
@@ -148,7 +149,6 @@ export class HeaderComponent implements OnInit {
       });
     }
 
-    // For Safari/iOS users who don't get the beforeinstallprompt event
     if (this.isIos() && !isStandalone) {
       this.showInstallButton = true;
       if (!alreadyDenied) {
@@ -177,7 +177,6 @@ export class HeaderComponent implements OnInit {
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as any).standalone;
 
-    // For Safari/iOS users who don't get the beforeinstallprompt event
     if (this.isIos() && !isStandalone) {
       setTimeout(() => {
         this.installModal = bootstrap.Modal.getOrCreateInstance(
@@ -244,4 +243,9 @@ export class HeaderComponent implements OnInit {
       window.location.href = '/';
     }
   };
+
+  handleImageError(event: Event) {
+    this.showDefaultIcon = true;
+    this.cdr.detectChanges();
+  }
 }

@@ -44,3 +44,24 @@ ol, ul {
 .sidebar.collapsed {
   margin-left: -250px;
 }
+
+
+// logout css
+   .logout:hover {
+        color: #e46464 !important; 
+    }
+
+
+
+    // company logo
+    .company-logo {
+  max-width: 40px;     /* Adjust as per your UI */
+  height: auto;
+  object-fit: cover;
+  transition: transform 0.3s ease-in-out;
+  margin-left: 0.5em;
+}
+
+.company-logo:hover {
+  transform: scale(1.05);  
+}

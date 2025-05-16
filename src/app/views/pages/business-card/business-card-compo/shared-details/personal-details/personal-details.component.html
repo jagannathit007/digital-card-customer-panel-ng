@@ -34,55 +34,61 @@
           </div>
         </div>
         <!-- Social Media Links -->
-        <div class="col-12 mt-4">
-          <!-- Display added social media links -->
-          <div class="row gy-4">
-            @for (item of personalDetails.personalSocialMedia; track $index) {
-            <div class="col-md-4 col-12">
-              <div class="d-flex justify-content-between align-items-center">
-                <label for="{{ item.name }}" class="form-label">
-                  <img
-                    src="{{ baseURL }}/{{ item.image }}"
-                    alt=""
-                    height="20"
-                  /><span class="fw-semibold ms-1"> {{ item.name }}</span>
-                </label>
-                <div class="form-check form-switch">
-                  <input
-                    class="form-check-input cursor-pointer"
-                    [ngModelOptions]="{ standalone: true }"
-                    [(ngModel)]="item.visibility"
-                    type="checkbox"
-                    id="{{ item.name }}Toggle"
-                    [disabled]="!isEditMode"
-                  />
-                </div>
-              </div>
-              <input
-                type="text"
-                id="{{ item.name }}"
-                class="form-control form-control-lg"
-                [(ngModel)]="item.link"
-                [ngModelOptions]="{ standalone: true }"
-                name="{{ item.name }}"
-                required="{{item.visibility}}"
-                [disabled]="!isEditMode"
-              />
-              @if(!item.isDefault){
-              <a
-                class="text-danger"
-                style="font-size: 12px"
-                (click)="deleteSocial($index)"
-                *ngIf="isEditMode"
-                >Delete</a
-              >
-              }
-            </div>
-            }
-          </div>
+    <div class="col-12 mt-4">
+  <!-- Display added social media links -->
+  <div class="row gy-4">
+    @for (item of personalDetails.personalSocialMedia; track $index) {
+    <div class="col-md-4 col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <label for="{{ item.name }}" class="form-label">
+          <img
+            src="{{ baseURL }}/{{ item.image }}"
+            alt=""
+            height="20"
+          /><span class="fw-semibold ms-1"> {{ item.name }}</span>
+        </label>
+        <div class="custom-toggle d-flex align-items-center">
+          <label class="toggle-switch">
+            <input
+              class="toggle-checkbox"
+              [ngModelOptions]="{ standalone: true }"
+              [(ngModel)]="item.visibility"
+              type="checkbox"
+              id="{{ item.name }}Toggle"
+              [disabled]="!isEditMode"
+            />
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="toggle-text ms-2">
+            {{ item.visibility ? 'Visible' : 'Hidden' }}
+          </span>
         </div>
-        <!-- </div> -->
-
+      </div>
+      <div class="d-flex justify-content-between">
+        <input
+          type="text"
+          id="{{ item.name }}"
+          class="form-control form-control-lg"
+          [(ngModel)]="item.link"
+          [ngModelOptions]="{ standalone: true }"
+          name="{{ item.name }}"
+          required="{{item.visibility}}"
+          [disabled]="!isEditMode"
+        />
+        @if(!item.isDefault){
+        <button
+          class="btn btn-danger btn-sm ms-2 rounded-2"
+          (click)="deleteSocial($index)"
+          *ngIf="isEditMode"
+        >
+          <i class="ri-delete-bin-line"></i>
+        </button>
+        }
+      </div>
+    </div>
+    }
+  </div>
+</div>
         <!-- Submit Button -->
         <div class="mt-3 d-flex justify-content-end">
           <button
@@ -116,6 +122,8 @@
   </div>
 </div>
 
+
+<!-- Add social media links -->
 <div
   class="modal fade"
   id="addSocialMediaModal"
@@ -139,6 +147,39 @@
       <form ngNativeValidate (ngSubmit)="addSocialMedia()">
         <div class="modal-body">
           <div class="mb-3">
+            <label class="form-label">Select Social Media</label>
+            <ng-select
+              [items]="socialMediaOptions"
+              bindLabel="name"
+              bindValue="name"
+              [(ngModel)]="selectedSocialMedia"
+              [ngModelOptions]="{ standalone: true }"
+              (change)="onSocialMediaSelect($event)"
+              placeholder="Choose a social media platform"
+            >
+              <ng-template ng-option-tmp let-item="item">
+                <div class="d-flex align-items-center">
+                  <img
+                    [src]="item.image"
+                    alt="{{ item.name }}"
+                    style="width: 24px; height: 24px; margin-right: 8px;"
+                  />
+                  <span>{{ item.name }}</span>
+                </div>
+              </ng-template>
+              <ng-template ng-label-tmp let-item="item">
+                <div class="d-flex align-items-center">
+                  <img
+                    [src]="item.image"
+                    alt="{{ item.name }}"
+                    style="width: 24px; height: 24px; margin-right: 8px;"
+                  />
+                  <span>{{ item.name }}</span>
+                </div>
+              </ng-template>
+            </ng-select>
+          </div>
+          <div class="mb-3">
             <label class="form-label">Platform Name</label>
             <input
               type="text"
@@ -151,14 +192,22 @@
           </div>
           <div class="mb-3">
             <label class="form-label">Platform Image</label>
+            <div *ngIf="newSocialMedia.image" class="mb-2">
+              <img
+                [src]="newSocialMedia.image"
+                alt="Selected Platform Image"
+                style="width: 50px; height: 50px; border-radius: 8px;"
+              />
+            </div>
             <input
               type="file"
               class="form-control"
-              name="socialName"
+              name="socialImage"
               id="platformImage"
               (change)="onSocialMediaIcon($event)"
-              required
+              accept="image/*"
             />
+            <small class="text-muted">Image will be automatically selected when choosing from dropdown</small>
           </div>
           <div class="mb-3">
             <label class="form-label">Link / URL</label>
@@ -173,6 +222,9 @@
           </div>
         </div>
         <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="onCloseSocialMediaModal()">
+            <i class="ri-close-line"></i> Cancel
+          </button>
           <button type="submit" class="btn btn-info">
             <i class="ri-add-fill"></i> Add
           </button>

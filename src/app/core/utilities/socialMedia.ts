@@ -1,0 +1,15 @@
+export const SOCIAL_MEDIA_LINKS = [
+  { name: 'Behance', image: '/assets/socialmediapng/behance.png' },
+  { name: 'Discord', image: '/assets/socialmediapng/discord.png' },
+  { name: 'Dribbble', image: '/assets/socialmediapng/dribbble.png' },
+  { name: 'Flickr', image: '/assets/socialmediapng/flickr.png' },
+  { name: 'GitHub', image: '/assets/socialmediapng/github.png' },
+  { name: 'Medium', image: '/assets/socialmediapng/medium.png' },
+  { name: 'Pinterest', image: '/assets/socialmediapng/pinterest.png' },
+  { name: 'Reddit', image: '/assets/socialmediapng/reddit.png' },
+  { name: 'Snapchat', image: '/assets/socialmediapng/snapchat.png' },
+  { name: 'TikTok', image: '/assets/socialmediapng/social-media.png' },
+  { name: 'Stack Overflow', image: '/assets/socialmediapng/stack-overflow.png' },
+  { name: 'Telegram', image: '/assets/socialmediapng/telegram.png' },
+  { name: 'Twitch', image: '/assets/socialmediapng/twitch.png' },
+];
