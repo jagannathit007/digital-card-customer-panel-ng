@@ -57,6 +57,12 @@ export class SideBarService {
       icon: 'user',
     };
 
+    const taskManagementMenu = {
+    title: 'Task Management',
+    link: 'task-management',
+    icon: 'file-text',
+  };
+
     const hasDigitalOrNFC = products.some(product => 
       product === "digital-card" || product === "nfc-card"
     );
@@ -67,6 +73,10 @@ export class SideBarService {
 
     const hasGoogleReview = products.some(product => 
       product === "google-standee"
+    );
+   
+    const hasTaskManagement = products.some(product => 
+      product === "task-management"
     );
 
     let menus = [];
@@ -88,6 +98,10 @@ export class SideBarService {
     // if (hasGoogleReview) {
     //   menus.splice(menus.length - 1, 0, googleReviewMenu);
     // }
+
+    if (hasTaskManagement) {
+    menus.splice(menus.length - 1, 0, taskManagementMenu);
+  }
 
     return [{
       moduleName: 'Member',

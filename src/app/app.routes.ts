@@ -1,3 +1,4 @@
+import { TaskRoutingModule } from './views/pages/task-management/task-routing.module';
 import { Routes } from '@angular/router';
 import { SignInComponent } from './views/pages/auth/sign-in/sign-in.component';
 import { HomeLayoutComponent } from './views/partials/home-layout/home-layout.component';
@@ -31,6 +32,12 @@ export const routes: Routes = [
         loadChildren:()=>import('./views/pages/website/website.module').then(m=>m.WebsiteModule),
         canActivate: [AuthGuard],
         data: { requiredProduct: 'website-details' }
+      },
+      {
+        path: 'task-management',
+        loadChildren:()=>import('./views/pages/task-management/task.module').then(m=>m.TaskModule),
+        canActivate: [AuthGuard],
+        data: { requiredProduct: 'task-management' }
       },
       {
         path: 'google-standee',

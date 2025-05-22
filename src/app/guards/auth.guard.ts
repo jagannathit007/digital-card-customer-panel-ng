@@ -67,6 +67,9 @@ export class AuthGuard implements CanActivate {
       case 'google-standee':
         hasAccess = products.some(product => product === "google-standee");
         break;
+      case 'task-management':
+        hasAccess = products.some(product => product === "task-management");
+         break;
       default:
         hasAccess = false;
     }
