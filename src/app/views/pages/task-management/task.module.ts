@@ -12,9 +12,18 @@ import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
 import { ToggleComponent } from '../../partials/toggle/toggle.component';
 import { DebounceDirective } from 'src/app/core/directives/debounce';
 
+
+import { TaskComponent } from './task-components/task/task.component';
+import { AllmembersComponent } from './task-components/task/shared/allmembers/allmembers.component';
+import { PersonaltaskComponent } from './task-components/task/shared/personaltask/personaltask.component';
+import { TeamtaskComponent } from './task-components/task/shared/teamtask/teamtask.component';
+
 @NgModule({
   declarations: [
-
+    TaskComponent,
+    AllmembersComponent,
+    PersonaltaskComponent,
+    TeamtaskComponent,
   ],
   imports: [
     CommonModule,

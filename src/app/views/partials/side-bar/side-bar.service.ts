@@ -57,11 +57,16 @@ export class SideBarService {
       icon: 'user',
     };
 
-    const taskManagementMenu = {
-    title: 'Task Management',
-    link: 'task-management',
-    icon: 'file-text',
-  };
+  const taskManagementMenu = {
+  title: 'Task Management',
+  link: 'task-management',
+  icon: 'file-text',
+  menu: [
+    { title: 'All Members', link: 'task-management/allmembers', icon: 'users' },
+    { title: 'Personal Task', link: 'task-management/personaltask', icon: 'user-check' },
+    { title: 'Team Task', link: 'task-management/teamtask', icon: 'users' },
+  ],
+};
 
     const hasDigitalOrNFC = products.some(product => 
       product === "digital-card" || product === "nfc-card"
