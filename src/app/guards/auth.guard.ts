@@ -45,7 +45,7 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    let results = await this.authService.getWebsiteDetails(currentBcardId);
+    // let results = await this.authService.getWebsiteDetails(currentBcardId);
 
     const subscriptionData = await this.authService.getSubscriptionData(currentBcardId);
     const products = subscriptionData.map(item => item.product);
@@ -59,10 +59,10 @@ export class AuthGuard implements CanActivate {
           product === "digital-card" || product === "nfc-card");
         break;
       case 'website-details':
+        // ! REMOVE THIS GETWEBSITE DETAILS API CALL BEACUASE THIS API IS USED IN SLIDEBAR SERVICE SECTION WITH PROPER VAILDATION
         // hasAccess = products.some(product => product === "website-details");
-        hasAccess = products.some(product => product === "website-details") && 
-                results.websiteVisible === true;
-
+        hasAccess = products.some(product => product === "website-details");
+                // results.websiteVisible === true;
         break;
       case 'google-standee':
         hasAccess = products.some(product => product === "google-standee");

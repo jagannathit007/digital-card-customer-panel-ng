@@ -100,7 +100,7 @@
             />
           </div>
 
-          <div class="col-md-6 col-12">
+          <!-- <div class="col-md-6 col-12">
             <label for="company" class="form-label fw-bold"
               >Business Keyword</label
             >
@@ -112,9 +112,22 @@
               [ngModelOptions]="{ standalone: true }"
               [disabled]="!isEditMode"
             />
-          </div>
+          </div> -->
+          <div class="col-md-6 col-12">
+  <label for="company" class="form-label fw-bold">Business Keyword</label>
+  <textarea
+    id="company"
+    class="form-control"
+    rows="4"
+    [(ngModel)]="businessProfile.businessKeyword"
+    [ngModelOptions]="{ standalone: true }"
+    [disabled]="!isEditMode"
+    placeholder="Enter business keywords separated by comma"
+  ></textarea>
+</div>
+
           
-          <div class="row ">
+          <div class="row mt-4">
   <!-- Profile Image Upload -->
  <div class="col-md-6 col-12">
    <label for="profileImage" class="form-label fw-bold">Profile Image</label>
