@@ -137,6 +137,41 @@ class ApiEndpoints {
   // Website Uniquename
   public WEBSITE_UNIQUE_NAME: string = `${this.PATH}/website/uniqueName/add`;
   public WEBSITE_NAME_SAVING: string = `${this.PATH}/website/uniqueName/update`;
+
+// ! TASK MANAGEMENT ROUTES
+// router.post('/teamMember/add', isTaskAuth, teamMemberCtrl.addTeamMember);
+// router.post('/teamMember/update', isTaskAuth, teamMemberCtrl.updateProfile);
+// router.post('/teamMember/delete/:id', isTaskAuth, teamMemberCtrl.deleteTeamMember);
+// router.post('/changePassword', isTaskAuth, teamMemberCtrl.changePassword);
+// router.post('/teamMember/changeRole/:id', isTaskAuth, teamMemberCtrl.changeRole);
+
+// // board routes
+// router.post('/board/create', adminLevelPermission, boardCtrl.createBoard);
+// router.post('/board/update/:boardId', adminLevelPermission, boardCtrl.updateBoard);
+// router.post('/board/delete/:boardId', adminLevelPermission, boardCtrl.deleteBoard);
+// router.post('/board/member/update', boardLevelPermission, boardCtrl.updateBoardMembers);
+// router.post('/board/categories/update', adminLevelPermission, boardCtrl.updateBoardCategories);
+// router.get('/board/all', adminLevelPermission, boardCtrl.getBoardsForAdmin);
+// router.get('/board/joined', isTaskAuth, boardCtrl.getJoinedBoards);
+
+
+public ADD_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/add`;
+public UPDATE_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/update`;
+public DELETE_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/delete`;
+public CHANGE_PASSWORD_INTASK: string = `${this.PATH}/task/changePassword`;
+public CHANGE_ROLE: string = `${this.PATH}/task/teamMember/changeRole`;
+
+public CREATE_BOARD: string = `${this.PATH}/task/board/create`;
+public UPDATE_BOARD: string = `${this.PATH}/task/board/update`;
+public DELETE_BOARD: string = `${this.PATH}/task/board/delete`;
+public UPDATE_BOARD_MEMBERS: string = `${this.PATH}/task/board/member/update`;
+public UPDATE_BOARD_CATEGORIES: string = `${this.PATH}/task/board/categories/update`;
+public GET_BOARDS_FOR_ADMIN: string = `${this.PATH}/task/board/all`;
+public GET_JOINED_BOARDS: string = `${this.PATH}/task/board/joined`;
+
+
+
+
 }
 
 export let apiEndpoints = new ApiEndpoints();

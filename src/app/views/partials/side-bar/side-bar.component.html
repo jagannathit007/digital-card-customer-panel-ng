@@ -58,7 +58,7 @@
 </nav> -->
 
 
-<nav id="sidebar" class="sidebar js-sidebar" [class.collapsed]="!appWorker.isSliderOpen">
+<!-- <nav id="sidebar" class="sidebar js-sidebar" [class.collapsed]="!appWorker.isSliderOpen">
   <div class="sidebar-content js-simplebar" style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
     <a class="sidebar-brand" style="color:#126f8a; background: aliceblue; padding: 7px 20px;"
       [routerLink]="'business-cards'">
@@ -107,6 +107,67 @@
         <li class="sidebar-item">
           <a class="sidebar-link user-select-none logout" (click)="logout()">
             <i class="align-middle text-danger logout" data-feather="log-out"></i>
+            <span class="align-middle text-danger logout">Logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav> -->
+
+
+
+<nav id="sidebar" class="sidebar js-sidebar" [class.collapsed]="!appWorker.isSliderOpen">
+  <div class="sidebar-content js-simplebar" style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+    <a class="sidebar-brand" style="color:#126f8a; background: aliceblue; padding: 7px 20px;"
+      [routerLink]="'business-cards'">
+      <span class="align-middle">
+        <img src="/assets/logo/companylogo (1).png" alt="Company Logo" class="company-logo img-fluid" />
+        <div style="font-size: 12px;">
+          {{ authService.profileData != null ? authService.profileData.name : '--' }}
+        </div>
+      </span>
+    </a>
+
+    <div class="vh-100" style="overflow-y: auto; overflow-x: hidden; padding-bottom: 50%;">
+      <ul class="sidebar-nav">
+        <span *ngFor="let module of filteredMenuList">
+          <li class="sidebar-header">{{module.moduleName}}</li>
+          <li class="sidebar-item" *ngFor="let item of module.menus; let i = index" [routerLinkActive]="'active'">
+            <ng-container *ngIf="!item.menu">
+              <a class="sidebar-link user-select-none" [routerLink]="item.link"
+                [queryParams]="item.query ? item.query : {}">
+                <i class="align-middle sidebar-icon" [attr.data-feather]="item?.icon"></i>
+                <span class="align-middle">{{ item.title }}</span>
+              </a>
+            </ng-container>
+
+            <ng-container *ngIf="item.menu">
+              <a class="sidebar-link user-select-none submenu-toggle" 
+                 [class.submenu-active]="sideBarService.activeSubMenuIndex === i"
+                 (click)="sideBarService.toggleSubMenu(i)">
+                <i class="align-middle sidebar-icon" [attr.data-feather]="item?.icon"></i>
+                <span class="align-middle">{{ item.title }}</span>
+                <i class="ri-arrow-down-s-fill submenu-arrow" 
+                   [class.submenu-open]="sideBarService.activeSubMenuIndex === i"></i>
+              </a>
+              <ul class="sub-menu" [class.sub-menu-open]="sideBarService.activeSubMenuIndex === i">
+                <li class="sidebar-item sub-item" *ngFor="let submenu of item.menu; let subIndex = index">
+                  <a class="sidebar-link user-select-none sub-link"
+                    [routerLink]="submenu.link" [routerLinkActive]="'active'">
+                    <i class="align-middle sidebar-icon sub-icon" [attr.data-feather]="submenu?.icon"></i>
+                    <span class="align-middle">{{ submenu.title }}</span>
+                  </a>
+                </li>
+              </ul>
+            </ng-container>
+          </li>
+        </span>
+
+        <li class="sidebar-header">Extra & Tools</li>
+        <li class="sidebar-item">
+          <a class="sidebar-link user-select-none logout-link" (click)="logout()">
+            <i class="align-middle text-danger logout sidebar-icon" data-feather="log-out"></i>
             <span class="align-middle text-danger logout">Logout</span>
           </a>
         </li>
