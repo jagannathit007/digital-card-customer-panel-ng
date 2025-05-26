@@ -139,6 +139,10 @@ class ApiEndpoints {
   public WEBSITE_NAME_SAVING: string = `${this.PATH}/website/uniqueName/update`;
 
 // ! TASK MANAGEMENT ROUTES
+// authentication routes
+// router.post('/sign-in', teamMemberCtrl.signIn);
+// router.post('/verify-invitation-token', teamMemberCtrl.verifyInvitationToken);
+
 // router.post('/teamMember/add', isTaskAuth, teamMemberCtrl.addTeamMember);
 // router.post('/teamMember/update', isTaskAuth, teamMemberCtrl.updateProfile);
 // router.post('/teamMember/delete/:id', isTaskAuth, teamMemberCtrl.deleteTeamMember);
@@ -154,6 +158,9 @@ class ApiEndpoints {
 // router.get('/board/all', adminLevelPermission, boardCtrl.getBoardsForAdmin);
 // router.get('/board/joined', isTaskAuth, boardCtrl.getJoinedBoards);
 
+
+public TEAM_MEMBER_SIGNIN: string = `${this.PATH}/task/sign-in`;
+public TEAM_MEMBER_VERIFY_TOKEN: string = `${this.PATH}/task/verify-invitation-token`;
 
 public ADD_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/add`;
 public UPDATE_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/update`;
