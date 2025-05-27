@@ -135,15 +135,27 @@ export class LoginComponent implements OnInit {
       if (response && response.status === 200 && response.data) {
         // Store user data but not token
         this.storage.set(teamMemberCommon.TEAM_MEMBER_DATA, response.data);
-        this.router.navigate(['/teammember/dashboard']);
+
+        const userData = response.data.user;
+        const isProfileComplete = userData.mobile && 
+                                userData.skills && 
+                                userData.skills.length > 0 && 
+                                userData.experience;
+        
+        if (isProfileComplete) {
+          this.router.navigate(['/teammember/dashboard']);
+        } else {
+          this.router.navigate(['/teammember/myprofile']);
+        }
+
       } else {
-        this.showError = true;
+        // this.showError = true;
         this.errorMessage = response?.message || 'Invalid credentials. Please try again.';
         swalHelper.showToast(this.errorMessage, 'error');
       }
     } catch (error) {
       this.isLoading = false;
-      this.showError = true;
+      // this.showError = true;
       this.errorMessage = 'Login failed. Please try again.';
       swalHelper.showToast(this.errorMessage, 'error');
     }
