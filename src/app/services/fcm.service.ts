@@ -29,11 +29,11 @@ export class FcmService {
         scope: '/firebase-cloud-messaging-push-scope'
       });
       
-      console.log('✅ Service Worker registered successfully:', registration);
+      // console.log('✅ Service Worker registered successfully:', registration);
       
       // Wait for the service worker to be ready
       await navigator.serviceWorker.ready;
-      console.log('✅ Service Worker is ready');
+      // console.log('✅ Service Worker is ready');
       
     } catch (error) {
       console.error('❌ Service Worker registration failed:', error);
@@ -56,7 +56,7 @@ async requestPermissionAndGetTokenSimple(): Promise<string | null> {
       return null;
     }
 
-    console.log('✅ Permission granted, getting token...');
+    // console.log('✅ Permission granted, getting token...');
 
     // Direct token request without waiting for service worker
     const token = await getToken(this.messaging, {
@@ -64,7 +64,7 @@ async requestPermissionAndGetTokenSimple(): Promise<string | null> {
     });
 
     if (token) {
-      console.log('✅ Token received:', token);
+      // console.log('✅ Token received:', token);
       return token;
     } else {
       console.warn('❌ No token available');

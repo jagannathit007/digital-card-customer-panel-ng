@@ -1,1 +1,109 @@
-<p>login works!</p>
+<main class="d-flex w-100 h-100" style="background: linear-gradient(135deg, #1e3c72, #2a5298);">
+  <div class="container">
+    <div class="row vh-100 align-items-center">
+      <div class="col-lg-4 offset-lg-4">
+        
+        <!-- Loading Spinner -->
+        <div *ngIf="isLoading" class="text-center">
+          <div class="spinner-border text-light" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        
+        <!-- Error Message with Go to Login Button -->
+        <div *ngIf="!isLoading && showError" class="card shadow-lg" style="border: none; border-radius: 12px;">
+          <div class="card-body p-4 text-center">
+            <div class="mb-3">
+              <i class="ri-error-warning-line" style="font-size: 48px; color: #dc3545;"></i>
+            </div>
+            <div class="alert alert-danger">
+              {{ errorMessage }}
+            </div>
+            <button 
+              type="button" 
+              class="btn btn-primary"
+              style="background-color: #2a5298; border-color: #2a5298;"
+              (click)="goToLoginPage()"
+            >
+              Go to Login Page
+            </button>
+          </div>
+        </div>
+        
+        <!-- Login Form -->
+        <div *ngIf="!isLoading && !showError && showLoginForm" class="card shadow-lg" style="border: none; border-radius: 12px;">
+          <div class="card-body p-4">
+            <div class="text-center mb-4">
+              <img src="https://itfuturz.in/images/logo.png" alt="Team Member Logo" class="rounded-circle" width="100px">
+            </div>
+            <h2 class="text-center mb-3" style="color: #2a5298;"><b>{{ whiteLabelName }}</b></h2>
+            <div class="text-center mb-4">
+              <span style="font-size: 14px; color: #6c757d;">Sign in to your team member account</span>
+            </div>
+
+            <form novalidate [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+              <!-- Email Field -->
+              <div class="mb-3">
+                <label for="emailId" class="form-label" style="color: #2a5298;">Email ID</label>
+                <input
+                  id="emailId"
+                  inputmode="email"
+                  class="form-control"
+                  type="email"
+                  formControlName="emailId"
+                  autocomplete="off"
+                  placeholder="Enter your email"
+                  [ngClass]="{'is-invalid': loginForm.controls.emailId?.invalid && (loginForm.controls.emailId?.dirty || loginForm.controls.emailId?.touched)}"
+                />
+                <div class="invalid-feedback">
+                  Please enter a valid email address.
+                </div>
+              </div>
+
+              <!-- Password Field -->
+              <div class="mb-3">
+                <label for="password" class="form-label" style="color: #2a5298;">Password</label>
+                <div class="position-relative">
+                  <input
+                    id="password"
+                    class="form-control"
+                    [type]="isPassword ? 'text' : 'password'"
+                    formControlName="password"
+                    autocomplete="off"
+                    placeholder="Enter your password"
+                    [ngClass]="{'is-invalid': loginForm.controls.password?.invalid && (loginForm.controls.password?.dirty || loginForm.controls.password?.touched)}"
+                  />
+                  <div class="position-absolute" style="top: 50%; right: 1rem; transform: translateY(-50%); cursor: pointer;">
+                    <i class="ri-{{ isPassword ? 'eye-fill' : 'eye-off-fill' }}" (click)="isPassword = !isPassword"></i>
+                  </div>
+                </div>
+                <div class="invalid-feedback">
+                  Password must be at least 6 characters long.
+                </div>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="text-center mt-4">
+                <button
+                  type="submit"
+                  [disabled]="!loginForm.valid || isLoading"
+                  class="btn btn-primary w-100"
+                  style="background-color: #2a5298; border-color: #2a5298;"
+                >
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                  Sign In
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        <footer class="text-center mt-3">
+          <a href="mailto:{{ emailId }}" class="text-light" style="text-decoration: none;">
+            <i class="ri-mail-line me-1"></i>{{ emailId }}
+          </a>
+        </footer>
+      </div>
+    </div>
+  </div>
+</main>
