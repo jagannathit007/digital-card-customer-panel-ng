@@ -38,7 +38,7 @@ export class TaskMemberAuthService {
     try {
       let response = await this.apiManager.request(
         {
-          url: apiEndpoints.SIGN_IN,
+          url: apiEndpoints.TEAM_MEMBER_SIGNIN,
           method: 'POST',
         },
         data,
@@ -63,7 +63,7 @@ export class TaskMemberAuthService {
       this.getHeaders();
       let response = await this.apiManager.request(
         {
-          url: apiEndpoints.GET_PROFILE,
+          url: apiEndpoints.TEAM_MEMBER_VERIFY_TOKEN,
           method: 'POST',
         },
         data,
