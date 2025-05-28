@@ -127,7 +127,8 @@ export class LoginComponent implements OnInit {
          const payload = { 
                 emailId, 
                 password,
-                fcm: fcmToken  
+                fcm: fcmToken,
+                ...(this.token && { token: this.token })
               };
       const response = await this.taskMemberAuthService.teamMemberSignin(payload);
       this.isLoading = false;

@@ -1,0 +1,67 @@
+.main-content {
+  margin-left: 250px; // Space for sidebar
+  margin-top: 60px;   // Space for header
+  margin-bottom: 50px; // Space for footer
+  min-height: calc(100vh - 110px); // Full height minus header and footer
+  padding: 20px;
+  background: #f8f9fa;
+
+  .content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    h1 {
+      color: #333;
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #666;
+      font-size: 16px;
+      margin-bottom: 30px;
+    }
+
+    .dashboard-content {
+      // Space for your future dashboard widgets
+      min-height: 400px;
+      
+      // You can add grid layout here later for dashboard cards
+      // display: grid;
+      // grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      // gap: 20px;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0; // No sidebar space on mobile
+    padding: 15px;
+
+    .content-wrapper {
+      padding: 20px;
+
+      h1 {
+        font-size: 24px;
+      }
+    }
+  }
+}
+
+// When sidebar is collapsed
+.sidebar.collapsed ~ .main-content {
+  margin-left: 60px; // Adjust for collapsed sidebar
+}
+
+@media (max-width: 768px) {
+  .sidebar.collapsed ~ .main-content {
+    margin-left: 0; // Full width on mobile even when collapsed
+  }
+}

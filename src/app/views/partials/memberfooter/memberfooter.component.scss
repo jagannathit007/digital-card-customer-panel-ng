@@ -1,0 +1,54 @@
+.member-footer {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 250px; // Adjust based on sidebar width
+  height: 50px;
+  background: #f8f9fa;
+  border-top: 1px solid #e0e0e0;
+  z-index: 999;
+
+  .footer-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0 20px;
+  }
+
+  .footer-content {
+    text-align: center;
+
+    .copyright-text {
+      margin: 0;
+      font-size: 12px;
+      color: #666;
+      font-weight: 400;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .member-footer {
+    left: 0; // Full width on mobile
+    
+    .footer-container {
+      padding: 0 15px;
+    }
+    
+    .copyright-text {
+      font-size: 11px;
+    }
+  }
+}
+
+// When sidebar is collapsed
+.sidebar.collapsed ~ .member-footer {
+  left: 60px; // Adjust for collapsed sidebar width
+}
+
+// Alternative layout if you want footer to span full width
+.full-width-footer {
+  left: 0 !important;
+}
