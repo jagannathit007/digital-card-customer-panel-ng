@@ -1,3 +1,84 @@
 :host {
   display: block;
 }
+// ngx-editor styling
+.NgxEditor {
+  border: 1px solid #e9ecef;
+  border-radius: 0 0 0.375rem 0.375rem;
+  min-height: 150px;
+  
+  &__Content {
+    padding: 10px;
+    min-height: 120px;
+  }
+}
+
+.NgxEditor__MenuBar {
+  border: 1px solid #e9ecef;
+  border-bottom: none;
+  border-radius: 0.375rem 0.375rem 0 0;
+  background-color: #f8f9fa;
+  padding: 5px;
+}
+
+// Description preview styling in table
+.description-preview {
+  max-height: 100px;
+  overflow: hidden;
+  line-height: 1.4;
+  
+  // Style for common HTML elements that might be in the description
+  h1, h2, h3, h4, h5, h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0.25rem 0;
+  }
+  
+  p {
+    margin: 0.25rem 0;
+  }
+  
+  ul, ol {
+    margin: 0.25rem 0;
+    padding-left: 1rem;
+  }
+  
+  blockquote {
+    margin: 0.25rem 0;
+    padding-left: 0.5rem;
+    border-left: 3px solid #dee2e6;
+    font-style: italic;
+  }
+  
+  strong, b {
+    font-weight: 600;
+  }
+  
+  em, i {
+    font-style: italic;
+  }
+  
+  code {
+    background-color: #f8f9fa;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-family: monospace;
+    font-size: 0.875rem;
+  }
+}
+
+// Modal adjustments for larger editor
+.modal-lg .modal-dialog {
+  max-width: 900px;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .NgxEditor {
+    min-height: 120px;
+    
+    &__Content {
+      min-height: 100px;
+    }
+  }
+}
