@@ -615,7 +615,7 @@
 // }
 
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, NgZone, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component,AfterViewInit, ElementRef, NgZone, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ModalService } from 'src/app/core/utilities/modal';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
@@ -633,7 +633,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
   styleUrls: ['./our-products.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OurProductsComponent implements OnInit, OnDestroy {
+export class OurProductsComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('fileInput') fileInputRef!: ElementRef;
   private objectURLCache = new Map<File, string>();
 
@@ -657,6 +657,7 @@ export class OurProductsComponent implements OnInit, OnDestroy {
   p: number = 1;
   isLoading: boolean = false;
   imageBaseURL = environment.baseURL + '/';
+  activeTab: string = 'products';
 
   // Editor instances for name and description
   editor: Editor = new Editor();
@@ -694,6 +695,15 @@ export class OurProductsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.editor.destroy();
     this.nameEditor.destroy();
+  }
+
+  ngAfterViewInit() {
+    this.cdr.markForCheck(); // Ensure UI updates after view init
+  }
+
+  switchTab(tab: string): void {
+    this.activeTab = tab;
+    this.cdr.markForCheck(); // Trigger change detection
   }
 
   async _getProducts() {
