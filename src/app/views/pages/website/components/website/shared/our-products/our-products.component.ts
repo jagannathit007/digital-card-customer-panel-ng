@@ -1388,75 +1388,157 @@ export class OurProductsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.cdr.markForCheck();
   }
 
+  // async onCreateCategoryProduct() {
+  //   if (this.selectedCategoryProduct.price && isNaN(Number(this.selectedCategoryProduct.price))) {
+  //     swalHelper.showToast('Please enter a valid price!', 'warning');
+  //     return;
+  //   }
+
+  //   const strippedName = this.stripHtml(this.selectedCategoryProduct.name).trim();
+  //   if (!strippedName) {
+  //     swalHelper.showToast('Product name is required!', 'warning');
+  //     return;
+  //   }
+
+  //   const formdata = new FormData();
+  //   formdata.append('name', this.selectedCategoryProduct.name);
+  //   formdata.append('description', this.selectedCategoryProduct.description);
+  //   formdata.append('businessCardId', this.businessCardId);
+  //   formdata.append('categoryId', this.selectedCategory._id);
+  //   formdata.append('visible', String(this.selectedCategoryProduct.visible));
+  //   if (this.selectedCategoryProduct.price) {
+  //     formdata.append('price', this.selectedCategoryProduct.price);
+  //   }
+  //   if (this.selectedCategoryProduct._id) {
+  //     formdata.append('productId', this.selectedCategoryProduct._id);
+  //   }
+
+  //   this.selectedCategoryProduct.images.forEach((file: any, index: number) => {
+  //     if (file instanceof File) {
+  //       formdata.append('images', file);
+  //     }
+  //   });
+
+  //   if (this.selectedCategoryProduct.existingImages && this.selectedCategoryProduct.existingImages.length > 0) {
+  //     formdata.append('existingImages', JSON.stringify(this.selectedCategoryProduct.existingImages));
+  //   }
+
+  //   this.isCategoryLoading = true;
+  //   try {
+  //     await this.websiteService.addOrUpdateProductInCategory(formdata);
+  //     await this._getCategories();
+  //     this.modal.close('create-category-product');
+  //     this._resetCategoryProduct();
+  //     swalHelper.showToast('Product saved successfully!', 'success');
+  //   } catch (error) {
+  //     console.error('Error saving product: ', error);
+  //     swalHelper.showToast('Error saving product!', 'error');
+  //   } finally {
+  //     this.isCategoryLoading = false;
+  //     this.cdr.markForCheck();
+  //   }
+  // }
+
   async onCreateCategoryProduct() {
-    if (this.selectedCategoryProduct.price && isNaN(Number(this.selectedCategoryProduct.price))) {
-      swalHelper.showToast('Please enter a valid price!', 'warning');
-      return;
-    }
-
-    const strippedName = this.stripHtml(this.selectedCategoryProduct.name).trim();
-    if (!strippedName) {
-      swalHelper.showToast('Product name is required!', 'warning');
-      return;
-    }
-
-    const formdata = new FormData();
-    formdata.append('name', this.selectedCategoryProduct.name);
-    formdata.append('description', this.selectedCategoryProduct.description);
-    formdata.append('businessCardId', this.businessCardId);
-    formdata.append('categoryId', this.selectedCategory._id);
-    formdata.append('visible', String(this.selectedCategoryProduct.visible));
-    if (this.selectedCategoryProduct.price) {
-      formdata.append('price', this.selectedCategoryProduct.price);
-    }
-    if (this.selectedCategoryProduct._id) {
-      formdata.append('productId', this.selectedCategoryProduct._id);
-    }
-
-    this.selectedCategoryProduct.images.forEach((file: any, index: number) => {
-      if (file instanceof File) {
-        formdata.append('images', file);
-      }
-    });
-
-    if (this.selectedCategoryProduct.existingImages && this.selectedCategoryProduct.existingImages.length > 0) {
-      formdata.append('existingImages', JSON.stringify(this.selectedCategoryProduct.existingImages));
-    }
-
-    this.isCategoryLoading = true;
-    try {
-      await this.websiteService.addOrUpdateProductInCategory(formdata);
-      await this._getCategories();
-      this.modal.close('create-category-product');
-      this._resetCategoryProduct();
-      swalHelper.showToast('Product saved successfully!', 'success');
-    } catch (error) {
-      console.error('Error saving product: ', error);
-      swalHelper.showToast('Error saving product!', 'error');
-    } finally {
-      this.isCategoryLoading = false;
-      this.cdr.markForCheck();
-    }
+  if (this.selectedCategoryProduct.price && isNaN(Number(this.selectedCategoryProduct.price))) {
+    swalHelper.showToast('Please enter a valid price!', 'warning');
+    return;
   }
+
+  const strippedName = this.stripHtml(this.selectedCategoryProduct.name).trim();
+  if (!strippedName) {
+    swalHelper.showToast('Product name is required!', 'warning');
+    return;
+  }
+
+  const formdata = new FormData();
+  formdata.append('name', this.selectedCategoryProduct.name);
+  formdata.append('description', this.selectedCategoryProduct.description);
+  formdata.append('businessCardId', this.businessCardId);
+  formdata.append('categoryId', this.selectedCategory._id);
+  formdata.append('visible', String(this.selectedCategoryProduct.visible));
+  if (this.selectedCategoryProduct.price) {
+    formdata.append('price', this.selectedCategoryProduct.price);
+  }
+  if (this.selectedCategoryProduct._id) {
+    formdata.append('productId', this.selectedCategoryProduct._id);
+  }
+
+  this.selectedCategoryProduct.images.forEach((file: any, index: number) => {
+    if (file instanceof File) {
+      formdata.append('images', file);
+    }
+  });
+
+  if (this.selectedCategoryProduct.existingImages && this.selectedCategoryProduct.existingImages.length > 0) {
+    formdata.append('existingImages', JSON.stringify(this.selectedCategoryProduct.existingImages));
+  }
+
+  this.isCategoryLoading = true;
+  try {
+    await this.websiteService.addOrUpdateProductInCategory(formdata);
+    // Refresh categories and update selectedCategory
+    await this._getCategories();
+    // Find the updated category and sync selectedCategory
+    const updatedCategory = this.categories.find(cat => cat._id === this.selectedCategory._id);
+    if (updatedCategory) {
+      this.selectedCategory = { ...updatedCategory, products: updatedCategory.products ? [...updatedCategory.products] : [] };
+    }
+    this.modal.close('create-category-product');
+    this._resetCategoryProduct();
+    swalHelper.showToast('Product saved successfully!', 'success');
+  } catch (error) {
+    console.error('Error saving product: ', error);
+    swalHelper.showToast('Error saving product!', 'error');
+  } finally {
+    this.isCategoryLoading = false;
+    this.cdr.markForCheck();
+  }
+}
+
+  // async deleteCategoryProduct(productId: string) {
+  //   try {
+  //     const confirm = await swalHelper.delete();
+  //     if (confirm.isConfirmed) {
+  //       await this.websiteService.deleteProductInCategory({
+  //         productId,
+  //         categoryId: this.selectedCategory._id,
+  //         businessCardId: this.businessCardId
+  //       });
+  //       await this._getCategories();
+  //       this._resetCategoryProduct();
+  //       swalHelper.showToast('Product deleted successfully!', 'success');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error deleting product: ', error);
+  //     swalHelper.showToast('Error deleting product!', 'error');
+  //   }
+  // }
 
   async deleteCategoryProduct(productId: string) {
-    try {
-      const confirm = await swalHelper.delete();
-      if (confirm.isConfirmed) {
-        await this.websiteService.deleteProductInCategory({
-          productId,
-          categoryId: this.selectedCategory._id,
-          businessCardId: this.businessCardId
-        });
-        await this._getCategories();
-        this._resetCategoryProduct();
-        swalHelper.showToast('Product deleted successfully!', 'success');
+  try {
+    const confirm = await swalHelper.delete();
+    if (confirm.isConfirmed) {
+      await this.websiteService.deleteProductInCategory({
+        productId,
+        categoryId: this.selectedCategory._id,
+        businessCardId: this.businessCardId
+      });
+      // Refresh categories and update selectedCategory
+      await this._getCategories();
+      // Find the updated category and sync selectedCategory
+      const updatedCategory = this.categories.find(cat => cat._id === this.selectedCategory._id);
+      if (updatedCategory) {
+        this.selectedCategory = { ...updatedCategory, products: updatedCategory.products ? [...updatedCategory.products] : [] };
       }
-    } catch (error) {
-      console.error('Error deleting product: ', error);
-      swalHelper.showToast('Error deleting product!', 'error');
+      this._resetCategoryProduct();
+      swalHelper.showToast('Product deleted successfully!', 'success');
     }
+  } catch (error) {
+    console.error('Error deleting product: ', error);
+    swalHelper.showToast('Error deleting product!', 'error');
   }
+}
 
   onOpenCategoryImageModal(image: string) {
     this.imageForCarousel = [image];
