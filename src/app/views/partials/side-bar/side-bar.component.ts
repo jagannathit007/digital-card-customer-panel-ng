@@ -69,9 +69,18 @@ export class SideBarComponent implements OnInit, AfterViewInit {
       'Do you really want to logout',
       'question'
     );
-    if (confirm.isConfirmed) {
-      this.storage.clearAll();
-      window.location.href = '/';
+    // if (confirm.isConfirmed) {
+    //   this.storage.clearAll();
+    //   window.location.href = '/';
+    // }
+     if (confirm.isConfirmed) {
+    // Preserve app_update_acknowledged before clearing
+    const acknowledged = this.storage.get('app_update_acknowledged');
+    this.storage.clearAll();
+    if (acknowledged) {
+      this.storage.set('app_update_acknowledged', acknowledged);
     }
+    window.location.href = '/';
+  }
   };
 }

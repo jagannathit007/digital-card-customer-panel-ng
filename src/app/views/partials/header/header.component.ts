@@ -29,6 +29,10 @@ export class HeaderComponent implements OnInit {
   userName: string = '';
   showDefaultIcon: boolean = false;
 
+private playStoreModal: any;
+playStoreAppUrl: string = 'https://play.google.com/store/apps/details?id=app.ibusinesscard.itfuturz';
+
+
   constructor(
     public appWorker: AppWorker,
     private storage: AppStorage,
@@ -45,6 +49,31 @@ export class HeaderComponent implements OnInit {
     );
     window.location.reload();
   }
+
+  openPlayStoreModal() {
+  setTimeout(() => {
+    this.playStoreModal = bootstrap.Modal.getOrCreateInstance(
+      document.getElementById('playStoreModal')
+    );
+    this.playStoreModal.show();
+  }, 100);
+}
+
+downloadFromPlayStore() {
+  window.open(this.playStoreAppUrl, '_blank');
+  this.playStoreModal?.hide();
+}
+
+copyPlayStoreLink() {
+  navigator.clipboard.writeText(this.playStoreAppUrl)
+    .then(() => {
+      swalHelper.showToast('Play Store Link Copied!', 'success');
+    })
+    .catch((err) => {
+      console.error('Failed to copy Play Store link: ', err);
+      swalHelper.error('Failed to copy link!');
+    });
+}
 
   copyToClipboard() {
     const fullUrl = `${environment.baseURL}/${this.userName}`;
@@ -238,10 +267,19 @@ export class HeaderComponent implements OnInit {
       'Do you really want to logout',
       'question'
     );
+    // if (confirm.isConfirmed) {
+    //   this.storage.clearAll();
+    //   window.location.href = '/';
+    // }
     if (confirm.isConfirmed) {
-      this.storage.clearAll();
-      window.location.href = '/';
+    // Preserve app_update_acknowledged before clearing
+    const acknowledged = this.storage.get('app_update_acknowledged');
+    this.storage.clearAll();
+    if (acknowledged) {
+      this.storage.set('app_update_acknowledged', acknowledged);
     }
+    window.location.href = '/';
+  }
   };
 
   handleImageError(event: Event) {

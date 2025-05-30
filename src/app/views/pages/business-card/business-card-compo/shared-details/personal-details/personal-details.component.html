@@ -233,3 +233,57 @@
     </div>
   </div>
 </div>
+
+
+
+<!-- Simple App Update Modal -->
+<div class="modal fade" [class.show]="showUpdateModal" [style.display]="showUpdateModal ? 'block' : 'none'" 
+     id="appUpdateModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content update-modal">
+      <div class="modal-header text-center">
+        <div class="w-100">
+          <div class="update-icon mb-2">
+            <!-- <i class="ri-smartphone-line display-4 text-warning"></i> -->
+            <img src="../../../../../assets/images/ibusniesspng.png" alt="Logo" class="logo-image">
+          </div>
+          <h4 class="modal-title fw-bold">🎉 New App Is Available On Playstore!</h4>
+          <p class="mb-0">Please download our new app</p>
+        </div>
+      </div>
+      
+      <div class="modal-body text-center p-4">
+        <!-- QR Code Center -->
+        <div class="qr-section mb-4">
+          <div class="qr-code-container bg-white p-3 rounded-3 shadow-sm mx-auto" style="width: fit-content;">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ playStoreLink }}" 
+                 alt="QR Code" 
+                 class="qr-image"
+                 style="width: 150px; height: 150px; border-radius: 8px;">
+          </div>
+          <p class="small text-muted mt-2 mb-0">Scan to download</p>
+        </div>
+        
+        <!-- Download Button -->
+        <div class="download-actions">
+          <a href="{{ playStoreLink }}" target="_blank" 
+             class="btn btn-success btn-lg me-2 mb-2">
+            <i class="ri-google-play-fill me-2"></i>Download Now
+          </a>
+          <button type="button" class="btn btn-outline-primary btn-lg mb-2" 
+                  (click)="copyPlayStoreLink()">
+            <i class="ri-file-copy-line me-2"></i>Copy Link
+          </button>
+        </div>
+      </div>
+      
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-primary btn-lg px-4" 
+                (click)="onModalAcknowledge()">
+          <i class="ri-check-line me-2"></i>Got It!
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

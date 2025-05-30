@@ -2,7 +2,7 @@
    <a class="sidebar-toggle js-sidebar-toggle" (click)="appWorker.toggleSlider()">
    <i class="hamburger align-self-center"></i>
    </a>
-   <div class="d-none d-md-flex flex-wrap justify-content-end align-items-center gap-3 p-2 ms-auto business-select">
+   <!-- <div class="d-none d-md-flex flex-wrap justify-content-end align-items-center gap-3 p-2 ms-auto business-select">
       <div class="icon-container shadow p-2 rounded bg-light" (click)="copyToClipboard()" data-tooltip="Copy Card Link">
         <i class="ri-links-line"></i>
       </div>
@@ -18,7 +18,35 @@
           <option [value]="item._id">{{ item.company }}</option>
         }
       </select>
-    </div>
+    </div> -->
+    <div class="d-none d-md-flex flex-wrap justify-content-end align-items-center gap-3 p-2 ms-auto business-select">
+      <!-- Play Store Icon with Animation -->
+      <div class="icon-container shadow p-2 rounded bg-light playstore-icon" 
+           (click)="openPlayStoreModal()" 
+           data-tooltip="Download Our App">
+        <i class="ri-google-play-fill text-primary animated-icon"></i>
+        <div class="notification-dot"></div>
+      </div>
+      
+      <div class="icon-container  shadow p-2 rounded bg-light" (click)="copyToClipboard()" data-tooltip="Copy Card Link">
+        <i class="ri-links-line"></i>
+      </div>
+      
+      <div *ngIf="showInstallButton" class="icon-container shadow p-2 rounded bg-light downloadIcon" (click)="openInstallModal()">
+        <i class="ri-download-2-line"></i>
+      </div>
+      
+      <div class="icon-container shadow p-2 z-0 rounded bg-light" (click)="modal.open('shareModal')" data-tooltip="Share on whatshaap">
+        <i class="ri-whatsapp-fill text-success"></i>
+      </div>
+      
+      <select class="form-select custom-select shadow-sm" [(ngModel)]="authService.selectedBusinessCard"
+        [ngModelOptions]="{standalone: true}" (change)="onBusinessChange()">
+        @for (item of authService.businessCards$ | async; track item._id) {
+          <option [value]="item._id">{{ item.company }}</option>
+        }
+      </select>
+</div>
     <div class="d-md-none position-sticky bottom-select-container bg-white shadow-sm py-2 px-3">
       <div class="d-flex gap-3 align-items-center">
         <div class="d-flex gap-2">
@@ -781,3 +809,55 @@
  </div>
  </div>
   
+ <!-- Play Store Modal -->
+<div class="modal fade" id="playStoreModal" tabindex="-1" aria-labelledby="playStoreModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0 text-center">
+        <div class="w-100">
+          <div class="app-icon-container mb-3">
+            <i class="ri-google-play-fill text-primary" style="font-size: 3rem;"></i>
+            <div class="pulse-animation"></div>
+          </div>
+          <h5 class="modal-title  fw-bold text-primary" id="playStoreModalLabel">
+            🎉Our New IBusinessCard App is Now Available on Play Store!
+          </h5>
+        </div>
+        <button type="button" class="btn-close mb-6" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body p-0 text-center">
+        <div class="notification-content">
+          <!-- <h6 class="mb-3 text-dark">Our New IBusinessCard App is now available on Play Store!</h6> -->
+          
+          <!-- QR Code Placeholder -->
+          <div class="qr-container mb-4">
+            <div class="qr-code-placeholder border rounded p-3 bg-light">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ playStoreAppUrl }}" 
+                 alt="QR Code" 
+                 class="qr-image"
+                 style="width: 150px; height: 150px; border-radius: 8px;">              
+                 <p class="small text-muted mt-2 mb-0">Scan QR Code to Download</p>
+            </div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="d-flex gap-2 justify-content-center">
+            <button class="btn btn-primary px-4" (click)="downloadFromPlayStore()">
+              <i class="ri-download-2-line me-2"></i>
+              Download Now
+            </button>
+            <button class="btn btn-outline-secondary px-4" (click)="copyPlayStoreLink()">
+              <i class="ri-links-line me-2"></i>
+              Copy Link
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer border-0 text-center">
+        <small class="text-muted">Get the full experience with our mobile app!</small>
+      </div>
+    </div>
+  </div>
+</div>

@@ -64,7 +64,14 @@ export class AuthService {
         this.headers
       );
       if (response.status == 200 && response.data != null) {
+        // this.storage.clearAll();
+        // this.storage.set(common.TOKEN, response.data);
+        // return true;
+          const acknowledged = this.storage.get('app_update_acknowledged');
         this.storage.clearAll();
+        if (acknowledged) {
+          this.storage.set('app_update_acknowledged', acknowledged);
+        }
         this.storage.set(common.TOKEN, response.data);
         return true;
       } else {

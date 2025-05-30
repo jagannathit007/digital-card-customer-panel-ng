@@ -22,6 +22,11 @@ export class PersonalDetailsComponent implements OnInit {
   personalDetails: any;
   isEditMode: boolean = false;
 
+   
+  showUpdateModal: boolean = false;
+  playStoreLink = 'https://play.google.com/store/apps/details?id=app.ibusinesscard.itfuturz';
+
+
   constructor(
     private authService: AuthService,
     private storage: AppStorage,
@@ -30,6 +35,29 @@ export class PersonalDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.getCards();
+        this.checkShowUpdateModal();
+
+  }
+
+  checkShowUpdateModal() {
+    const modalAcknowledged = localStorage.getItem('app_update_acknowledged');
+    if (!modalAcknowledged) {
+      setTimeout(() => {
+        this.showUpdateModal = true;
+      }, 1000);
+    }
+  }
+
+  
+onModalAcknowledge() {
+  localStorage.setItem('app_update_acknowledged', 'true');
+  this.showUpdateModal = false;
+}
+
+    copyPlayStoreLink() {
+    navigator.clipboard.writeText(this.playStoreLink).then(() => {
+      swalHelper.showToast('Link copied to clipboard!', 'success');
+    });
   }
 
   enableEdit() {
