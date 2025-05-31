@@ -24,7 +24,7 @@ export class PersonalDetailsComponent implements OnInit {
 
    
   showUpdateModal: boolean = false;
-  playStoreLink = 'https://play.google.com/store/apps/details?id=app.ibusinesscard.itfuturz';
+  playStoreLink = 'https://play.google.com/store/apps/details?id=com.itfuturz.digitalcard&pcampaignid=web_share';
 
 
   constructor(

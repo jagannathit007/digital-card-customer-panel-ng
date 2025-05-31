@@ -30,7 +30,7 @@ export class HeaderComponent implements OnInit {
   showDefaultIcon: boolean = false;
 
 private playStoreModal: any;
-playStoreAppUrl: string = 'https://play.google.com/store/apps/details?id=app.ibusinesscard.itfuturz';
+playStoreAppUrl: string = 'https://play.google.com/store/apps/details?id=com.itfuturz.digitalcard&pcampaignid=web_share';
 
 
   constructor(
