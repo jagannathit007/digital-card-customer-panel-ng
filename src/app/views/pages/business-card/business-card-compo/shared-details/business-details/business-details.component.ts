@@ -370,9 +370,9 @@ export class BusinessDetailsComponent implements OnInit {
   };
 
   onSocialMediaSelect(event: any) {
-    console.log('Selected value from dropdown:', event);
-    console.log('Type of event:', typeof event);
-    console.log('socialMediaOptions:', this.socialMediaOptions);
+    // console.log('Selected value from dropdown:', event);
+    // console.log('Type of event:', typeof event);
+    // console.log('socialMediaOptions:', this.socialMediaOptions);
 
     const eventValue = event && typeof event === 'object' && event.name ? event.name : event;
 
@@ -390,12 +390,12 @@ export class BusinessDetailsComponent implements OnInit {
         option.name &&
         option.name.trim().toLowerCase() === trimmedEventValue.toLowerCase()
     );
-    console.log('Found selected option:', selected);
+    // console.log('Found selected option:', selected);
 
     if (selected) {
       this.newSocialMedia.name = selected.name;
       this.newSocialMedia.image = selected.image;
-      console.log('Updated newSocialMedia:', this.newSocialMedia);
+      // console.log('Updated newSocialMedia:', this.newSocialMedia);
 
       fetch(selected.image)
         .then((res) => {
@@ -408,7 +408,7 @@ export class BusinessDetailsComponent implements OnInit {
           this.socialMediaImage = new File([blob], `${selected.name}.png`, {
             type: 'image/png',
           });
-          console.log('socialMediaImage set:', this.socialMediaImage);
+          // console.log('socialMediaImage set:', this.socialMediaImage);
 
           const fileInput = document.getElementById('platformImage') as HTMLInputElement;
           if (fileInput && this.socialMediaImage) {

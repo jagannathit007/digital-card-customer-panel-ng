@@ -109,7 +109,7 @@ export class AuthService {
 
   async updateProfile(data: any) {
     try {
-      console.log(data);
+      // console.log(data);
       
       this.getHeaders();
       let response = await this.apiManager.request(
