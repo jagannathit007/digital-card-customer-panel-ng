@@ -1,274 +1,236 @@
 <div class="row">
-    <div class="row">
-        <label class="fw-bold text-uppercase fs-3">Website Details</label>
-    </div>
+  <div class="row">
+    <label class="fw-bold text-uppercase fs-3">Website Details</label>
+  </div>
 
-<div class="row mb-3">
-  <div class="col-md-6 col-12">
-    <label for="name" class="form-label fw-bold">
-      Website Name <code class="text-danger">(Only lowercase letters, numbers, and hyphens are allowed.)</code>
-    </label>
-    <div class="d-flex align-items-center">
-      <div class="input-group flex-nowrap">
-        <span class="input-group-text" id="basic-addon3">{{baseURL}}/</span>
-        <input
-          type="text"
-          class="form-control"
-          id="basic-url"
-          aria-describedby="basic-addon3"
-          [(ngModel)]="websiteName"
-          [ngModelOptions]="{standalone: true}"
-          [debounceTime]="1000"
-          (debounceEvent)="_uniqueWebsiteName()"
-          [disabled]="!isEditingWebsiteName"
-        >
-        <button
-          type="button"
-          class="btn btn-success mx-2"
-          (click)="toggleWebsiteNameEdit()"
-        >
-          <i class="ri-{{isEditingWebsiteName ? 'save' : 'edit-2'}}-fill"></i> {{isEditingWebsiteName ? 'Save' : 'Edit'}}
-        </button>
+  <div class="row mb-3">
+    <div class="col-md-6 col-12">
+      <label for="name" class="form-label fw-bold">
+        Website Name <code class="text-danger">(Only lowercase letters, numbers, and hyphens are allowed.)</code>
+      </label>
+      <div class="d-flex align-items-center">
+        <div class="input-group flex-nowrap">
+          <span class="input-group-text" id="basic-addon3">{{baseURL}}/</span>
+          <input
+            type="text"
+            class="form-control"
+            id="basic-url"
+            aria-describedby="basic-addon3"
+            [(ngModel)]="websiteName"
+            [ngModelOptions]="{standalone: true}"
+            [debounceTime]="1000"
+            (debounceEvent)="_uniqueWebsiteName()"
+            [disabled]="!isEditingWebsiteName"
+          >
+          <button
+            type="button"
+            class="btn btn-success mx-2"
+            (click)="toggleWebsiteNameEdit()"
+          >
+            <i class="ri-{{isEditingWebsiteName ? 'save' : 'edit-2'}}-fill"></i> {{isEditingWebsiteName ? 'Save' : 'Edit'}}
+          </button>
+        </div>
+        
+        <div class="d-flex align-items-center ms-2">
+          <div
+            class="icon-container rounded bg-light d-flex align-items-center justify-content-center p-2 me-2"
+            (click)="copyToClipboard()"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            data-tooltip="Copy Website Link"
+            style="cursor: pointer;"
+          >
+            <i class="ri-links-line"></i>
+          </div>
+          
+          <div
+            class="icon-container shadow rounded bg-light d-flex align-items-center justify-content-center p-2"
+            (click)="modal.open('shareModals');getWebsiteMessage()"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            data-tooltip="Share Website Link"
+            style="cursor: pointer;"
+          >
+            <i class="ri-whatsapp-fill text-success"></i>
+          </div>
+          
+          <div
+            class="spinner-border spinner-border-sm text-success ms-2"
+            role="status"
+            *ngIf="hasCheckedUserName"
+          >
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
       </div>
       
-      <div class="d-flex align-items-center ms-2">
-        <div
-          class="icon-container rounded bg-light d-flex align-items-center justify-content-center p-2 me-2"
-          (click)="copyToClipboard()"
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
-          data-tooltip="Copy Website Link"
-          style="cursor: pointer;"
-        >
-          <i class="ri-links-line"></i>
-        </div>
-        
-        <div
-          class="icon-container shadow rounded bg-light d-flex align-items-center justify-content-center p-2"
-          (click)="modal.open('shareModals');getWebsiteMessage()"
-          data-bs-toggle="tooltip"
-          data-bs-placement="top"
-          data-tooltip="Share Website Link"
-          style="cursor: pointer;"
-        >
-          <i class="ri-whatsapp-fill text-success"></i>
-        </div>
-        
-        <div
-          class="spinner-border spinner-border-sm text-success ms-2"
-          role="status"
-          *ngIf="hasCheckedUserName"
-        >
-          <span class="visually-hidden">Loading...</span>
+      <div
+        *ngIf="response"
+        class="text-{{response?.data == null ? 'danger' : 'success'}} mt-2"
+        style="font-size: small;"
+      >
+        {{response.message}}
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <label class="fw-bold text-uppercase fs-3">Home Page Details</label>
+  </div>
+
+  <div *ngIf="isLoading" class="text-center my-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div class="row g-4 my-3" *ngIf="!isLoading">
+    <div class="col-md-6 col-12">
+      <label for="heading" class="form-label fw-bold">Heading <code class="text-danger">*</code></label>
+      <div class="form-control p-0" style="height: auto;">
+        <ngx-editor-menu [editor]="headingEditor" [toolbar]="toolbar"></ngx-editor-menu>
+        <ngx-editor
+          [editor]="headingEditor"
+          [(ngModel)]="home.heading"
+          name="heading"
+          #heading="ngModel"
+          placeholder="Enter heading..."
+          [disabled]="false"
+        ></ngx-editor>
+      </div>
+      <div *ngIf="heading.invalid && heading.touched" class="text-danger" style="font-size: small;">
+        Heading is required!
+      </div>
+    </div>
+
+    <div class="col-md-6 col-12">
+      <div class="d-flex align-items-center mb-2">
+        <label for="slogan" class="form-label fw-bold">Slogan <code class="text-danger">*</code></label>
+        <app-toggle
+          [isActive]="sloganVisible"
+          [onText]="'Visible'"
+          [offText]="'Hidden'"
+          class="ms-3"
+          (changed)="this.sloganVisible=!this.sloganVisible;_updateVisibility()"
+        ></app-toggle>
+      </div>
+      <div class="form-control p-0" style="height: auto;">
+        <ngx-editor-menu [editor]="sloganEditor" [toolbar]="toolbar"></ngx-editor-menu>
+        <ngx-editor
+          [editor]="sloganEditor"
+          [(ngModel)]="home.slogan"
+          name="slogan"
+          #slogan="ngModel"
+          placeholder="Enter slogan..."
+          [disabled]="false"
+          required
+        ></ngx-editor>
+      </div>
+      <div *ngIf="slogan.invalid && slogan.touched" class="text-danger" style="font-size: small;">
+        Slogan is required!
+      </div>
+    </div>
+
+    <div class="col-md-6 col-12">
+      <div class="d-flex align-items-center mb-2">
+        <label for="bannerImage" class="form-label fw-bold">Banner Image <code class="text-danger">(Upload up to 15 Images)</code></label>
+        <app-toggle
+          [isActive]="bannerImageVisible"
+          [onText]="'Visible'"
+          [offText]="'Hidden'"
+          class="ms-3"
+          (changed)="this.bannerImageVisible=!this.bannerImageVisible;_updateVisibility()"
+        ></app-toggle>
+      </div>
+      <input type="file" #fileInput id="bannerImage" class="form-control" (change)="onBannerImageSelected($event)" multiple accept="image/*" />
+      <div *ngIf="bannerImages?.length" class="mt-3 d-flex flex-wrap gap-2">
+        <div *ngFor="let img of bannerImages; let i = index" class="position-relative">
+          <img [src]="getImagePreview(img)" alt="Banner Preview" class="img-thumbnail" width="100" height="70" />
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                style="cursor: pointer; font-size: 10px;" (click)="removeImage(i)">
+            ✖
+          </span>
         </div>
       </div>
     </div>
-    
-    <div
-      *ngIf="response"
-      class="text-{{response?.data == null ? 'danger' : 'success'}} mt-2"
-      style="font-size: small;"
-    >
-      {{response.message}}
+
+    <div class="col-md-6 col-12">
+      <div class="d-flex align-items-center mb-2">
+        <label for="logoImage" class="form-label fw-bold">Logo Image</label>
+        <app-toggle
+          [isActive]="logoImageVisible"
+          [onText]="'Visible'"
+          [offText]="'Hidden'"
+          class="ms-3"
+          (changed)="this.logoImageVisible=!this.logoImageVisible;_updateVisibility()"
+        ></app-toggle>
+      </div>
+      <input type="file" id="logoImage" class="form-control" (change)="onLogoImageSelected($event)" accept="image/*" />
+      <div *ngIf="logoImagePreview" class="mt-3">
+        <img [src]="logoImagePreview" alt="Logo Preview" class="img-thumbnail" width="100" height="70"/>
+      </div>
+    </div>
+
+    <div class="col-md-6 col-12">
+      <div class="d-flex align-items-center mb-2">
+        <label for="languageVisible" class="form-label fw-bold">Multi Language</label>
+        <app-toggle
+          [isActive]="languageVisible"
+          [onText]="'Visible'"
+          [offText]="'Hidden'"
+          class="ms-3"
+          (changed)="this.languageVisible=!this.languageVisible;_updateVisibility()"
+        ></app-toggle>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save Button -->
+  <div class="mt-4 d-flex justify-content-end">
+    <button type="button" class="btn btn-success me-2" (click)="savehomeDetails()" [disabled]="isLoading">
+      <i class="ri-save-fill"></i> {{ isLoading ? 'Saving...' : 'Save' }}
+    </button>
+  </div>
+</div>
+
+<!-- Share Modal (Unchanged) -->
+<div class="modal fade" id="shareModals" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="shareModalLabel">Share website details</h5>
+        <button type="button" class="btn-close" (click)="modal.close('shareModals')"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="countryCode" class="form-label">Select Country</label>
+          <select id="country-code" class="form-select" [(ngModel)]="selectedCountryCode">
+            <option data-countrycode="IN" value="91" selected>India (+91)</option>
+            <option data-countrycode="US" value="1">USA (+1)</option>
+            <option data-countrycode="UK" value="44">UK (+44)</option>
+            <optgroup label="Other countries">
+              <option data-countrycode="DZ" value="213">Algeria (+213)</option>
+              <option data-countrycode="AD" value="376">Andorra (+376)</option>
+              <!-- Add other countries as needed -->
+            </optgroup>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="mobileNumber" class="form-label">Enter Mobile Number</label>
+          <div class="input-group">
+            <span class="input-group-text">{{selectedCountryCode}}</span>
+            <input type="text" class="form-control" [(ngModel)]="mobileNumber" placeholder="Enter WhatsApp Number">
+          </div>
+          <small class="form-text text-muted">Do not include country code in the number</small>
+        </div>
+        <div class="mb-3">
+          <label for="message" class="form-label">Message</label>
+          <textarea class="form-control" [(ngModel)]="message" rows="3" placeholder="Write your message..."></textarea>
+        </div>
+        <button type="button" class="btn btn-success w-100" (click)="shareOnWhatsApp()">
+          <i class="ri-whatsapp-fill"></i> Share on WhatsApp
+        </button>
+      </div>
     </div>
   </div>
 </div>
-          <!-- <div class="row mb-3">
-            <div class="col-md-6 col-12">
-              <label for="name" class="form-label fw-bold">
-                Website Name <code class="text-danger">(Only lowercase letters, numbers, and hyphens are allowed.)</code>
-              </label>
-              <div class="d-flex align-items-center">
-                <div class="input-group flex-nowrap">
-                  <span class="input-group-text" id="basic-addon3">{{baseURL}}/</span>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="basic-url"
-                    aria-describedby="basic-addon3"
-                    [(ngModel)]="websiteName"
-                    [ngModelOptions]="{standalone: true}"
-                    [debounceTime]="1000"
-                    (debounceEvent)="_uniqueWebsiteName()"
-                  >
-                  <button
-                    type="button"
-                    class="btn btn-success mx-2"
-                    (click)="_saveWebsiteName()"
-                  >
-                    <i class="ri-save-fill"></i> Save
-                  </button>
-                </div>
-                
-                <div class="d-flex align-items-center ms-2">
-                  <div
-                    class="icon-container rounded bg-light d-flex align-items-center justify-content-center p-2 me-2"
-                    (click)="copyToClipboard()"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="top"
-                    title="Copy Website Link"
-                    style="cursor: pointer;"
-                  >
-                    <i class="ri-links-line"></i>
-                  </div>
-                  
-                  <div
-                    class="icon-container shadow rounded bg-light d-flex align-items-center justify-content-center p-2"
-                    (click)="modal.open('shareModals');getWebsiteMessage()"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="top"
-                    title="Share Website Link"
-                    style="cursor: pointer;"
-                  >
-                    <i class="ri-whatsapp-fill text-success"></i>
-                  </div>
-                  
-                  <div
-                    class="spinner-border spinner-border-sm text-success ms-2"
-                    role="status"
-                    *ngIf="hasCheckedUserName"
-                  >
-                    <span class="visually-hidden">Loading...</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div
-                *ngIf="response"
-                class="text-{{response?.data == null ? 'danger' : 'success'}} mt-2"
-                style="font-size: small;"
-              >
-                {{response.message}}
-              </div>
-            </div>
-          </div> -->
-
-
-    <div class="row">
-        <label class="fw-bold text-uppercase fs-3">Home Page Details</label>
-    </div>
-
-    <div *ngIf="isLoading" class="text-center my-4">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    </div>
-
-    <div class="row g-4 my-0" *ngIf="!isLoading">
-        <div class="col-md-6 col-12">
-            <label for="heading" class="form-label fw-bold">Heading</label>
-            <input type="text" id="heading" class="form-control" [(ngModel)]="home.heading" required />
-        </div>
-
-        <div class="col-md-6 col-12">
-            <div class="d-flex">
-                <label for="slogan" class="form-label fw-bold">Slogan</label>
-                <app-toggle [isActive]="sloganVisible" [onText]="'Visible'" [offText]="'Hidden'" class="ms-3"
-                    (changed)="this.sloganVisible=!this.sloganVisible;_updateVisibility()"></app-toggle>
-            </div>
-            <input type="text" id="slogan" class="form-control" [(ngModel)]="home.slogan" required />
-        </div>
-
-        <div class="col-md-6 col-12">
-            <div class="d-flex">
-                <label for="bannerImage" class="form-label fw-bold">Banner Image <code class="text-danger">(Upload Upto 15 Images)</code></label>
-                <app-toggle [isActive]="bannerImageVisible" [onText]="'Visible'" [offText]="'Hidden'" class="ms-3"
-                    (changed)="this.bannerImageVisible=!this.bannerImageVisible;_updateVisibility()"></app-toggle>
-            </div>
-            <input type="file" #fileInput id="bannerImage" class="form-control" (change)="onBannerImageSelected($event)" multiple accept="image/*" />
-            <div *ngIf="bannerImages?.length" class="mt-3 d-flex flex-wrap gap-2">
-                <div *ngFor="let img of bannerImages; let i = index" class="position-relative">
-                    <img [src]="getImagePreview(img)" alt="Banner Preview" class="img-thumbnail" width="100" height="70" />
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                        style="cursor: pointer; font-size: 10px;" (click)="removeImage(i)">
-                        ✖
-                    </span>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="col-md-6 col-12">
-            <div class="d-flex">
-                <label for="logoImage" class="form-label fw-bold">Logo Image</label>
-                <app-toggle [isActive]="logoImageVisible" [onText]="'Visible'" [offText]="'Hidden'" class="ms-3"
-                    (changed)="this.logoImageVisible=!this.logoImageVisible;_updateVisibility()"></app-toggle>
-            </div>
-
-            <input type="file" id="logoImage" class="form-control" (change)="onLogoImageSelected($event)" />
-            <div *ngIf="logoImagePreview" class="mt-3">
-                <img [src]="logoImagePreview" alt="Logo Preview" class="img-thumbnail" width="100" height="70"/>
-            </div>
-        </div>
-
-         <div class="col-md-6 col-12">
-            <div class="d-flex">
-            <span class="badge bg-primary text-white fw-bold" for="languageVisible">Multi Language</span>
-                <app-toggle [isActive]="languageVisible" [onText]="'Visible'" [offText]="'Hidden'" class="ms-3"
-                    (changed)="this.languageVisible=!this.languageVisible;_updateVisibility()"></app-toggle>
-            </div>
-        </div>
-
-
-
-    </div>
-
-    <!-- Save Button -->
-    <div class="mt-3 d-flex justify-content-end">
-        <button type="button" class="btn btn-success me-2" (click)="savehomeDetails()"><i class="ri-save-fill"></i>
-            Save</button>
-    </div>
-</div>
-
- <!-- Share UserInformation Profile Bootstrap modal-->
- <div class="modal fade" id="shareModals" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-       <!-- Centered Modal -->
-       <div class="modal-content">
-          <div class="modal-header">
-             <h5 class="modal-title" id="shareModalLabel">Share website details</h5>
-             <button type="button" class="btn-close" (click)="modal.close('shareModals')"></button>
-          </div>
-          <div class="modal-body">
-             <!-- Country Selection Dropdown -->
-             <div class="mb-3">
-                <label for="countryCode" class="form-label">Select Country</label>
-                <select id="country-code" class="form-select" [(ngModel)]="selectedCountryCode" >
-                <option data-countrycode="IN" value="91" selected="">
-                   India (+91)
-                </option>
-                <option data-countrycode="US" value="1">USA (+1)</option>
-                <option data-countrycode="UK" value="44">UK (+44)</option>
-                <optgroup label="Other countries">
-                   <option data-countrycode="DZ" value="213">
-                      Algeria (+213)
-                   </option>
-                   <option data-countrycode="AD" value="376">
-                      Andorra (+376)
-                   </option>
-                   <!-- Rest of country options remain the same -->
-                </optgroup>
-                </select>
-             </div>
-             <!-- Mobile Number Input with Country Code Display -->
-             <div class="mb-3">
-                <label for="mobileNumber" class="form-label">Enter Mobile Number</label>
-                <div class="input-group">
-                   <span class="input-group-text">{{selectedCountryCode}}</span>
-                   <input type="text" class="form-control" [(ngModel)]="mobileNumber" placeholder="Enter WhatsApp Number">
-                </div>
-                <small class="form-text text-muted">Do not include country code in the number</small>
-             </div>
-             <!-- Message Box -->
-             <div class="mb-3">
-                <label for="message" class="form-label">Message</label>
-                <textarea class="form-control" [(ngModel)]="message" rows="3" placeholder="Write your message..."></textarea>
-             </div>
-             <!-- Share Button with WhatsApp Icon -->
-             <button type="button" class="btn btn-success w-100" (click)="shareOnWhatsApp()">
-             <i class="ri-whatsapp-fill"></i> Share on WhatsApp
-             </button>
-          </div>
-       </div>
-    </div>
-  </div>

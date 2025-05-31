@@ -71,13 +71,13 @@ export class WebsiteBuilderService {
     }
 
     // Catogery wise product services CRUD
-    async addOrUpdateProductCategory(data: any) {
+    async addOrUpdateCategory(data: any) {
       try {
         this.getHeaders();
         // console.log("catogrey craete",data);
         let response = await this.apiManager.request(
           {
-            url: apiEndpoints.ADD_OR_UPDATE_PRODUCT_CATEGORY,
+            url: apiEndpoints.ADD_OR_UPDATE_CATEGORY,
             method: 'POST',
           },
           data,
@@ -164,29 +164,7 @@ export class WebsiteBuilderService {
         return false;
       }
     }
-    async toggleCategoryVisibility(data: any) {
-      try {
-        this.getHeaders();
-        let response = await this.apiManager.request(
-          {
-            url: apiEndpoints.TOGGLE_CATEGORY_VISIBILITY,
-            method: 'POST',
-          },
-          data,
-          this.headers
-        );
-        if (response.status == 200 && response.data != 0) {
-          swalHelper.success(response.message);
-          return true;
-        } else {
-          swalHelper.showToast(response.message, 'warning');
-          return false;
-        }
-      } catch (err) {
-        swalHelper.showToast('Something went wrong!', 'error');
-        return false;
-      }
-    }
+    
 
     async updateVisibility(data:any){
       try {

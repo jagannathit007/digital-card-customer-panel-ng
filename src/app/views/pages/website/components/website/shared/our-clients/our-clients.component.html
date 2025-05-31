@@ -1,217 +1,364 @@
-<div >
-    <div class="row">
-        <div class="col-md">
-            <div class="d-flex">
-                <label class="fw-bold text-uppercase fs-3">Our Clients</label>
-                    <app-toggle [isActive]="clientVisible" [onText]="'Visible'" [offText]="'Hidden'" class="ms-2 mt-2"
-                    (changed)="this.clientVisible=!this.clientVisible;_updateVisibility()">
-                </app-toggle>
+<div>
+  <div class="row">
+    <div class="col-md">
+      <div class="d-flex">
+        <label class="fw-bold text-uppercase fs-3">Our Clients</label>
+        <app-toggle
+          [isActive]="clientVisible"
+          [onText]="'Visible'"
+          [offText]="'Hidden'"
+          class="ms-2 mt-2"
+          (changed)="this.clientVisible=!this.clientVisible;_updateVisibility()"
+        ></app-toggle>
+      </div>
+    </div>
+    <div class="col-md-auto">
+      <button class="btn btn-info" (click)="modal.open('AddClientModal')">
+        <i class="ri-add-circle-line"></i> Add Client
+      </button>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col">
+      <span class="fw-semibold">Search</span>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+      />
+    </div>
+    <div class="col-auto">
+      <span class="fw-semibold">Page</span>
+      <select
+        class="form-select"
+        [(ngModel)]="itemsPerPage"
+        (change)="onItemsPerPageChange()"
+      >
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="table-responsive mt-4">
+    <table class="table table-bordered table-hover">
+      <thead class="table-light text-uppercase">
+        <tr>
+          <th class="text-center" style="width: 5%;">No.</th>
+          <th>Client Name</th>
+          <th>Website</th>
+          <th class="text-center">Logo</th>
+          <th class="text-center">Visible</th>
+          <th width="10%" class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="isLoading">
+          <td class="text-center" colspan="5">
+            <div
+              class="spinner-border spinner-border-sm text-secondary"
+              role="status"
+            >
+              <span class="visually-hidden">Loading...</span>
             </div>
-            
-        </div>
-        <div class="col-md-auto">
-            <button class="btn btn-info" (click)="modal.open('AddClientModal')">
-                <i class="ri-add-circle-line"></i> Add Client
+          </td>
+        </tr>
+        <tr *ngIf="!isLoading && filteredClients.length === 0">
+          <td class="text-center" colspan="5">No Clients Found</td>
+        </tr>
+        <tr
+          *ngFor="
+            let client of filteredClients
+              | paginate
+                : { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems };
+            let i = index
+          "
+        >
+          <td class="text-center">{{ (p - 1) * itemsPerPage + i + 1 }}</td>
+          <td>
+            <div [innerHTML]="sanitizeHtml(client.name)" class="name-preview"></div>
+          </td>
+          <td>
+            <a [href]="client.url" target="_blank" *ngIf="client.url">{{ client.url }}</a>
+          </td>
+          <td class="text-center">
+            <img
+              [src]="baseURL + '/' + client.image"
+              class="img-fluid cursor-pointer"
+              style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;"
+              *ngIf="client.image && client.image.length"
+              data-bs-toggle="modal"
+              data-bs-target="#imageModal"
+              (click)="selectedImage = baseURL + '/' + client.image"
+            />
+            <span *ngIf="!client.image || client.image.length === 0">No Image</span>
+          </td>
+          <td class="text-center">
+            <span class="badge bg-{{ client.visible ? 'success' : 'warning' }}">
+              {{ (client.visible ? 'visible' : 'invisible') | uppercase }}
+            </span>
+          </td>
+          <td class="text-center">
+            <button
+              class="btn btn-sm btn-info me-1"
+              (click)="editClient(client)"
+            >
+              <i class="ri-edit-box-line"></i>
             </button>
-        </div>
-    </div>
+            <button
+              class="btn btn-sm btn-danger"
+              (click)="prepareDeleteClient(client._id)"
+            >
+              <i class="ri-delete-bin-line"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-    <div class="row mt-3">
-        <div class="col">
-            <span class="fw-semibold">Search</span>
-            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm" (input)="onSearch()">
-        </div>
-        <div class="col-auto">
-            <span class="fw-semibold">Page</span>
-            <select class="form-select" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="table-responsive mt-4">
-        <table class="table table-bordered table-hover\">
-            <thead class="table-light text-uppercase">
-                <tr>
-                    <th class="text-center" style="width: 5%;">No.</th>
-                    
-                    <th>Client Name</th>
-                    <th>Website</th>
-                    <th class="text-center">Logo</th>
-                    <th class="text-center">Visible</th>
-                    <th width="10%" class="text-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngIf="isLoading">
-                    <td class="text-center" colspan="5">
-                        <div class="spinner-border spinner-border-sm text-secondary" role="status">
-                            <span class="visually-hidden">Loading...</span>
-                        </div>
-                    </td>
-                </tr>
-                <tr *ngIf="!isLoading && filteredClients.length === 0">
-                    <td class="text-center" colspan="5">No Clients Found</td>
-                </tr>
-                <tr *ngFor="let client of filteredClients | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems }; let i = index">
-                    <td class="text-center">{{ (p - 1) * itemsPerPage + i + 1 }}</td>
-                    <td>{{ client.name }}</td>
-                    <td><a [href]="client.url" target="_blank" *ngIf="client.url">{{ client.url }}</a></td>
-                    <td class="text-center">
-                        <img [src]="baseURL + '/' + client.image" class="img-fluid cursor-pointer"
-                            style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;"
-                            *ngIf="client.image && client.image.length"
-                            data-bs-toggle="modal" data-bs-target="#imageModal" 
-                            (click)="selectedImage = baseURL + '/' + client.image">
-                        <span *ngIf="!client.image || client.image.length === 0">No Image</span>
-                    </td>
-                    <td class="text-center"> <span class="badge bg-{{client.visible?'success':'warning'}}">{{(client.visible?'visible':'invisible') | uppercase}}</span></td>
-                    <td class="text-center">
-                        <button class="btn btn-sm btn-info me-1" (click)="editClient(client)">
-                            <i class="ri-edit-box-line"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger" (click)="prepareDeleteClient(client._id)">
-                            <i class="ri-delete-bin-line"></i>
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="text-end">
-        <pagination-controls (pageChange)="pageChangeEvent($event)" id="pager"></pagination-controls>
-    </div>
+  <div class="text-end">
+    <pagination-controls
+      (pageChange)="pageChangeEvent($event)"
+      id="pager"
+    ></pagination-controls>
+  </div>
 </div>
 
 <!-- Add Client Modal -->
-<div class="modal fade" id="AddClientModal" tabindex="-1" aria-labelledby="AddClientModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title fw-medium" id="AddClientModalLabel">Add Client</h4>
-                <button type="button" class="btn-close" (click)="OnCloseModal('AddClientModal')"></button>
+<div
+  class="modal fade"
+  id="AddClientModal"
+  tabindex="-1"
+  aria-labelledby="AddClientModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title fw-medium" id="AddClientModalLabel">Add Client</h4>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="OnCloseModal('AddClientModal')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form #clientForm="ngForm">
+          <div class="mb-3">
+            <label for="clientName" class="form-label">Client Name</label>
+            <div class="form-control p-0" style="height: auto;">
+              <ngx-editor-menu
+                [editor]="addEditor"
+                [toolbar]="toolbar"
+              ></ngx-editor-menu>
+              <ngx-editor
+                [editor]="addEditor"
+                [(ngModel)]="newClient.name"
+                name="clientName"
+                #clientName="ngModel"
+                placeholder="Enter client name..."
+                [disabled]="false"
+                required
+              ></ngx-editor>
             </div>
-            <div class="modal-body">
-                <form #clientForm="ngForm">
-                    <div class="mb-3">
-                        <label for="clientName" class="form-label">Client Name</label>
-                        <input type="text" class="form-control" id="clientName" placeholder="Enter client name" 
-                            [(ngModel)]="newClient.name" name="clientName" #clientName="ngModel" required>
-                        <div *ngIf="clientName.invalid && clientName.touched" class="text-danger">
-                            Client name is required!
-                        </div>
-                    </div>
-                    <!-- <div class="mb-3">
-                        <label for="editClientName" class="form-label">Visible</label>
-                        <div class="form-check form-switch switch-lg ms-3 mt-2">
-                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="newClient.visible" [ngModelOptions]="{standalone: true}">
-                        </div>
-                    </div> -->
-                    <div class="mb-3">
-    <app-toggle 
-        [isActive]="newClient.visible" 
-        [onText]="'Visible'" 
-        [offText]="'Hidden'" 
-        class="ms-3 mt-2"
-        (changed)="newClient.visible=!newClient.visible">
-    </app-toggle>
-</div>
-                    <div class="mb-3">
-                        <label for="clientUrl" class="form-label">Website URL</label>
-                        <input type="text" class="form-control" id="clientUrl" placeholder="Enter website URL" 
-                            [(ngModel)]="newClient.url" name="clientUrl" #clientUrl="ngModel">
-                    </div>
+            <div
+              *ngIf="clientName.invalid && clientName.touched"
+              class="text-danger"
+            >
+              Client name is required!
+            </div>
+          </div>
 
-                    <div class="mb-3">
-                        <label for="clientImage" class="form-label">Upload Logo</label>
-                        <input type="file" class="form-control" id="clientImage" (change)="onFileChange($event)" accept="image/*">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" (click)="addClient()" [disabled]="clientForm.invalid || isLoading">
-                    <i class="ri-add-circle-line"></i> 
-                    {{ isLoading ? 'Adding...' : 'Add Client' }}
-                </button>
-            </div>
-        </div>
+          <div class="mb-3">
+            <app-toggle
+              [isActive]="newClient.visible"
+              [onText]="'Visible'"
+              [offText]="'Hidden'"
+              class="ms-3 mt-2"
+              (changed)="newClient.visible=!newClient.visible"
+            ></app-toggle>
+          </div>
+
+          <div class="mb-3">
+            <label for="clientUrl" class="form-label">Website URL</label>
+            <input
+              type="text"
+              class="form-control"
+              id="clientUrl"
+              placeholder="Enter website URL"
+              [(ngModel)]="newClient.url"
+              name="clientUrl"
+              #clientUrl="ngModel"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="clientImage" class="form-label">Upload Logo</label>
+            <input
+              type="file"
+              class="form-control"
+              id="clientImage"
+              (change)="onFileChange($event)"
+              accept="image/*"
+            />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-success"
+          (click)="addClient()"
+          [disabled]="clientForm.invalid || isLoading"
+        >
+          <i class="ri-add-circle-line"></i>
+          {{ isLoading ? 'Adding...' : 'Add Client' }}
+        </button>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Edit Client Modal -->
-<div class="modal fade" id="EditClientModal" tabindex="-1" aria-labelledby="EditClientModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title fw-medium" id="EditClientModalLabel">Edit Client</h4>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modal.close('EditClientModal')"></button>
+<div
+  class="modal fade"
+  id="EditClientModal"
+  tabindex="-1"
+  aria-labelledby="EditClientModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title fw-medium" id="EditClientModalLabel">Edit Client</h4>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="modal.close('EditClientModal')"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label for="editClientName" class="form-label">Client Name</label>
+            <div class="form-control p-0" style="height: auto;">
+              <ngx-editor-menu
+                [editor]="editEditor"
+                [toolbar]="toolbar"
+              ></ngx-editor-menu>
+              <ngx-editor
+                [editor]="editEditor"
+                [(ngModel)]="editingClient.name"
+                name="editClientName"
+                placeholder="Enter client name..."
+                [disabled]="false"
+                required
+              ></ngx-editor>
             </div>
-            <div class="modal-body">
-                <form>
-                    <div class="mb-3">
-                        <label for="editClientName" class="form-label">Client Name</label>
-                        <input type="text" class="form-control" id="editClientName" placeholder="Enter client name" 
-                            [(ngModel)]="editingClient.name" name="editClientName" required>
-                    </div>
-                    <!-- <div class="mb-3">
-                        <label for="editClientName" class="form-label">Visible</label>
-                        <div class="form-check form-switch switch-lg ms-3">
-                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="editingClient.visible" [ngModelOptions]="{standalone: true}">
-                        </div>
-                    </div> -->
-                    <div class="mb-3">
-    <app-toggle 
-        [isActive]="editingClient.visible" 
-        [onText]="'Visible'" 
-        [offText]="'Hidden'" 
-        class="ms-3"
-        (changed)="editingClient.visible=!editingClient.visible">
-    </app-toggle>
-</div>
-                    <div class="mb-3">
-                        <label for="editClientUrl" class="form-label">Website URL</label>
-                        <input type="text" class="form-control" id="editClientUrl" placeholder="Enter website URL"
-                            [(ngModel)]="editingClient.url" name="editClientUrl">
-                    </div>
-                    <div class="mb-3">
-                        <label for="editClientImage" class="form-label">Current Logo</label>
-                        <div *ngIf="editingClient.currentImage && editingClient.currentImage.length" class="mb-2">
-                            <img [src]="baseURL + '/' + editingClient.currentImage" class="img-thumbnail" style="max-height: 100px; max-width: 100px;">
-                        </div>
-                        <div *ngIf="!editingClient.currentImage || editingClient.currentImage.length === 0" class="mb-2">
-                            <span class="text-muted">No current logo</span>
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="editClientImage" class="form-label">Upload New Logo</label>
-                        <input type="file" class="form-control" id="editClientImage" (change)="onEditFileChange($event)" accept="image/*">
-                        <small class="text-muted">Leave empty to keep the current logo</small>
-                    </div>
-                </form>
+          </div>
+
+          <div class="mb-3">
+            <app-toggle
+              [isActive]="editingClient.visible"
+              [onText]="'Visible'"
+              [offText]="'Hidden'"
+              class="ms-3"
+              (changed)="editingClient.visible=!editingClient.visible"
+            ></app-toggle>
+          </div>
+
+          <div class="mb-3">
+            <label for="editClientUrl" class="form-label">Website URL</label>
+            <input
+              type="text"
+              class="form-control"
+              id="editClientUrl"
+              placeholder="Enter website URL"
+              [(ngModel)]="editingClient.url"
+              name="editClientUrl"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="editClientImage" class="form-label">Current Logo</label>
+            <div
+              *ngIf="editingClient.currentImage && editingClient.currentImage.length"
+              class="mb-2"
+            >
+              <img
+                [src]="baseURL + '/' + editingClient.currentImage"
+                class="img-thumbnail"
+                style="max-height: 100px; max-width: 100px;"
+              />
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" (click)="updateClient()" [disabled]="isLoading">
-                    <i class="ri-save-line"></i> {{ isLoading ? 'Saving...' : 'Save' }}
-                </button>
+            <div
+              *ngIf="!editingClient.currentImage || editingClient.currentImage.length === 0"
+              class="mb-2"
+            >
+              <span class="text-muted">No current logo</span>
             </div>
-        </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="editClientImage" class="form-label">Upload New Logo</label>
+            <input
+              type="file"
+              class="form-control"
+              id="editClientImage"
+              (change)="onEditFileChange($event)"
+              accept="image/*"
+            />
+            <small class="text-muted">Leave empty to keep the current logo</small>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-success"
+          (click)="updateClient()"
+          [disabled]="isLoading"
+        >
+          <i class="ri-save-line"></i> {{ isLoading ? 'Saving...' : 'Save' }}
+        </button>
+      </div>
     </div>
+  </div>
 </div>
 
-<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center">
-                <img [src]="selectedImage" class="img-fluid rounded" style="max-width: 100%; max-height: 80vh;">
-            </div>
-        </div>
+<div
+  class="modal fade"
+  id="imageModal"
+  tabindex="-1"
+  aria-labelledby="imageModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body text-center">
+        <img
+          [src]="selectedImage"
+          class="img-fluid rounded"
+          style="max-width: 100%; max-height: 80vh;"
+        />
+      </div>
     </div>
+  </div>
 </div>
