@@ -143,8 +143,12 @@ export class LoginComponent implements OnInit {
         // this.storage.set(teamMemberCommon.TEAM_MEMBER_DATA, response.data.user);
         // this.storage.set(teamMemberCommon.TEAM_MEMBER_TOKEN, response.data.token);
 
-        await this.getProfile();
-        // console.log();
+        console.log(response.data)
+
+        console.log(response.data.user.role, response.data.taskUserToken)
+        if(response.data.user.role === "admin" && response.data.taskUserToken){
+          await this.getProfile();
+        }
         
         const userData = response.data.user;
         const isProfileComplete = userData.mobile &&
@@ -178,6 +182,7 @@ export class LoginComponent implements OnInit {
 
   getProfile = async () => {
     let data = await this.authService.getProfile({});
+    console.log("data : ", data)
     if (data != null) {
       data.businessCards = data.businessCards.map((v: any, i: any) => {
         v.company = v.company || `Card ${i + 1}`;

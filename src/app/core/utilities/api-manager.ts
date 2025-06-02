@@ -64,12 +64,12 @@ export class ApiManager {
         }
       }
     } catch (error: any) {
-      if (error.status != null) {
-        if (String(error.status) === '401') {
-          this.appStorage.clearAll();
-          window.location.href = '/';
-        }
-      }
+      // if (error.status != null) {
+      //   if (String(error.status) === '401') {
+      //     this.appStorage.clearAll();
+      //     window.location.href = '/';
+      //   }
+      // }
       throw error;
     }
   };
