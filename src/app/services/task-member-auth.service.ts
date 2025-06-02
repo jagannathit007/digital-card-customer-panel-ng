@@ -36,9 +36,12 @@ export class TaskMemberAuthService {
       );
       if (response.status === 200 && response.data != null) {
         this.storage.clearAll();
-        // this.storage.set(teamMemberCommon.TEAM_MEMBER_TOKEN, response.data.token); 
-        this.storage.set(teamMemberCommon.TEAM_MEMBER_DATA, response.data); 
-        return response; 
+        this.storage.set(teamMemberCommon.TEAM_MEMBER_TOKEN, response.data.token); 
+        this.storage.set(teamMemberCommon.TEAM_MEMBER_DATA, response.data.user);
+        if (response.data.taskUserToken){
+          this.storage.set(teamMemberCommon.TOKEN, response.data.taskUserToken);
+        }
+        return response;
       } else {
         swalHelper.showToast(response.message || 'Login failed', 'warning');
         return null;

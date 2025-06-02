@@ -8,15 +8,17 @@ import { TokenVerificationComponent } from './views/standalone/token-verificatio
 import { LoginComponent } from './views/pages/task-management/task-components/task/shared/teammembers-auth/login/login.component';
 import { DashboardComponent } from './views/pages/task-management/task-components/task/shared/dashboard/dashboard.component';
 import { MemberprofileComponent } from './views/pages/task-management/task-components/task/shared/memberprofile/memberprofile.component';
+import { TeamtaskComponent } from './views/pages/task-management/task-components/task/shared/teamtask/teamtask.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'auth/login' },
   { path: 'auth/login', component: SignInComponent },
-  { path:'teammember/login',  component: LoginComponent},
+  { path: 'teammember/login', component: LoginComponent },
   { path: 'teammember/login/:token', component: LoginComponent },
   { path: 'teammember/dashboard', component: DashboardComponent },
   { path: 'teammember/myprofile', component: MemberprofileComponent },
   { path: 'token/authToken', component: TokenVerificationComponent },
+  { path: 'task-management/teamtask', component: TeamtaskComponent },
   {
     path: '',
     component: HomeLayoutComponent,
@@ -24,55 +26,55 @@ export const routes: Routes = [
     children: [
       {
         path: 'business-cards',
-        loadChildren:()=>import('./views/pages/business-card/business-card.module').then(m=>m.BusinessCardModule),
+        loadChildren: () => import('./views/pages/business-card/business-card.module').then(m => m.BusinessCardModule),
         canActivate: [AuthGuard],
         data: { requiredProduct: 'business-cards' }
       },
       {
         path: 'scanned-cards',
-        loadComponent:()=>import('./views/pages/business-card-detail/business-card-detail.component').then(c=>c.BusinessCardDetailComponent),
+        loadComponent: () => import('./views/pages/business-card-detail/business-card-detail.component').then(c => c.BusinessCardDetailComponent),
         canActivate: [AuthGuard],
         data: { requiredProduct: 'scanned-cards' }
       },
       {
         path: 'website-details',
-        loadChildren:()=>import('./views/pages/website/website.module').then(m=>m.WebsiteModule),
+        loadChildren: () => import('./views/pages/website/website.module').then(m => m.WebsiteModule),
         canActivate: [AuthGuard],
         data: { requiredProduct: 'website-details' }
       },
       {
         path: 'task-management',
-        loadChildren:()=>import('./views/pages/task-management/task.module').then(m=>m.TaskModule),
+        loadChildren: () => import('./views/pages/task-management/task.module').then(m => m.TaskModule),
         canActivate: [AuthGuard],
         data: { requiredProduct: 'task-management' }
       },
       {
         path: 'google-standee',
-        loadComponent:()=>import('./views/pages/google-standee/google-standee.component').then(m=>m.GoogleStandeeComponent),
+        loadComponent: () => import('./views/pages/google-standee/google-standee.component').then(m => m.GoogleStandeeComponent),
         canActivate: [AuthGuard],
         data: { requiredProduct: 'google-standee' }
       },
       {
         path: 'profile',
-        loadComponent:()=>import('./views/pages/profile-page/profile-page.component').then(m=>m.ProfilePageComponent),
+        loadComponent: () => import('./views/pages/profile-page/profile-page.component').then(m => m.ProfilePageComponent),
         canActivate: [AuthGuard],
         data: { requiredProduct: 'profile' }
       },
       {
         path: 'account-settings',
-        loadComponent:()=>import('./views/pages/account-settings/account-settings.component').then(m=>m.AccountSettingsComponent),
+        loadComponent: () => import('./views/pages/account-settings/account-settings.component').then(m => m.AccountSettingsComponent),
         canActivate: [AuthGuard],
         data: { requiredProduct: 'account-settings' }
       },
       {
         path: 'shared-history',
-        loadComponent:()=>import('./views/pages/shared-history/shared-history.component').then(c=>c.SharedHistoryComponent),
+        loadComponent: () => import('./views/pages/shared-history/shared-history.component').then(c => c.SharedHistoryComponent),
         canActivate: [AuthGuard],
         data: { requiredProduct: 'shared-history' }
       },
       {
         path: 'customers',
-        loadComponent:()=>import('./views/pages/customers/customers.component').then(c=>c.CustomersComponent),
+        loadComponent: () => import('./views/pages/customers/customers.component').then(c => c.CustomersComponent),
         canActivate: [AuthGuard],
         data: { requiredProduct: 'customers' }
       },
