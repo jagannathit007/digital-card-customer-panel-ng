@@ -176,11 +176,6 @@ export class SideBarService {
       ],
     };
 
-    setTimeout(() => {
-      
-      console.log(this.taskMemberAuthService.memberDetails)
-    }, 2000);
-
     if (userDetails && userDetails?.role !== 'member') {
       taskManagementMenu.menu.splice(1, 0, {
         title: 'All Members',
