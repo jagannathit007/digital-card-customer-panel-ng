@@ -10,6 +10,7 @@ import { common } from 'src/app/core/constants/common';
 import * as featherIcons from 'feather-icons'; 
 import { environment } from 'src/env/env.local';
 import { AppWorker } from 'src/app/core/workers/app.worker';
+import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 
 @Component({
   selector: 'app-side-bar',
@@ -24,6 +25,8 @@ export class SideBarComponent implements OnInit, AfterViewInit {
   subscriptionData: any[] = [];
   filteredMenuList: any[] = [];
 
+  teamMemberData: any ;
+
   whiteLabelName: string = environment.whiteLabelName;
 
   constructor(
@@ -37,11 +40,16 @@ export class SideBarComponent implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
+    this.teamMemberData = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA);
     if (this.currentBcardId) {
       this.subscriptionData = await this.authService.getSubscriptionData(this.currentBcardId);
 
       this.filteredMenuList = await this.sideBarService.getMenusByProducts(this.subscriptionData);
-    } else {
+      console.log("filteredMenuList : ", this.filteredMenuList);
+    } else if(!this.currentBcardId && this.teamMemberData) {
+      this.filteredMenuList = await this.sideBarService.getMenusByProducts([])
+    }
+     else {
       this.filteredMenuList = [{
         moduleName: 'Member',
         menus: [

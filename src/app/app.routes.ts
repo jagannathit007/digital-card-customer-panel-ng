@@ -8,7 +8,6 @@ import { TokenVerificationComponent } from './views/standalone/token-verificatio
 import { LoginComponent } from './views/pages/task-management/task-components/task/shared/teammembers-auth/login/login.component';
 import { DashboardComponent } from './views/pages/task-management/task-components/task/shared/dashboard/dashboard.component';
 import { MemberprofileComponent } from './views/pages/task-management/task-components/task/shared/memberprofile/memberprofile.component';
-import { TeamtaskComponent } from './views/pages/task-management/task-components/task/shared/teamtask/teamtask.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'auth/login' },
@@ -18,7 +17,6 @@ export const routes: Routes = [
   { path: 'teammember/dashboard', component: DashboardComponent },
   { path: 'teammember/myprofile', component: MemberprofileComponent },
   { path: 'token/authToken', component: TokenVerificationComponent },
-  { path: 'task-management/teamtask', component: TeamtaskComponent },
   {
     path: '',
     component: HomeLayoutComponent,

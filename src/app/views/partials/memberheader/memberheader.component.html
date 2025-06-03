@@ -1,25 +1,69 @@
-<header class="member-header">
-  <div class="header-container">
-    
-    <!-- Left side - can be used for breadcrumbs or page title later -->
-    <div class="header-left">
-      <!-- Empty for now - you can add content here later -->
-    </div>
-
-    <!-- Right side - Profile Section -->
-    <div class="header-right">
-      <div class="profile-section" (click)="onProfileClick()">
-        <div class="profile-icon">
-          <i class="profile-avatar">
-            <!-- Simple profile icon -->
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </i>
-        </div>
+<nav class="navbar navbar-expand navbar-light navbar-bg px-4 ">
+   <a class="sidebar-toggle js-sidebar-toggle" (click)="appWorker.toggleSlider()">
+   <i class="hamburger align-self-center"></i>
+   </a>
+   <!-- <div class="d-none d-md-flex flex-wrap justify-content-end align-items-center gap-3 p-2 ms-auto business-select">
+      <div class="icon-container shadow p-2 rounded bg-light" (click)="copyToClipboard()" data-tooltip="Copy Card Link">
+        <i class="ri-links-line"></i>
+      </div>
+      <div *ngIf="showInstallButton" class="icon-container shadow p-2 rounded bg-light downloadIcon" (click)="openInstallModal()">
+        <i class="ri-download-2-line"></i>
+      </div>
+      <div class="icon-container shadow p-2 rounded bg-light" (click)="modal.open('shareModal')" data-tooltip="Share on whatshaap">
+        <i class="ri-whatsapp-fill text-success"></i>
+      </div>
+    </div> -->
+    <div class="d-md-none position-sticky bottom-select-container bg-white shadow-sm py-2 px-3">
+      <div class="d-flex gap-3 align-items-center">
+        <!-- <div class="d-flex gap-2">
+          <div class="icon-container p-2 rounded bg-light" (click)="copyToClipboard()">
+            <i class="ri-links-line"></i>
+          </div>
+          <div *ngIf="showInstallButton" class="icon-container p-2 rounded bg-light" (click)="openInstallModal()">
+            <i class="ri-download-2-line"></i>
+          </div>
+          <div class="icon-container p-2 rounded bg-light" (click)="modal.open('shareModal')">
+            <i class="ri-whatsapp-fill text-success"></i>
+          </div>
+        </div> -->
+        <!-- <select class="form-select custom-select flex-grow-1" [(ngModel)]="authService.selectedBusinessCard"
+          [ngModelOptions]="{standalone: true}" (change)="onBusinessChange()">
+          @for (item of authService.businessCards$ | async; track item._id) {
+            <option [value]="item._id">{{ item.company }}</option>
+          }
+        </select> -->
       </div>
     </div>
-
-  </div>
-</header>
+    <!-- adding users profile image in header section -->
+     <div class="navbar-collapse collapse">
+  <ul class="navbar-nav navbar-align">
+    <li class="nav-item dropdown">
+      <a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown">
+        <!-- <i class="align-middle" data-feather="settings"></i> -->
+      </a>
+      <a href="#" data-bs-toggle="dropdown" style="text-decoration: none;">
+        @if (memberDetails != null && memberDetails.profileImage && memberDetails.profileImage) {
+          <img
+            class="profile-image"
+            src="{{ imageUrl }}{{ memberDetails.profileImage }}"
+            alt="Profile Image"
+            style="object-fit: cover;"
+            (error)="handleImageError($event)"
+          />
+        } @else {
+          <i class="ri-user-3-line default-profile-icon"></i>
+        }
+      </a>
+      <div class="dropdown-menu dropdown-menu-end">
+        <a class="dropdown-item" href="/profile">
+          <i class="ri-user-3-line"></i>&nbsp;&nbsp;Profile
+        </a>
+        <a class="dropdown-item text-danger" (click)="logout()">
+          <i class="ri-logout-circle-r-line" style="width:20px;"></i>&nbsp;&nbsp;Logout
+        </a>
+      </div>
+    </li>
+  </ul>
+</div>
+  </nav>
+  

@@ -2,10 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
 import { SideBarComponent } from '../side-bar/side-bar.component';
 import { HeaderComponent } from '../header/header.component';
+import { MemberheaderComponent } from '../../partials/memberheader/memberheader.component';
 import { RouterOutlet } from '@angular/router';
 import { FooterComponent } from '../footer/footer.component';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
+import { common } from 'src/app/core/constants/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-home-layout',
@@ -15,13 +18,20 @@ import { AppStorage } from 'src/app/core/utilities/app-storage';
     RouterOutlet,
     SideBarComponent,
     HeaderComponent,
+    MemberheaderComponent,
     FooterComponent,
+    FormsModule
   ],
   templateUrl: './home-layout.component.html',
   styleUrls: ['./home-layout.component.scss'],
 })
 export class HomeLayoutComponent implements OnInit {
-  ngOnInit(): void {}
+  
+  constructor(private storage:AppStorage){}
+  businessId:any
+  ngOnInit(): void {
+    this.businessId=this.storage.get(common.BUSINESS_CARD);
+  }
 
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {

@@ -161,6 +161,7 @@ class ApiEndpoints {
 
 public TEAM_MEMBER_SIGNIN: string = `${this.PATH}/task/sign-in`;
 public TEAM_MEMBER_VERIFY_TOKEN: string = `${this.PATH}/task/verify-invitation-token`;
+public TEAM_MEMBER_PROFILE: string = `${this.PATH}/task/get-current-user`;
 
 public ADD_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/add`;
 public UPDATE_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/update`;

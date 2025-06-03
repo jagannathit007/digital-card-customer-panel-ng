@@ -3,7 +3,12 @@
     <app-side-bar></app-side-bar>
   </div>
   <div class="main flex-grow-1 position-relative" style="overflow-x: hidden; overflow-y: auto;">
-    <app-header></app-header>
+    @if (businessId) {
+      <app-header *ngIf="businessId"></app-header>
+    }@else {
+      <app-memberheader></app-memberheader>
+    }
+    
     <main class="content p-3">
       <router-outlet></router-outlet>
     </main>

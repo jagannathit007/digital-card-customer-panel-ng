@@ -74,4 +74,27 @@ export class TaskMemberAuthService {
       return null;
     }
   }
+
+  async getTeamMemberProfile(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.TEAM_MEMBER_PROFILE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
 }
