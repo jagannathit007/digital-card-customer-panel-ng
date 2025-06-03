@@ -7,10 +7,11 @@ import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { AuthService } from 'src/app/services/auth.service';
 import { common } from 'src/app/core/constants/common';
-import * as featherIcons from 'feather-icons'; 
+import * as featherIcons from 'feather-icons';
 import { environment } from 'src/env/env.local';
 import { AppWorker } from 'src/app/core/workers/app.worker';
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
+import { TaskMemberAuthService } from 'src/app/services/task-member-auth.service';
 
 @Component({
   selector: 'app-side-bar',
@@ -20,12 +21,11 @@ import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
   styleUrls: ['./side-bar.component.scss'],
 })
 export class SideBarComponent implements OnInit, AfterViewInit {
-
-  currentBcardId: string = "";
+  currentBcardId: string = '';
   subscriptionData: any[] = [];
   filteredMenuList: any[] = [];
 
-  teamMemberData: any ;
+  teamMemberData: any;
 
   whiteLabelName: string = environment.whiteLabelName;
 
@@ -33,6 +33,7 @@ export class SideBarComponent implements OnInit, AfterViewInit {
     private router: Router,
     private storage: AppStorage,
     public authService: AuthService,
+    public taskMemberAuthService: TaskMemberAuthService,
     public sideBarService: SideBarService,
     public appWorker: AppWorker
   ) {
@@ -42,24 +43,29 @@ export class SideBarComponent implements OnInit, AfterViewInit {
   async ngOnInit() {
     this.teamMemberData = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA);
     if (this.currentBcardId) {
-      this.subscriptionData = await this.authService.getSubscriptionData(this.currentBcardId);
+      this.subscriptionData = await this.authService.getSubscriptionData(
+        this.currentBcardId
+      );
 
-      this.filteredMenuList = await this.sideBarService.getMenusByProducts(this.subscriptionData);
-      console.log("filteredMenuList : ", this.filteredMenuList);
-    } else if(!this.currentBcardId && this.teamMemberData) {
-      this.filteredMenuList = await this.sideBarService.getMenusByProducts([])
-    }
-     else {
-      this.filteredMenuList = [{
-        moduleName: 'Member',
-        menus: [
+      this.filteredMenuList = await this.sideBarService.getMenusByProducts(
+        this.subscriptionData
+      );
+      console.log('filteredMenuList : ', this.filteredMenuList);
+    } else if (!this.currentBcardId && this.teamMemberData) {
+      this.filteredMenuList = await this.sideBarService.getMenusByProducts([]);
+    } else {
+      this.filteredMenuList = [
         {
-          title: 'Account Settings',
-          link: 'account-settings',
-          icon: 'settings',
+          moduleName: 'Member',
+          menus: [
+            {
+              title: 'Account Settings',
+              link: 'account-settings',
+              icon: 'settings',
+            },
+          ],
         },
-      ]
-      }];
+      ];
     }
   }
 
@@ -78,8 +84,13 @@ export class SideBarComponent implements OnInit, AfterViewInit {
       'question'
     );
     if (confirm.isConfirmed) {
-      this.storage.clearAll();
-      window.location.href = '/';
+      if (!this.storage.get(common.BUSINESS_CARD)) {
+        window.location.href = '/teammember/login';
+        this.storage.clearAll();
+      } else {
+        this.storage.clearAll();
+        window.location.href = '/';
+      }
     }
   };
 }

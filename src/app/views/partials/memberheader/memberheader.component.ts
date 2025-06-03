@@ -55,7 +55,7 @@ export class MemberheaderComponent {
   }
 
 async ngOnInit() {
-    this.onInitFunction();
+  this.onInitFunction();
 
     this.sharedService.refreshHeader$.subscribe(() => {
       this.onInitFunction();
@@ -73,7 +73,7 @@ async ngOnInit() {
       //   window.location.reload();
       // }
       this.memberDetails = data
-      // this.authService.taskMemberAuthService = data;
+      this.taskMemberAuthService.memberDetails = data;
       // let businessCardsSubject = new BehaviorSubject<any[]>(data.businessCards);
       // this.authService.businessCards$ = businessCardsSubject.asObservable();
       this.storage.set(teamMemberCommon.TEAM_MEMBER_DATA, data);

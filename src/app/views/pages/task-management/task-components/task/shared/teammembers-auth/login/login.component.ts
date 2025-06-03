@@ -145,6 +145,8 @@ export class LoginComponent implements OnInit {
 
         console.log(response.data)
 
+        this.taskMemberAuthService.memberDetails = response.data.user;
+
         console.log(response.data.user.role, response.data.taskUserToken)
         if(response.data.user.role === "admin" && response.data.taskUserToken){
           await this.getProfile();
@@ -161,10 +163,10 @@ export class LoginComponent implements OnInit {
 
           this.router.navigate(['/task-management/allmembers']);
         } else {
-          console.log('LoginComponent: Redirecting to /task-management/allmembers'); // Debug log
+          console.log('LoginComponent: Redirecting to /task-management/dashboard'); // Debug log
           console.log("here log");
           
-          this.router.navigate(['/task-management/teamtask']);
+          this.router.navigate(['/task-management/dashboard']);
         }
 
       } else {

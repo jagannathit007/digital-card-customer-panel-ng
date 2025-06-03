@@ -4,6 +4,7 @@ import { TaskComponent } from './task-components/task/task.component';
 import { AllmembersComponent } from './task-components/task/shared/allmembers/allmembers.component';
 import { PersonaltaskComponent } from './task-components/task/shared/personaltask/personaltask.component';
 import { TeamtaskComponent } from './task-components/task/shared/teamtask/teamtask.component';
+import { DashboardComponent } from './task-components/task/shared/dashboard/dashboard.component';
 
 
 const routes: Routes = [
@@ -11,8 +12,9 @@ const routes: Routes = [
       path: '',
       component: TaskComponent,
       children: [
+      { path: 'dashboard', component: DashboardComponent },
       { path: 'allmembers', component: AllmembersComponent },
-      { path: 'personaltask', component: PersonaltaskComponent },
+      { path: 'boards', component: PersonaltaskComponent },
       { path: 'teamtask', component: TeamtaskComponent },
       { path: '', redirectTo: 'allmembers', pathMatch: 'full' },
     ],

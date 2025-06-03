@@ -6,7 +6,6 @@ import { TokenVerificationComponent } from './views/standalone/token-verificatio
 
 // Task managemnt members routes
 import { LoginComponent } from './views/pages/task-management/task-components/task/shared/teammembers-auth/login/login.component';
-import { DashboardComponent } from './views/pages/task-management/task-components/task/shared/dashboard/dashboard.component';
 import { MemberprofileComponent } from './views/pages/task-management/task-components/task/shared/memberprofile/memberprofile.component';
 
 export const routes: Routes = [
@@ -14,7 +13,6 @@ export const routes: Routes = [
   { path: 'auth/login', component: SignInComponent },
   { path: 'teammember/login', component: LoginComponent },
   { path: 'teammember/login/:token', component: LoginComponent },
-  { path: 'teammember/dashboard', component: DashboardComponent },
   { path: 'teammember/myprofile', component: MemberprofileComponent },
   { path: 'token/authToken', component: TokenVerificationComponent },
   {

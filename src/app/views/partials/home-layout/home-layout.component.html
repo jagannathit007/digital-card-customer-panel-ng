@@ -4,8 +4,9 @@
   </div>
   <div class="main flex-grow-1 position-relative" style="overflow-x: hidden; overflow-y: auto;">
     @if (businessId) {
-      <app-header *ngIf="businessId"></app-header>
-    }@else {
+      <app-header ></app-header>
+    }
+    @if(!businessId) {
       <app-memberheader></app-memberheader>
     }
     

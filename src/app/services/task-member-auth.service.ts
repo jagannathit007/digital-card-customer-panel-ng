@@ -11,7 +11,7 @@ import { Observable, of } from 'rxjs';
 })
 export class TaskMemberAuthService {
   private headers: any = [];
-  profileData: any;
+  memberDetails: any;
 
   constructor(private apiManager: ApiManager, private storage: AppStorage) {}
 

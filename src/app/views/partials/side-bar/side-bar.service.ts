@@ -68,19 +68,19 @@
 //   ],
 // };
 
-//     const hasDigitalOrNFC = products.some(product => 
+//     const hasDigitalOrNFC = products.some(product =>
 //       product === "digital-card" || product === "nfc-card"
 //     );
 
-//     const hasWebsiteDetails = products.some(product => 
+//     const hasWebsiteDetails = products.some(product =>
 //       product === "website-details"
 //     );
 
-//     const hasGoogleReview = products.some(product => 
+//     const hasGoogleReview = products.some(product =>
 //       product === "google-standee"
 //     );
-   
-//     const hasTaskManagement = products.some(product => 
+
+//     const hasTaskManagement = products.some(product =>
 //       product === "task-management"
 //     );
 
@@ -135,13 +135,13 @@
 //   }
 // }
 
-
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { common } from 'src/app/core/constants/common';
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
+import { TaskMemberAuthService } from 'src/app/services/task-member-auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -150,22 +150,57 @@ export class SideBarService {
   constructor(
     private router: Router,
     public authService: AuthService,
+    public taskMemberAuthService: TaskMemberAuthService,
     private storage: AppStorage
   ) {}
 
-  async getMenusByProducts(subscriptionData: any[]): Promise<any[]> {
+  async getMenusByProducts(subscriptionData: any[] ): Promise<any[]> {
     const teamMemberData = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA); // Team member data
     const validRoles = ['member', 'leader', 'manager', 'editor', 'admin'];
 
+    const userDetails = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA)
+
     // Define task management menu (common for team members and admins)
-    const taskManagementMenu = {
+    let taskManagementMenu = {
       title: 'Task Management',
       link: 'task-management',
       icon: 'file-text',
       menu: [
-        { title: 'All Members', link: 'task-management/allmembers', icon: 'users' },
-        { title: 'Personal Task', link: 'task-management/personaltask', icon: 'user-check' },
-        { title: 'Team Task', link: 'task-management/teamtask', icon: 'users' },
+        {
+          title: 'Dashboard',
+          link: 'task-management/dashboard',
+          icon: 'table',
+        },
+        { title: 'Boards', link: 'task-management/boards', icon: 'pie-chart' },
+        { title: 'Team Task', link: 'task-management/teamtask', icon: 'grid' },
+      ],
+    };
+
+    setTimeout(() => {
+      
+      console.log(this.taskMemberAuthService.memberDetails)
+    }, 2000);
+
+    if (userDetails && userDetails?.role !== 'member') {
+      taskManagementMenu.menu.splice(1, 0, {
+        title: 'All Members',
+        link: 'task-management/allmembers',
+        icon: 'users',
+      });
+    }
+
+    const personalTaskManagementMenu = {
+      title: 'Personal Tasks',
+      link: 'personal-task',
+      icon: 'file-text',
+      menu: [
+        { title: 'My Day', link: 'personal-task/my-day', icon: 'aperture' },
+        {
+          title: 'Next 7 Days',
+          link: 'personal-task/next-seven-days',
+          icon: 'calendar',
+        },
+        { title: 'All Tasks', link: 'personal-task/all', icon: 'codesandbox' },
       ],
     };
 
@@ -173,16 +208,18 @@ export class SideBarService {
     if (teamMemberData && validRoles.includes(teamMemberData.role)) {
       if (teamMemberData.role !== 'admin') {
         // Non-admin team members get only task-management menu
-        return [{
-          moduleName: 'Team Member',
-          menus: [taskManagementMenu]
-        }];
+        return [
+          {
+            moduleName: 'Team Member',
+            menus: [taskManagementMenu],
+          },
+        ];
       }
       // Admin team member falls through to admin logic below
     }
 
     // Admin-specific menu logic (or admin team member)
-    const products = subscriptionData.map(item => item.product);
+    const products = subscriptionData.map((item) => item.product);
     const currentBcardId = this.storage.get(common.BUSINESS_CARD);
 
     const businessCardMenu = {
@@ -227,20 +264,20 @@ export class SideBarService {
       icon: 'user',
     };
 
-    const hasDigitalOrNFC = products.some(product => 
-      product === 'digital-card' || product === 'nfc-card'
+    const hasDigitalOrNFC = products.some(
+      (product) => product === 'digital-card' || product === 'nfc-card'
     );
 
-    const hasWebsiteDetails = products.some(product => 
-      product === 'website-details'
+    const hasWebsiteDetails = products.some(
+      (product) => product === 'website-details'
     );
 
-    const hasGoogleReview = products.some(product => 
-      product === 'google-standee'
+    const hasGoogleReview = products.some(
+      (product) => product === 'google-standee'
     );
 
-    const hasTaskManagement = products.some(product => 
-      product === 'task-management'
+    const hasTaskManagement = products.some(
+      (product) => product === 'task-management'
     );
 
     let menus = [];
@@ -253,7 +290,9 @@ export class SideBarService {
     }
 
     if (hasWebsiteDetails && currentBcardId) {
-      const websiteDetails = await this.authService.getWebsiteDetails(currentBcardId);
+      const websiteDetails = await this.authService.getWebsiteDetails(
+        currentBcardId
+      );
       if (websiteDetails.websiteVisible === true) {
         menus.splice(menus.length - 1, 0, websiteDetailsMenu);
       }
@@ -264,13 +303,16 @@ export class SideBarService {
     }
 
     if (hasTaskManagement) {
+      menus.splice(menus.length - 1, 0, personalTaskManagementMenu);
       menus.splice(menus.length - 1, 0, taskManagementMenu);
     }
 
-    return [{
-      moduleName: 'Member',
-      menus: menus
-    }];
+    return [
+      {
+        moduleName: 'Member',
+        menus: menus,
+      },
+    ];
   }
 
   isMobile: boolean = false;

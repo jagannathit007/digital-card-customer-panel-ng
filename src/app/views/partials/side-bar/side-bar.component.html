@@ -124,7 +124,7 @@
       <span class="align-middle">
         <img src="/assets/logo/companylogo (1).png" alt="Company Logo" class="company-logo img-fluid" />
         <div style="font-size: 12px;">
-          {{ authService.profileData != null ? authService.profileData.name : '--' }}
+          {{ authService.profileData != null ? authService.profileData.name : taskMemberAuthService.memberDetails ? taskMemberAuthService.memberDetails.name : '--' }}
         </div>
       </span>
     </a>
