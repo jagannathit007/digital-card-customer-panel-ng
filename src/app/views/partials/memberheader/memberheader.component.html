@@ -27,9 +27,9 @@
         }
       </a>
       <div class="dropdown-menu dropdown-menu-end">
-        <a class="dropdown-item" href="/profile">
-          <i class="ri-user-3-line"></i>&nbsp;&nbsp;Profile
-        </a>
+     <a class="dropdown-item" [routerLink]="['/task-management/profile']">
+  <i class="ri-user-3-line"></i>&nbsp;&nbsp;Profile
+</a>
         <a class="dropdown-item text-danger" (click)="logout()">
           <i class="ri-logout-circle-r-line" style="width:20px;"></i>&nbsp;&nbsp;Logout
         </a>

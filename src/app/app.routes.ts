@@ -13,7 +13,6 @@ export const routes: Routes = [
   { path: 'auth/login', component: SignInComponent },
   { path: 'teammember/login', component: LoginComponent },
   { path: 'teammember/login/:token', component: LoginComponent },
-  { path: 'teammember/myprofile', component: MemberprofileComponent },
   { path: 'token/authToken', component: TokenVerificationComponent },
   {
     path: '',

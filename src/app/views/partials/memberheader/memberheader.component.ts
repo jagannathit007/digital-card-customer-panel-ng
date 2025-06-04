@@ -1,3 +1,4 @@
+import { RouterModule } from '@angular/router';
 // memberheader.component.ts
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { AsyncPipe, CommonModule } from '@angular/common';
@@ -18,7 +19,7 @@ import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 @Component({
   selector: 'app-memberheader',
   standalone: true,
-  imports: [CommonModule, FormsModule, AsyncPipe, AvatarComponent],
+  imports: [CommonModule,RouterModule, FormsModule, AsyncPipe, AvatarComponent],
   templateUrl: './memberheader.component.html',
   styleUrl: './memberheader.component.scss'
 })
