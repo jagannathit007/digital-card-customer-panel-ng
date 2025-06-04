@@ -8,7 +8,7 @@ import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
 import { ModalService } from 'src/app/core/utilities/modal';
 import { TaskService } from 'src/app/services/task.service';
-import { AddTeamMemberComponent, TeamMemberData } from '../../../../../../partials/task-managemnt/common-components/addTeamMember/addTeamMember.component';
+import { TeamMemberData } from './../../../../../../partials/task-managemnt/common-components/addTeamMember/addTeamMember.component';
 
 @Component({
   selector: 'app-allmembers',

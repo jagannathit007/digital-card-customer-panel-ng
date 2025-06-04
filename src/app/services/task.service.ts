@@ -117,29 +117,7 @@ export class TaskService {
     }
   }
 
-  async ChangePasswordInTask(data: any) {
-    try {
-      this.getHeaders();
-      let response = await this.apiManager.request(
-        {
-          url: apiEndpoints.CHANGE_PASSWORD_INTASK,
-          method: 'POST',
-        },
-        data,
-        this.headers
-      );
-      if (response.status == 200 && response.data != 0) {
-        swalHelper.success(response.message);
-        return true;
-      } else {
-        swalHelper.showToast(response.message, 'warning');
-        return false;
-      }
-    } catch (err) {
-      swalHelper.showToast('Something went wrong!', 'error');
-      return false;
-    }
-  }
+
 
   async ChangeRole(data: any) {
     try {

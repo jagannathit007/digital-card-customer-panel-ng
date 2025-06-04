@@ -20,7 +20,9 @@ import { TeamtaskComponent } from './task-components/task/shared/teamtask/teamta
 import { MydaytaskComponent } from './task-components/task/shared/mydaytask/mydaytask.component';
 import { MyweektaskComponent } from './task-components/task/shared/myweektask/myweektask.component';
 import { MyalltaskComponent } from './task-components/task/shared/myalltask/myalltask.component';
+import { MemberprofileComponent } from './task-components/task/shared/memberprofile/memberprofile.component';
 import { AddTeamMemberComponent } from "../../partials/task-managemnt/common-components/addTeamMember/addTeamMember.component";
+
 
 @NgModule({
   declarations: [
@@ -31,6 +33,7 @@ import { AddTeamMemberComponent } from "../../partials/task-managemnt/common-com
     MydaytaskComponent,
     MyweektaskComponent,
     MyalltaskComponent,
+    MemberprofileComponent
   ],
   imports: [
     CommonModule,
