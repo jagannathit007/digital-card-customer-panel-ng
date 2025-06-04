@@ -20,6 +20,7 @@ import { TeamtaskComponent } from './task-components/task/shared/teamtask/teamta
 import { MydaytaskComponent } from './task-components/task/shared/mydaytask/mydaytask.component';
 import { MyweektaskComponent } from './task-components/task/shared/myweektask/myweektask.component';
 import { MyalltaskComponent } from './task-components/task/shared/myalltask/myalltask.component';
+import { AddTeamMemberComponent } from "../../partials/task-managemnt/common-components/addTeamMember/addTeamMember.component";
 
 @NgModule({
   declarations: [
@@ -33,7 +34,7 @@ import { MyalltaskComponent } from './task-components/task/shared/myalltask/myal
   ],
   imports: [
     CommonModule,
-   TaskRoutingModule,
+    TaskRoutingModule,
     RouterModule,
     NgxPaginationModule,
     NgSelectModule,
@@ -41,6 +42,7 @@ import { MyalltaskComponent } from './task-components/task/shared/myalltask/myal
     TooltipDirective,
     ToggleComponent,
     DebounceDirective,
-  ]
+    AddTeamMemberComponent
+]
 })
 export class TaskModule { }

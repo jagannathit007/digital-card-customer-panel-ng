@@ -1,0 +1,275 @@
+<!-- Add Team Member Modal -->
+<div class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4" 
+     (click)="closeModal()" 
+     (keydown)="onKeyDown($event)">
+  
+  <div class="tw-bg-white tw-rounded-xl tw-shadow-2xl tw-max-w-2xl tw-w-full tw-max-h-[90vh] tw-overflow-hidden" 
+       (click)="$event.stopPropagation()">
+    
+    <!-- Modal Header -->
+    <div class="tw-flex tw-justify-between tw-items-center tw-p-6 tw-border-b tw-border-gray-200 tw-bg-gradient-to-r tw-from-blue-50 tw-to-indigo-50">
+      <div class="tw-flex tw-items-center tw-gap-3">
+        <div class="tw-w-10 tw-h-10 tw-bg-blue-100 tw-rounded-full tw-flex tw-items-center tw-justify-center">
+          <i class="fas fa-user-plus tw-text-blue-600"></i>
+        </div>
+        <div>
+          <h2 class="tw-text-xl tw-font-semibold tw-text-gray-900">Add Team Member</h2>
+          <p class="tw-text-sm tw-text-gray-600">Invite a new member to join your team</p>
+        </div>
+      </div>
+      <button 
+        class="tw-text-gray-400 hover:tw-text-gray-600 tw-text-2xl tw-transition-colors tw-w-8 tw-h-8 tw-flex tw-items-center tw-justify-center tw-rounded-full hover:tw-bg-gray-100"
+        (click)="closeModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="tw-p-6 tw-max-h-[calc(90vh-200px)] tw-overflow-y-auto">
+      <form (ngSubmit)="onSubmit()" #memberForm="ngForm" class="tw-space-y-6">
+        
+        <!-- Basic Information Section -->
+        <div class="tw-space-y-4">
+          <h3 class="tw-text-lg tw-font-medium tw-text-gray-900 tw-flex tw-items-center tw-gap-2">
+            <i class="fas fa-user tw-text-blue-600"></i>
+            Basic Information
+          </h3>
+          
+          <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4">
+            <!-- Full Name -->
+            <div>
+              <label for="fullName" class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+                Full Name <span class="tw-text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="fullName"
+                name="fullName"
+                [(ngModel)]="memberData.fullName"
+                #fullName="ngModel"
+                required
+                class="tw-w-full tw-px-4 tw-py-3 tw-border tw-border-gray-200 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-transition-all"
+                placeholder="Enter full name"
+                [class.tw-border-red-300]="fullName.invalid && fullName.touched"
+              />
+              <div *ngIf="fullName.invalid && fullName.touched" class="tw-text-red-500 tw-text-xs tw-mt-1">
+                Full name is required
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label for="email" class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+                Email Address <span class="tw-text-red-500">*</span>
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                [(ngModel)]="memberData.email"
+                #email="ngModel"
+                required
+                email
+                class="tw-w-full tw-px-4 tw-py-3 tw-border tw-border-gray-200 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-transition-all"
+                placeholder="Enter email address"
+                [class.tw-border-red-300]="email.invalid && email.touched"
+              />
+              <div *ngIf="email.invalid && email.touched" class="tw-text-red-500 tw-text-xs tw-mt-1">
+                <span *ngIf="email.errors?.['required']">Email is required</span>
+                <span *ngIf="email.errors?.['email']">Please enter a valid email</span>
+              </div>
+            </div>
+
+            <!-- Mobile -->
+            <div>
+              <label for="mobile" class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+                Mobile Number
+              </label>
+              <input
+                type="tel"
+                id="mobile"
+                name="mobile"
+                [(ngModel)]="memberData.mobile"
+                #mobile="ngModel"
+                class="tw-w-full tw-px-4 tw-py-3 tw-border tw-border-gray-200 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-transition-all"
+                placeholder="Enter mobile number"
+                pattern="[0-9]{10}"
+                [class.tw-border-red-300]="mobile.invalid && mobile.touched"
+              />
+              <div *ngIf="mobile.invalid && mobile.touched" class="tw-text-red-500 tw-text-xs tw-mt-1">
+                Please enter a valid 10-digit mobile number
+              </div>
+            </div>
+
+            <!-- Role -->
+            <div>
+              <label for="role" class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+                Role <span class="tw-text-red-500">*</span>
+              </label>
+              <select
+                id="role"
+                name="role"
+                [(ngModel)]="memberData.role"
+                #role="ngModel"
+                required
+                class="tw-w-full tw-px-4 tw-py-3 tw-border tw-border-gray-200 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-bg-white tw-transition-all"
+                [class.tw-border-red-300]="role.invalid && role.touched"
+              >
+                <option value="">Select Role</option>
+                <option value="admin">Admin</option>
+                <option value="manager">Manager</option>
+                <option value="leader">Leader</option>
+                <option value="editor">Editor</option>
+                <option value="member">Member</option>
+              </select>
+              <div *ngIf="role.invalid && role.touched" class="tw-text-red-500 tw-text-xs tw-mt-1">
+                Role is required
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Skills Section -->
+        <div class="tw-space-y-4">
+          <h3 class="tw-text-lg tw-font-medium tw-text-gray-900 tw-flex tw-items-center tw-gap-2">
+            <i class="fas fa-lightbulb tw-text-blue-600"></i>
+            Skills & Expertise
+          </h3>
+          
+          <div class="tw-space-y-3">
+            <!-- Skills Input -->
+            <div>
+              <label for="skillInput" class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+                Add Skills
+              </label>
+              <div class="tw-flex tw-gap-2">
+                <input
+                  type="text"
+                  id="skillInput"
+                  [(ngModel)]="currentSkill"
+                  name="skillInput"
+                  class="tw-flex-1 tw-px-4 tw-py-3 tw-border tw-border-gray-200 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-transition-all"
+                  placeholder="Type a skill and press Enter"
+                  (keyup.enter)="addSkill()"
+                />
+                <button
+                  type="button"
+                  class="tw-px-4 tw-py-3 tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-rounded-lg tw-transition-colors tw-flex tw-items-center tw-gap-2"
+                  (click)="addSkill()"
+                  [disabled]="!currentSkill?.trim()"
+                >
+                  <i class="fas fa-plus"></i>
+                  Add
+                </button>
+              </div>
+            </div>
+
+            <!-- Skills Display -->
+            <div *ngIf="memberData.skills.length > 0" class="tw-flex tw-flex-wrap tw-gap-2">
+              <span
+                *ngFor="let skill of memberData.skills; let i = index"
+                class="tw-inline-flex tw-items-center tw-gap-2 tw-bg-blue-50 tw-text-blue-700 tw-px-3 tw-py-2 tw-rounded-full tw-text-sm tw-font-medium"
+              >
+                {{ skill }}
+                <button
+                  type="button"
+                  class="tw-text-blue-500 hover:tw-text-blue-700 tw-text-xs"
+                  (click)="removeSkill(i)"
+                >
+                  <i class="fas fa-times"></i>
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Experience Section -->
+        <div class="tw-space-y-4">
+          <h3 class="tw-text-lg tw-font-medium tw-text-gray-900 tw-flex tw-items-center tw-gap-2">
+            <i class="fas fa-briefcase tw-text-blue-600"></i>
+            Experience
+          </h3>
+          
+          <div>
+            <label for="experience" class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+              Brief Description
+            </label>
+            <textarea
+              id="experience"
+              name="experience"
+              [(ngModel)]="memberData.experience"
+              rows="3"
+              class="tw-w-full tw-px-4 tw-py-3 tw-border tw-border-gray-200 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-transition-all tw-resize-none"
+              placeholder="Brief description of experience and background..."
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Permissions Section -->
+        <div class="tw-space-y-4">
+          <h3 class="tw-text-lg tw-font-medium tw-text-gray-900 tw-flex tw-items-center tw-gap-2">
+            <i class="fas fa-shield-alt tw-text-blue-600"></i>
+            Permissions
+          </h3>
+          
+          <div class="tw-space-y-3">
+            <div class="tw-flex tw-items-center tw-gap-3 tw-p-3 tw-bg-gray-50 tw-rounded-lg">
+              <input
+                type="checkbox"
+                id="sendInvite"
+                [(ngModel)]="memberData.sendInviteEmail"
+                name="sendInvite"
+                class="tw-w-4 tw-h-4 tw-text-blue-600 tw-bg-gray-100 tw-border-gray-300 tw-rounded focus:tw-ring-blue-500"
+              />
+              <label for="sendInvite" class="tw-flex-1 tw-text-sm tw-text-gray-700">
+                <span class="tw-font-medium">Send invitation email</span>
+                <p class="tw-text-xs tw-text-gray-500 tw-mt-1">
+                  Member will receive an email invitation to join the team
+                </p>
+              </label>
+            </div>
+
+            <div class="tw-flex tw-items-center tw-gap-3 tw-p-3 tw-bg-gray-50 tw-rounded-lg">
+              <input
+                type="checkbox"
+                id="activateImmediately"
+                [(ngModel)]="memberData.activateImmediately"
+                name="activateImmediately"
+                class="tw-w-4 tw-h-4 tw-text-blue-600 tw-bg-gray-100 tw-border-gray-300 tw-rounded focus:tw-ring-blue-500"
+              />
+              <label for="activateImmediately" class="tw-flex-1 tw-text-sm tw-text-gray-700">
+                <span class="tw-font-medium">Activate immediately</span>
+                <p class="tw-text-xs tw-text-gray-500 tw-mt-1">
+                  Member will be active without email verification
+                </p>
+              </label>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Modal Footer -->
+    <div class="tw-flex tw-justify-end tw-gap-3 tw-p-6 tw-border-t tw-border-gray-200 tw-bg-gray-50">
+      <button
+        type="button"
+        class="tw-px-6 tw-py-2.5 tw-border tw-border-gray-200 tw-text-gray-700 tw-rounded-lg hover:tw-bg-gray-50 tw-font-medium tw-transition-colors"
+        (click)="closeModal()"
+        [disabled]="isSubmitting"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        form="memberForm"
+        class="tw-px-6 tw-py-2.5 tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-rounded-lg tw-font-medium tw-transition-colors tw-flex tw-items-center tw-gap-2 tw-disabled:opacity-50 tw-disabled:cursor-not-allowed"
+        [disabled]="memberForm.invalid || isSubmitting"
+        (click)="onSubmit()"
+      >
+        <i class="fas fa-spinner tw-animate-spin" *ngIf="isSubmitting"></i>
+        <i class="fas fa-user-plus" *ngIf="!isSubmitting"></i>
+        {{ isSubmitting ? 'Adding Member...' : 'Add Member' }}
+      </button>
+    </div>
+  </div>
+</div>
