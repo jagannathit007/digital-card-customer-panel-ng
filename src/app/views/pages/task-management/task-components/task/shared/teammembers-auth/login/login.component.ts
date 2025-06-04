@@ -183,9 +183,11 @@ export class LoginComponent implements OnInit {
   }
 
   getProfile = async () => {
-    let data = await this.authService.getProfile({});
-    console.log("data : ", data)
-    if (data != null) {
+    let result = await this.authService.getProfile({});
+
+    const data = result?.profile;
+    const memberData = result?.memberProfile;
+    if (result != null) {
       data.businessCards = data.businessCards.map((v: any, i: any) => {
         v.company = v.company || `Card ${i + 1}`;
         return v;

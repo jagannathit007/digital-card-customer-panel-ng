@@ -14,6 +14,8 @@ import { common } from 'src/app/core/constants/common';
 import { BehaviorSubject } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
+import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
+import { TaskMemberAuthService } from 'src/app/services/task-member-auth.service';
 declare var $: any;
 
 @Component({
@@ -26,40 +28,36 @@ declare var $: any;
 export class SignInComponent implements OnInit {
   constructor(
     private authService: AuthService,
-    private storage:AppStorage,
-    private router:Router,
-    private route: ActivatedRoute,
+    private taskMemberAuthService: TaskMemberAuthService, 
+    private storage: AppStorage,
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     document.body.style.backgroundColor = '#0e273c';
   }
 
-  async ngOnInit(){
-  }
+  async ngOnInit() {}
 
   whileLabelName = environment.whiteLabelName;
-  isPassword: boolean = false; 
+  isPassword: boolean = false;
   emailId = 'info@itfuturz.com';
 
-  
   loginForm = new FormGroup({
-    emailId: new FormControl('', [
-      Validators.required, 
-      Validators.email,
-    ]),
+    emailId: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [
       Validators.required,
-      Validators.minLength(6), 
+      Validators.minLength(6),
     ]),
   });
 
   isLoading: boolean = false;
 
-  async redirectTologin(){
-    await this.getProfile()
-         setTimeout(() => {
-          this.router.navigate(['/dashboard']);
-        }, 300); 
-          window.location.href = '/business-cards';
+  async redirectTologin() {
+    await this.getProfile();
+    setTimeout(() => {
+      this.router.navigate(['/dashboard']);
+    }, 300);
+    window.location.href = '/business-cards';
   }
   // Submit function
   onSubmit = async () => {
@@ -69,7 +67,7 @@ export class SignInComponent implements OnInit {
         const response = await this.authService.signIn(this.loginForm.value);
         this.isLoading = false;
         if (response) {
-          this.redirectTologin()
+          this.redirectTologin();
         }
       } catch (error) {
         console.error('Sign-In failed', error);
@@ -82,8 +80,11 @@ export class SignInComponent implements OnInit {
   };
 
   getProfile = async () => {
-    let data = await this.authService.getProfile({});
-    if (data != null) {
+    let result = await this.authService.getProfile({});
+
+    const data = result?.profile;
+    const memberData = result?.memberProfile;
+    if (result != null) {
       data.businessCards = data.businessCards.map((v: any, i: any) => {
         v.company = v.company || `Card ${i + 1}`;
         return v;
@@ -98,6 +99,11 @@ export class SignInComponent implements OnInit {
       let businessCardsSubject = new BehaviorSubject<any[]>(data.businessCards);
       this.authService.businessCards$ = businessCardsSubject.asObservable();
       this.storage.set(common.USER_DATA, data);
+
+      if (data.taskAccountAdminId && memberData) {
+        this.storage.set(teamMemberCommon.TEAM_MEMBER_DATA, memberData);
+        this.taskMemberAuthService.memberDetails = memberData;
+      }
     }
   };
 }

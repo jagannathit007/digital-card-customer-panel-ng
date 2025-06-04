@@ -12,6 +12,8 @@ import { environment } from 'src/env/env.local';
 import { ModalService } from 'src/app/core/utilities/modal';
 import { SharedService } from 'src/app/services/shared.service';
 import { AvatarComponent } from '../avatar/avatar.component';
+import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
+import { TaskMemberAuthService } from 'src/app/services/task-member-auth.service';
 
 declare var bootstrap: any;
 
@@ -33,6 +35,7 @@ export class HeaderComponent implements OnInit {
     public appWorker: AppWorker,
     private storage: AppStorage,
     public authService: AuthService,
+    private taskMemberAuthService: TaskMemberAuthService,
     public modal: ModalService,
     private cdr: ChangeDetectorRef,
     private sharedService: SharedService
@@ -213,8 +216,11 @@ export class HeaderComponent implements OnInit {
   }
 
   getProfile = async () => {
-    let data = await this.authService.getProfile({});
-    if (data != null) {
+    let result = await this.authService.getProfile({});
+
+    const data = result?.profile;
+    const memberData = result?.memberProfile;
+    if (result != null) {
       data.businessCards = data.businessCards.map((v: any, i: any) => {
         v.company = v.company || `Card ${i + 1}`;
         return v;
@@ -229,6 +235,11 @@ export class HeaderComponent implements OnInit {
       let businessCardsSubject = new BehaviorSubject<any[]>(data.businessCards);
       this.authService.businessCards$ = businessCardsSubject.asObservable();
       this.storage.set(common.USER_DATA, data);
+
+      if (data.taskAccountAdminId && memberData) {
+        this.storage.set(teamMemberCommon.TEAM_MEMBER_DATA, memberData);
+        this.taskMemberAuthService.memberDetails = memberData;
+      }
     }
   };
 
