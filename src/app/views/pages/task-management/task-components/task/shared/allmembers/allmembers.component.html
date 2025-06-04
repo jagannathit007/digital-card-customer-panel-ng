@@ -1,1 +1,89 @@
-<p>allmembers works!</p>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Team Members</h4>
+    <input
+      type="text"
+      class="form-control w-25"
+      placeholder="Search by name, email, etc."
+      [(ngModel)]="search"
+      (input)="onSearchChange($event)"
+    />
+  </div>
+
+  <div *ngIf="loading" class="text-center my-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && members.length > 0">
+    <div class="table-responsive">
+      <table class="table table-striped table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Profile</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Mobile</th>
+            <th>Role</th>
+            <th>Verified</th>
+            <th>Active</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let member of members">
+            <td>
+              <img
+                [src]="baseURL + '/' + member.profileImage"
+                alt="Profile"
+                width="40"
+                height="40"
+                class="rounded-circle"
+              />
+            </td>
+            <td>{{ member.name }}</td>
+            <td>{{ member.emailId }}</td>
+            <td>{{ member.mobile }}</td>
+            <td>{{ member.role }}</td>
+            <td>
+              <span
+                class="badge"
+                [ngClass]="member.isVerified ? 'bg-success' : 'bg-danger'"
+              >
+                {{ member.isVerified ? 'Yes' : 'No' }}
+              </span>
+            </td>
+            <td>
+              <span
+                class="badge"
+                [ngClass]="member.isActive ? 'bg-primary' : 'bg-secondary'"
+              >
+                {{ member.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <nav class="mt-4">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" [class.disabled]="page === 1">
+          <a class="page-link" (click)="prevPage()">Previous</a>
+        </li>
+        <li class="page-item disabled">
+          <span class="page-link">
+            Page {{ page }} of {{ totalPages }}
+          </span>
+        </li>
+        <li class="page-item" [class.disabled]="page === totalPages">
+          <a class="page-link" (click)="nextPage()">Next</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <div *ngIf="!loading && members.length === 0" class="alert alert-warning">
+    No team members found.
+  </div>
+</div>
