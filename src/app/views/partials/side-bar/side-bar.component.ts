@@ -84,13 +84,13 @@ export class SideBarComponent implements OnInit, AfterViewInit {
       'question'
     );
     if (confirm.isConfirmed) {
-      if (!this.storage.get(common.BUSINESS_CARD)) {
+      const businessCardId = this.storage.get(common.BUSINESS_CARD);
+      if (!businessCardId) {
         window.location.href = '/teammember/login';
-        this.storage.clearAll();
       } else {
-        this.storage.clearAll();
         window.location.href = '/';
       }
+      this.storage.clearAll();
     }
   };
 }

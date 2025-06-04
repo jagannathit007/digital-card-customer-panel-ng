@@ -5,6 +5,7 @@ import { common } from '../core/constants/common';
 import { ApiManager } from '../core/utilities/api-manager';
 import { AppStorage } from '../core/utilities/app-storage';
 import { Observable, of } from 'rxjs';
+import { teamMemberCommon } from '../core/constants/team-members-common';
 
 @Injectable({
   providedIn: 'root',
@@ -65,7 +66,11 @@ export class AuthService {
       );
       if (response.status == 200 && response.data != null) {
         this.storage.clearAll();
-        this.storage.set(common.TOKEN, response.data);
+        this.storage.set(common.TOKEN, response.data.token);
+
+        if(response.data.teamMemberToken){
+          this.storage.set(teamMemberCommon.TEAM_MEMBER_TOKEN, response.data.teamMemberToken);
+        }
         return true;
       } else {
         swalHelper.showToast(response.message, 'warning');
