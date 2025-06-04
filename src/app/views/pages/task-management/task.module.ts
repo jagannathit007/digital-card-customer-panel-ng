@@ -17,6 +17,9 @@ import { TaskComponent } from './task-components/task/task.component';
 import { AllmembersComponent } from './task-components/task/shared/allmembers/allmembers.component';
 import { PersonaltaskComponent } from './task-components/task/shared/personaltask/personaltask.component';
 import { TeamtaskComponent } from './task-components/task/shared/teamtask/teamtask.component';
+import { MydaytaskComponent } from './task-components/task/shared/mydaytask/mydaytask.component';
+import { MyweektaskComponent } from './task-components/task/shared/myweektask/myweektask.component';
+import { MyalltaskComponent } from './task-components/task/shared/myalltask/myalltask.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +27,9 @@ import { TeamtaskComponent } from './task-components/task/shared/teamtask/teamta
     AllmembersComponent,
     PersonaltaskComponent,
     TeamtaskComponent,
+    MydaytaskComponent,
+    MyweektaskComponent,
+    MyalltaskComponent,
   ],
   imports: [
     CommonModule,

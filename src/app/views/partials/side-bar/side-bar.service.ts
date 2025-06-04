@@ -135,6 +135,202 @@
 //   }
 // }
 
+// import { Injectable } from '@angular/core';
+// import { Router } from '@angular/router';
+// import { AuthService } from 'src/app/services/auth.service';
+// import { AppStorage } from 'src/app/core/utilities/app-storage';
+// import { common } from 'src/app/core/constants/common';
+// import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
+// import { TaskMemberAuthService } from 'src/app/services/task-member-auth.service';
+
+// @Injectable({
+//   providedIn: 'root',
+// })
+// export class SideBarService {
+//   constructor(
+//     private router: Router,
+//     public authService: AuthService,
+//     public taskMemberAuthService: TaskMemberAuthService,
+//     private storage: AppStorage
+//   ) {}
+
+//   async getMenusByProducts(subscriptionData: any[] ): Promise<any[]> {
+//     const teamMemberData = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA); // Team member data
+//     const validRoles = ['member', 'leader', 'manager', 'editor', 'admin'];
+
+//     const userDetails = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA)
+
+//     // Define task management menu (common for team members and admins)
+//     let taskManagementMenu = {
+//       title: 'Task Management',
+//       link: 'task-management',
+//       icon: 'file-text',
+//       menu: [
+//         {
+//           title: 'Dashboard',
+//           link: 'task-management/dashboard',
+//           icon: 'table',
+//         },
+//         { title: 'Boards', link: 'task-management/boards', icon: 'pie-chart' },
+//         { title: 'Team Task', link: 'task-management/teamtask', icon: 'grid' },
+//       ],
+//     };
+
+//     if (userDetails && userDetails?.role !== 'member') {
+//       taskManagementMenu.menu.splice(1, 0, {
+//         title: 'All Members',
+//         link: 'task-management/allmembers',
+//         icon: 'users',
+//       });
+//     }
+
+//     const personalTaskManagementMenu = {
+//       title: 'Personal Tasks',
+//       link: 'personal-task',
+//       icon: 'file-text',
+//       menu: [
+//         { title: 'My Day', link: 'personal-task/my-day', icon: 'aperture' },
+//         {
+//           title: 'Next 7 Days',
+//           link: 'personal-task/next-seven-days',
+//           icon: 'calendar',
+//         },
+//         { title: 'All Tasks', link: 'personal-task/all', icon: 'codesandbox' },
+//       ],
+//     };
+
+//     // Team member role check
+//     if (teamMemberData && validRoles.includes(teamMemberData.role)) {
+//       if (teamMemberData.role !== 'admin') {
+//         // Non-admin team members get only task-management menu
+//         return [
+//           {
+//             moduleName: 'Team Member',
+//             menus: [taskManagementMenu],
+//           },
+//         ];
+//       }
+//       // Admin team member falls through to admin logic below
+//     }
+
+//     // Admin-specific menu logic (or admin team member)
+//     const products = subscriptionData.map((item) => item.product);
+//     const currentBcardId = this.storage.get(common.BUSINESS_CARD);
+
+//     const businessCardMenu = {
+//       title: 'Business Card',
+//       link: 'business-cards',
+//       icon: 'briefcase',
+//     };
+
+//     const scannedCardsMenu = {
+//       title: 'Scanned Cards',
+//       link: 'scanned-cards',
+//       icon: 'credit-card',
+//     };
+
+//     const websiteDetailsMenu = {
+//       title: 'Website Builder',
+//       link: 'website-details',
+//       icon: 'layout',
+//     };
+
+//     const googleReviewMenu = {
+//       title: 'Google Review',
+//       link: 'google-standee',
+//       icon: 'star',
+//     };
+
+//     const accountSettingsMenu = {
+//       title: 'Account Settings',
+//       link: 'account-settings',
+//       icon: 'settings',
+//     };
+
+//     const sharedHistoryMenu = {
+//       title: 'Shared History',
+//       link: 'shared-history',
+//       icon: 'clock',
+//     };
+
+//     const customerMenu = {
+//       title: 'Customers',
+//       link: 'customers',
+//       icon: 'user',
+//     };
+
+//     const hasDigitalOrNFC = products.some(
+//       (product) => product === 'digital-card' || product === 'nfc-card'
+//     );
+
+//     const hasWebsiteDetails = products.some(
+//       (product) => product === 'website-details'
+//     );
+
+//     const hasGoogleReview = products.some(
+//       (product) => product === 'google-standee'
+//     );
+
+//     const hasTaskManagement = products.some(
+//       (product) => product === 'task-management'
+//     );
+
+//     let menus = [];
+
+//     menus.push(customerMenu);
+//     menus.push(accountSettingsMenu);
+
+//     if (hasDigitalOrNFC) {
+//       menus = [businessCardMenu, scannedCardsMenu, sharedHistoryMenu, ...menus];
+//     }
+
+//     if (hasWebsiteDetails && currentBcardId) {
+//       const websiteDetails = await this.authService.getWebsiteDetails(
+//         currentBcardId
+//       );
+//       if (websiteDetails.websiteVisible === true) {
+//         menus.splice(menus.length - 1, 0, websiteDetailsMenu);
+//       }
+//     }
+
+//     if (hasGoogleReview) {
+//       menus.splice(menus.length - 1, 0, googleReviewMenu);
+//     }
+
+//     if (hasTaskManagement) {
+//       menus.splice(menus.length - 1, 0, personalTaskManagementMenu);
+//       menus.splice(menus.length - 1, 0, taskManagementMenu);
+//     }
+
+//     return [
+//       {
+//         moduleName: 'Member',
+//         menus: menus,
+//       },
+//     ];
+//   }
+
+//   isMobile: boolean = false;
+//   activeSubMenuIndex: number | null = null;
+
+//   toggleSubMenu(index: number) {
+//     if (this.activeSubMenuIndex === index) {
+//       this.activeSubMenuIndex = null;
+//     } else {
+//       this.activeSubMenuIndex = index;
+//     }
+//   }
+
+//   navigateWithQueryParams(submenu: any) {
+//     this.router.navigate([submenu.link], { queryParams: submenu.queryParams });
+//   }
+
+//   onNavSwitch(item: string) {
+//     this.router.navigateByUrl(`/${item}`);
+//   }
+// }
+
+
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
@@ -154,55 +350,45 @@ export class SideBarService {
     private storage: AppStorage
   ) {}
 
-  async getMenusByProducts(subscriptionData: any[] ): Promise<any[]> {
-    const teamMemberData = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA); // Team member data
+  async getMenusByProducts(subscriptionData: any[]): Promise<any[]> {
+    const teamMemberData = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA);
     const validRoles = ['member', 'leader', 'manager', 'editor', 'admin'];
+    const userDetails = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA);
 
-    const userDetails = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA)
-
-    // Define task management menu (common for team members and admins)
-    let taskManagementMenu = {
+    let taskManagementMenu: any = {
       title: 'Task Management',
       link: 'task-management',
       icon: 'file-text',
       menu: [
-        {
-          title: 'Dashboard',
-          link: 'task-management/dashboard',
-          icon: 'table',
-        },
+        { title: 'Dashboard', link: 'task-management/dashboard', icon: 'table' },
         { title: 'Boards', link: 'task-management/boards', icon: 'pie-chart' },
         { title: 'Team Task', link: 'task-management/teamtask', icon: 'grid' },
       ],
     };
 
-    if (userDetails && userDetails?.role !== 'member') {
-      taskManagementMenu.menu.splice(1, 0, {
-        title: 'All Members',
-        link: 'task-management/allmembers',
-        icon: 'users',
-      });
+    if (userDetails) {
+      if (userDetails.role !== 'member') {
+        taskManagementMenu.menu.splice(1, 0, {
+          title: 'All Members',
+          link: 'task-management/allmembers',
+          icon: 'users',
+        });
+      }
+      if (userDetails.role === 'admin') {
+        taskManagementMenu.menu.splice(0, 0, {
+          title: 'Personal Tasks',
+          icon: 'file-text',
+          menu: [
+            { title: 'My Day', link: 'task-management/personal-task/my-day', icon: 'aperture' },
+            { title: 'Next 7 Days', link: 'task-management/personal-task/next-seven-days', icon: 'calendar' },
+            { title: 'All Tasks', link: 'task-management/personal-task/all', icon: 'codesandbox' },
+          ],
+        });
+      }
     }
 
-    const personalTaskManagementMenu = {
-      title: 'Personal Tasks',
-      link: 'personal-task',
-      icon: 'file-text',
-      menu: [
-        { title: 'My Day', link: 'personal-task/my-day', icon: 'aperture' },
-        {
-          title: 'Next 7 Days',
-          link: 'personal-task/next-seven-days',
-          icon: 'calendar',
-        },
-        { title: 'All Tasks', link: 'personal-task/all', icon: 'codesandbox' },
-      ],
-    };
-
-    // Team member role check
     if (teamMemberData && validRoles.includes(teamMemberData.role)) {
       if (teamMemberData.role !== 'admin') {
-        // Non-admin team members get only task-management menu
         return [
           {
             moduleName: 'Team Member',
@@ -210,10 +396,8 @@ export class SideBarService {
           },
         ];
       }
-      // Admin team member falls through to admin logic below
     }
 
-    // Admin-specific menu logic (or admin team member)
     const products = subscriptionData.map((item) => item.product);
     const currentBcardId = this.storage.get(common.BUSINESS_CARD);
 
@@ -285,9 +469,7 @@ export class SideBarService {
     }
 
     if (hasWebsiteDetails && currentBcardId) {
-      const websiteDetails = await this.authService.getWebsiteDetails(
-        currentBcardId
-      );
+      const websiteDetails = await this.authService.getWebsiteDetails(currentBcardId);
       if (websiteDetails.websiteVisible === true) {
         menus.splice(menus.length - 1, 0, websiteDetailsMenu);
       }
@@ -298,7 +480,6 @@ export class SideBarService {
     }
 
     if (hasTaskManagement) {
-      menus.splice(menus.length - 1, 0, personalTaskManagementMenu);
       menus.splice(menus.length - 1, 0, taskManagementMenu);
     }
 
@@ -312,17 +493,27 @@ export class SideBarService {
 
   isMobile: boolean = false;
   activeSubMenuIndex: number | null = null;
+  activeSubSubMenuIndex: number | null = null;
 
   toggleSubMenu(index: number) {
     if (this.activeSubMenuIndex === index) {
       this.activeSubMenuIndex = null;
     } else {
       this.activeSubMenuIndex = index;
+      this.activeSubSubMenuIndex = null; // Reset sub-submenu when toggling a new menu
+    }
+  }
+
+  toggleSubSubMenu(index: number) {
+    if (this.activeSubSubMenuIndex === index) {
+      this.activeSubSubMenuIndex = null;
+    } else {
+      this.activeSubSubMenuIndex = index;
     }
   }
 
   navigateWithQueryParams(submenu: any) {
-    this.router.navigate([submenu.link], { queryParams: submenu.queryParams });
+    this.router.navigate([submenu.link], { queryParams: submenu.queryParams || {} });
   }
 
   onNavSwitch(item: string) {

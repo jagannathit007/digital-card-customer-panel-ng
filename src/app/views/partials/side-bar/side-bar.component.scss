@@ -69,6 +69,370 @@
 
 
 /* Enhanced CSS with Beautiful Animations - Fixed Active Colors */
+// ol, ul {
+//   padding-left: 0rem;
+// }
+
+// /* Header Animations */
+// .header_transition_fixed {
+//   background-color: #126f8a;
+//   color: white;
+//   animation: headerAnimation 0.3s 1;
+// }
+
+// @keyframes headerAnimation {
+//   0% {
+//     opacity: 0;
+//     transform: translateY(-100%);
+//   }
+//   100% {
+//     opacity: 0.9;
+//     transform: translateY(0);
+//   }
+// }
+
+// .header_transition_normal {
+//   animation: headerAnimation2 0.3s 1;
+// }
+
+// @keyframes headerAnimation2 {
+//   0% {
+//     opacity: 0;
+//     transform: translateY(10%);
+//   }
+//   100% {
+//     opacity: 0.9;
+//     transform: translateY(0);
+//   }
+// }
+
+// /* Enhanced Sidebar Styles */
+// .sidebar {
+//   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+//   width: 250px;
+//   box-shadow: 2px 0 15px rgba(0, 0, 0, 0.1);
+// }
+
+// .sidebar.collapsed {
+//   margin-left: -250px;
+// }
+
+// /* Sidebar Navigation */
+// .sidebar-nav {
+//   animation: slideInLeft 0.5s ease-out;
+// }
+
+// @keyframes slideInLeft {
+//   0% {
+//     opacity: 0;
+//     transform: translateX(-20px);
+//   }
+//   100% {
+//     opacity: 1;
+//     transform: translateX(0);
+//   }
+// }
+
+// /* Sidebar Items */
+// .sidebar-item {
+//   position: relative;
+//   overflow: hidden;
+// }
+
+// /* Default Sidebar Link Styles */
+// .sidebar-link {
+//   position: relative;
+//   display: flex;
+//   align-items: center;
+//   padding: 12px 20px;
+//   color: #64748b;
+//   text-decoration: none;
+//   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+//   border-radius: 8px;
+//   margin: 2px 8px;
+// }
+
+// .sidebar-link::before {
+//   content: '';
+//   position: absolute;
+//   left: 0;
+//   top: 0;
+//   height: 100%;
+//   width: 0;
+//   background: linear-gradient(135deg, #126f8a 0%, #1e88a8 100%);
+//   transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+//   z-index: -1;
+//   border-radius: 8px;
+// }
+
+// .sidebar-link:hover::before {
+//   width: 100%;
+// }
+
+// .sidebar-link:hover {
+//   color: white;
+//   transform: translateX(5px);
+//   box-shadow: 0 4px 15px rgba(18, 111, 138, 0.3);
+// }
+
+// /* Active State for ALL Regular Menu Items (Light/Subtle Style like Scanned Cards) */
+// .sidebar-link.active {
+//   background: rgba(18, 111, 138, 0.1) !important;
+//   color: #126f8a !important;
+//   border-left: 3px solid #126f8a;
+//   box-shadow: none;
+// }
+
+// .sidebar-link.active .sidebar-icon {
+//   color: #126f8a !important;
+// }
+
+// /* Sidebar Icons */
+// .sidebar-icon {
+//   margin-right: 12px;
+//   transition: all 0.3s ease;
+//   width: 18px;
+//   height: 18px;
+// }
+
+// .sidebar-link:hover .sidebar-icon {
+//   transform: scale(1.1) rotate(5deg);
+// }
+
+// /* Submenu Toggle */
+// .submenu-toggle {
+//   cursor: pointer;
+// }
+
+// .submenu-toggle:active {
+//   transform: translateX(3px) scale(0.98);
+// }
+
+// /* Submenu Toggle Active State */
+// .submenu-toggle.submenu-active {
+//   // background: linear-gradient(135deg, #126f8a 0%, #1e88a8 100%);
+//   color: white;
+//   box-shadow: 0 4px 15px rgba(18, 111, 138, 0.4);
+// }
+
+// .submenu-toggle.submenu-active .sidebar-icon {
+//   transform: scale(1.1);
+// }
+
+// .submenu-toggle.submenu-active .submenu-arrow {
+//   color: white;
+// }
+
+// /* Submenu Arrow Animation */
+// .submenu-arrow {
+//   margin-left: auto;
+//   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+//   font-size: 16px;
+//   color: #94a3b8;
+// }
+
+// .submenu-arrow.submenu-open {
+//   transform: rotate(180deg);
+//   color: #126f8a;
+// }
+
+// .submenu-toggle:hover .submenu-arrow {
+//   color: white;
+//   transform: scale(1.2);
+// }
+
+// .submenu-toggle:hover .submenu-arrow.submenu-open {
+//   transform: rotate(180deg) scale(1.2);
+// }
+
+// /* Submenu Styles */
+// .sub-menu {
+//   max-height: 0;
+//   overflow: hidden;
+//   background: rgba(18, 111, 138, 0.05);
+//   border-radius: 8px;
+//   margin: 4px 8px 8px 28px;
+//   transition: max-height 0.3s ease-out, opacity 0.2s ease;
+//   opacity: 0;
+// }
+
+// .sub-menu.sub-menu-open {
+//   max-height: 500px;
+//   opacity: 1;
+//   box-shadow: inset 0 2px 8px rgba(18, 111, 138, 0.1);
+// }
+
+// .sub-item {
+//   opacity: 0;
+//   transform: translateX(-10px);
+//   transition: all 0.2s ease;
+// }
+
+// .sub-menu-open .sub-item {
+//   opacity: 1;
+//   transform: translateX(0);
+// }
+
+// .sub-menu-open .sub-item:nth-child(1) { transition-delay: 0.05s; }
+// .sub-menu-open .sub-item:nth-child(2) { transition-delay: 0.1s; }
+// .sub-menu-open .sub-item:nth-child(3) { transition-delay: 0.15s; }
+// .sub-menu-open .sub-item:nth-child(4) { transition-delay: 0.2s; }
+// .sub-menu-open .sub-item:nth-child(5) { transition-delay: 0.25s; }
+
+// @keyframes slideInSubmenu {
+//   0% {
+//     opacity: 0;
+//     transform: translateX(-15px);
+//   }
+//   100% {
+//     opacity: 1;
+//     transform: translateX(0);
+//   }
+// }
+
+// .sub-link {
+//   padding: 8px 16px;
+//   font-size: 13px;
+//   margin: 2px 4px;
+//   border-left: 2px solid transparent;
+//   transition: all 0.3s ease;
+// }
+
+// .sub-link:hover {
+//   background: rgba(18, 111, 138, 0.1);
+//   border-left-color: #126f8a;
+//   transform: translateX(8px);
+// }
+
+// .sub-link.active {
+//   // background: linear-gradient(135deg, #126f8a 0%, #1e88a8 100%);
+//   color: white;
+//   border-left-color: #0f5a6b;
+//   box-shadow: 0 2px 8px rgba(18, 111, 138, 0.3);
+// }
+
+// .sub-link.active .sub-icon {
+//   opacity: 1;
+//   color: white;
+// }
+
+// .sub-icon {
+//   width: 14px;
+//   height: 14px;
+//   margin-right: 10px;
+//   opacity: 0.7;
+// }
+
+// .sub-link:hover .sub-icon {
+//   opacity: 1;
+//   transform: scale(1.15);
+// }
+
+// /* Sidebar Header */
+// .sidebar-header {
+//   font-size: 11px;
+//   font-weight: 600;
+//   text-transform: uppercase;
+//   letter-spacing: 1px;
+//   color: #94a3b8;
+//   padding: 20px 20px 8px;
+//   margin-top: 16px;
+//   position: relative;
+// }
+
+// .sidebar-header::after {
+//   content: '';
+//   position: absolute;
+//   bottom: 0;
+//   left: 20px;
+//   right: 20px;
+//   height: 1px;
+//   background: linear-gradient(90deg, #126f8a, transparent);
+//   opacity: 0.3;
+// }
+
+// /* Company Logo */
+// .company-logo {
+//   max-width: 40px;
+//   height: auto;
+//   object-fit: cover;
+//   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+//   margin-left: 0.5em;
+//   border-radius: 6px;
+// }
+
+// .company-logo:hover {
+//   transform: scale(1.08) rotate(2deg);
+//   box-shadow: 0 4px 12px rgba(18, 111, 138, 0.3);
+// }
+
+// /* LOGOUT LINK - Special Styling (RED COLOR) */
+// .logout-link {
+//   position: relative;
+//   overflow: hidden;
+// }
+
+// .logout-link::before {
+//   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+// }
+
+// .logout-link:hover {
+//   color: white !important;
+//   box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3) !important;
+// }
+
+// .logout-link:hover .logout {
+//   color: white !important;
+// }
+
+// .logout-link:active {
+//   transform: translateX(3px) scale(0.98);
+// }
+
+// /* Make sure logout text stays red by default */
+// .logout {
+//   color: #ef4444 !important;
+// }
+
+// /* Pulse Animation for Active States (NOT for logout) */
+// @keyframes pulse {
+//   0% {
+//     box-shadow: 0 0 0 0 rgba(18, 111, 138, 0.4);
+//   }
+//   70% {
+//     box-shadow: 0 0 0 8px rgba(18, 111, 138, 0);
+//   }
+//   100% {
+//     box-shadow: 0 0 0 0 rgba(18, 111, 138, 0);
+//   }
+// }
+
+// /* Apply pulse only to regular active links, not logout - REMOVED FOR SUBTLE STYLE */
+// /* .sidebar-link.active:not(.logout-link) {
+//   animation: pulse 2s infinite;
+// } */
+
+// /* Responsive Design */
+// @media (max-width: 768px) {
+//   .sidebar {
+//     position: fixed;
+//     z-index: 1000;
+//     height: 100vh;
+//   }
+  
+//   .sidebar.collapsed {
+//     margin-left: -280px;
+//   }
+// }
+
+
+
+
+
+
+
+
+
 ol, ul {
   padding-left: 0rem;
 }
@@ -175,7 +539,7 @@ ol, ul {
   box-shadow: 0 4px 15px rgba(18, 111, 138, 0.3);
 }
 
-/* Active State for ALL Regular Menu Items (Light/Subtle Style like Scanned Cards) */
+/* Active State for ALL Regular Menu Items */
 .sidebar-link.active {
   background: rgba(18, 111, 138, 0.1) !important;
   color: #126f8a !important;
@@ -210,7 +574,6 @@ ol, ul {
 
 /* Submenu Toggle Active State */
 .submenu-toggle.submenu-active {
-  // background: linear-gradient(135deg, #126f8a 0%, #1e88a8 100%);
   color: white;
   box-shadow: 0 4px 15px rgba(18, 111, 138, 0.4);
 }
@@ -305,7 +668,6 @@ ol, ul {
 }
 
 .sub-link.active {
-  // background: linear-gradient(135deg, #126f8a 0%, #1e88a8 100%);
   color: white;
   border-left-color: #0f5a6b;
   box-shadow: 0 2px 8px rgba(18, 111, 138, 0.3);
@@ -324,6 +686,124 @@ ol, ul {
 }
 
 .sub-link:hover .sub-icon {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+/* Sub-Submenu Styles (Nested Level) */
+.sub-submenu-toggle {
+  cursor: pointer;
+  padding: 8px 16px;
+  font-size: 13px;
+  margin: 2px 4px;
+  border-left: 2px solid transparent;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.sub-submenu-toggle:active {
+  transform: translateX(3px) scale(0.98);
+}
+
+.sub-submenu-toggle.submenu-active {
+  color: white;
+  box-shadow: 0 2px 8px rgba(18, 111, 138, 0.3);
+}
+
+.sub-submenu-toggle.submenu-active .sub-icon {
+  transform: scale(1.1);
+}
+
+.sub-submenu-toggle.submenu-active .sub-submenu-arrow {
+  color: white;
+}
+
+.sub-submenu-arrow {
+  margin-left: auto;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.sub-submenu-arrow.submenu-open {
+  transform: rotate(180deg);
+  color: #126f8a;
+}
+
+.sub-submenu-toggle:hover .sub-submenu-arrow {
+  color: white;
+  transform: scale(1.2);
+}
+
+.sub-submenu-toggle:hover .sub-submenu-arrow.submenu-open {
+  transform: rotate(180deg) scale(1.2);
+}
+
+.sub-sub-menu {
+  max-height: 0;
+  overflow: hidden;
+  background: rgba(18, 111, 138, 0.03);
+  border-radius: 8px;
+  margin: 2px 4px 4px 16px;
+  transition: max-height 0.3s ease-out, opacity 0.2s ease;
+  opacity: 0;
+}
+
+.sub-sub-menu.sub-sub-menu-open {
+  max-height: 400px;
+  opacity: 1;
+  box-shadow: inset 0 1px 4px rgba(18, 111, 138, 0.1);
+}
+
+.sub-sub-item {
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.2s ease;
+}
+
+.sub-sub-menu-open .sub-sub-item {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.sub-sub-menu-open .sub-sub-item:nth-child(1) { transition-delay: 0.05s; }
+.sub-sub-menu-open .sub-sub-item:nth-child(2) { transition-delay: 0.1s; }
+.sub-sub-menu-open .sub-sub-item:nth-child(3) { transition-delay: 0.15s; }
+
+.sub-sub-link {
+  padding: 6px 12px;
+  font-size: 12px;
+  margin: 1px 2px;
+  border-left: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.sub-sub-link:hover {
+  background: rgba(18, 111, 138, 0.1);
+  border-left-color: #126f8a;
+  transform: translateX(6px);
+}
+
+.sub-sub-link.active {
+  color: white;
+  border-left-color: #0f5a6b;
+  box-shadow: 0 1px 4px rgba(18, 111, 138, 0.2);
+}
+
+.sub-sub-link.active .sub-sub-icon {
+  opacity: 1;
+  color: white;
+}
+
+.sub-sub-icon {
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+  opacity: 0.7;
+}
+
+.sub-sub-link:hover .sub-sub-icon {
   opacity: 1;
   transform: scale(1.15);
 }
@@ -393,24 +873,6 @@ ol, ul {
 .logout {
   color: #ef4444 !important;
 }
-
-/* Pulse Animation for Active States (NOT for logout) */
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(18, 111, 138, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 8px rgba(18, 111, 138, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(18, 111, 138, 0);
-  }
-}
-
-/* Apply pulse only to regular active links, not logout - REMOVED FOR SUBTLE STYLE */
-/* .sidebar-link.active:not(.logout-link) {
-  animation: pulse 2s infinite;
-} */
 
 /* Responsive Design */
 @media (max-width: 768px) {
