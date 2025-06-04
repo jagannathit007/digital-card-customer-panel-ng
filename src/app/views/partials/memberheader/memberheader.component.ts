@@ -40,17 +40,6 @@ export class MemberheaderComponent implements OnInit {
   ) {}
 
   async onInitFunction() {
-    // await this.getProfile();
-    // this.authService.selectedBusinessCard =
-    //   this.storage.get(common.BUSINESS_CARD) ?? '';
-
-    // let userData = this.storage.get(common.USER_DATA);
-
-    // const matchedCard = userData.businessCards.find(
-    //   (e: any) => e._id === this.authService.selectedBusinessCard
-    // );
-    // this.userName = matchedCard?.userName;
-
     this.getProfile();
   }
 

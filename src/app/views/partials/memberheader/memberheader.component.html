@@ -1,75 +1,41 @@
-<!-- memberheader.component.html -->
-<nav class="navbar navbar-expand navbar-modern navbar-bg px-4">
-  <a class="sidebar-toggle js-sidebar-toggle" (click)="appWorker.toggleSlider()">
-    <div class="hamburger align-self-center"></div>
-  </a>
-  
-  <div class="d-md-none position-sticky bottom-select-container bg-white shadow-sm py-2 px-3">
-    <div class="d-flex gap-3 align-items-center">
-      <!-- Mobile content here -->
+<nav class="navbar navbar-expand navbar-light navbar-bg px-4 ">
+   <a class="sidebar-toggle js-sidebar-toggle" (click)="appWorker.toggleSlider()">
+   <i class="hamburger align-self-center"></i>
+   </a>
+    <div class="d-md-none position-sticky bottom-select-container bg-white shadow-sm py-2 px-3">
+      <div class="d-flex gap-3 align-items-center">
+      </div>
     </div>
-  </div>
-
-  <!-- Profile Section -->
-  <div class="navbar-collapse collapse">
-    <ul class="navbar-nav navbar-align ms-auto">
-      <li class="nav-item dropdown profile-button-container">
-        <a href="#" class="profile-button dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-          <div class="position-relative">
-            <!-- Profile Image or Default Icon -->
-            @if (memberDetails != null && memberDetails.profileImage && memberDetails.profileImage && !showDefaultIcon) {
-              <img
-                class="profile-image"
-                [src]="imageUrl + memberDetails.profileImage"
-                alt="Profile Image"
-                (error)="handleImageError($event)"
-              />
-            } @else {
-              <div class="default-profile-icon">
-                <i class="ri-user-3-line"></i>
-              </div>
-            }
-            
-            <!-- Online Indicator -->
-            <div class="online-indicator"></div>
-          </div>
-          
-          <!-- Profile Info (Hidden on Mobile) -->
-          <div class="profile-info d-none d-md-block">
-            <p class="profile-name">{{ memberDetails?.name || 'User' }}</p>
-            <p class="profile-status">Online</p>
-          </div>
+    <!-- adding users profile image in header section -->
+     <div class="navbar-collapse collapse">
+  <ul class="navbar-nav navbar-align">
+    <li class="nav-item dropdown">
+      <a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown">
+        <!-- <i class="align-middle" data-feather="settings"></i> -->
+      </a>
+      <a href="#" data-bs-toggle="dropdown" style="text-decoration: none;">
+        @if (memberDetails != null && memberDetails.profileImage && memberDetails.profileImage) {
+          <img
+            class="profile-image"
+            src="{{ imageUrl }}{{ memberDetails.profileImage }}"
+            alt="Profile Image"
+            style="object-fit: cover;"
+            (error)="handleImageError($event)"
+          />
+        } @else {
+          <i class="ri-user-3-line default-profile-icon"></i>
+        }
+      </a>
+      <div class="dropdown-menu dropdown-menu-end">
+        <a class="dropdown-item" href="/profile">
+          <i class="ri-user-3-line"></i>&nbsp;&nbsp;Profile
         </a>
-
-        <!-- Dropdown Menu -->
-        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-modern fade-in">
-          <li>
-            <a class="dropdown-item dropdown-item-modern slide-in" href="/profile">
-              <i class="ri-user-3-line"></i>
-              Profile Settings
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item dropdown-item-modern slide-in" href="/notifications">
-              <i class="ri-notification-3-line"></i>
-              Notifications
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item dropdown-item-modern slide-in" href="/settings">
-              <i class="ri-settings-3-line"></i>
-              Account Settings
-            </a>
-          </li>
-          <li><hr class="dropdown-divider"></li>
-          <li>
-            <a class="dropdown-item dropdown-item-modern logout-item slide-in" href="#" (click)="logout()">
-              <i class="ri-logout-circle-r-line"></i>
-              Logout
-            </a>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </div>
-</nav>
+        <a class="dropdown-item text-danger" (click)="logout()">
+          <i class="ri-logout-circle-r-line" style="width:20px;"></i>&nbsp;&nbsp;Logout
+        </a>
+      </div>
+    </li>
+  </ul>
+</div>
+  </nav>
+  
