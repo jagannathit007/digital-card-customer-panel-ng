@@ -23,6 +23,8 @@ import { MyweektaskComponent } from './task-components/task/shared/myweektask/my
 import { MyalltaskComponent } from './task-components/task/shared/myalltask/myalltask.component';
 import { MemberprofileComponent } from './task-components/task/shared/memberprofile/memberprofile.component';
 import { AddTeamMemberComponent } from "../../partials/task-managemnt/common-components/addTeamMember/addTeamMember.component";
+import { SendingMailComponent } from "../../partials/task-managemnt/common-components/sendingMail/sendingMail.component";
+import { ChangeMemberRoleComponent } from "../../partials/task-managemnt/common-components/changeMEmberRole/changeMEmberRole.component";
 
 
 @NgModule({
@@ -47,7 +49,9 @@ import { AddTeamMemberComponent } from "../../partials/task-managemnt/common-com
     TooltipDirective,
     ToggleComponent,
     DebounceDirective,
-    AddTeamMemberComponent
+    AddTeamMemberComponent,
+    SendingMailComponent,
+    ChangeMemberRoleComponent
 ]
 })
 export class TaskModule { }

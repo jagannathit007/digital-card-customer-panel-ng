@@ -8,12 +8,12 @@ import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
 import { ModalService } from 'src/app/core/utilities/modal';
 import { TaskService } from 'src/app/services/task.service';
-import { TeamMemberData } from './../../../../../../partials/task-managemnt/common-components/addTeamMember/addTeamMember.component';
+import { TeamMemberData } from 'src/app/views/partials/task-managemnt/common-components/addTeamMember/addTeamMember.component';
 
 @Component({
   selector: 'app-allmembers',
   templateUrl: './allmembers.component.html',
-  styleUrl: './allmembers.component.scss'
+  styleUrl: './allmembers.component.scss',
 })
 export class AllmembersComponent implements OnInit {
   baseURL = environment.baseURL;
@@ -23,22 +23,25 @@ export class AllmembersComponent implements OnInit {
   totalPages: number = 1;
   search: string = '';
   loading: boolean = false;
-  
+
   // Filter properties
   filterRole: string = '';
   filterStatus: string = '';
   filterVerified: string = '';
-  
+  showSendingMailModal: boolean = false;
+  showChangeMemberRoleModal: boolean = false;
+  selectedMemberForMail: any = null;
+
   // Modal properties
   selectedMember: any = null;
   activeTab: string = 'details';
   modalTabs = [
     { id: 'details', label: 'Details', icon: 'fas fa-user' },
     { id: 'boards', label: 'Boards', icon: 'fas fa-clipboard-list' },
-    { id: 'actions', label: 'Actions', icon: 'fas fa-cog' }
+    { id: 'actions', label: 'Actions', icon: 'fas fa-cog' },
   ];
 
-    // Add Team Member Modal
+  // Add Team Member Modal
   showAddMemberModal: boolean = false;
 
   constructor(
@@ -61,10 +64,10 @@ export class AllmembersComponent implements OnInit {
       search: this.search,
       role: this.filterRole || undefined,
       isActive: this.filterStatus ? this.filterStatus === 'active' : undefined,
-      isVerified: this.filterVerified ? this.filterVerified === 'verified' : undefined
+      isVerified: this.filterVerified
+        ? this.filterVerified === 'verified'
+        : undefined,
     };
-
-    console.log('Fetching members with request data:', requestData);
 
     try {
       const result = await this.taskService.GetAllMembers(requestData);
@@ -120,12 +123,12 @@ export class AllmembersComponent implements OnInit {
 
   // Role badge styling
   getRoleBadgeClass(role: string): string {
-    const roleClasses:any = {
-      'admin': 'tw-bg-red-100 tw-text-red-800',
-      'manager': 'tw-bg-purple-100 tw-text-purple-800',
-      'leader': 'tw-bg-orange-100 tw-text-orange-800',
-      'editor': 'tw-bg-indigo-100 tw-text-indigo-800',
-      'member': 'tw-bg-gray-100 tw-text-gray-800'
+    const roleClasses: any = {
+      admin: 'tw-bg-red-100 tw-text-red-800',
+      manager: 'tw-bg-purple-100 tw-text-purple-800',
+      leader: 'tw-bg-orange-100 tw-text-orange-800',
+      editor: 'tw-bg-indigo-100 tw-text-indigo-800',
+      member: 'tw-bg-gray-100 tw-text-gray-800',
     };
     return roleClasses[role] || 'tw-bg-gray-100 tw-text-gray-800';
   }
@@ -134,41 +137,38 @@ export class AllmembersComponent implements OnInit {
     if (event) {
       event.stopPropagation();
     }
-    
-    try {
-      // Implement re-invite API call
-      swalHelper.confirmation(
-        'Re-invite User',
-        `Are you sure you want to re-invite ${member.name}?`,
-        'question'
-      ).then(async (result) => {
-        if (result.isConfirmed) {
-          // Call your re-invite API here
-          swalHelper.showToast(`Re-invitation sent to ${member.name}`, 'success');
-        }
-      });
-    } catch (error) {
-      console.error('Error re-inviting user:', error);
-      swalHelper.showToast('Failed to re-invite user', 'error');
-    }
+
+    this.selectedMemberForMail = member;
+    this.showSendingMailModal = true;
+  }
+
+  closeSendingMailModal(event: any) {
+    this.showSendingMailModal = false;
+    this.selectedMemberForMail = null;
   }
 
   async toggleUserStatus(member: any) {
     const action = member.isActive ? 'deactivate' : 'activate';
     const actionText = member.isActive ? 'Deactivate' : 'Activate';
-    
+
     try {
-      swalHelper.confirmation(
-        `${actionText} User`,
-        `Are you sure you want to ${action} ${member.name}?`,
-        'question'
-      ).then(async (result) => {
-        if (result.isConfirmed) {
-          // Call your toggle status API here
-          member.isActive = !member.isActive;
-          swalHelper.showToast(`${member.name} has been ${action}d`, 'success');
-        }
-      });
+      swalHelper
+        .confirmation(
+          `${actionText} User`,
+          `Are you sure you want to ${action} ${member.name}?`,
+          'question'
+        )
+        .then(async (result) => {
+          if (result.isConfirmed) {
+            // Call your toggle status API here
+            // const response = await this.taskService.()
+            member.isActive = !member.isActive;
+            swalHelper.showToast(
+              `${member.name} has been ${action}d`,
+              'success'
+            );
+          }
+        });
     } catch (error) {
       console.error('Error toggling user status:', error);
       swalHelper.showToast('Failed to update user status', 'error');
@@ -177,13 +177,40 @@ export class AllmembersComponent implements OnInit {
 
   addToBoard(member: any) {
     // Implement add to board functionality
-    swalHelper.showToast('Add to board functionality to be implemented', 'info');
+    swalHelper.showToast(
+      'Add to board functionality to be implemented',
+      'info'
+    );
   }
 
-  editMember(member: any) {
-    // Implement edit member functionality
-    swalHelper.showToast('Edit member functionality to be implemented', 'info');
+  // Update the changeMemberRole method in allmembers.component.ts
+changeMemberRole(member: any) {
+  this.selectedMember = member; // Set the selected member for the role change modal
+  this.showChangeMemberRoleModal = true;
+}
+
+// Add new method to handle role change completion
+onRoleChanged(event: { member: any; newRole: string; reason?: string }) {
+  // Update the member's role in the local array
+  const memberIndex = this.members.findIndex(m => m._id === event.member._id);
+  if (memberIndex !== -1) {
+    this.members[memberIndex].role = event.newRole;
   }
+  
+  swalHelper.showToast(
+    `${event.member.name}'s role has been updated to ${event.newRole}`,
+    'success'
+  );
+  
+  this.showChangeMemberRoleModal = false;
+  this.selectedMember = null;
+}
+
+// Add method to handle modal close
+onChangeMemberRoleModalClose() {
+  this.showChangeMemberRoleModal = false;
+  this.selectedMember = null;
+}
 
   // Utility methods
   getMemberStatusText(member: any): string {
@@ -212,7 +239,6 @@ export class AllmembersComponent implements OnInit {
     }
   }
 
-
   // Updated openAddMemberModal method
   openAddMemberModal() {
     this.showAddMemberModal = true;
@@ -225,26 +251,7 @@ export class AllmembersComponent implements OnInit {
 
   // New method to handle member addition
   async onMemberAdded(memberData: TeamMemberData) {
-    try {
-      // Here you would call your API to add the member
-      // Example API call:
-      // const result = await this.taskService.addTeamMember(memberData);
-      
-      // For now, let's simulate the API call
-      console.log('Adding member:', memberData);
-      
-      // Show success message
-      swalHelper.showToast(`${memberData.fullName} has been added successfully!`, 'success');
-      
-      // Refresh the members list
-      await this.fetchMembers();
-      
-      // Close the modal
-      this.showAddMemberModal = false;
-      
-    } catch (error) {
-      console.error('Error adding member:', error);
-      swalHelper.showToast('Failed to add team member', 'error');
-    }
+    await this.fetchMembers();
+    this.showAddMemberModal = false;
   }
 }

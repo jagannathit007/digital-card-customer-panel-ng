@@ -27,6 +27,10 @@ export class MemberprofileComponent implements OnInit {
   showOldPassword: boolean = false;
   showNewPassword: boolean = false;
   showConfirmPassword: boolean = false;
+  
+  // Skills management
+  skillsList: string[] = [];
+  currentSkill: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -39,7 +43,6 @@ export class MemberprofileComponent implements OnInit {
       mobile: [{ value: '', disabled: true }, [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
       emailId: [{ value: '', disabled: true }], // Always disabled
       role: [{ value: '', disabled: true }], // Always disabled
-      skills: [{ value: '', disabled: true }],
       experience: [{ value: '', disabled: true }]
     });
 
@@ -52,6 +55,39 @@ export class MemberprofileComponent implements OnInit {
 
   ngOnInit() {
     this.getTeamMemberProfile();
+  }
+
+  // Mobile number input restriction
+  onMobileInput(event: any): void {
+    const input = event.target;
+    let value = input.value.replace(/\D/g, ''); // Remove non-digits
+    
+    if (value.length > 10) {
+      value = value.substring(0, 10); // Limit to 10 digits
+    }
+    
+    input.value = value;
+    this.profileForm.get('mobile')?.setValue(value);
+  }
+
+  // Skills management methods
+  addSkill(): void {
+    const skill = this.currentSkill.trim();
+    if (skill && !this.skillsList.includes(skill)) {
+      this.skillsList.push(skill);
+      this.currentSkill = '';
+    }
+  }
+
+  removeSkill(index: number): void {
+    this.skillsList.splice(index, 1);
+  }
+
+  onSkillKeyPress(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.addSkill();
+    }
   }
 
   togglePasswordVisibility(field: string): void {
@@ -124,9 +160,12 @@ export class MemberprofileComponent implements OnInit {
       mobile: data.mobile || '',
       emailId: data.emailId || '',
       role: data.role || '',
-      skills: Array.isArray(data.skills) ? data.skills.join(', ') : '',
       experience: data.experience || ''
     });
+
+    // Populate skills list
+    this.skillsList = Array.isArray(data.skills) ? [...data.skills] : 
+                     (data.skills ? data.skills.split(',').map((skill: string) => skill.trim()).filter((skill: string) => skill.length > 0) : []);
   }
 
   enableEdit() {
@@ -134,7 +173,6 @@ export class MemberprofileComponent implements OnInit {
     // Enable only editable fields (not email and role)
     this.profileForm.get('name')?.enable();
     this.profileForm.get('mobile')?.enable();
-    this.profileForm.get('skills')?.enable();
     this.profileForm.get('experience')?.enable();
     
     // Email and role always remain disabled
@@ -147,7 +185,6 @@ export class MemberprofileComponent implements OnInit {
     // Disable all editable fields
     this.profileForm.get('name')?.disable();
     this.profileForm.get('mobile')?.disable();
-    this.profileForm.get('skills')?.disable();
     this.profileForm.get('experience')?.disable();
     
     // Reset form to original values
@@ -156,6 +193,9 @@ export class MemberprofileComponent implements OnInit {
     // Clear image selection
     this.selectedFile = null;
     this.imagePreview = null;
+    
+    // Reset current skill input
+    this.currentSkill = '';
   }
 
   // Password form methods
@@ -280,15 +320,10 @@ export class MemberprofileComponent implements OnInit {
       this.isSaving = true;
       const formData = this.profileForm.getRawValue();
       
-      // Convert skills string to array
-      const skillsArray = formData.skills ? 
-        formData.skills.split(',').map((skill: string) => skill.trim()).filter((skill: string) => skill.length > 0) : 
-        [];
-
       const updateData = {
         name: formData.name,
         mobile: formData.mobile,
-        skills: skillsArray,
+        skills: this.skillsList,
         experience: formData.experience
       };
 
@@ -298,7 +333,7 @@ export class MemberprofileComponent implements OnInit {
         formDataWithImage.append('file', this.selectedFile);
         formDataWithImage.append('name', updateData.name);
         formDataWithImage.append('mobile', updateData.mobile);
-        skillsArray.forEach((skill: any) => {
+        this.skillsList.forEach((skill: string) => {
           formDataWithImage.append('skills[]', skill);
         });        
         formDataWithImage.append('experience', updateData.experience);
@@ -327,12 +362,12 @@ export class MemberprofileComponent implements OnInit {
     this.isEditing = false;
     this.selectedFile = null;
     this.imagePreview = null;
+    this.currentSkill = '';
     this.getTeamMemberProfile(); // Refresh data
     
     // Disable all editable fields
     this.profileForm.get('name')?.disable();
     this.profileForm.get('mobile')?.disable();
-    this.profileForm.get('skills')?.disable();
     this.profileForm.get('experience')?.disable();
   }
 

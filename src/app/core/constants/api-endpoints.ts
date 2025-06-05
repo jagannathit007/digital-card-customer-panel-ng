@@ -162,6 +162,7 @@ class ApiEndpoints {
 public TEAM_MEMBER_SIGNIN: string = `${this.PATH}/task/sign-in`;
 public TEAM_MEMBER_VERIFY_TOKEN: string = `${this.PATH}/task/verify-invitation-token`;
 public TEAM_MEMBER_PROFILE: string = `${this.PATH}/task/get-current-user`;
+public REINVITE_USER: string = `${this.PATH}/task/teamMember/resend-invitation`;
 
 public GET_ALL_MEMBERS: string = `${this.PATH}/task/teamMember/getAll`;
 public ADD_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/add`;
@@ -169,6 +170,7 @@ public UPDATE_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/update`;
 public DELETE_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/delete`;
 public CHANGE_MEMBER_PASSWORD: string = `${this.PATH}/task/changePassword`;
 public CHANGE_ROLE: string = `${this.PATH}/task/teamMember/changeRole`;
+
 
 public CREATE_BOARD: string = `${this.PATH}/task/board/create`;
 public UPDATE_BOARD: string = `${this.PATH}/task/board/update`;

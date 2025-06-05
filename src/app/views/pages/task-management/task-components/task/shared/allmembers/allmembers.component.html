@@ -5,20 +5,25 @@
     <!-- Title and Add Button -->
     <div class="tw-flex tw-justify-between tw-items-center">
       <h1 class="tw-text-3xl tw-font-bold tw-text-gray-800">Team Members</h1>
-      <button 
+      <button
         class="tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-px-6 tw-py-2.5 tw-rounded-lg tw-font-medium tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-2"
-        (click)="openAddMemberModal()">
+        (click)="openAddMemberModal()"
+      >
         <i class="fas fa-user-plus"></i>
         Add Member
       </button>
     </div>
 
     <!-- Search and Filter Section -->
-    <div class="tw-flex tw-flex-col sm:tw-flex-row tw-gap-4 tw-bg-white tw-p-4 tw-rounded-xl tw-shadow-sm tw-border">
+    <div
+      class="tw-flex tw-flex-col sm:tw-flex-row tw-gap-4 tw-bg-white tw-p-4 tw-rounded-xl tw-shadow-sm tw-border"
+    >
       <!-- Search Input -->
       <div class="tw-flex-1">
         <div class="tw-relative">
-          <i class="fas fa-search tw-absolute tw-left-3 tw-top-1/2 tw-transform -tw-translate-y-1/2 tw-text-gray-400"></i>
+          <i
+            class="fas fa-search tw-absolute tw-left-3 tw-top-1/2 tw-transform -tw-translate-y-1/2 tw-text-gray-400"
+          ></i>
           <input
             type="text"
             class="tw-w-full tw-pl-10 tw-pr-4 tw-py-2.5 tw-border tw-border-gray-200 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-transition-all"
@@ -32,10 +37,11 @@
       <!-- Filter Dropdowns -->
       <div class="tw-flex tw-gap-3">
         <!-- Role Filter -->
-        <select 
+        <select
           class="tw-px-4 tw-py-2.5 tw-border tw-border-gray-200 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-bg-white"
           [(ngModel)]="filterRole"
-          (change)="onFilterChange()">
+          (change)="onFilterChange()"
+        >
           <option value="">All Roles</option>
           <option value="admin">Admin</option>
           <option value="manager">Manager</option>
@@ -45,20 +51,22 @@
         </select>
 
         <!-- Status Filter -->
-        <select 
+        <select
           class="tw-px-4 tw-py-2.5 tw-border tw-border-gray-200 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-bg-white"
           [(ngModel)]="filterStatus"
-          (change)="onFilterChange()">
+          (change)="onFilterChange()"
+        >
           <option value="">All Status</option>
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
         </select>
 
         <!-- Verification Filter -->
-        <select 
+        <select
           class="tw-px-4 tw-py-2.5 tw-border tw-border-gray-200 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-bg-white"
           [(ngModel)]="filterVerified"
-          (change)="onFilterChange()">
+          (change)="onFilterChange()"
+        >
           <option value="">All Verification</option>
           <option value="verified">Verified</option>
           <option value="unverified">Unverified</option>
@@ -68,19 +76,26 @@
   </div>
 
   <!-- Loading State -->
-  <div *ngIf="loading" class="tw-flex tw-justify-center tw-items-center tw-py-16">
-    <div class="tw-animate-spin tw-rounded-full tw-h-12 tw-w-12 tw-border-b-2 tw-border-blue-600"></div>
+  <div
+    *ngIf="loading"
+    class="tw-flex tw-justify-center tw-items-center tw-py-16"
+  >
+    <div
+      class="tw-animate-spin tw-rounded-full tw-h-12 tw-w-12 tw-border-b-2 tw-border-blue-600"
+    ></div>
   </div>
 
   <!-- Members Grid -->
   <div *ngIf="!loading && members.length > 0" class="tw-space-y-6">
     <!-- Members Cards Grid -->
-    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 xl:tw-grid-cols-4 tw-gap-6">
-      <div 
-        *ngFor="let member of members" 
+    <div
+      class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 xl:tw-grid-cols-4 tw-gap-6"
+    >
+      <div
+        *ngFor="let member of members"
         class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-100 tw-p-6 tw-transition-all tw-duration-200 hover:tw-shadow-lg hover:tw-border-blue-200 hover:tw-scale-105 tw-cursor-pointer"
-        (click)="openMemberModal(member)">
-        
+        (click)="openMemberModal(member)"
+      >
         <!-- Profile Image and Status -->
         <div class="tw-flex tw-justify-between tw-items-start tw-mb-4">
           <div class="tw-relative">
@@ -90,16 +105,19 @@
               class="tw-w-16 tw-h-16 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-100"
             />
             <!-- Online/Offline Status Indicator -->
-            <div class="tw-absolute -tw-bottom-1 -tw-right-1 tw-w-5 tw-h-5 tw-rounded-full tw-border-2 tw-border-white"
-                 [class]="member.isActive ? 'tw-bg-green-500' : 'tw-bg-gray-400'"></div>
+            <div
+              class="tw-absolute -tw-bottom-1 -tw-right-1 tw-w-5 tw-h-5 tw-rounded-full tw-border-2 tw-border-white"
+              [class]="member.isActive ? 'tw-bg-green-500' : 'tw-bg-gray-400'"
+            ></div>
           </div>
-          
+
           <!-- Quick Actions -->
           <div class="tw-flex tw-gap-1">
-            <button 
+            <button
               *ngIf="!member.isVerified"
               class="tw-bg-yellow-100 hover:tw-bg-yellow-200 tw-text-yellow-700 tw-px-2 tw-py-1 tw-rounded-md tw-text-xs tw-font-medium tw-transition-colors"
-              (click)="reInviteUser(member, $event)">
+              (click)="reInviteUser(member, $event)"
+            >
               Re-invite
             </button>
           </div>
@@ -109,9 +127,13 @@
         <div class="tw-space-y-3">
           <!-- Name and Role -->
           <div>
-            <h3 class="tw-font-semibold tw-text-gray-900 tw-text-lg tw-mb-1">{{ member.name }}</h3>
-            <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium"
-                  [class]="getRoleBadgeClass(member.role)">
+            <h3 class="tw-font-semibold tw-text-gray-900 tw-text-lg tw-mb-1">
+              {{ member.name }}
+            </h3>
+            <span
+              class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium"
+              [class]="getRoleBadgeClass(member.role)"
+            >
               {{ member.role | titlecase }}
             </span>
           </div>
@@ -129,15 +151,20 @@
           </div>
 
           <!-- Skills -->
-          <div *ngIf="member.skills && member.skills.length > 0" class="tw-flex tw-flex-wrap tw-gap-1">
-            <span 
-              *ngFor="let skill of member.skills.slice(0, 2)" 
-              class="tw-bg-blue-50 tw-text-blue-700 tw-px-2 tw-py-1 tw-rounded-md tw-text-xs">
+          <div
+            *ngIf="member.skills && member.skills.length > 0"
+            class="tw-flex tw-flex-wrap tw-gap-1"
+          >
+            <span
+              *ngFor="let skill of member.skills.slice(0, 2)"
+              class="tw-bg-blue-50 tw-text-blue-700 tw-px-2 tw-py-1 tw-rounded-md tw-text-xs"
+            >
               {{ skill }}
             </span>
-            <span 
-              *ngIf="member.skills.length > 2" 
-              class="tw-bg-gray-100 tw-text-gray-600 tw-px-2 tw-py-1 tw-rounded-md tw-text-xs">
+            <span
+              *ngIf="member.skills.length > 2"
+              class="tw-bg-gray-100 tw-text-gray-600 tw-px-2 tw-py-1 tw-rounded-md tw-text-xs"
+            >
               +{{ member.skills.length - 2 }}
             </span>
           </div>
@@ -145,14 +172,26 @@
           <!-- Status Badges -->
           <div class="tw-flex tw-justify-between tw-items-center tw-pt-2">
             <div class="tw-flex tw-gap-2">
-              <span class="tw-inline-flex tw-items-center tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium"
-                    [class]="member.isVerified ? 'tw-bg-green-100 tw-text-green-800' : 'tw-bg-red-100 tw-text-red-800'">
-                <i [class]="member.isVerified ? 'fas fa-check-circle tw-mr-1' : 'fas fa-times-circle tw-mr-1'"></i>
-                {{ member.isVerified ? 'Verified' : 'Unverified' }}
+              <span
+                class="tw-inline-flex tw-items-center tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium"
+                [class]="
+                  member.isVerified
+                    ? 'tw-bg-green-100 tw-text-green-800'
+                    : 'tw-bg-red-100 tw-text-red-800'
+                "
+              >
+                <i
+                  [class]="
+                    member.isVerified
+                      ? 'fas fa-check-circle tw-mr-1'
+                      : 'fas fa-times-circle tw-mr-1'
+                  "
+                ></i>
+                {{ member.isVerified ? "Verified" : "Unverified" }}
               </span>
             </div>
             <span class="tw-text-xs tw-text-gray-500">
-              {{ member.isActive ? 'Active' : 'Inactive' }}
+              {{ member.isActive ? "Active" : "Inactive" }}
             </span>
           </div>
         </div>
@@ -161,43 +200,53 @@
 
     <!-- Pagination -->
     <div class="tw-flex tw-justify-center tw-items-center tw-gap-4 tw-py-8">
-      <button 
+      <button
         class="tw-px-4 tw-py-2 tw-rounded-lg tw-border tw-border-gray-200 tw-text-gray-600 hover:tw-bg-gray-50 tw-transition-colors tw-disabled:opacity-50 tw-disabled:cursor-not-allowed"
         [disabled]="page === 1"
-        (click)="prevPage()">
+        (click)="prevPage()"
+      >
         <i class="fas fa-chevron-left tw-mr-2"></i>
         Previous
       </button>
-      
-      <span class="tw-px-4 tw-py-2 tw-bg-blue-50 tw-text-blue-700 tw-rounded-lg tw-font-medium">
+
+      <span
+        class="tw-px-4 tw-py-2 tw-bg-blue-50 tw-text-blue-700 tw-rounded-lg tw-font-medium"
+      >
         Page {{ page }} of {{ totalPages }}
       </span>
-      
-      <button 
+
+      <button
         class="tw-px-4 tw-py-2 tw-rounded-lg tw-border tw-border-gray-200 tw-text-gray-600 hover:tw-bg-gray-50 tw-transition-colors tw-disabled:opacity-50 tw-disabled:cursor-not-allowed"
         [disabled]="page === totalPages"
-        (click)="nextPage()">
+        (click)="nextPage()"
+      >
         Next
         <i class="fas fa-chevron-right tw-ml-2"></i>
       </button>
     </div>
   </div>
 
-<app-add-team-member 
-  *ngIf="showAddMemberModal"
-  (closeModalEvent)="onAddMemberModalClose()"
-  (memberAdded)="onMemberAdded($event)">
-</app-add-team-member>
+  <app-add-team-member
+    *ngIf="showAddMemberModal"
+    (closeModalEvent)="onAddMemberModalClose()"
+    (memberAdded)="onMemberAdded($event)"
+  >
+  </app-add-team-member>
 
   <!-- Empty State -->
   <div *ngIf="!loading && members.length === 0" class="tw-text-center tw-py-16">
     <div class="tw-max-w-md tw-mx-auto">
       <i class="fas fa-users tw-text-6xl tw-text-gray-300 tw-mb-4"></i>
-      <h3 class="tw-text-xl tw-font-semibold tw-text-gray-700 tw-mb-2">No team members found</h3>
-      <p class="tw-text-gray-500 tw-mb-6">Try adjusting your search or filter criteria</p>
-      <button 
+      <h3 class="tw-text-xl tw-font-semibold tw-text-gray-700 tw-mb-2">
+        No team members found
+      </h3>
+      <p class="tw-text-gray-500 tw-mb-6">
+        Try adjusting your search or filter criteria
+      </p>
+      <button
         class="tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-px-6 tw-py-2.5 tw-rounded-lg tw-font-medium tw-transition-colors"
-        (click)="openAddMemberModal()">
+        (click)="openAddMemberModal()"
+      >
         Add Your First Member
       </button>
     </div>
@@ -205,10 +254,19 @@
 </div>
 
 <!-- Member Details Modal -->
-<div *ngIf="selectedMember" class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4" (click)="closeMemberModal()">
-  <div class="tw-bg-white tw-rounded-xl tw-shadow-2xl tw-max-w-2xl tw-w-full tw-max-h-[90vh] tw-overflow-hidden" (click)="$event.stopPropagation()">
+<div
+  *ngIf="selectedMember"
+  class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4"
+  (click)="closeMemberModal()"
+>
+  <div
+    class="tw-bg-white tw-rounded-xl tw-shadow-2xl tw-max-w-2xl tw-w-full tw-max-h-[90vh] tw-overflow-hidden"
+    (click)="$event.stopPropagation()"
+  >
     <!-- Modal Header -->
-    <div class="tw-flex tw-justify-between tw-items-center tw-p-6 tw-border-b tw-border-gray-200">
+    <div
+      class="tw-flex tw-justify-between tw-items-center tw-p-6 tw-border-b tw-border-gray-200"
+    >
       <div class="tw-flex tw-items-center tw-gap-4">
         <img
           [src]="baseURL + '/' + selectedMember.profileImage"
@@ -216,13 +274,16 @@
           class="tw-w-12 tw-h-12 tw-rounded-full tw-object-cover"
         />
         <div>
-          <h2 class="tw-text-xl tw-font-semibold tw-text-gray-900">{{ selectedMember.name }}</h2>
+          <h2 class="tw-text-xl tw-font-semibold tw-text-gray-900">
+            {{ selectedMember.name }}
+          </h2>
           <p class="tw-text-gray-600">{{ selectedMember.role | titlecase }}</p>
         </div>
       </div>
-      <button 
+      <button
         class="tw-text-gray-400 hover:tw-text-gray-600 tw-text-2xl"
-        (click)="closeMemberModal()">
+        (click)="closeMemberModal()"
+      >
         <i class="fas fa-times"></i>
       </button>
     </div>
@@ -230,11 +291,16 @@
     <!-- Modal Tabs -->
     <div class="tw-border-b tw-border-gray-200">
       <nav class="tw-flex">
-        <button 
+        <button
           *ngFor="let tab of modalTabs"
           class="tw-px-6 tw-py-3 tw-text-sm tw-font-medium tw-border-b-2 tw-transition-colors"
-          [class]="activeTab === tab.id ? 'tw-text-blue-600 tw-border-blue-600' : 'tw-text-gray-600 tw-border-transparent hover:tw-text-gray-800'"
-          (click)="activeTab = tab.id">
+          [class]="
+            activeTab === tab.id
+              ? 'tw-text-blue-600 tw-border-blue-600'
+              : 'tw-text-gray-600 tw-border-transparent hover:tw-text-gray-800'
+          "
+          (click)="activeTab = tab.id"
+        >
           <i [class]="tab.icon + ' tw-mr-2'"></i>
           {{ tab.label }}
         </button>
@@ -247,45 +313,80 @@
       <div *ngIf="activeTab === 'details'" class="tw-space-y-6">
         <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6">
           <div>
-            <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">Email</label>
+            <label
+              class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2"
+              >Email</label
+            >
             <p class="tw-text-gray-900">{{ selectedMember.emailId }}</p>
           </div>
           <div>
-            <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">Mobile</label>
-            <p class="tw-text-gray-900">{{ selectedMember.mobile || 'Not provided' }}</p>
+            <label
+              class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2"
+              >Mobile</label
+            >
+            <p class="tw-text-gray-900">
+              {{ selectedMember.mobile || "Not provided" }}
+            </p>
           </div>
           <div>
-            <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">Role</label>
-            <p class="tw-text-gray-900">{{ selectedMember.role | titlecase }}</p>
+            <label
+              class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2"
+              >Role</label
+            >
+            <p class="tw-text-gray-900">
+              {{ selectedMember.role | titlecase }}
+            </p>
           </div>
           <div>
-            <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">Status</label>
+            <label
+              class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2"
+              >Status</label
+            >
             <div class="tw-flex tw-gap-2">
-              <span class="tw-inline-flex tw-items-center tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium"
-                    [class]="selectedMember.isVerified ? 'tw-bg-green-100 tw-text-green-800' : 'tw-bg-red-100 tw-text-red-800'">
-                {{ selectedMember.isVerified ? 'Verified' : 'Unverified' }}
+              <span
+                class="tw-inline-flex tw-items-center tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium"
+                [class]="
+                  selectedMember.isVerified
+                    ? 'tw-bg-green-100 tw-text-green-800'
+                    : 'tw-bg-red-100 tw-text-red-800'
+                "
+              >
+                {{ selectedMember.isVerified ? "Verified" : "Unverified" }}
               </span>
-              <span class="tw-inline-flex tw-items-center tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium"
-                    [class]="selectedMember.isActive ? 'tw-bg-blue-100 tw-text-blue-800' : 'tw-bg-gray-100 tw-text-gray-800'">
-                {{ selectedMember.isActive ? 'Active' : 'Inactive' }}
+              <span
+                class="tw-inline-flex tw-items-center tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium"
+                [class]="
+                  selectedMember.isActive
+                    ? 'tw-bg-blue-100 tw-text-blue-800'
+                    : 'tw-bg-gray-100 tw-text-gray-800'
+                "
+              >
+                {{ selectedMember.isActive ? "Active" : "Inactive" }}
               </span>
             </div>
           </div>
         </div>
-        
+
         <div *ngIf="selectedMember.skills && selectedMember.skills.length > 0">
-          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">Skills</label>
+          <label
+            class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2"
+            >Skills</label
+          >
           <div class="tw-flex tw-flex-wrap tw-gap-2">
-            <span 
-              *ngFor="let skill of selectedMember.skills" 
-              class="tw-bg-blue-50 tw-text-blue-700 tw-px-3 tw-py-1 tw-rounded-full tw-text-sm">
+            <span
+              *ngFor="let skill of selectedMember.skills"
+              class="tw-bg-blue-50 tw-text-blue-700 tw-px-3 tw-py-1 tw-rounded-full tw-text-sm"
+            >
               {{ skill }}
             </span>
           </div>
         </div>
 
         <div *ngIf="selectedMember.experience">
-          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">Experience</label>
+          <label
+            class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2"
+            >Experience</label
+          >
           <p class="tw-text-gray-900">{{ selectedMember.experience }}</p>
         </div>
       </div>
@@ -293,45 +394,92 @@
       <!-- Boards Tab -->
       <div *ngIf="activeTab === 'boards'" class="tw-space-y-4">
         <div class="tw-text-center tw-py-8">
-          <i class="fas fa-clipboard-list tw-text-4xl tw-text-gray-300 tw-mb-3"></i>
-          <p class="tw-text-gray-600">Board information will be displayed here</p>
+          <i
+            class="fas fa-clipboard-list tw-text-4xl tw-text-gray-300 tw-mb-3"
+          ></i>
+          <p class="tw-text-gray-600">
+            Board information will be displayed here
+          </p>
         </div>
       </div>
 
       <!-- Actions Tab -->
       <div *ngIf="activeTab === 'actions'" class="tw-space-y-4">
         <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 tw-gap-4">
-          <button 
+          <button
             class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors"
-            [class]="selectedMember.isActive ? 'tw-text-red-600 hover:tw-border-red-200' : 'tw-text-green-600 hover:tw-border-green-200'"
-            (click)="toggleUserStatus(selectedMember)">
-            <i [class]="selectedMember.isActive ? 'fas fa-user-slash' : 'fas fa-user-check'"></i>
-            <span>{{ selectedMember.isActive ? 'Deactivate' : 'Activate' }} User</span>
+            [class]="
+              selectedMember.isActive
+                ? 'tw-text-red-600 hover:tw-border-red-200'
+                : 'tw-text-green-600 hover:tw-border-green-200'
+            "
+            (click)="toggleUserStatus(selectedMember)"
+          >
+            <i
+              [class]="
+                selectedMember.isActive
+                  ? 'fas fa-user-slash'
+                  : 'fas fa-user-check'
+              "
+            ></i>
+            <span
+              >{{
+                selectedMember.isActive ? "Deactivate" : "Activate"
+              }}
+              User</span
+            >
           </button>
 
-          <button 
+          <button
             class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors tw-text-blue-600 hover:tw-border-blue-200"
-            (click)="addToBoard(selectedMember)">
+            (click)="addToBoard(selectedMember)"
+          >
             <i class="fas fa-plus-circle"></i>
             <span>Add to Board</span>
           </button>
 
-          <button 
+          <button
             *ngIf="!selectedMember.isVerified"
             class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors tw-text-yellow-600 hover:tw-border-yellow-200"
-            (click)="reInviteUser(selectedMember)">
+            (click)="reInviteUser(selectedMember)"
+          >
             <i class="fas fa-paper-plane"></i>
             <span>Re-invite User</span>
           </button>
 
-          <button 
+          <button
             class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors tw-text-purple-600 hover:tw-border-purple-200"
-            (click)="editMember(selectedMember)">
-            <i class="fas fa-edit"></i>
-            <span>Edit Member</span>
+            (click)="changeMemberRole(selectedMember)"
+          >
+            <i class="fa-solid fa-sitemap"></i>
+            <span>Change Member Role</span>
           </button>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- sending mail -->
+
+<!-- <app-sending-mail
+  [member]="selectedMemberForMail"
+  [isVisible]="showSendingMailModal"
+>
+</app-sending-mail> -->
+
+<app-sending-mail
+  [member]="selectedMemberForMail"
+  [isVisible]="showSendingMailModal"
+  (closeModal)="closeSendingMailModal($event)"
+  (mailSent)="closeSendingMailModal($event)"
+>
+</app-sending-mail>
+
+<app-change-member-role
+  *ngIf="showChangeMemberRoleModal"
+  [isVisible]="showChangeMemberRoleModal"
+  [member]="selectedMember"
+  (closeModal)="onChangeMemberRoleModalClose()"
+  (roleChanged)="onRoleChanged($event)"
+></app-change-member-role>
