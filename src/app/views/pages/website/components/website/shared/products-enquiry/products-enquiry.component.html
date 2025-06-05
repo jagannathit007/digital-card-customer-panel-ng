@@ -51,7 +51,7 @@
                     <td>{{ order.customer.name }}</td>
                     <td>{{ order.customer.email }}</td>
                     <td>{{ order.customer.message }}</td>
-                    <td>{{ order.product.name }}</td>
+                    <td>{{ stripHtml(order.product.name) }}</td>
                     <td>{{ order.product.price }}</td>
                     <td>{{ order.orderDate | date: 'dd/MM/yyyy' }}</td>
                     <td class="text-center"><button class="btn btn-danger btn-sm" (click)="_deleteEnquiry(order._id)"><i class="ri-delete-bin-line"></i></button></td>

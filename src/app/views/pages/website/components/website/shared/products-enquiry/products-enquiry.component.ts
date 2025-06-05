@@ -81,4 +81,9 @@ export class ProductsEnquiryComponent implements OnInit {
        this._fetchOrders();
       }
   }
+
+  stripHtml(content: any): any {
+  if (!content) return '';
+  return content.replace(/<[^>]*>/g, '');
+}
 }
