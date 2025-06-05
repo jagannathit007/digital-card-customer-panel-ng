@@ -98,12 +98,38 @@ export class TaskMemberAuthService {
     }
   }
 
-  async ChangePasswordInTask(data: any) {
+   async UpdateTeamMember(data: any) {
     try {
       this.getHeaders();
       let response = await this.apiManager.request(
         {
-          url: apiEndpoints.CHANGE_PASSWORD_INTASK,
+          url: apiEndpoints.UPDATE_TEAM_MEMBER,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data != 0) {
+        swalHelper.success(response.message);
+        return true;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
+
+
+  async ChangeMemberPassword(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.CHANGE_MEMBER_PASSWORD,
           method: 'POST',
         },
         data,

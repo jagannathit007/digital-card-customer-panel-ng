@@ -167,7 +167,7 @@ public GET_ALL_MEMBERS: string = `${this.PATH}/task/teamMember/getAll`;
 public ADD_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/add`;
 public UPDATE_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/update`;
 public DELETE_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/delete`;
-public CHANGE_PASSWORD_INTASK: string = `${this.PATH}/task/changePassword`;
+public CHANGE_MEMBER_PASSWORD: string = `${this.PATH}/task/changePassword`;
 public CHANGE_ROLE: string = `${this.PATH}/task/teamMember/changeRole`;
 
 public CREATE_BOARD: string = `${this.PATH}/task/board/create`;
