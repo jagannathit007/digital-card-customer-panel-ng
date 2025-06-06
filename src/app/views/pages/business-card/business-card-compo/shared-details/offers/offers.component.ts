@@ -93,7 +93,7 @@ export class OffersComponent {
     businessCardId: '',
     visible:true
   }
-  imageBaseURL = environment.baseURL + '/';
+  imageBaseURL = environment.imageURL;
 
   onOpenCreateModal() {
     this.selectedOffer = {

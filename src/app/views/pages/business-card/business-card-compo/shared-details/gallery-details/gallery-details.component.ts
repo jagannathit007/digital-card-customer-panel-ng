@@ -13,6 +13,7 @@ import { ModalService } from 'src/app/core/utilities/modal';
 })
 export class GalleryDetailsComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
+  imageBaseURL = environment.imageURL;
   selectedImages: string[] = [];
   selectedImagesLength: number = 0;
   actualImageToDeleteIndex: number | null = null;
@@ -78,15 +79,15 @@ export class GalleryDetailsComponent implements OnInit {
       this.selectedImages.splice(this.imageToDeleteIndex, 1);
       this.imageToDeleteIndex = null;
     }
-  
+
     if (this.actualImageToDeleteIndex !== null) {
       let image = this.galleries[this.actualImageToDeleteIndex].split(`${environment.baseURL}/`)[1];
-      
+
       let result = await this.authService.deleteGalleryDetails({
-          fileURL: image,
-          type: 'image',
+        fileURL: image,
+        type: 'image',
       });
-  
+
       if (result) {
         // Remove the image from the gallery list
         this.galleries.splice(this.actualImageToDeleteIndex, 1);
@@ -94,7 +95,7 @@ export class GalleryDetailsComponent implements OnInit {
       }
     }
   }
-  
+
 
   isLoading: boolean = false;
   galleries: any[] = [];
@@ -102,8 +103,8 @@ export class GalleryDetailsComponent implements OnInit {
     this.isLoading = true;
     let result = await this.authService.getGalleryDetails({});
     if (result != null) {
-      this.galleries = result.images.map((v: any) => `${environment.baseURL}/${v}`);
-      this.videos = result.videos.map((v: any) => `${environment.baseURL}/${v}`);
+      this.galleries = result.images.map((v: any) => `${environment.imageURL}${v}`);
+      this.videos = result.videos.map((v: any) => `${environment.imageURL}${v}`);
     }
     this.isLoading = false;
   };
@@ -175,105 +176,105 @@ export class GalleryDetailsComponent implements OnInit {
 
   // Add these methods to your component class
 
-// For deleting existing videos from server
-async confirmDeleteVideoByActualIndex(index: number): Promise<void> {
-  this.actualVideoToDeleteIndex = index;
-  // this.modal.open('deleteVideoModal');
-  let con=swalHelper.delete()
-  if((await con).isConfirmed){
-    this.deleteVideo();
+  // For deleting existing videos from server
+  async confirmDeleteVideoByActualIndex(index: number): Promise<void> {
+    this.actualVideoToDeleteIndex = index;
+    // this.modal.open('deleteVideoModal');
+    let con = swalHelper.delete()
+    if ((await con).isConfirmed) {
+      this.deleteVideo();
+    }
   }
-}
 
-// For deleting selected videos (not yet uploaded)
-async confirmDeleteVideoByIndex(index: number): Promise<void> {
-  this.videoToDeleteIndex = index;
-  // this.modal.open('deleteVideoModal');
-  let con=swalHelper.delete()
-  if((await con).isConfirmed){
-    this.deleteVideo();
+  // For deleting selected videos (not yet uploaded)
+  async confirmDeleteVideoByIndex(index: number): Promise<void> {
+    this.videoToDeleteIndex = index;
+    // this.modal.open('deleteVideoModal');
+    let con = swalHelper.delete()
+    if ((await con).isConfirmed) {
+      this.deleteVideo();
+    }
   }
-}
 
-async deleteVideo(): Promise<void> {
-  try {
-    if (this.videoToDeleteIndex !== null) {
-      // Handle locally selected videos (not yet uploaded)
-      this.selectedVideos.splice(this.videoToDeleteIndex, 1);
-      this.fileVideos.splice(this.videoToDeleteIndex, 1);
-      this.videoToDeleteIndex = null;
-      swalHelper.showToast('Video removed successfully', 'success');
-    } 
-    else if (this.actualVideoToDeleteIndex !== null) {
-      // Handle videos already on server
-      const videoUrl = this.videos[this.actualVideoToDeleteIndex];
-      const fileURL = videoUrl.split(`${environment.baseURL}/`)[1];
-      
-      const success = await this.authService.deleteGalleryDetails({
-        fileURL: fileURL,
-        type: 'video'
-      });
-
-      if (success) {
-        this.videos.splice(this.actualVideoToDeleteIndex, 1);
-        swalHelper.showToast('Video deleted successfully', 'success');
+  async deleteVideo(): Promise<void> {
+    try {
+      if (this.videoToDeleteIndex !== null) {
+        // Handle locally selected videos (not yet uploaded)
+        this.selectedVideos.splice(this.videoToDeleteIndex, 1);
+        this.fileVideos.splice(this.videoToDeleteIndex, 1);
+        this.videoToDeleteIndex = null;
+        swalHelper.showToast('Video removed successfully', 'success');
       }
-      this.actualVideoToDeleteIndex = null;
-    }
-  } catch (error) {
-    console.error('Error deleting video:', error);
-    swalHelper.showToast('Failed to delete video', 'error');
-  } finally {
-    this.modal.close('deleteVideoModal');
-  }
-}
+      else if (this.actualVideoToDeleteIndex !== null) {
+        // Handle videos already on server
+        const videoUrl = this.videos[this.actualVideoToDeleteIndex];
+        const fileURL = videoUrl.split(`${environment.baseURL}/`)[1];
 
-onVideoSelected(event: any): void {
-  const files = event.target.files;
-  const totalVideos = this.videos.length + this.selectedVideos.length + files.length;
+        const success = await this.authService.deleteGalleryDetails({
+          fileURL: fileURL,
+          type: 'video'
+        });
 
-  if (totalVideos > 10) {
-    swalHelper.showToast('Only 10 videos are allowed to upload!', 'warning');
-    return;
-  }
-
-  if (files) {
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.selectedVideos.push(e.target.result);
-        this.fileVideos.push(file);
-      };
-      reader.readAsDataURL(file);
+        if (success) {
+          this.videos.splice(this.actualVideoToDeleteIndex, 1);
+          swalHelper.showToast('Video deleted successfully', 'success');
+        }
+        this.actualVideoToDeleteIndex = null;
+      }
+    } catch (error) {
+      console.error('Error deleting video:', error);
+      swalHelper.showToast('Failed to delete video', 'error');
+    } finally {
+      this.modal.close('deleteVideoModal');
     }
   }
-}
 
-async uploadVideos() {
-  if (this.fileVideos.length === 0) {
-    swalHelper.showToast('Select videos to upload!', 'warning');
-    return;
+  onVideoSelected(event: any): void {
+    const files = event.target.files;
+    const totalVideos = this.videos.length + this.selectedVideos.length + files.length;
+
+    if (totalVideos > 10) {
+      swalHelper.showToast('Only 10 videos are allowed to upload!', 'warning');
+      return;
+    }
+
+    if (files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.selectedVideos.push(e.target.result);
+          this.fileVideos.push(file);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
   }
 
-  this.isVideoUploading = true;
-  const formData = new FormData();
-  
-  for (let file of this.fileVideos) {
-    formData.append('files', file);
-  }
-  
-  formData.append('businessCardId', this.storage.get(common.BUSINESS_CARD));
-  formData.append('type', 'video'); // Add type to distinguish between images and videos
+  async uploadVideos() {
+    if (this.fileVideos.length === 0) {
+      swalHelper.showToast('Select videos to upload!', 'warning');
+      return;
+    }
 
-  const result = await this.authService.updateGalleryDetails(formData);
-  if (result) {
-    this.selectedVideos = [];
-    this.fileVideos = [];
-    this.getGallery();
-    swalHelper.showToast('Videos uploaded successfully!', 'success');
+    this.isVideoUploading = true;
+    const formData = new FormData();
+
+    for (let file of this.fileVideos) {
+      formData.append('files', file);
+    }
+
+    formData.append('businessCardId', this.storage.get(common.BUSINESS_CARD));
+    formData.append('type', 'video'); // Add type to distinguish between images and videos
+
+    const result = await this.authService.updateGalleryDetails(formData);
+    if (result) {
+      this.selectedVideos = [];
+      this.fileVideos = [];
+      this.getGallery();
+      swalHelper.showToast('Videos uploaded successfully!', 'success');
+    }
+    this.isVideoUploading = false;
   }
-  this.isVideoUploading = false;
-} 
 
 }

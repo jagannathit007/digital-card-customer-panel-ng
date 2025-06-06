@@ -14,7 +14,7 @@ declare var $: any;
   styleUrl: './personal-details.component.scss',
 })
 export class PersonalDetailsComponent implements OnInit {
-  baseURL = environment.baseURL;
+  baseURL = environment.imageURL;
   newSocialMedia = { name: '', link: '', image: '' }; 
   socialMediaImage: File | undefined;
   socialMediaOptions = SOCIAL_MEDIA_LINKS; 

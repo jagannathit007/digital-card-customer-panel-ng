@@ -88,13 +88,13 @@
           </td>
           <td class="text-center">
             <img
-              [src]="baseURL + '/' + client.image"
+              [src]="baseURL + client.image"
               class="img-fluid cursor-pointer"
               style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;"
               *ngIf="client.image && client.image.length"
               data-bs-toggle="modal"
               data-bs-target="#imageModal"
-              (click)="selectedImage = baseURL + '/' + client.image"
+              (click)="selectedImage = baseURL + client.image"
             />
             <span *ngIf="!client.image || client.image.length === 0">No Image</span>
           </td>

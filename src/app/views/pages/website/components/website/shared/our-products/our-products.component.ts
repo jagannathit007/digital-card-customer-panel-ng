@@ -658,7 +658,7 @@ export class OurProductsComponent implements OnInit, OnDestroy, AfterViewInit {
   itemsPerPage: number = 10;
   p: number = 1;
   isLoading: boolean = false;
-  imageBaseURL = environment.baseURL + '/';
+  imageBaseURL = environment.imageURL;
   activeTab: string = 'products';
 
   // Catogrey manage Properties

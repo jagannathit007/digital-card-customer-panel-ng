@@ -101,7 +101,7 @@
           <img
             src="{{ imageBaseURL }}{{ item.image }}"
             alt=""
-            style="width: 10%; height: 10%; cursor: pointer"
+            style="width: 100px; height: 100px; cursor: pointer; object-fit: cover;"
             *ngIf="item.image != ''"
             (click)="showImage(item.image)"
           />
@@ -232,6 +232,7 @@
                   class="form-check-input"
                   type="checkbox"
                   role="switch"
+                  [ngModelOptions]="{ standalone: true }"
                   id="offersVisibilitySwitch"
                   [(ngModel)]="selectedOffer.visible"
                 />

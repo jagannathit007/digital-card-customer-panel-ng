@@ -27,10 +27,10 @@
       <thead class="text-uppercase bg-light">
         <tr>
           <th class="text-center" [width]="'5%'">#</th>
-          <th>Title</th>
-          <th class="text-center" [width]="'20%'">Image</th>
+          <th [width]="'15%'">Title</th>
+          <th class="text-center" [width]="'10%'">Image</th>
           <th [width]="'25%'">Description</th>
-          <th class="text-center" [width]="'15%'">
+          <th class="text-center" [width]="'10%'">
             <i class="ri-tools-fill"></i>
           </th>
         </tr>
@@ -89,7 +89,7 @@
             <img
               src="{{ imageBaseURL }}{{ item.image }}"
               alt=""
-              style="width: 10%; height: 10%; cursor: pointer"
+              style="width:100px; height: 100px; cursor: pointer; object-fit: cover; border-radius: 10px;"
               *ngIf="item.image != ''"
               (click)="showImage(item.image)"
             />

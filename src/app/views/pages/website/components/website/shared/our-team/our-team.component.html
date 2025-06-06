@@ -82,13 +82,13 @@
           <td class="text-center">{{ (p - 1) * itemsPerPage + i + 1 }}</td>
           <td class="text-center">
             <img
-              [src]="baseURL + '/' + member.photo"
+              [src]="imageURL + member.photo"
               class="img-fluid rounded-circle"
               style="width: 30px; height: 30px; object-fit: cover; cursor: pointer;"
               *ngIf="member.photo && member.photo.length"
               data-bs-toggle="modal"
               data-bs-target="#imageModal"
-              (click)="selectedImage = baseURL + '/' + member.photo"
+              (click)="selectedImage = imageURL + member.photo"
             />
             <span *ngIf="!member.photo || member.photo.length === 0">No Image</span>
           </td>
@@ -312,7 +312,7 @@
               class="mb-2"
             >
               <img
-                [src]="baseURL + '/' + editingMember.currentPhoto"
+                [src]="imageURL + editingMember.currentPhoto"
                 class="img-thumbnail rounded-circle"
                 style="max-height: 100px; max-width: 100px;"
               />

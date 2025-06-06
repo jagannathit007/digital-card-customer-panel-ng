@@ -287,7 +287,7 @@ import { WebsiteBuilderService } from 'src/app/services/website-builder.service'
   styleUrl: './our-team.component.scss',
 })
 export class OurTeamComponent implements OnInit, OnDestroy {
-  baseURL = environment.baseURL;
+  imageURL = environment.imageURL;
   searchTerm: string = '';
   itemsPerPage: number = 10;
   totalItems: number = 0;

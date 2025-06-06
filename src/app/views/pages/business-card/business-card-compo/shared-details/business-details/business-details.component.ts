@@ -290,7 +290,8 @@ import { SOCIAL_MEDIA_LINKS } from 'src/app/core/utilities/socialMedia';
   styleUrls: ['./business-details.component.scss'],
 })
 export class BusinessDetailsComponent implements OnInit {
-  baseURL = environment.baseURL;
+  baseURL = environment.imageURL;
+  homeURL = environment.baseURL;
   newSocialMedia = { name: '', link: '', image: '' };
   socialMediaImage: File | undefined;
   socialMediaOptions = SOCIAL_MEDIA_LINKS;

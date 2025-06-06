@@ -84,7 +84,7 @@ export class BusinessProductsComponent implements OnInit {
     description: '',
     businesscardId:''
   }
-  imageBaseURL = environment.baseURL + '/';
+  imageBaseURL = environment.imageURL;
 
   onOpenUpdateModal(item: any) {
     this.selectedProducts = item;

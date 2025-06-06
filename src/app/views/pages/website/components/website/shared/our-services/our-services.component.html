@@ -65,10 +65,10 @@
                     *ngFor="let service of filteredServices | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems }; let i = index">
                     <td class="text-center">{{ (p - 1) * itemsPerPage + i + 1 }}</td>
                     <td class="text-center">
-                        <img [src]="baseURL + '/' + service.image" class="img-fluid cursor-pointer"
+                        <img [src]="imageURL + service.image" class="img-fluid cursor-pointer"
                             style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;"
                             *ngIf="service.image && service.image.length" data-bs-toggle="modal"
-                            data-bs-target="#imageModal" (click)="selectedImage = baseURL + '/' + service.image">
+                            data-bs-target="#imageModal" (click)="selectedImage = imageURL + service.image">
                         <span *ngIf="!service.image || service.image.length === 0">No Image</span>
                     </td>
                     <td>
@@ -261,7 +261,7 @@
                     <div class="mb-3">
                         <label for="editServiceImage" class="form-label">Current Image</label>
                         <div *ngIf="editingService.currentImage && editingService.currentImage.length" class="mb-2">
-                            <img [src]="baseURL + '/' + editingService.currentImage" class="img-thumbnail"
+                            <img [src]="imageURL + editingService.currentImage" class="img-thumbnail"
                                 style="max-height: 100px; max-width: 100px;">
                         </div>
                         <div *ngIf="!editingService.currentImage || editingService.currentImage.length === 0"

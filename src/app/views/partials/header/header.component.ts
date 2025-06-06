@@ -89,7 +89,7 @@ copyPlayStoreLink() {
   }
 
   businessDetails: any = null;
-  imageUrl = environment.baseURL + '/';
+  imageUrl = environment.imageURL;
   getCards = async () => {
     let results = await this.authService.getBusinessCards();
     const selectedBusinessId = this.authService.selectedBusinessCard;

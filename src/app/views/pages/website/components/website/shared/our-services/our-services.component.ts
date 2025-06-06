@@ -293,7 +293,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
   styleUrl: './our-services.component.scss',
 })
 export class OurServicesComponent implements OnInit, OnDestroy {
-  baseURL = environment.baseURL;
+  imageURL = environment.imageURL;
   searchTerm: string = '';
   itemsPerPage: number = 10;
   totalItems: number = 0;
