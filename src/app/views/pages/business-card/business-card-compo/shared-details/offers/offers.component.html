@@ -161,7 +161,7 @@
         ></button>
       </div>
       <form action="" (ngSubmit)="onCreateOffer()" ngNativeValidate>
-        <div class="modal-body">
+        <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
           <div class="row">
             <div class="col-md-12">
               <span class="fw-bold">Offer title</span>
@@ -234,6 +234,7 @@
                   role="switch"
                   id="offersVisibilitySwitch"
                   [(ngModel)]="selectedOffer.visible"
+                  [ngModelOptions]="{ standalone: true }"
                 />
               </div>
             </div>
