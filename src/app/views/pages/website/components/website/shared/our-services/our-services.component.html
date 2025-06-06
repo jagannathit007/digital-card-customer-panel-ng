@@ -73,10 +73,10 @@
                     </td>
                     <td>
                         <!-- {{ service.title }} -->
-                         <div [innerHTML]="getSafeHtml(service.title)" class="description-preview"></div>
+                         <div [innerHTML]="sanitizeHtml(service.title)" class="description-preview"></div>
                     </td>
                     <td>
-                        <div [innerHTML]="getSafeHtml(service.description)" class="description-preview"></div>
+                        <div [innerHTML]="sanitizeHtml(service.description)" class="description-preview"></div>
                     </td>
                     <td class="text-center">
                         <span class="badge bg-{{service.visible?'success':'warning'}}">
