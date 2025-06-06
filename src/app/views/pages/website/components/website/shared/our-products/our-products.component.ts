@@ -1066,8 +1066,9 @@ onUploadImage(event: any) {
   }
 
   // Sanitize HTML content to prevent XSS
-  sanitizeHtml(html: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(html);
+  sanitizeHtml(content: any): any {
+    if (!content) return '';
+  return content.replace(/<[^>]*>/g, '');
   }
 
   // Helper method to strip HTML tags for search and validation

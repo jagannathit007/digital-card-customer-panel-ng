@@ -369,9 +369,9 @@ export class OurServicesComponent implements OnInit, OnDestroy {
     this.editTitleEditor.destroy();
   }
 
-  getSafeHtml(html: string): SafeHtml {
-    return this.sanitizer.bypassSecurityTrustHtml(html);
-}
+//   getSafeHtml(html: string): SafeHtml {
+//     return this.sanitizer.bypassSecurityTrustHtml(html);
+// }
 
   async fetchWebsiteDetails() {
     this.isLoading = true;
@@ -594,5 +594,10 @@ export class OurServicesComponent implements OnInit, OnDestroy {
     const tmp = document.createElement('DIV');
     tmp.innerHTML = html;
     return tmp.textContent || tmp.innerText || '';
+  }
+
+  sanitizeHtml(content: any): any {
+    if (!content) return '';
+    return content.replace(/<[^>]*>/g, '');
   }
 }
