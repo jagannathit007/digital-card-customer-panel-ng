@@ -33,15 +33,15 @@ export class TaskService {
         data,
         this.headers
       );
-      if (response.status == 200 && response.data != 0) {
+      if (response.status == 200 && response.data) {
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
-        return [];
+        return null;
       }
     } catch (err) {
       swalHelper.showToast('Something went wrong!', 'error');
-      return [];
+      return null;
     }
   }
 
@@ -81,7 +81,7 @@ export class TaskService {
         data,
         this.headers
       );
-      if (response.status == 200 && response.data != 0) {
+      if (response.status == 200 && response.data) {
         // swalHelper.success(response.message);
         return true;
       } else {
@@ -105,7 +105,7 @@ export class TaskService {
         data,
         this.headers
       );
-      if (response.status == 200 && response.data != 0) {
+      if (response.status == 200 && response.data) {
         swalHelper.success(response.message);
         return true;
       } else {
@@ -143,6 +143,30 @@ export class TaskService {
     }
   }
 
+  async toggleMemberStatus(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.TOGGLE_MEMBER_STATUS,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data) {
+        swalHelper.success(response.message);
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
   async CreateBoard(data: any) {
     try {
       this.getHeaders();
@@ -154,7 +178,7 @@ export class TaskService {
         data,
         this.headers
       );
-      if (response.status == 200 && response.data != 0) {
+      if (response.status == 200 && response.data) {
         swalHelper.success(response.message);
         return true;
       } else {
@@ -178,7 +202,7 @@ export class TaskService {
         data,
         this.headers
       );
-      if (response.status == 200 && response.data != 0) {
+      if (response.status == 200 && response.data) {
         swalHelper.success(response.message);
         return true;
       } else {
@@ -202,7 +226,7 @@ export class TaskService {
         data,
         this.headers
       );
-      if (response.status == 200 && response.data != 0) {
+      if (response.status == 200 && response.data) {
         swalHelper.success(response.message);
         return true;
       } else {
@@ -226,7 +250,7 @@ export class TaskService {
         data,
         this.headers
       );
-      if (response.status == 200 && response.data != 0) {
+      if (response.status == 200 && response.data) {
         swalHelper.success(response.message);
         return true;
       } else {
@@ -250,7 +274,7 @@ export class TaskService {
         data,
         this.headers
       );
-      if (response.status == 200 && response.data != 0) {
+      if (response.status == 200 && response.data) {
         swalHelper.success(response.message);
         return true;
       } else {
@@ -274,7 +298,7 @@ export class TaskService {
         data,
         this.headers
       );
-      if (response.status == 200 && response.data != 0) {
+      if (response.status == 200 && response.data) {
         swalHelper.success(response.message);
         return true;
       } else {
@@ -298,7 +322,7 @@ export class TaskService {
         data,
         this.headers
       );
-      if (response.status == 200 && response.data != 0) {
+      if (response.status == 200 && response.data) {
         swalHelper.success(response.message);
         return true;
       } else {

@@ -1,3 +1,4 @@
+import { TaskPermissionsService } from './../../../../../../../services/task-permissions.service';
 // allmembers.component.ts
 import { TaskMemberAuthService } from './../../../../../../../services/task-member-auth.service';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
@@ -9,6 +10,7 @@ import { environment } from 'src/env/env.local';
 import { ModalService } from 'src/app/core/utilities/modal';
 import { TaskService } from 'src/app/services/task.service';
 import { TeamMemberData } from 'src/app/views/partials/task-managemnt/common-components/addTeamMember/addTeamMember.component';
+import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 
 @Component({
   selector: 'app-allmembers',
@@ -31,6 +33,7 @@ export class AllmembersComponent implements OnInit {
   showSendingMailModal: boolean = false;
   showChangeMemberRoleModal: boolean = false;
   selectedMemberForMail: any = null;
+  currentUser: any = null;
 
   // Modal properties
   selectedMember: any = null;
@@ -49,10 +52,13 @@ export class AllmembersComponent implements OnInit {
     public authService: AuthService,
     private cdr: ChangeDetectorRef,
     public modal: ModalService,
-    private taskService: TaskService
+    private taskService: TaskService,
+    private taskMemberAuthService: TaskMemberAuthService,
+    public taskPermissionsService: TaskPermissionsService
   ) {}
 
   ngOnInit(): void {
+    this.currentUser = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA);
     this.fetchMembers();
   }
 
@@ -134,6 +140,7 @@ export class AllmembersComponent implements OnInit {
   }
 
   async reInviteUser(member: any, event?: Event) {
+    console.log('Re-inviting user:', member);
     if (event) {
       event.stopPropagation();
     }
@@ -151,28 +158,23 @@ export class AllmembersComponent implements OnInit {
     const action = member.isActive ? 'deactivate' : 'activate';
     const actionText = member.isActive ? 'Deactivate' : 'Activate';
 
-    try {
-      swalHelper
-        .confirmation(
-          `${actionText} User`,
-          `Are you sure you want to ${action} ${member.name}?`,
-          'question'
-        )
-        .then(async (result) => {
-          if (result.isConfirmed) {
-            // Call your toggle status API here
-            // const response = await this.taskService.()
-            member.isActive = !member.isActive;
-            swalHelper.showToast(
-              `${member.name} has been ${action}d`,
-              'success'
-            );
+    swalHelper
+      .confirmation(
+        `${actionText} User`,
+        `Are you sure you want to ${action} ${member.name}?`,
+        'question'
+      )
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          // Call your toggle status API here
+          const response = await this.taskService.toggleMemberStatus({
+            memberId: this.selectedMember._id,
+          });
+          if (response) {
+            member.isActive = response.isActive;
           }
-        });
-    } catch (error) {
-      console.error('Error toggling user status:', error);
-      swalHelper.showToast('Failed to update user status', 'error');
-    }
+        }
+      });
   }
 
   addToBoard(member: any) {
@@ -184,33 +186,58 @@ export class AllmembersComponent implements OnInit {
   }
 
   // Update the changeMemberRole method in allmembers.component.ts
-changeMemberRole(member: any) {
-  this.selectedMember = member; // Set the selected member for the role change modal
-  this.showChangeMemberRoleModal = true;
-}
-
-// Add new method to handle role change completion
-onRoleChanged(event: { member: any; newRole: string; reason?: string }) {
-  // Update the member's role in the local array
-  const memberIndex = this.members.findIndex(m => m._id === event.member._id);
-  if (memberIndex !== -1) {
-    this.members[memberIndex].role = event.newRole;
+  changeMemberRole(member: any) {
+    this.selectedMember = member; // Set the selected member for the role change modal
+    this.showChangeMemberRoleModal = true;
   }
-  
-  swalHelper.showToast(
-    `${event.member.name}'s role has been updated to ${event.newRole}`,
-    'success'
-  );
-  
-  this.showChangeMemberRoleModal = false;
-  this.selectedMember = null;
-}
 
-// Add method to handle modal close
-onChangeMemberRoleModalClose() {
-  this.showChangeMemberRoleModal = false;
-  this.selectedMember = null;
-}
+  // Add new method to handle role change completion
+  onRoleChanged(event: { member: any; newRole: string }) {
+    const memberIndex = this.members.findIndex(
+      (m) => m._id === event.member._id
+    );
+    if (memberIndex !== -1) {
+      this.members[memberIndex] = event.member;
+    }
+
+    swalHelper.showToast(
+      `${event.member.name}'s role has been updated to ${event.newRole}`,
+      'success'
+    );
+
+    this.showChangeMemberRoleModal = false;
+    this.selectedMember = null;
+  }
+
+  // Add method to handle modal close
+  onChangeMemberRoleModalClose() {
+    this.showChangeMemberRoleModal = false;
+    // this.selectedMember = null;
+  }
+
+  async deleteMember(member: any) {
+    const action = member.isActive ? 'deactivate' : 'activate';
+    const actionText = member.isActive ? 'Deactivate' : 'Activate';
+
+    swalHelper
+      .confirmation(
+        `Delete User`,
+        `Are you sure you want to Delete ${member.name}?`,
+        'question'
+      )
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          // Call your toggle status API here
+          const response = await this.taskService.DeleteTeamMember({
+            memberId: this.selectedMember._id,
+          });
+          if (response) {
+            this.selectedMember = null; 
+            this.members = this.members.filter((m) => m._id !== member._id);
+          }
+        }
+      });
+  }
 
   // Utility methods
   getMemberStatusText(member: any): string {

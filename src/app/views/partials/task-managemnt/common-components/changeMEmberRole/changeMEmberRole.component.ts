@@ -1,15 +1,38 @@
-import { TaskMemberAuthService } from './../../../../../services/task-member-auth.service';
-import { TaskService } from 'src/app/services/task.service';
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   Input,
   Output,
+  EventEmitter,
+  OnInit,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { finalize } from 'rxjs/operators';
 import { environment } from 'src/env/env.local';
+import { TaskService } from 'src/app/services/task.service';
+
+export interface User {
+  _id: string;
+  name: string;
+  mobile: string;
+  emailId: string;
+  profileImage: string;
+  role: 'admin' | 'editor' | 'manager' | 'leader' | 'member';
+  skills: string[];
+  experience: string;
+  isVerified: boolean;
+  isActive: boolean;
+}
+
+export interface RoleOption {
+  value: string;
+  label: string;
+  disabled: boolean;
+  hierarchy: number;
+}
 
 @Component({
   selector: 'app-change-member-role',
@@ -19,152 +42,180 @@ import { environment } from 'src/env/env.local';
   styleUrl: './changeMemberRole.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChangeMemberRoleComponent {
+export class ChangeMemberRoleComponent implements OnInit {
+  @Input() currentUser!: User;
+  @Input() selectedMember!: User;
   @Input() isVisible: boolean = false;
-  @Input() member: any = null;
-  @Output() closeModal = new EventEmitter<void>();
-  @Output() roleChanged = new EventEmitter<{
-    member: any;
+  @Output() onChangeMemberRoleModalClose = new EventEmitter<void>();
+  @Output() onRoleChanged = new EventEmitter<{
+    member: User;
     newRole: string;
-    reason?: string;
   }>();
 
-  constructor(private taskService: TaskService, private taskMemberAuthService: TaskMemberAuthService) {}
+  private http = inject(HttpClient);
 
-  baseURL = environment.baseURL;
-  selectedRole: string = '';
-  changeReason: string = '';
-  isLoading: boolean = false;
-  roleHierarchy: any = {
+  // Role hierarchy - higher number means higher privilege
+  private readonly roleHierarchy = {
+    admin: 5,
     editor: 4,
     manager: 3,
     leader: 2,
     member: 1,
   };
 
-  currentMemberDetails: any;
-
-  isRoleHigherOrEqual(role1: string, role2: string): boolean {
-    return (
-      this.roleHierarchy[role1] >= this.roleHierarchy[role2]
-    );
-  }
-
-  getRadioLabelClasses(role: any): string {
-  const isDisabled = role.value === this.member?.role || 
-                    this.isRoleHigherOrEqual(role.value, this.currentMemberDetails?.role);
-  const isSelected = this.selectedRole === role.value;
-  
-  if (isDisabled) {
-    return 'tw-cursor-not-allowed tw-border-gray-200 tw-bg-gray-50';
-  } else if (isSelected) {
-    return 'tw-cursor-pointer tw-border-blue-500 tw-bg-blue-50 tw-shadow-md';
-  } else {
-    return 'tw-cursor-pointer tw-border-gray-200 hover:tw-border-gray-300 hover:tw-bg-gray-50';
-  }
-}
-
-  // Available roles with descriptions
-  availableRoles = [
-    {
-      value: 'editor',
-      label: 'Editor',
-      description: 'Full access to all features and settings',
-      icon: 'fas fa-crown',
-      color: 'tw-text-red-600',
-    },
-    {
-      value: 'manager',
-      label: 'Manager',
-      description: 'Manage teams and projects with elevated permissions',
-      icon: 'fas fa-user-tie',
-      color: 'tw-text-purple-600',
-    },
-    {
-      value: 'leader',
-      label: 'Team Leader',
-      description: 'Lead specific teams and oversee project execution',
-      icon: 'fas fa-users',
-      color: 'tw-text-orange-600',
-    },
-
-    {
-      value: 'member',
-      label: 'Member',
-      description: 'Standard access to assigned projects and tasks',
-      icon: 'fas fa-user',
-      color: 'tw-text-gray-600',
-    },
+  // Available roles for change (excluding admin)
+  private readonly availableRoles = [
+    { value: 'editor', label: 'Editor', hierarchy: 4 },
+    { value: 'manager', label: 'Manager', hierarchy: 3 },
+    { value: 'leader', label: 'Leader', hierarchy: 2 },
+    { value: 'member', label: 'Member', hierarchy: 1 },
   ];
 
+  constructor(private taskService: TaskService) {}
+
+  selectedRole: string = '';
+  roleOptions: RoleOption[] = [];
+  isLoading: boolean = false;
+  error: string = '';
+  canChangeRole: boolean = false;
+  baseURL = environment.baseURL;
+
   ngOnInit() {
-    if (this.member) {
-      this.selectedRole = this.member.role;
-    }
-    this.currentMemberDetails = this.taskMemberAuthService.memberDetails;
+    this.initializeComponent();
   }
 
   ngOnChanges() {
-    if (this.member && this.isVisible) {
-      this.selectedRole = this.member.role;
-      this.changeReason = '';
+    if (this.isVisible && this.currentUser && this.selectedMember) {
+      this.initializeComponent();
     }
   }
 
-  onClose() {
-    this.closeModal.emit();
-    this.resetForm();
+  private initializeComponent() {
+    this.selectedRole = this.selectedMember?.role || '';
+    this.error = '';
+    this.canChangeRole = this.checkCanChangeRole();
+    this.setRoleOptions();
   }
 
-  onBackdropClick(event: Event) {
-    if (event.target === event.currentTarget) {
-      this.onClose();
+  private checkCanChangeRole(): boolean {
+    if (!this.currentUser || !this.selectedMember) return false;
+
+    const currentUserLevel = this.roleHierarchy[this.currentUser.role];
+    const targetUserLevel = this.roleHierarchy[this.selectedMember.role];
+
+    // Only admin, editor, and manager can change roles
+    if (['member', 'leader'].includes(this.currentUser.role)) {
+      return false;
     }
+
+    // Admin can change anyone's role (except to admin)
+    if (this.currentUser.role === 'admin') {
+      return this.selectedMember.role !== 'admin';
+    }
+
+    // Editor and Manager can only change roles of users with lower hierarchy
+    return currentUserLevel > targetUserLevel;
   }
 
-  async onSubmit() {
-    if (!this.selectedRole || this.selectedRole === this.member.role) {
+  private setRoleOptions() {
+    if (!this.canChangeRole) {
+      this.roleOptions = [];
+      return;
+    }
+
+    const currentUserLevel = this.roleHierarchy[this.currentUser.role];
+
+    this.roleOptions = this.availableRoles.map((role) => {
+      let disabled = false;
+
+      if (this.currentUser.role === 'admin') {
+        // Admin can assign any role except admin
+        disabled = false;
+      } else {
+        // Editor and Manager cannot assign roles equal or higher than their own
+        disabled = role.hierarchy >= currentUserLevel;
+      }
+
+      return {
+        value: role.value,
+        label: role.label,
+        disabled,
+        hierarchy: role.hierarchy,
+      };
+    });
+  }
+
+  onRoleChange(newRole: string) {
+    this.selectedRole = newRole;
+    this.error = '';
+  }
+
+  async changeRole() {
+    if (!this.selectedRole || this.selectedRole === this.selectedMember.role) {
+      this.error = 'Please select a different role';
+      return;
+    }
+
+    if (!this.canChangeRole) {
+      this.error = "You do not have permission to change this user's role";
       return;
     }
 
     this.isLoading = true;
+    this.error = '';
 
-    // Here you would typically call your API to update the role
     const result = await this.taskService.ChangeRole({
-      memberId: this.member._id,
+      memberId: this.selectedMember._id,
       newRole: this.selectedRole,
     });
 
     if (result) {
-      this.roleChanged.emit({
-        member: this.member,
-        newRole: this.selectedRole,
-        reason: this.changeReason,
-      });
       this.isLoading = false;
-      this.onClose();
+      const updatedUser = {
+        ...this.selectedMember,
+        role: this.selectedRole as any,
+      };
+
+      // Emit the role changed event
+      this.onRoleChanged.emit({
+        member: updatedUser,
+        newRole: this.selectedRole,
+      });
+
+      // Close the modal
+      this.closeModal();
     }
   }
 
-  private resetForm() {
-    this.selectedRole = '';
-    this.changeReason = '';
-    this.isLoading = false;
+  closeModal() {
+    this.selectedRole = this.selectedMember?.role || '';
+    this.error = '';
+    this.onChangeMemberRoleModalClose.emit();
   }
 
-  getRoleInfo(roleValue: string) {
-    return this.availableRoles.find((role) => role.value === roleValue);
+  getRoleIcon(role: string): string {
+    switch (role) {
+      case 'editor':
+        return 'fas fa-pen-nib';
+      case 'manager':
+        return 'fas fa-user-tie';
+      case 'leader':
+        return 'fas fa-users';
+      case 'member':
+        return 'fas fa-user';
+      default:
+        return 'fas fa-user-circle';
+    }
   }
 
-  get isFormValid(): boolean {
-    return !!this.selectedRole && this.selectedRole !== this.member?.role;
-  }
-
-  get currentRoleInfo() {
-    return this.getRoleInfo(this.member?.role);
-  }
-
-  get selectedRoleInfo() {
-    return this.getRoleInfo(this.selectedRole);
+  getRoleBadgeClass(role: string): string {
+    const classes = {
+      admin: 'tw-bg-purple-100 tw-text-purple-800 tw-border-purple-200',
+      editor: 'tw-bg-blue-100 tw-text-blue-800 tw-border-blue-200',
+      manager: 'tw-bg-green-100 tw-text-green-800 tw-border-green-200',
+      leader: 'tw-bg-orange-100 tw-text-orange-800 tw-border-orange-200',
+      member: 'tw-bg-gray-100 tw-text-gray-800 tw-border-gray-200',
+    };
+    return classes[role as keyof typeof classes] || classes.member;
   }
 }

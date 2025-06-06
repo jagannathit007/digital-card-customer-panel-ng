@@ -367,7 +367,7 @@ export class SideBarService {
     };
 
     if (userDetails) {
-      if (userDetails.role !== 'member') {
+      if (userDetails.role !== 'member' && userDetails.role !== 'leader') {
         taskManagementMenu.menu.splice(1, 0, {
           title: 'All Members',
           link: 'task-management/allmembers',

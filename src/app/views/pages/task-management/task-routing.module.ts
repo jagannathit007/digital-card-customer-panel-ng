@@ -9,6 +9,7 @@ import { MyalltaskComponent } from './task-components/task/shared/myalltask/myal
 import { MyweektaskComponent } from './task-components/task/shared/myweektask/myweektask.component';
 import { MydaytaskComponent } from './task-components/task/shared/mydaytask/mydaytask.component';
 import { MemberprofileComponent } from './task-components/task/shared/memberprofile/memberprofile.component';
+import { AllBoardsComponent } from './task-components/task/shared/allBoards/allBoards.component';
 
 
 const routes: Routes = [
@@ -18,7 +19,7 @@ const routes: Routes = [
       children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'allmembers', component: AllmembersComponent },
-      { path: 'boards', component: PersonaltaskComponent },
+      { path: 'boards', component: AllBoardsComponent },
       { path: 'teamtask', component: TeamtaskComponent },
       { path: 'personal-task/my-day', component: MydaytaskComponent },
       { path: 'personal-task/next-seven-days', component: MyweektaskComponent },

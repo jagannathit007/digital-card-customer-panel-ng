@@ -24,8 +24,7 @@ import { MyalltaskComponent } from './task-components/task/shared/myalltask/myal
 import { MemberprofileComponent } from './task-components/task/shared/memberprofile/memberprofile.component';
 import { AddTeamMemberComponent } from "../../partials/task-managemnt/common-components/addTeamMember/addTeamMember.component";
 import { SendingMailComponent } from "../../partials/task-managemnt/common-components/sendingMail/sendingMail.component";
-import { ChangeMemberRoleComponent } from "../../partials/task-managemnt/common-components/changeMEmberRole/changeMEmberRole.component";
-
+import { ChangeMemberRoleComponent } from './../../partials/task-managemnt/common-components/changeMemberRole/changeMemberRole.component';
 
 @NgModule({
   declarations: [
@@ -52,6 +51,6 @@ import { ChangeMemberRoleComponent } from "../../partials/task-managemnt/common-
     AddTeamMemberComponent,
     SendingMailComponent,
     ChangeMemberRoleComponent
-]
+  ]
 })
 export class TaskModule { }

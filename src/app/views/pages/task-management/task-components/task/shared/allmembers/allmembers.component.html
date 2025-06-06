@@ -365,6 +365,27 @@
               </span>
             </div>
           </div>
+          <div>
+            <label
+              class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2"
+              >Created By</label
+            >
+            <div class="tw-flex tw-items-center tw-gap-4 tw-rounded-lg tw-p-2 tw-bg-gray-50">
+              <img
+                [src]="!selectedMember.addedBy.isDeleted ? baseURL + '/' + selectedMember.addedBy.profileImage : 'https://static.thenounproject.com/png/574748-200.png'"
+                [alt]="selectedMember.addedBy.name"
+                class="tw-w-9 tw-h-9 tw-rounded-full tw-object-cover"
+              />
+              <div>
+                <p class="tw-text-sm tw-text-gray-900">
+                  {{ selectedMember.addedBy.name }}
+              </p>
+                <p class="tw-text-gray-600">
+                  {{ selectedMember.addedBy.role | titlecase }}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div *ngIf="selectedMember.skills && selectedMember.skills.length > 0">
@@ -405,7 +426,35 @@
 
       <!-- Actions Tab -->
       <div *ngIf="activeTab === 'actions'" class="tw-space-y-4">
-        <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 tw-gap-4">
+        
+        <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 tw-gap-4" *ngIf="!taskPermissionsService.isRoleHigherOrEqual(selectedMember?.role); else noPermission">
+
+          <button
+            class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors tw-text-blue-600 hover:tw-border-blue-200"
+            (click)="addToBoard(selectedMember)"
+          >
+            <i class="fas fa-plus-circle"></i>
+            <span>Add to Board</span>
+          </button>
+
+          <button
+            class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors tw-text-purple-600 hover:tw-border-purple-200"
+            (click)="changeMemberRole(selectedMember)"
+          >
+            <i class="fa-solid fa-sitemap"></i>
+            <span>Change Member Role</span>
+          </button>
+
+          <button
+            *ngIf="!selectedMember.isVerified"
+            class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors tw-text-yellow-600 hover:tw-border-yellow-200"
+            (click)="reInviteUser(selectedMember)"
+          >
+            <i class="fas fa-paper-plane"></i>
+            <span>Re-invite User</span>
+          </button>
+
+          
           <button
             class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors"
             [class]="
@@ -431,30 +480,21 @@
           </button>
 
           <button
-            class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors tw-text-blue-600 hover:tw-border-blue-200"
-            (click)="addToBoard(selectedMember)"
+            class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors tw-text-red-600 hover:tw-border-red-200"
+            (click)="deleteMember(selectedMember)"
           >
-            <i class="fas fa-plus-circle"></i>
-            <span>Add to Board</span>
-          </button>
-
-          <button
-            *ngIf="!selectedMember.isVerified"
-            class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors tw-text-yellow-600 hover:tw-border-yellow-200"
-            (click)="reInviteUser(selectedMember)"
-          >
-            <i class="fas fa-paper-plane"></i>
-            <span>Re-invite User</span>
-          </button>
-
-          <button
-            class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors tw-text-purple-600 hover:tw-border-purple-200"
-            (click)="changeMemberRole(selectedMember)"
-          >
-            <i class="fa-solid fa-sitemap"></i>
-            <span>Change Member Role</span>
+            <i class="fa-solid fa-trash"></i>
+            <span>Delete User</span>
           </button>
         </div>
+        <ng-template #noPermission>
+          <div class="tw-text-center tw-py-8">
+            <i class="fas fa-lock tw-text-4xl tw-text-gray-300 tw-mb-3"></i>
+            <p class="tw-text-gray-600">
+              You do not have permission to perform actions on this user
+            </p>
+          </div>
+        </ng-template>
       </div>
     </div>
   </div>
@@ -477,9 +517,10 @@
 </app-sending-mail>
 
 <app-change-member-role
-  *ngIf="showChangeMemberRoleModal"
+  [currentUser]="currentUser"
+  [selectedMember]="selectedMember"
   [isVisible]="showChangeMemberRoleModal"
-  [member]="selectedMember"
-  (closeModal)="onChangeMemberRoleModalClose()"
-  (roleChanged)="onRoleChanged($event)"
-></app-change-member-role>
+  (onChangeMemberRoleModalClose)="onChangeMemberRoleModalClose()"
+  (onRoleChanged)="onRoleChanged($event)"
+>
+</app-change-member-role>

@@ -170,6 +170,7 @@ public UPDATE_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/update`;
 public DELETE_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/delete`;
 public CHANGE_MEMBER_PASSWORD: string = `${this.PATH}/task/changePassword`;
 public CHANGE_ROLE: string = `${this.PATH}/task/teamMember/changeRole`;
+public TOGGLE_MEMBER_STATUS: string = `${this.PATH}/task/teamMember/status/toggle`;
 
 
 public CREATE_BOARD: string = `${this.PATH}/task/board/create`;
