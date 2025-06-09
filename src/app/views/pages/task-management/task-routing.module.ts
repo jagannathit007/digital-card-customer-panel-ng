@@ -25,7 +25,7 @@ const routes: Routes = [
       { path: 'personal-task/next-seven-days', component: MyweektaskComponent },
       { path: 'personal-task/all', component: MyalltaskComponent },
       { path: 'profile', component: MemberprofileComponent },
-      { path: '', redirectTo: 'allmembers', pathMatch: 'full' },  
+      { path: '', redirectTo: 'allmembers', pathMatch: 'full' },
     ],
     },
 ];

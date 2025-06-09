@@ -1,3 +1,6 @@
+import { TaskPermissionsService } from './../../../../../../../services/task-permissions.service';
+import { TaskService } from './../../../../../../../services/task.service';
+import { TaskMemberAuthService } from './../../../../../../../services/task-member-auth.service';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -55,7 +58,6 @@ interface TeamMember {
   styleUrl: './allBoards.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-
 export class AllBoardsComponent implements OnInit {
   // Signals for reactive state management
   boards = signal<Board[]>([]);
@@ -64,11 +66,17 @@ export class AllBoardsComponent implements OnInit {
   showCategoriesModal = signal(false);
   showMembersModal = signal(false);
   showAddMemberModal = signal(false);
-  editingCategories = signal<Category[]>([]);
   newCategoryName = signal('');
+  originalCategories = signal<Category[]>([]);
+  editingCategories = signal<Category[]>([]);
+  newCategories = signal<Category[]>([]);
+  hasChanges = signal(false);
   searchTerm = signal('');
   hoveredDescription = signal<string>('');
   expandingBoardId = signal<string>('');
+  loading: boolean = false;
+  currentUser: any;
+  availableMembersDetails: any[] = [];
 
   // Computed values
   filteredBoards = computed(() => {
@@ -81,7 +89,7 @@ export class AllBoardsComponent implements OnInit {
   });
 
   getNonDeletedCategoriesCount(categories: Category[]): number {
-    return categories.filter(c => !c.isDeleted).length;
+    return categories.filter((c) => !c.isDeleted).length;
   }
 
   availableTeamMembers = computed(() => {
@@ -94,10 +102,16 @@ export class AllBoardsComponent implements OnInit {
     );
   });
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private taskService: TaskService,
+    public taskPermissionsService: TaskPermissionsService
+  ) {}
 
   ngOnInit() {
-    this.loadDummyData();
+    this.currentUser = this.taskPermissionsService.getCurrentUser();
+    // this.loadDummyData();
+    this.loadData();
   }
 
   private loadDummyData() {
@@ -235,6 +249,29 @@ export class AllBoardsComponent implements OnInit {
     this.teamMembers.set(dummyTeamMembers);
   }
 
+  private async loadData() {
+    this.loading = true;
+    let result: any = null;
+    if (
+      this.currentUser.role === 'admin' ||
+      this.currentUser.role === 'editor'
+    ) {
+      result = await this.taskService.GetBoardByAdmin({});
+    } else {
+      result = await this.taskService.GetJoinedBoards({});
+    }
+    if (result && result) {
+      console.log('Fetched Boards:', result);
+      this.boards.set(result);
+      this.teamMembers.set(result.members);
+      this.loading = false;
+    } else {
+      this.boards.set([]);
+      this.teamMembers.set([]);
+      this.loading = false;
+    }
+  }
+
   onBoardClick(board: Board, event: Event) {
     event.stopPropagation();
     if (this.selectedBoard()?._id === board._id) {
@@ -262,9 +299,14 @@ export class AllBoardsComponent implements OnInit {
   onShowCategories(board: Board, event: Event) {
     event.stopPropagation();
     this.selectedBoard.set(board);
-    this.editingCategories.set([
-      ...board.categories.filter((cat) => !cat.isDeleted),
-    ]);
+    
+    // Store original categories for comparison
+    const originalCats = board.categories.filter((cat) => !cat.isDeleted);
+    this.originalCategories.set([...originalCats]);
+    this.editingCategories.set([...originalCats]);
+    this.newCategories.set([]);
+    this.hasChanges.set(false);
+    
     this.showCategoriesModal.set(true);
   }
 
@@ -287,18 +329,49 @@ export class AllBoardsComponent implements OnInit {
   // ...existing code...
 
   onAddCategory() {
-    const name = this.newCategoryName();
-    if (!name.trim()) return;
+    const name = this.newCategoryName().trim();
+    if (!name) return;
 
     const newCategory: Category = {
-      _id: Date.now().toString(), // Temporary ID
-      name: name.trim(),
-      isDeleted: false
+      _id: Date.now().toString(), // Temporary ID for new categories
+      name: name,
+      isDeleted: false,
     };
 
-    this.editingCategories.update(cats => [...cats, newCategory]);
+    // Add to new categories array
+    this.newCategories.update((cats) => [...cats, newCategory]);
     this.newCategoryName.set('');
+    this.checkForChanges();
   }
+
+  onRemoveExistingCategory(categoryId: string) {
+    // Remove from editing categories (this will mark it as deleted)
+    this.editingCategories.update((cats) =>
+      cats.filter((cat) => cat._id !== categoryId)
+    );
+    this.checkForChanges();
+  }
+
+  onRemoveNewCategory(categoryId: string) {
+    // Remove from new categories array
+    this.newCategories.update((cats) =>
+      cats.filter((cat) => cat._id !== categoryId)
+    );
+    this.checkForChanges();
+  }
+
+  private checkForChanges() {
+    const originalIds = this.originalCategories().map(cat => cat._id).sort();
+    const currentIds = this.editingCategories().map(cat => cat._id).sort();
+    const hasNewCategories = this.newCategories().length > 0;
+    
+    // Check if existing categories changed or new categories added
+    const existingChanged = JSON.stringify(originalIds) !== JSON.stringify(currentIds);
+    this.hasChanges.set(existingChanged || hasNewCategories);
+  }
+
+
+
 
   isNewCategoryNameEmpty(): boolean {
     return !this.newCategoryName().trim();
@@ -314,31 +387,57 @@ export class AllBoardsComponent implements OnInit {
     const board = this.selectedBoard();
     if (!board) return;
 
+    // Prepare data for API call
     const existingCategoryIds = this.editingCategories().map((cat) => cat._id);
-    const newCategoryNames = this.editingCategories()
-      .filter(
-        (cat) => !board.categories.some((existing) => existing._id === cat._id)
-      )
-      .map((cat) => cat.name);
+    const newCategoryNames = this.newCategories().map((cat) => cat.name);
 
-    // Simulate API call
-    console.log('Updating categories:', {
+    // Log the arrays as requested (instead of API call)
+    console.log('Board ID:', board._id);
+    console.log('Existing Category IDs:', existingCategoryIds);
+    console.log('New Category Names:', newCategoryNames);
+
+    // Here you would make the actual API call:
+    /*
+    const updateData = {
       boardId: board._id,
       existingCategoryIds,
-      newCategoryNames,
-    });
+      newCategoryNames
+    };
+    
+    // Call your service method here
+    // await this.taskService.updateBoardCategories(updateData);
+    */
 
-    // Update local state
+    // For now, just update local state to simulate the update
+    const allCategories = [
+      ...this.editingCategories(),
+      ...this.newCategories().map(cat => ({
+        ...cat,
+        _id: `new_${Date.now()}_${Math.random()}` // Simulate server-generated ID
+      }))
+    ];
+
+    // Update local board state
     this.boards.update((boards) =>
       boards.map((b) =>
         b._id === board._id
-          ? { ...b, categories: [...this.editingCategories()] }
+          ? { ...b, categories: allCategories }
           : b
       )
     );
 
     this.showCategoriesModal.set(false);
+    this.resetCategoryModal();
   }
+
+  private resetCategoryModal() {
+    this.originalCategories.set([]);
+    this.editingCategories.set([]);
+    this.newCategories.set([]);
+    this.newCategoryName.set('');
+    this.hasChanges.set(false);
+  }
+
 
   onAddMemberToBoard(memberId: string) {
     const board = this.selectedBoard();
@@ -369,12 +468,15 @@ export class AllBoardsComponent implements OnInit {
     this.showCategoriesModal.set(false);
     this.showMembersModal.set(false);
     this.showAddMemberModal.set(false);
-    this.newCategoryName.set('');
+    this.resetCategoryModal();
   }
-
   onDocumentClick() {
     this.selectedBoard.set(null);
   }
+
+  allCategoriesToShow = computed(() => {
+    return [...this.editingCategories(), ...this.newCategories()];
+  });
 
   formatDate(dateString: string): string {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -398,7 +500,7 @@ export class AllBoardsComponent implements OnInit {
     if (!name) return '';
     return name
       .split(' ')
-      .map(part => part[0])
+      .map((part) => part[0])
       .join('')
       .toUpperCase()
       .slice(0, 2);
@@ -424,7 +526,7 @@ export class AllBoardsComponent implements OnInit {
     }
   }
 
-  onMemberRoleChanged(event: {memberId: string, newRole: string}) {
+  onMemberRoleChanged(event: { memberId: string; newRole: string }) {
     // Handle member role changed event
     if (this.selectedBoard()) {
       // Change member role logic here

@@ -25,7 +25,7 @@ export class TaskPermissionsService {
     member: 1,
   };
 
-  private getCurrentUser = () => {
+  public getCurrentUser = () => {
     let taskMemberDetails = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA);
     return taskMemberDetails ? taskMemberDetails : null;
   };
@@ -162,6 +162,22 @@ export class TaskPermissionsService {
 
   getRoleRank(role: string): number {
     try {
+      if (!role || !this.rolesHierarchy[role]) {
+        return 0; // Return 0 for undefined or unknown roles
+      }
+      return this.rolesHierarchy[role];
+    } catch (err) {
+      swalHelper.showToast(
+        'Something went wrong while getting role rank!',
+        'error'
+      );
+      return 0;
+    }
+  }
+
+  getCurrentUserRoleRank(): number {
+    try {
+      const role = this.getCurrentUser()?.role;
       if (!role || !this.rolesHierarchy[role]) {
         return 0; // Return 0 for undefined or unknown roles
       }

@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, Output, EventEmitter, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { environment } from 'src/env/env.local';
+import { TaskPermissionsService } from 'src/app/services/task-permissions.service';
 
 interface Member {
   _id: string;
@@ -22,10 +24,16 @@ export class JoinedMembersComponent {
   @Input() members: Member[] = [];
   @Input() boardId: string = '';
   @Output() showAllMembers = new EventEmitter<Event>();
+  @Output() addMember = new EventEmitter<Event>();
+
+  constructor(public taskPermissionsService: TaskPermissionsService) {
+    
+  }
 
   // Signals for reactive state
   hoveredMember = signal<Member | null>(null);
   showTooltip = signal(false);
+  baseURL = environment.baseURL
 
   // Computed values
   displayMembers = computed(() => {
@@ -49,6 +57,11 @@ export class JoinedMembersComponent {
 
   onMemberLeave() {
     this.hoveredMember.set(null);
+    this.showTooltip.set(false);
+  }
+
+  onAddMemberClick(event: Event) {
+    this.addMember.emit(event);
     this.showTooltip.set(false);
   }
 

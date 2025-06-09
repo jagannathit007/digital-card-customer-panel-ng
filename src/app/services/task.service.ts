@@ -299,10 +299,9 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.success(response.message);
-        return true;
+        return response.data;
       } else {
-        swalHelper.showToast(response.message, 'warning');
+        // swalHelper.showToast(response.message, 'warning');
         return false;
       }
     } catch (err) {
@@ -323,10 +322,9 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.success(response.message);
-        return true;
+        return response.data;
       } else {
-        swalHelper.showToast(response.message, 'warning');
+        // swalHelper.showToast(response.message, 'warning');
         return false;
       }
     } catch (err) {
