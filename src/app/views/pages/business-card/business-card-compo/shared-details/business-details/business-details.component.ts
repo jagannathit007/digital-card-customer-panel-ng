@@ -76,10 +76,10 @@ export class BusinessDetailsComponent implements OnInit {
           };
           // If no new image is selected, keep the server images as previews
           if (!this.profileImagePreview && this.businessProfile.image.profileImage) {
-            this.profileImagePreview = this.baseURL + '/' + this.businessProfile.image.profileImage;
+            this.profileImagePreview = this.baseURL +  this.businessProfile.image.profileImage;
           }
           if (!this.coverImagePreview && this.businessProfile.image.coverImage) {
-            this.coverImagePreview = this.baseURL +'/'+ this.businessProfile.image.coverImage;
+            this.coverImagePreview = this.baseURL + this.businessProfile.image.coverImage;
           }
         } else {
           console.error('No card found with the given businessCardId:', businessCardId);

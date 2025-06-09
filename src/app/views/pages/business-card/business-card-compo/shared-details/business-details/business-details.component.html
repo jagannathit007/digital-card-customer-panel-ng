@@ -163,7 +163,7 @@
    <!-- Cover Image Preview -->
    <div *ngIf="coverImagePreview || (businessProfile?.image?.coverImage)" class="image-preview mt-2">
     <img
-   [src]="coverImagePreview || baseURL + '/' + businessProfile.image.coverImage"
+   [src]="coverImagePreview || baseURL + businessProfile.image.coverImage"
    alt="Cover Image Preview"
    class="preview-image"
  />
