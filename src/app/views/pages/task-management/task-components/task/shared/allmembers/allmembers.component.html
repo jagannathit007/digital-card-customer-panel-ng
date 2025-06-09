@@ -43,10 +43,9 @@
           (change)="onFilterChange()"
         >
           <option value="">All Roles</option>
-          <option value="admin">Admin</option>
+          <option value="editor">Editor</option>
           <option value="manager">Manager</option>
           <option value="leader">Leader</option>
-          <option value="editor">Editor</option>
           <option value="member">Member</option>
         </select>
 
@@ -430,6 +429,7 @@
         <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 tw-gap-4" *ngIf="!taskPermissionsService.isRoleHigherOrEqual(selectedMember?.role); else noPermission">
 
           <button
+          *ngIf="taskPermissionsService.getRoleRank(selectedMember?.role) <= 3"
             class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-p-4 tw-border tw-border-gray-200 tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors tw-text-blue-600 hover:tw-border-blue-200"
             (click)="addToBoard(selectedMember)"
           >

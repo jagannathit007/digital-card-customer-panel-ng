@@ -1,1 +1,400 @@
-<p>allBoards works!</p>,
+<div class="tw-min-h-screen tw-bg-gradient-to-br tw-from-slate-50 tw-to-blue-50 tw-p-6" (click)="onDocumentClick()">
+  <!-- Header Section -->
+  <div class="tw-max-w-7xl tw-mx-auto tw-mb-8">
+    <div class="tw-flex tw-justify-between tw-items-center tw-mb-6">
+      <div>
+        <h1 class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-mb-2">Project Boards</h1>
+        <p class="tw-text-gray-600">Manage and organize your team's project boards</p>
+      </div>
+      
+      <!-- Search Bar -->
+      <div class="tw-relative">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Search boards..."
+          class="tw-w-80 tw-pl-10 tw-pr-4 tw-py-3 tw-border tw-border-gray-200 tw-rounded-xl tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-shadow-sm tw-transition-all tw-duration-200"
+        >
+        <svg class="tw-absolute tw-left-3 tw-top-3.5 tw-h-5 tw-w-5 tw-text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Boards Grid -->
+  <div class="tw-max-w-7xl tw-mx-auto">
+    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 xl:tw-grid-cols-4 tw-gap-6">
+      
+      <!-- Add New Board Card -->
+      <div 
+        (click)="onCreateNewBoard()"
+        class="tw-group tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border-2 tw-border-dashed tw-border-gray-200 tw-p-8 tw-cursor-pointer tw-transition-all tw-duration-300 hover:tw-border-blue-400 hover:tw-shadow-lg hover:tw-scale-105 tw-flex tw-flex-col tw-items-center tw-justify-center tw-min-h-[300px]"
+      >
+        <div class="tw-w-16 tw-h-16 tw-bg-blue-100 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mb-4 tw-transition-all tw-duration-300 group-hover:tw-bg-blue-200 group-hover:tw-scale-110">
+          <svg class="tw-w-8 tw-h-8 tw-text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+        </div>
+        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-700 tw-mb-2 group-hover:tw-text-blue-600 tw-transition-colors tw-duration-300">Create New Board</h3>
+        <p class="tw-text-sm tw-text-gray-500 tw-text-center">Start a new project board to organize your team's work</p>
+      </div>
+
+      <!-- Board Cards -->
+      <div 
+        *ngFor="let board of filteredBoards()" 
+        class="tw-group tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border tw-border-gray-100 tw-overflow-hidden tw-cursor-pointer tw-transition-all tw-duration-300 hover:tw-shadow-xl hover:tw-scale-105 tw-relative tw-min-h-[300px]"
+        [class.tw-ring-2]="selectedBoard()?._id === board._id"
+        [class.tw-ring-blue-500]="selectedBoard()?._id === board._id"
+        [class.tw-animate-pulse]="expandingBoardId() === board._id"
+        (click)="onBoardClick(board, $event)"
+      >
+        <!-- Board Header -->
+        <div class="tw-p-6 tw-pb-4">
+          <div class="tw-flex tw-justify-between tw-items-start tw-mb-3">
+            <h3 class="tw-text-xl tw-font-bold tw-text-gray-900 tw-leading-tight">{{ board.name }}</h3>
+            
+            <!-- Categories Icon -->
+            <button 
+              (click)="onShowCategories(board, $event)"
+              class="tw-p-2 tw-rounded-lg tw-text-gray-400 hover:tw-text-blue-600 hover:tw-bg-blue-50 tw-transition-all tw-duration-200"
+              title="Manage Categories"
+            >
+              <svg class="tw-w-5 tw-h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.99 1.99 0 013 12V7a4 4 0 014-4z"></path>
+              </svg>
+            </button>
+          </div>
+          
+          <!-- Description with Tooltip -->
+          <div class="tw-relative">
+            <p 
+              class="tw-text-gray-600 tw-text-sm tw-leading-relaxed"
+              (mouseenter)="onDescriptionHover(board.description)"
+              (mouseleave)="onDescriptionLeave()"
+            >
+              {{ truncateDescription(board.description) }}
+            </p>
+            
+            <!-- Tooltip -->
+            <div 
+              *ngIf="hoveredDescription() === board.description && board.description.length > 60"
+              class="tw-absolute tw-z-50 tw-bg-gray-900 tw-text-white tw-text-xs tw-rounded-lg tw-px-3 tw-py-2 tw-max-w-xs tw-shadow-lg tw-top-full tw-left-0 tw-mt-2 tw-animate-fade-in"
+            >
+              {{ board.description }}
+              <div class="tw-absolute tw-bottom-full tw-left-4 tw-w-0 tw-h-0 tw-border-l-4 tw-border-r-4 tw-border-b-4 tw-border-transparent tw-border-b-gray-900"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Categories Pills -->
+        <div class="tw-px-6 tw-pb-4">
+          <div class="tw-flex tw-flex-wrap tw-gap-2">
+            <span 
+  *ngFor="let category of board.categories.slice(0, 3); trackBy: trackByCategoryId" 
+  class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium tw-bg-blue-100 tw-text-blue-800"
+  [class.tw-hidden]="category.isDeleted"
+>
+  {{ category.name }}
+</span>
+            <span 
+              *ngIf="getNonDeletedCategoriesCount(board.categories) > 3"
+              class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium tw-bg-gray-100 tw-text-gray-600"
+            >
+              +{{ getNonDeletedCategoriesCount(board.categories) - 3 }} more
+            </span>
+          </div>
+        </div>
+
+        <!-- Board Footer -->
+        <div class="tw-px-6 tw-pb-6 tw-mt-auto">
+          <div class="tw-flex tw-justify-between tw-items-center tw-text-sm tw-text-gray-500 tw-mb-4">
+            <span>Created: {{ formatDate(board.createdAt) }}</span>
+            <span class="tw-px-2 tw-py-1 tw-bg-green-100 tw-text-green-700 tw-rounded-full tw-text-xs tw-font-medium">
+              {{ board.type }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Joined Members Component -->
+        <div class="tw-absolute tw-bottom-6 tw-right-6">
+          <app-joined-members 
+            [members]="board.members"
+            [boardId]="board._id"
+            (showAllMembers)="onShowMembers(board, $event)"
+          ></app-joined-members>
+        </div>
+
+        <!-- Open Button (appears when board is selected) -->
+        <div 
+          *ngIf="selectedBoard()?._id === board._id"
+          class="tw-absolute tw-bottom-6 tw-left-6 tw-animate-fade-in"
+        >
+          <button 
+            (click)="onOpenBoard(board)"
+            class="tw-bg-blue-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-lg tw-font-medium tw-text-sm tw-shadow-lg hover:tw-bg-blue-700 tw-transition-all tw-duration-200 tw-transform hover:tw-scale-105"
+          >
+            Open Board
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredBoards().length === 0" class="tw-text-center tw-py-16">
+      <div class="tw-w-24 tw-h-24 tw-bg-gray-100 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-4">
+        <svg class="tw-w-12 tw-h-12 tw-text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+      </div>
+      <h3 class="tw-text-lg tw-font-medium tw-text-gray-900 tw-mb-2">No boards found</h3>
+      <p class="tw-text-gray-500 tw-mb-6">Try adjusting your search or create a new board to get started.</p>
+      <button 
+        (click)="onCreateNewBoard()"
+        class="tw-bg-blue-600 tw-text-white tw-px-6 tw-py-3 tw-rounded-lg tw-font-medium hover:tw-bg-blue-700 tw-transition-colors tw-duration-200"
+      >
+        Create Your First Board
+      </button>
+    </div>
+  </div>
+
+  <!-- Categories Modal -->
+  <div 
+    *ngIf="showCategoriesModal()"
+    class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-animate-fade-in"
+    (click)="onCloseModal()"
+  >
+    <div 
+      class="tw-bg-white tw-rounded-2xl tw-p-6 tw-w-full tw-max-w-md tw-mx-4 tw-animate-scale-in"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="tw-flex tw-justify-between tw-items-center tw-mb-6">
+        <h3 class="tw-text-xl tw-font-bold tw-text-gray-900">Manage Categories</h3>
+        <button 
+          (click)="onCloseModal()"
+          class="tw-text-gray-400 hover:tw-text-gray-600 tw-transition-colors tw-duration-200"
+        >
+          <svg class="tw-w-6 tw-h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Add New Category -->
+      <div class="tw-mb-4">
+        <div class="tw-flex tw-gap-2">
+          <input
+            type="text"
+            [(ngModel)]="newCategoryName"
+            placeholder="Enter category name"
+            class="tw-flex-1 tw-px-3 tw-py-2 tw-border tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500"
+            (keyup.enter)="onAddCategory()"
+          >
+          <button 
+            (click)="onAddCategory()"
+            [disabled]="isNewCategoryNameEmpty()"
+            class="tw-bg-blue-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-lg tw-font-medium hover:tw-bg-blue-700 tw-transition-colors tw-duration-200 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+
+      <!-- Categories List -->
+      <div class="tw-space-y-2 tw-mb-6">
+        <div 
+          *ngFor="let category of editingCategories()" 
+          class="tw-flex tw-justify-between tw-items-center tw-p-3 tw-bg-gray-50 tw-rounded-lg"
+        >
+          <span class="tw-font-medium tw-text-gray-700">{{ category.name }}</span>
+          <button 
+            (click)="onRemoveCategory(category._id)"
+            class="tw-text-red-500 hover:tw-text-red-700 tw-transition-colors tw-duration-200"
+          >
+            <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="tw-flex tw-gap-3">
+        <button 
+          (click)="onCloseModal()"
+          class="tw-flex-1 tw-px-4 tw-py-2 tw-border tw-border-gray-200 tw-text-gray-700 tw-rounded-lg tw-font-medium hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
+        >
+          Cancel
+        </button>
+        <button 
+          (click)="onUpdateCategories()"
+          class="tw-flex-1 tw-bg-blue-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-lg tw-font-medium hover:tw-bg-blue-700 tw-transition-colors tw-duration-200"
+        >
+          Update Categories
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Members Modal -->
+  <div 
+    *ngIf="showMembersModal()"
+    class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-animate-fade-in"
+    (click)="onCloseModal()"
+  >
+    <div 
+      class="tw-bg-white tw-rounded-2xl tw-p-6 tw-w-full tw-max-w-lg tw-mx-4 tw-max-h-[80vh] tw-overflow-y-auto tw-animate-scale-in"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="tw-flex tw-justify-between tw-items-center tw-mb-6">
+        <h3 class="tw-text-xl tw-font-bold tw-text-gray-900">Board Members</h3>
+        <button 
+          (click)="onCloseModal()"
+          class="tw-text-gray-400 hover:tw-text-gray-600 tw-transition-colors tw-duration-200"
+        >
+          <svg class="tw-w-6 tw-h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Members List -->
+      <div class="tw-space-y-3 tw-mb-6">
+        <div 
+          *ngFor="let member of selectedBoard()?.members" 
+          class="tw-flex tw-items-center tw-p-4 tw-bg-gray-50 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors tw-duration-200"
+        >
+          <!-- Member Avatar -->
+          <div class="tw-w-12 tw-h-12 tw-rounded-full tw-overflow-hidden tw-border-2 tw-border-white tw-shadow-sm tw-mr-4">
+            <img 
+              *ngIf="member.profileImage; else memberInitialsTemplate"
+              [src]="member.profileImage"
+              [alt]="member.name"
+              class="tw-w-full tw-h-full tw-object-cover"
+            >
+            <ng-template #memberInitialsTemplate>
+              <div class="tw-w-full tw-h-full tw-bg-gradient-to-br tw-from-blue-500 tw-to-purple-600 tw-flex tw-items-center tw-justify-center tw-text-white tw-text-sm tw-font-semibold">
+                {{ getMemberInitials(member.name) }}
+              </div>
+            </ng-template>
+          </div>
+
+          <!-- Member Info -->
+          <div class="tw-flex-1">
+            <h4 class="tw-font-semibold tw-text-gray-900 tw-text-sm">{{ member.name }}</h4>
+            <p class="tw-text-xs tw-text-gray-500">{{ member.emailId }}</p>
+            <span class="tw-inline-flex tw-items-center tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium tw-bg-blue-100 tw-text-blue-800 tw-mt-1 tw-capitalize">
+              {{ member.role }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Member Button -->
+      <div class="tw-flex tw-gap-3">
+        <button 
+          (click)="onCloseModal()"
+          class="tw-flex-1 tw-px-4 tw-py-2 tw-border tw-border-gray-200 tw-text-gray-700 tw-rounded-lg tw-font-medium hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
+        >
+          Close
+        </button>
+        <button 
+          (click)="onShowAddMember($event)"
+          class="tw-flex-1 tw-bg-blue-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-lg tw-font-medium hover:tw-bg-blue-700 tw-transition-colors tw-duration-200"
+        >
+          Add Member
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Member Modal -->
+  <div 
+    *ngIf="showAddMemberModal()"
+    class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-animate-fade-in"
+    (click)="onCloseModal()"
+  >
+    <div 
+      class="tw-bg-white tw-rounded-2xl tw-p-6 tw-w-full tw-max-w-lg tw-mx-4 tw-max-h-[80vh] tw-overflow-y-auto tw-animate-scale-in"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="tw-flex tw-justify-between tw-items-center tw-mb-6">
+        <h3 class="tw-text-xl tw-font-bold tw-text-gray-900">Add Team Members</h3>
+        <button 
+          (click)="onCloseModal()"
+          class="tw-text-gray-400 hover:tw-text-gray-600 tw-transition-colors tw-duration-200"
+        >
+          <svg class="tw-w-6 tw-h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Available Team Members -->
+      <div class="tw-space-y-3 tw-mb-6">
+        <div 
+          *ngFor="let member of availableTeamMembers()" 
+          class="tw-flex tw-items-center tw-justify-between tw-p-4 tw-bg-gray-50 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors tw-duration-200"
+        >
+          <div class="tw-flex tw-items-center">
+            <!-- Member Avatar -->
+            <div class="tw-w-10 tw-h-10 tw-rounded-full tw-overflow-hidden tw-border-2 tw-border-white tw-shadow-sm tw-mr-3">
+              <img 
+                *ngIf="member.profileImage; else teamMemberInitialsTemplate"
+                [src]="member.profileImage"
+                [alt]="member.name"
+                class="tw-w-full tw-h-full tw-object-cover"
+              >
+              <ng-template #teamMemberInitialsTemplate>
+                <div class="tw-w-full tw-h-full tw-bg-gradient-to-br tw-from-green-500 tw-to-blue-600 tw-flex tw-items-center tw-justify-center tw-text-white tw-text-xs tw-font-semibold">
+                  {{ getMemberInitials(member.name) }}
+                </div>
+              </ng-template>
+            </div>
+
+            <!-- Member Info -->
+            <div>
+              <h4 class="tw-font-medium tw-text-gray-900 tw-text-sm">{{ member.name }}</h4>
+              <p class="tw-text-xs tw-text-gray-500">{{ member.emailId }}</p>
+              <div class="tw-flex tw-items-center tw-gap-2 tw-mt-1">
+                <span class="tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium tw-bg-green-100 tw-text-green-800 tw-capitalize">
+                  {{ member.role }}
+                </span>
+                <span *ngIf="member.experience" class="tw-text-xs tw-text-gray-500">{{ member.experience }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add Button -->
+          <button 
+            (click)="onAddMemberToBoard(member._id)"
+            class="tw-bg-blue-600 tw-text-white tw-px-3 tw-py-1.5 tw-rounded-lg tw-text-xs tw-font-medium hover:tw-bg-blue-700 tw-transition-colors tw-duration-200"
+          >
+            Add
+          </button>
+        </div>
+
+        <!-- Empty State for Available Members -->
+        <div *ngIf="availableTeamMembers().length === 0" class="tw-text-center tw-py-8">
+          <div class="tw-w-16 tw-h-16 tw-bg-gray-100 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-4">
+            <svg class="tw-w-8 tw-h-8 tw-text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+          </div>
+          <h4 class="tw-text-sm tw-font-medium tw-text-gray-900 tw-mb-2">No available members</h4>
+          <p class="tw-text-xs tw-text-gray-500">All team members are already added to this board.</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="tw-flex tw-gap-3">
+        <button 
+          (click)="onCloseModal()"
+          class="tw-flex-1 tw-px-4 tw-py-2 tw-border tw-border-gray-200 tw-text-gray-700 tw-rounded-lg tw-font-medium hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,1 +1,113 @@
-<p>joinedMembers works!</p>,
+<div class="tw-relative tw-flex tw-items-center">
+  <!-- Display first two members -->
+  <div class="tw-flex tw--space-x-2">
+    <div 
+      *ngFor="let member of displayMembers(); let i = index"
+      class="tw-relative tw-group"
+      (mouseenter)="onMemberHover(member, $event)"
+      (mouseleave)="onMemberLeave()"
+    >
+      <!-- Member Avatar -->
+      <div class="tw-relative tw-w-8 tw-h-8 tw-rounded-full tw-overflow-hidden tw-border-2 tw-border-white tw-shadow-sm tw-cursor-pointer tw-transition-all tw-duration-200 hover:tw-scale-110 hover:tw-z-10">
+        <img 
+          *ngIf="member.profileImage; else initialsTemplate"
+          [src]="member.profileImage"
+          [alt]="member.name"
+          class="tw-w-full tw-h-full tw-object-cover"
+          [style.z-index]="10 - i"
+        >
+        <ng-template #initialsTemplate>
+          <div class="tw-w-full tw-h-full tw-bg-gradient-to-br tw-from-blue-500 tw-to-purple-600 tw-flex tw-items-center tw-justify-center tw-text-white tw-text-xs tw-font-semibold">
+            {{ getMemberInitials(member.name) }}
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Member Tooltip -->
+      <div 
+        *ngIf="hoveredMember()?._id === member._id && showTooltip()"
+        class="tw-absolute tw-bottom-full tw-left-1/2 tw-transform tw--translate-x-1/2 tw-mb-2 tw-z-50 tw-animate-fade-in"
+      >
+        <div class="tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-200 tw-p-3 tw-min-w-[200px]">
+          <!-- Member Info Card -->
+          <div class="tw-flex tw-items-center tw-mb-3">
+            <div class="tw-w-10 tw-h-10 tw-rounded-full tw-overflow-hidden tw-border-2 tw-border-gray-100 tw-mr-3">
+              <img 
+                *ngIf="member.profileImage; else tooltipInitialsTemplate"
+                [src]="member.profileImage"
+                [alt]="member.name"
+                class="tw-w-full tw-h-full tw-object-cover"
+              >
+              <ng-template #tooltipInitialsTemplate>
+                <div class="tw-w-full tw-h-full tw-bg-gradient-to-br tw-from-blue-500 tw-to-purple-600 tw-flex tw-items-center tw-justify-center tw-text-white tw-text-sm tw-font-semibold">
+                  {{ getMemberInitials(member.name) }}
+                </div>
+              </ng-template>
+            </div>
+            <div class="tw-flex-1">
+              <h4 class="tw-font-semibold tw-text-gray-900 tw-text-sm">{{ member.name }}</h4>
+              <p class="tw-text-xs tw-text-gray-500 tw-capitalize">{{ member.role }}</p>
+            </div>
+          </div>
+          
+          <div class="tw-space-y-1">
+            <div class="tw-flex tw-items-center tw-text-xs tw-text-gray-600">
+              <svg class="tw-w-3 tw-h-3 tw-mr-2 tw-text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+              <span class="tw-truncate">{{ member.emailId }}</span>
+            </div>
+            
+            <div class="tw-flex tw-items-center tw-text-xs tw-text-gray-600">
+              <svg class="tw-w-3 tw-h-3 tw-mr-2 tw-text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+              </svg>
+              <span class="tw-capitalize">{{ member.role }}</span>
+            </div>
+          </div>
+          
+          <!-- Tooltip Arrow -->
+          <div class="tw-absolute tw-top-full tw-left-1/2 tw-transform tw--translate-x-1/2 tw-w-0 tw-h-0 tw-border-l-4 tw-border-r-4 tw-border-t-4 tw-border-transparent tw-border-t-white"></div>
+          <div class="tw-absolute tw-top-full tw-left-1/2 tw-transform tw--translate-x-1/2 tw-w-0 tw-h-0 tw-border-l-4 tw-border-r-4 tw-border-t-4 tw-border-transparent tw-border-t-gray-200 tw-mt-px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Remaining members count -->
+  <div 
+    *ngIf="remainingCount() > 0"
+    class="tw-relative tw-ml-1"
+    (mouseenter)="onCountHover($event)"
+    (mouseleave)="onCountLeave()"
+    (click)="onCountClick($event)"
+  >
+    <div class="tw-w-8 tw-h-8 tw-rounded-full tw-bg-gray-100 tw-border-2 tw-border-white tw-shadow-sm tw-flex tw-items-center tw-justify-center tw-cursor-pointer tw-transition-all tw-duration-200 hover:tw-bg-blue-100 hover:tw-scale-110 hover:tw-shadow-md">
+      <span class="tw-text-xs tw-font-semibold tw-text-gray-600">+{{ remainingCount() }}</span>
+    </div>
+
+    <!-- Count Tooltip -->
+    <div 
+      *ngIf="showTooltip() && !hoveredMember()"
+      class="tw-absolute tw-bottom-full tw-left-1/2 tw-transform tw--translate-x-1/2 tw-mb-2 tw-z-50 tw-animate-fade-in"
+    >
+      <div class="tw-bg-gray-900 tw-text-white tw-text-xs tw-rounded-lg tw-px-3 tw-py-2 tw-whitespace-nowrap tw-shadow-lg">
+        {{ remainingCount() }} more member{{ remainingCount() > 1 ? 's' : '' }}
+        <div class="tw-absolute tw-top-full tw-left-1/2 tw-transform tw--translate-x-1/2 tw-w-0 tw-h-0 tw-border-l-4 tw-border-r-4 tw-border-t-4 tw-border-transparent tw-border-t-gray-900"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Show empty state if no members -->
+  <div 
+    *ngIf="totalMembers() === 0"
+    class="tw-flex tw-items-center tw-text-gray-400"
+  >
+    <div class="tw-w-8 tw-h-8 tw-rounded-full tw-bg-gray-100 tw-border-2 tw-border-gray-200 tw-border-dashed tw-flex tw-items-center tw-justify-center">
+      <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+      </svg>
+    </div>
+    <span class="tw-text-xs tw-text-gray-500 tw-ml-2">No members</span>
+  </div>
+</div>
