@@ -74,28 +74,35 @@ export class GalleryDetailsComponent implements OnInit {
     this.modal.open('deleteModal')
   }
 
+
+
   async deleteImage() {
-    if (this.imageToDeleteIndex !== null) {
-      this.selectedImages.splice(this.imageToDeleteIndex, 1);
-      this.imageToDeleteIndex = null;
-    }
-
-    if (this.actualImageToDeleteIndex !== null) {
-      let image = this.galleries[this.actualImageToDeleteIndex].split(`${environment.baseURL}/`)[1];
-
-      let result = await this.authService.deleteGalleryDetails({
-        fileURL: image,
-        type: 'image',
-      });
-
-      if (result) {
-        // Remove the image from the gallery list
-        this.galleries.splice(this.actualImageToDeleteIndex, 1);
-        swalHelper.showToast('Gallery Image Deleted!', 'success');
-      }
-    }
+  if (this.imageToDeleteIndex !== null) {
+    this.selectedImages.splice(this.imageToDeleteIndex, 1);
+    this.imageToDeleteIndex = null;
   }
 
+  if (this.actualImageToDeleteIndex !== null) {
+    let image = this.galleries[this.actualImageToDeleteIndex];
+
+    const fileName = image.split('/').pop().split('?')[0]; 
+
+    let result = await this.authService.deleteGalleryDetails({
+      fileURL: fileName,
+      type: 'image',
+    });
+
+    if (result) {
+      this.galleries.splice(this.actualImageToDeleteIndex, 1);
+      swalHelper.showToast('Gallery Image Deleted!', 'success');
+    } else {
+      console.error('Deletion failed:', result);
+      swalHelper.showToast('Failed to delete image: ' + (result || 'Unknown error'), 'error');
+    }
+    this.actualImageToDeleteIndex = null;
+  }
+  this.modal.close('deleteModal');
+}
 
   isLoading: boolean = false;
   galleries: any[] = [];
@@ -196,38 +203,40 @@ export class GalleryDetailsComponent implements OnInit {
     }
   }
 
-  async deleteVideo(): Promise<void> {
-    try {
-      if (this.videoToDeleteIndex !== null) {
-        // Handle locally selected videos (not yet uploaded)
-        this.selectedVideos.splice(this.videoToDeleteIndex, 1);
-        this.fileVideos.splice(this.videoToDeleteIndex, 1);
-        this.videoToDeleteIndex = null;
-        swalHelper.showToast('Video removed successfully', 'success');
-      }
-      else if (this.actualVideoToDeleteIndex !== null) {
-        // Handle videos already on server
-        const videoUrl = this.videos[this.actualVideoToDeleteIndex];
-        const fileURL = videoUrl.split(`${environment.baseURL}/`)[1];
+  async deleteVideo() {
+  try {
+    if (this.videoToDeleteIndex !== null) {
+      this.selectedVideos.splice(this.videoToDeleteIndex, 1);
+      this.fileVideos.splice(this.videoToDeleteIndex, 1);
+      this.videoToDeleteIndex = null;
+      swalHelper.showToast('Video removed successfully', 'success');
+    } else if (this.actualVideoToDeleteIndex !== null) {
+      let video = this.videos[this.actualVideoToDeleteIndex];
+      // Extract filename from old or new URLs
+      const lastSegment = video.split('/').pop();
+      const fileName = lastSegment ? lastSegment.split('?')[0] : '';
 
-        const success = await this.authService.deleteGalleryDetails({
-          fileURL: fileURL,
-          type: 'video'
-        });
+      const result = await this.authService.deleteGalleryDetails({
+        fileURL: fileName,
+        type: 'video',
+      });
 
-        if (success) {
-          this.videos.splice(this.actualVideoToDeleteIndex, 1);
-          swalHelper.showToast('Video deleted successfully', 'success');
-        }
-        this.actualVideoToDeleteIndex = null;
+      if (result) {
+        this.videos.splice(this.actualVideoToDeleteIndex, 1);
+        swalHelper.showToast('Video deleted successfully', 'success');
+      } else {
+        console.error('Deletion failed:', result);
+        swalHelper.showToast('Failed to delete video: ' , 'error');
       }
-    } catch (error) {
-      console.error('Error deleting video:', error);
-      swalHelper.showToast('Failed to delete video', 'error');
-    } finally {
-      this.modal.close('deleteVideoModal');
+      this.actualVideoToDeleteIndex = null;
     }
+  } catch (error) {
+    console.error('Error deleting video:', error);
+    swalHelper.showToast('Failed to delete video', 'error');
+  } finally {
+    this.modal.close('deleteVideoModal');
   }
+}
 
   onVideoSelected(event: any): void {
     const files = event.target.files;
