@@ -12,6 +12,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { JoinedMembersComponent } from 'src/app/views/partials/task-managemnt/common-components/joinedMembers/joinedMembers.component';
+import { swalHelper } from 'src/app/core/constants/swal-helper';
+import { environment } from 'src/env/env.local';
+import { AddTeamMemberComponent } from '../../../../../../partials/task-managemnt/common-components/addTeamMember/addTeamMember.component';
 
 interface Category {
   _id: string;
@@ -53,7 +56,12 @@ interface TeamMember {
 @Component({
   selector: 'app-all-boards',
   standalone: true,
-  imports: [CommonModule, FormsModule, JoinedMembersComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    JoinedMembersComponent,
+    AddTeamMemberComponent,
+  ],
   templateUrl: './allBoards.component.html',
   styleUrl: './allBoards.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -66,6 +74,7 @@ export class AllBoardsComponent implements OnInit {
   showCategoriesModal = signal(false);
   showMembersModal = signal(false);
   showAddMemberModal = signal(false);
+  showCreateMemberModal = signal(false);
   newCategoryName = signal('');
   originalCategories = signal<Category[]>([]);
   editingCategories = signal<Category[]>([]);
@@ -76,7 +85,12 @@ export class AllBoardsComponent implements OnInit {
   expandingBoardId = signal<string>('');
   loading: boolean = false;
   currentUser: any;
-  availableMembersDetails: any[] = [];
+  allMembersDetails: any[] = [];
+  membersLoading = signal(false);
+  baseURL = environment.baseURL;
+  selectedMemberIds = signal<string[]>([]);
+  originalSelectedMemberIds = signal<string[]>([]);
+  hasSelectedMembersChanged = signal(false);
 
   // Computed values
   filteredBoards = computed(() => {
@@ -261,7 +275,6 @@ export class AllBoardsComponent implements OnInit {
       result = await this.taskService.GetJoinedBoards({});
     }
     if (result && result) {
-      console.log('Fetched Boards:', result);
       this.boards.set(result);
       this.teamMembers.set(result.members);
       this.loading = false;
@@ -296,17 +309,97 @@ export class AllBoardsComponent implements OnInit {
     this.router.navigate(['/create-board']);
   }
 
+  async availableTeamMembersToAdd(board: Board | null) {
+    if (!board) return;
+    this.membersLoading.set(true);
+
+    const result = await this.taskService.GetAllAvailableMembers({
+      boardId: board._id,
+    });
+
+    if (result) {
+      this.allMembersDetails = result;
+
+      // Initialize selected members with current board members
+      const currentMemberIds = board.members
+        .filter((m) => !m.isDeleted)
+        .map((m) => m._id);
+
+      this.selectedMemberIds.set([...currentMemberIds]);
+      this.originalSelectedMemberIds.set([...currentMemberIds]);
+      this.hasSelectedMembersChanged.set(false);
+
+      this.membersLoading.set(false);
+    } else {
+      console.error('Failed to fetch available members');
+      this.allMembersDetails = [];
+      this.selectedMemberIds.set([]);
+      this.originalSelectedMemberIds.set([]);
+      this.membersLoading.set(false);
+    }
+  }
+
+  onToggleMemberSelection(memberId: string) {
+    const currentSelected = this.selectedMemberIds();
+    if (currentSelected.includes(memberId)) {
+      // Remove member
+      this.selectedMemberIds.set(
+        currentSelected.filter((id) => id !== memberId)
+      );
+    } else {
+      // Add member
+      this.selectedMemberIds.set([...currentSelected, memberId]);
+    }
+    this.checkForMemberChanges();
+  }
+
+  // Add method to check if member is selected
+  isMemberSelected(memberId: string): boolean {
+    return this.selectedMemberIds().includes(memberId);
+  }
+
+  // Add method to check for changes
+  private checkForMemberChanges() {
+    const original = [...this.originalSelectedMemberIds()].sort();
+    const current = [...this.selectedMemberIds()].sort();
+    this.hasSelectedMembersChanged.set(
+      JSON.stringify(original) !== JSON.stringify(current)
+    );
+  }
+
+  // Add method to check if member should be disabled
+  isMemberDisabled(member: any): boolean {
+    return this.taskPermissionsService.isRoleHigherOrEqual(member.role) || !member.isActive || !member.isVerified;
+  }
+
+  // Add method to get disabled reason
+  getMemberDisabledReason(member: any): string {
+    if (this.taskPermissionsService.isRoleHigherOrEqual(member.role)) {
+      return 'Cannot add members with higher or equal role';
+    }
+    if (!member.isActive && !member.isVerified) {
+      return 'Member is inactive and not verified';
+    }
+    if (!member.isActive) {
+      return 'Member is inactive';
+    }
+    if (!member.isVerified) {
+      return 'Member is not verified';
+    }
+    return '';
+  }
+
   onShowCategories(board: Board, event: Event) {
     event.stopPropagation();
     this.selectedBoard.set(board);
-    
+
     // Store original categories for comparison
     const originalCats = board.categories.filter((cat) => !cat.isDeleted);
     this.originalCategories.set([...originalCats]);
     this.editingCategories.set([...originalCats]);
     this.newCategories.set([]);
     this.hasChanges.set(false);
-    
+
     this.showCategoriesModal.set(true);
   }
 
@@ -316,17 +409,18 @@ export class AllBoardsComponent implements OnInit {
     this.showMembersModal.set(true);
   }
 
-  onShowAddMember(event: Event) {
+  onShowAddMember(board: Board | null, event: Event) {
     event.stopPropagation();
+    if (!board) return;
     this.showMembersModal.set(false);
     this.showAddMemberModal.set(true);
+
+    this.availableTeamMembersToAdd(board);
   }
 
-  // ...existing code...
   trackByCategoryId(index: number, category: any): string {
     return category._id;
   }
-  // ...existing code...
 
   onAddCategory() {
     const name = this.newCategoryName().trim();
@@ -361,20 +455,32 @@ export class AllBoardsComponent implements OnInit {
   }
 
   private checkForChanges() {
-    const originalIds = this.originalCategories().map(cat => cat._id).sort();
-    const currentIds = this.editingCategories().map(cat => cat._id).sort();
+    const originalIds = this.originalCategories()
+      .map((cat) => cat._id)
+      .sort();
+    const currentIds = this.editingCategories()
+      .map((cat) => cat._id)
+      .sort();
     const hasNewCategories = this.newCategories().length > 0;
-    
+
     // Check if existing categories changed or new categories added
-    const existingChanged = JSON.stringify(originalIds) !== JSON.stringify(currentIds);
+    const existingChanged =
+      JSON.stringify(originalIds) !== JSON.stringify(currentIds);
     this.hasChanges.set(existingChanged || hasNewCategories);
   }
 
-
-
-
   isNewCategoryNameEmpty(): boolean {
     return !this.newCategoryName().trim();
+  }
+
+  isNewCategoryNameIsUnique(): boolean {
+    const name = this.newCategoryName().trim();
+    if (!name) return true; // Empty name is considered unique
+    const allCategories = [
+      ...this.editingCategories().map((cat) => cat.name),
+      ...this.newCategories().map((cat) => cat.name),
+    ];
+    return !allCategories.includes(name);
   }
 
   onRemoveCategory(categoryId: string) {
@@ -391,13 +497,46 @@ export class AllBoardsComponent implements OnInit {
     const existingCategoryIds = this.editingCategories().map((cat) => cat._id);
     const newCategoryNames = this.newCategories().map((cat) => cat.name);
 
-    // Log the arrays as requested (instead of API call)
-    console.log('Board ID:', board._id);
-    console.log('Existing Category IDs:', existingCategoryIds);
-    console.log('New Category Names:', newCategoryNames);
+    const data = {
+      boardId: board._id,
+      existingCategoryIds,
+      newCategoryNames,
+    };
 
-    // Here you would make the actual API call:
-    /*
+    swalHelper
+      .confirmation(
+        `Update Categories`,
+        `Are you sure you want to update categories for ${board.name}?`,
+        'question'
+      )
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          // Call your toggle status API here
+          const response = await this.taskService.UpdateBoardCategories(data);
+          if (response) {
+            const allCategories = [
+              ...this.editingCategories(),
+              ...this.newCategories().map((cat) => ({
+                ...cat,
+                _id: `new_${Date.now()}_${Math.random()}`, // Simulate server-generated ID
+              })),
+            ];
+
+            // Update local board state
+            this.boards.update((boards) =>
+              boards.map((b) =>
+                b._id === board._id ? { ...b, categories: allCategories } : b
+              )
+            );
+
+            this.showCategoriesModal.set(false);
+            this.resetCategoryModal();
+          }
+        }
+      });
+  }
+  // Here you would make the actual API call:
+  /*
     const updateData = {
       boardId: board._id,
       existingCategoryIds,
@@ -408,27 +547,7 @@ export class AllBoardsComponent implements OnInit {
     // await this.taskService.updateBoardCategories(updateData);
     */
 
-    // For now, just update local state to simulate the update
-    const allCategories = [
-      ...this.editingCategories(),
-      ...this.newCategories().map(cat => ({
-        ...cat,
-        _id: `new_${Date.now()}_${Math.random()}` // Simulate server-generated ID
-      }))
-    ];
-
-    // Update local board state
-    this.boards.update((boards) =>
-      boards.map((b) =>
-        b._id === board._id
-          ? { ...b, categories: allCategories }
-          : b
-      )
-    );
-
-    this.showCategoriesModal.set(false);
-    this.resetCategoryModal();
-  }
+  // For now, just update local state to simulate the update
 
   private resetCategoryModal() {
     this.originalCategories.set([]);
@@ -438,30 +557,77 @@ export class AllBoardsComponent implements OnInit {
     this.hasChanges.set(false);
   }
 
+  // onAddMemberToBoard(memberId: string) {
+  //   const board = this.selectedBoard();
+  //   const member = this.teamMembers().find((m) => m._id === memberId);
 
-  onAddMemberToBoard(memberId: string) {
+  //   if (!board || !member) return;
+
+  //   const newMember: Member = {
+  //     _id: member._id,
+  //     name: member.name,
+  //     emailId: member.emailId,
+  //     role: member.role,
+  //     profileImage: member.profileImage,
+  //     isDeleted: false,
+  //   };
+
+  //   // Update local state
+  //   this.boards.update((boards) =>
+  //     boards.map((b) =>
+  //       b._id === board._id ? { ...b, members: [...b.members, newMember] } : b
+  //     )
+  //   );
+
+  //   this.showAddMemberModal.set(false);
+  // }
+
+  async onUpdateBoardMembers() {
     const board = this.selectedBoard();
-    const member = this.teamMembers().find((m) => m._id === memberId);
+    if (!board || !this.hasSelectedMembersChanged()) return;
 
-    if (!board || !member) return;
+    const selectedIds = this.selectedMemberIds();
 
-    const newMember: Member = {
-      _id: member._id,
-      name: member.name,
-      emailId: member.emailId,
-      role: member.role,
-      profileImage: member.profileImage,
-      isDeleted: false,
-    };
-
-    // Update local state
-    this.boards.update((boards) =>
-      boards.map((b) =>
-        b._id === board._id ? { ...b, members: [...b.members, newMember] } : b
+    swalHelper
+      .confirmation(
+        `Update Members`,
+        `Are you sure you want to update members for ${board.name}?`,
+        'question'
       )
-    );
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          const response = await this.taskService.UpdateBoardMembers({
+            boardId: board._id,
+            members: selectedIds,
+          });
 
-    this.showAddMemberModal.set(false);
+          if (response) {
+            // Update local board state
+            const updatedMembers = this.allMembersDetails
+              .filter((member) => selectedIds.includes(member._id))
+              .map((member) => ({
+                _id: member._id,
+                name: member.name,
+                emailId: member.emailId,
+                role: member.role,
+                profileImage: member.profileImage,
+                isDeleted: false,
+              }));
+
+            this.boards.update((boards) =>
+              boards.map((b) =>
+                b._id === board._id ? { ...b, members: updatedMembers } : b
+              )
+            );
+
+            // Update original selection to reflect saved state
+            this.originalSelectedMemberIds.set([...selectedIds]);
+            this.hasSelectedMembersChanged.set(false);
+          }
+
+          this.showAddMemberModal.set(false);
+        }
+      });
   }
 
   onCloseModal() {
@@ -469,7 +635,16 @@ export class AllBoardsComponent implements OnInit {
     this.showMembersModal.set(false);
     this.showAddMemberModal.set(false);
     this.resetCategoryModal();
+    this.resetMemberModal();
   }
+
+  private resetMemberModal() {
+    this.selectedMemberIds.set([]);
+    this.originalSelectedMemberIds.set([]);
+    this.hasSelectedMembersChanged.set(false);
+    this.allMembersDetails = [];
+  }
+
   onDocumentClick() {
     this.selectedBoard.set(null);
   }
@@ -514,7 +689,6 @@ export class AllBoardsComponent implements OnInit {
     // Handle member added event
     if (this.selectedBoard()) {
       // Add member to board logic here
-      console.log('Member added:', memberId);
     }
   }
 
@@ -522,7 +696,6 @@ export class AllBoardsComponent implements OnInit {
     // Handle member removed event
     if (this.selectedBoard()) {
       // Remove member from board logic here
-      console.log('Member removed:', memberId);
     }
   }
 
@@ -530,7 +703,22 @@ export class AllBoardsComponent implements OnInit {
     // Handle member role changed event
     if (this.selectedBoard()) {
       // Change member role logic here
-      console.log('Member role changed:', event);
     }
+  }
+
+  // Method to open the modal for adding a new member
+  onCreateNewUser() {
+    this.showCreateMemberModal.set(true);
+  }
+
+  // New method to handle modal close
+  onAddMemberModalClose() {
+    this.showCreateMemberModal.set(false);
+  }
+
+  async onMemberCreated(memberData: any) {
+    this.showCreateMemberModal.set(false);
+
+    this.availableTeamMembersToAdd(this.selectedBoard());
   }
 }

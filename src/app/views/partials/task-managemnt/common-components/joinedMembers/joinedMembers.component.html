@@ -102,10 +102,10 @@
 
           <!-- Tooltip Arrow -->
           <div
-            class="tw-absolute tw-top-full tw-right-4 tw-w-0 tw-h-0 tw-border-l-4 tw-border-r-4 tw-border-t-4 tw-border-transparent tw-border-t-white"
+            class="tw-absolute tw-top-full tw-right-4 tw-w-0 tw-h-0 tw-border-l-4 tw-border-r-4 tw-border-t-4 tw-border-transparent tw-border-t-black"
           ></div>
           <div
-            class="tw-absolute tw-top-full tw-right-4 tw-transform tw-w-0 tw-h-0 tw-border-l-4 tw-border-r-4 tw-border-t-4 tw-border-transparent tw-border-t-gray-200 tw-mt-px"
+            class="tw-absolute tw-top-full tw-right-4 tw-transform tw-w-0 tw-h-0 tw-border-l-4 tw-border-r-4 tw-border-t-4 tw-border-transparent tw-border-t-black tw-mt-px"
           ></div>
         </div>
       </div>
@@ -131,14 +131,14 @@
     <!-- Count Tooltip -->
     <div
       *ngIf="showTooltip() && !hoveredMember()"
-      class="tw-absolute tw-bottom-full tw-left-1/2 tw-transform tw--translate-x-1/2 tw-mb-2 tw-z-50 tw-animate-fade-in"
+      class="tw-absolute tw-bottom-full tw-transform tw--translate-x-1/2 tw-mb-2 tw-z-50 tw-animate-fade-in tw-right-0"
     >
       <div
         class="tw-bg-gray-900 tw-text-white tw-text-xs tw-rounded-lg tw-px-3 tw-py-2 tw-whitespace-nowrap tw-shadow-lg"
       >
         {{ remainingCount() }} more member{{ remainingCount() > 1 ? "s" : "" }}
         <div
-          class="tw-absolute tw-top-full tw-left-1/2 tw-transform tw--translate-x-1/2 tw-w-0 tw-h-0 tw-border-l-4 tw-border-r-4 tw-border-t-4 tw-border-transparent tw-border-t-gray-900"
+          class="tw-absolute tw-top-full tw-right-4 tw-transform tw--translate-x-1/2 tw-w-0 tw-h-0 tw-border-l-4 tw-border-r-4 tw-border-t-4 tw-border-transparent tw-border-t-gray-900"
         ></div>
       </div>
     </div>
@@ -157,12 +157,13 @@
     <span class="tw-text-xs tw-text-gray-500 tw-ml-2 tw-mr-2">No members</span>
   </div>
 
+  <!-- all members button -->
   <div
-  *ngIf="taskPermissionsService.getCurrentUserRoleRank() >= 4"
+  *ngIf="remainingCount() === 0 && taskPermissionsService.getCurrentUserRoleRank() >= 4"
   class="tw-relative tw-flex tw-justify-center tw-items-center tw-w-8 tw-h-8 tw-rounded-full tw-overflow-hidden tw-border-2 tw-border-white tw-shadow-sm tw-cursor-pointer tw-transition-all tw-duration-200 hover:tw-scale-110 hover:tw-z-10 tw-bg-gray-200"
-  (click)="onAddMemberClick($event)"
+  (click)="onCountClick($event)"
   >
-    <i class="fa-solid fa-plus"></i>
+    <i class="fa-solid fa-user-group"></i>
     <!-- <ng-template #initialsTemplate>
           <div class="tw-w-full tw-h-full tw-bg-gradient-to-br tw-from-blue-500 tw-to-purple-600 tw-flex tw-items-center tw-justify-center tw-text-white tw-text-xs tw-font-semibold">
             {{ getMemberInitials(member.name) }}

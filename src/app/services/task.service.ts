@@ -56,7 +56,6 @@ export class TaskService {
         data,
         this.headers
       );
-      console.log('Add Team Member Response:', response);
       if (response.status == 200 && response.data) {
         swalHelper.success(response.message);
         return true;
@@ -251,7 +250,7 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.success(response.message);
+        swalHelper.showToast(response.message, 'success');
         return true;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -333,7 +332,26 @@ export class TaskService {
     }
   }
 
-
-
-
+  async GetAllAvailableMembers(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.GET_ALL_AVAILABLE_MEMBERS,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
 }
