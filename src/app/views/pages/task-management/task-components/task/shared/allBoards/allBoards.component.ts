@@ -375,7 +375,7 @@ export class AllBoardsComponent implements OnInit {
   // Add method to get disabled reason
   getMemberDisabledReason(member: any): string {
     if (this.taskPermissionsService.isRoleHigherOrEqual(member.role)) {
-      return 'Cannot add members with higher or equal role';
+      return 'Cannot update members with higher or equal role';
     }
     if (!member.isActive && !member.isVerified) {
       return 'Member is inactive and not verified';
