@@ -13,7 +13,7 @@
       >
         <img
           *ngIf="member.profileImage; else initialsTemplate"
-          [src]="baseURL + '/' + member.profileImage"
+          [src]="imageURL + member.profileImage"
           [alt]="member.name"
           class="tw-w-full tw-h-full tw-object-cover"
           [style.z-index]="10 - i"
@@ -42,7 +42,7 @@
             >
               <img
                 *ngIf="member.profileImage; else tooltipInitialsTemplate"
-                [src]="baseURL + '/' + member.profileImage"
+                [src]="imageURL + member.profileImage"
                 [alt]="member.name"
                 class="tw-w-full tw-h-full tw-object-cover"
               />

@@ -99,7 +99,7 @@
         <div class="tw-flex tw-justify-between tw-items-start tw-mb-4">
           <div class="tw-relative">
             <img
-              [src]="baseURL + '/' + member.profileImage"
+              [src]="imageURL + member.profileImage"
               [alt]="member.name"
               class="tw-w-16 tw-h-16 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-100"
             />
@@ -268,7 +268,7 @@
     >
       <div class="tw-flex tw-items-center tw-gap-4">
         <img
-          [src]="baseURL + '/' + selectedMember.profileImage"
+          [src]="imageURL + selectedMember.profileImage"
           [alt]="selectedMember.name"
           class="tw-w-12 tw-h-12 tw-rounded-full tw-object-cover"
         />
@@ -371,7 +371,7 @@
             >
             <div class="tw-flex tw-items-center tw-gap-4 tw-rounded-lg tw-p-2 tw-bg-gray-50">
               <img
-                [src]="!selectedMember.addedBy.isDeleted ? baseURL + '/' + selectedMember.addedBy.profileImage : 'https://static.thenounproject.com/png/574748-200.png'"
+                [src]="!selectedMember.addedBy.isDeleted ? imageURL + selectedMember.addedBy.profileImage : 'https://static.thenounproject.com/png/574748-200.png'"
                 [alt]="selectedMember.addedBy.name"
                 class="tw-w-9 tw-h-9 tw-rounded-full tw-object-cover"
               />

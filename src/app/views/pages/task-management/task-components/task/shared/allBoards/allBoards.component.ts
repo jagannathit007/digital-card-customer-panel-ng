@@ -87,7 +87,7 @@ export class AllBoardsComponent implements OnInit {
   currentUser: any;
   allMembersDetails: any[] = [];
   membersLoading = signal(false);
-  baseURL = environment.baseURL;
+  imageURL = environment.imageURL;
   selectedMemberIds = signal<string[]>([]);
   originalSelectedMemberIds = signal<string[]>([]);
   hasSelectedMembersChanged = signal(false);

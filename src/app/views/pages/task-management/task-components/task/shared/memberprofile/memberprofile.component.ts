@@ -397,7 +397,7 @@ export class MemberprofileComponent implements OnInit {
       return this.imagePreview; // Show preview during editing
     }
     if (this.memberData?.profileImage) {
-      return `${environment.baseURL}/${this.memberData.profileImage}`;
+      return `${environment.imageURL}${this.memberData.profileImage}`;
     }
     return 'assets/images/avatar.png'; 
   }

@@ -33,7 +33,7 @@ export class JoinedMembersComponent {
   // Signals for reactive state
   hoveredMember = signal<Member | null>(null);
   showTooltip = signal(false);
-  baseURL = environment.baseURL
+  imageURL = environment.imageURL
 
   // Computed values
   displayMembers = computed(() => {

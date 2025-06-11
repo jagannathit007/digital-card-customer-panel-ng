@@ -533,7 +533,7 @@
           >
             <img
               *ngIf="member.profileImage; else memberInitialsTemplate"
-              [src]="baseURL + '/' + member.profileImage"
+              [src]="imageURL + member.profileImage"
               [alt]="member.name"
               class="tw-w-full tw-h-full tw-object-cover"
             />
@@ -782,7 +782,7 @@
                         member.profileImage;
                         else teamMemberInitialsTemplate
                       "
-                      [src]="baseURL + '/' + member.profileImage"
+                      [src]="imageURL + member.profileImage"
                       [alt]="member.name"
                       class="tw-w-full tw-h-full tw-object-cover"
                     />

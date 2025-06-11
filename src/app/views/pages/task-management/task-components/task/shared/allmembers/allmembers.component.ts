@@ -18,7 +18,7 @@ import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
   styleUrl: './allmembers.component.scss',
 })
 export class AllmembersComponent implements OnInit {
-  baseURL = environment.baseURL;
+  imageURL = environment.imageURL;
   members: any[] = [];
   page: number = 1;
   limit: number = 12; // Increased for better grid layout
