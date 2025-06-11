@@ -1,0 +1,228 @@
+<div>
+  <div class="row">
+    <div class="col-md">
+      <div class="d-flex">
+        <label class="fw-bold text-uppercase fs-3">FAQs</label>
+        <app-toggle
+          [isActive]="faqVisible"
+          [onText]="'Visible'"
+          [offText]="'Hidden'"
+          class="ms-2 mt-2"
+          (changed)="this.faqVisible = !this.faqVisible; _updateVisibility()"
+        ></app-toggle>
+      </div>
+    </div>
+    <div class="col-md-auto">
+      <button class="btn btn-info" (click)="onOpenAddFaqDetails()">
+        <i class="ri-add-circle-line"></i> Add
+      </button>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col">
+      <span class="fw-semibold">Search</span>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+      />
+    </div>
+  </div>
+
+  <div class="table-responsive mt-4">
+    <table class="table table-bordered table-hover">
+      <thead class="bg-light text-uppercase">
+        <tr>
+          <th class="text-center" width="5%">#</th>
+          <th>Title</th>
+          <th>Description</th>
+          <th class="text-center">Status</th>
+          <th class="text-center" width="10%"><i class="ri-tools-fill"></i></th>
+        </tr>
+      </thead>
+      <tbody *ngIf="!isLoading && (filteredFaqList?.length ?? 0) > 0">
+        <tr *ngFor="let item of filteredFaqList; let i = index">
+          <td class="text-center">{{ i + 1 }}</td>
+          <td>
+            <div [innerHTML]="sanitizeHtml(item.faqTitle)" class="title-preview"></div>
+          </td>
+          <td>
+            <div
+              [innerHTML]="sanitizeHtml(item.faqDescription)"
+              class="description-preview"
+            ></div>
+          </td>
+          <td class="text-center">
+            <span
+              class="badge bg-{{ item.visible ? 'success' : 'warning' }}"
+            >
+              {{ (item.visible ? 'visible' : 'invisible') | titlecase }}
+            </span>
+          </td>
+          <td class="text-center">
+            <button
+              class="btn btn-info btn-sm"
+              (click)="onOpenUpdateModal(item)"
+            >
+              <i class="ri-edit-line"></i>
+            </button>
+            <button
+              class="btn btn-danger btn-sm ms-1"
+              (click)="_deleteFaqData(item._id)"
+            >
+              <i class="ri-delete-bin-line"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+      <tbody *ngIf="isLoading">
+        <tr>
+          <td class="text-center" colspan="5">
+            <div
+              class="spinner-border spinner-border-sm text-secondary"
+              role="status"
+            >
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+      <tbody *ngIf="!isLoading && filteredFaqList?.length == 0">
+        <tr>
+          <td class="text-center" colspan="5">
+            <img
+              src="../../../../assets/images/NoRecordFound.png"
+              alt=""
+              style="width: 90px;"
+            />
+            <div class="fw-bold">No Records Found</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="add-faq"
+  tabindex="-1"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  role="dialog"
+  aria-labelledby="modalTitleId"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg"
+    role="document"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title fw-bold" id="modalTitleId">
+          {{ payload._id == null ? 'Add' : 'Edit' }} FAQ Details
+        </h4>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          (click)="modal.close('add-faq'); reset()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form #faqForm="ngForm">
+          <div class="ms-2" *ngFor="let item of payload.addFaqData; let i = index">
+            <div class="row mb-4">
+              <div class="col-12">
+                <label for="faqTitle{{ i }}" class="fw-semibold">Title</label>
+                <div class="form-control p-0" style="height: auto;">
+                  <ngx-editor-menu
+                    [editor]="addTitleEditor"
+                    [toolbar]="toolbar"
+                  ></ngx-editor-menu>
+                  <ngx-editor
+                    [editor]="addTitleEditor"
+                    [(ngModel)]="item.faqTitle"
+                    name="faqTitle{{ i }}"
+                    #faqTitle="ngModel"
+                    placeholder="Enter the FAQ title..."
+                    [disabled]="false"
+                    required
+                  ></ngx-editor>
+                </div>
+                <div
+                  *ngIf="faqTitle.invalid && faqTitle.touched"
+                  class="text-danger"
+                >
+                  FAQ title is required!
+                </div>
+              </div>
+
+              <div class="col-12 mt-3">
+                <label for="faqDescription{{ i }}" class="fw-semibold">Description</label>
+                <div class="form-control p-0" style="height: auto;">
+                  <ngx-editor-menu
+                    [editor]="addEditor"
+                    [toolbar]="toolbar"
+                  ></ngx-editor-menu>
+                  <ngx-editor
+                    [editor]="addEditor"
+                    [(ngModel)]="item.faqDescription"
+                    name="faqDescription{{ i }}"
+                    #faqDescription="ngModel"
+                    placeholder="Enter the FAQ description..."
+                    [disabled]="false"
+                    required
+                  ></ngx-editor>
+                </div>
+                <div
+                  *ngIf="faqDescription.invalid && faqDescription.touched"
+                  class="text-danger"
+                >
+                  FAQ description is required!
+                </div>
+              </div>
+
+              <div class="col-12 mt-3">
+                <label class="fw-semibold">Visibility</label>
+                <div>
+                  <app-toggle
+                    [isActive]="item.visible"
+                    [onText]="'Visible'"
+                    [offText]="'Hidden'"
+                    class="ms-3 mt-2"
+                    (changed)="item.visible = !item.visible"
+                  ></app-toggle>
+                </div>
+              </div>
+
+              <div class="col-1 mt-4" *ngIf="!payload._id">
+                <i
+                  *ngIf="i !== 0"
+                  class="ri-delete-bin-line fs-2 text-danger"
+                  style="cursor: pointer;"
+                  (click)="onDelete(i)"
+                ></i>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-success"
+          (click)="_saveFaqData()"
+          [disabled]="faqForm.invalid || isLoading"
+        >
+          <i class="ri-save-line"></i>
+          {{ isLoading ? 'Saving...' : 'Save' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -97,6 +97,16 @@ export class WebsiteComponent{
         href: "our-certificate",
         icon:'ri-gallery-fill'
       },
+      {
+        title: "Our Faq",
+        href: "our-faq",
+        icon:'ri-question-answer-line'
+      },
+      {
+        title: "Our Blogs",
+        href: "our-blogs",
+        icon:'ri-article-line'
+      },
     ]
    
      isActive(href: string): boolean {

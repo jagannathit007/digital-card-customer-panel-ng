@@ -121,6 +121,14 @@ class ApiEndpoints {
   // our Certificates
   public WEBSITE_CERTIFICATES_ADD: string = `${this.PATH}/website/certificate/otherimages`;
 
+  // our Faq
+  public WEBSITE_FAQ_ADD: string = `${this.PATH}/website/faq/update`;
+  public WEBSITE_FAQ_DELETE: string = `${this.PATH}/website/faq/delete`;
+
+  // our Blogs
+  public WEBSITE_BLOGS_ADD: string = `${this.PATH}/website/blog/update`;
+  public WEBSITE_BLOGS_DELETE: string = `${this.PATH}/website/blog/delete`;
+
   //veryfy token
   public VERIFY_TOKEN: string = `${this.PATH}/verify-token`;
 

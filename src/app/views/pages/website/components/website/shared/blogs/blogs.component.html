@@ -1,0 +1,259 @@
+<div>
+  <div class="row">
+    <div class="col-md">
+      <div class="d-flex">
+        <label class="fw-bold text-uppercase fs-3">Blogs</label>
+        <app-toggle
+          [isActive]="blogVisible"
+          [onText]="'Visible'"
+          [offText]="'Hidden'"
+          class="ms-2 mt-2"
+          (changed)="this.blogVisible=!this.blogVisible;_updateVisibility()"
+        ></app-toggle>
+      </div>
+    </div>
+    <div class="col-md-auto pe-0">
+      <button class="btn btn-info" (click)="onOpenCreateModal()">
+        <i class="ri-add-circle-line"></i> Add Blog
+      </button>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col">
+      <span class="fw-semibold">Search</span>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+      />
+    </div>
+    <div class="col-auto">
+      <span class="fw-semibold">Page</span>
+      <select
+        class="form-select"
+        [(ngModel)]="itemsPerPage"
+        (change)="onItemsPerPageChange()"
+      >
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="table-responsive mt-4">
+    <table class="table table-bordered table-hover">
+      <thead class="text-uppercase bg-light">
+        <tr>
+          <th class="text-center" style="width: 5%">#</th>
+          <th>Title</th>
+          <th style="width: 25%">Description</th>
+          <th class="text-center" style="width: 20%">Images</th>
+          <th class="text-center" style="width: 15%"><i class="ri-tools-fill"></i></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="isLoading">
+          <td class="text-center" colspan="5">
+            <div class="spinner-border spinner-border-sm text-secondary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="!isLoading && filteredBlogs.length === 0">
+          <td class="text-center" colspan="5">
+            <img src="../../../../../../../assets/images/NoRecordFound.png" alt="" style="width: 90px;">
+            <div class="fw-bold">No Records Found</div>
+          </td>
+        </tr>
+        <tr
+          *ngFor="
+            let item of filteredBlogs
+              | paginate
+                : { id: 'blogs-pagination', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems };
+            let i = index
+          "
+        >
+          <td class="text-center">{{ (p - 1) * itemsPerPage + i + 1 }}</td>
+          <td><div [innerHTML]="sanitizeHtml(item.title)" class="title-preview"></div></td>
+          <td>
+            <div [innerHTML]="sanitizeHtml(item.description)" class="description-preview"></div>
+          </td>
+          <td class="text-center">
+            <div class="tw-flex tw-items-center" style="cursor: pointer;" *ngIf="item.images.length > 0"
+                 (click)="onOpenImageModal(item.images)">
+              <img [src]="imageBaseURL + item.images[0]" alt="Blog Image"
+                   style="width: 25px; height: 25px;" />
+              <span *ngIf="item.images.length > 1"
+                    [tooltip]="'... +' + (item.images.length - 1) + ' more images'" tooltipPosition="above">
+                <span class="mx-2 fw-bold text-success">. . .</span>
+                <span class="badge bg-success">+{{ item.images.length - 1 }}</span>
+              </span>
+            </div>
+            <div *ngIf="item.images.length === 0">:: NA ::</div>
+          </td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-info" (click)="onOpenUpdateModal(item)">
+              <i class="ri-edit-fill"></i>
+            </button>
+            <button class="btn btn-danger btn-sm ms-1" (click)="_deleteBlog(item._id)">
+              <i class="ri-delete-bin-6-fill"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="text-end">
+    <pagination-controls
+      [id]="'blogs-pagination'"
+      (pageChange)="onPageChange($event)"
+      [maxSize]="5"
+      [directionLinks]="true"
+      [autoHide]="false"
+      previousLabel="Previous"
+      nextLabel="Next"
+    ></pagination-controls>
+  </div>
+</div>
+
+<!-- Add/Update Blog Modal -->
+<div class="modal fade" id="create-blogs" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+     role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title fw-medium" id="modalTitleId">
+          {{ selectedBlog._id != null ? 'Update' : 'Add' }} Blog
+        </h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                (click)="onCloseModal('create-blogs')"></button>
+      </div>
+      <form #blogForm="ngForm" (ngSubmit)="onCreateBlog()">
+        <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+          <div class="row">
+            <div class="col-md-12">
+              <span class="fw-bold">Blog Title <code class="text-danger">*</code></span>
+              <div class="form-control p-0" style="height: auto;">
+                <ngx-editor-menu [editor]="titleEditor" [toolbar]="toolbar"></ngx-editor-menu>
+                <ngx-editor
+                  [editor]="titleEditor"
+                  [(ngModel)]="selectedBlog.title"
+                  name="blogTitle"
+                  #blogTitle="ngModel"
+                  placeholder="Enter blog title..."
+                  [disabled]="false"
+                  required
+                ></ngx-editor>
+              </div>
+              <div *ngIf="blogTitle.invalid && blogTitle.touched" class="text-danger">
+                Blog title is required!
+              </div>
+            </div>
+            <div class="col-md-12 mt-4">
+              <span class="fw-bold">Blog Description <code class="text-danger">*</code></span>
+              <div class="form-control p-0" style="height: auto;">
+                <ngx-editor-menu [editor]="descriptionEditor" [toolbar]="toolbar"></ngx-editor-menu>
+                <ngx-editor
+                  [editor]="descriptionEditor"
+                  [(ngModel)]="selectedBlog.description"
+                  name="blogDescription"
+                  #blogDescription="ngModel"
+                  placeholder="Enter blog description..."
+                  [disabled]="false"
+                  required
+                ></ngx-editor>
+              </div>
+              <div *ngIf="blogDescription.invalid && blogDescription.touched" class="text-danger">
+                Blog description is required!
+              </div>
+            </div>
+            <div class="col-md-6 mt-4">
+              <span class="fw-bold">Upload Images <code class="text-danger">* (Upload up to 5 images)</code></span>
+              <input type="file" #fileInput name="images" multiple accept="image/*"
+                     (change)="onUploadImage($event)" class="form-control mt-1"/>
+              <div class="d-flex flex-wrap gap-2 mt-2">
+                <div *ngFor="let img of selectedBlog.existingImages; let i = index" class="position-relative">
+                  <img [src]="getImagePreview(img)" alt="preview"
+                       style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;" />
+                  <button type="button"
+                          class="btn-close position-absolute top-0 end-0 bg-white rounded-circle"
+                          (click)="removeImage(i, true)"
+                          style="position: absolute; top: -4px; right: -4px; font-size: 10px; color: red; cursor: pointer;"
+                          aria-label="Close"></button>
+                </div>
+                <div *ngFor="let img of selectedBlog.images; let i = index" class="position-relative">
+                  <img [src]="getImagePreview(img)" alt="preview"
+                       style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;" />
+                  <button type="button"
+                          class="btn-close position-absolute top-0 end-0 bg-white rounded-circle"
+                          (click)="removeImage(i)"
+                          style="position: absolute; top: -4px; right: -4px; font-size: 10px; color: red; cursor: pointer;"
+                          aria-label="Close"></button>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 mt-4">
+              <app-toggle
+                [isActive]="selectedBlog.visible"
+                [onText]="'Visible'"
+                [offText]="'Hidden'"
+                class="ms-3 mt-2"
+                (changed)="selectedBlog.visible=!selectedBlog.visible"
+              ></app-toggle>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary me-2" (click)="onCancel()">
+            <i class="ri-close-line"></i> Cancel
+          </button>
+          <button type="submit" class="btn btn-success" [disabled]="blogForm.invalid || isLoading">
+            <i class="ri-save-fill"></i> {{ isLoading ? 'Saving...' : 'Save' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Image Carousel Modal -->
+<div class="modal fade" id="image-carousel" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+     role="dialog" aria-labelledby="carouselModalTitleId" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title fw-medium" id="carouselModalTitleId">
+          Blog Images
+        </h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                (click)="modal.close('image-carousel')"></button>
+      </div>
+      <div class="modal-body">
+        <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item {{i==0?'active':''}}"
+                 *ngFor="let img of imageForCarousel;let i=index">
+              <img [src]="imageBaseURL + img" class="d-block w-100" alt="Blog Image">
+            </div>
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+                  data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+                  data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -401,4 +401,100 @@ export class WebsiteBuilderService {
       }
     }
 
+    async updateFaq(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_FAQ_ADD,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        
+        if (response.status == 200 && response.data != null) {
+          return response.data;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return null;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return null;
+      }
+    }
+
+    async deleteFaq(data:any){
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_FAQ_DELETE,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.showToast(response.message, 'success');
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (error) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+
+    async updateBlogs(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_BLOGS_ADD,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        
+        if (response.status == 200 && response.data != null) {
+          return response.data;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return null;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return null;
+      }
+    }
+
+    async deleteBlogs(data:any){
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_BLOGS_DELETE,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.showToast(response.message, 'success');
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (error) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+
 }
