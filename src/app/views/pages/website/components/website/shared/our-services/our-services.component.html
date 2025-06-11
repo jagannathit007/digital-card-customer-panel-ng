@@ -7,7 +7,6 @@
                     (changed)="this.serviceVisible=!this.serviceVisible;_updateVisibility()">
                 </app-toggle>
             </div>
-            
         </div>
         <div class="col-md-auto">
             <button class="btn btn-info" (click)="modal.open('AddServiceModal')">
@@ -49,7 +48,7 @@
             <tbody>
                 <!-- Loading Spinner -->
                 <tr *ngIf="isLoading">
-                    <td class="text-center" colspan="5">
+                    <td class="text-center" colspan="6">
                         <div class="spinner-border spinner-border-sm text-secondary" role="status">
                             <span class="visually-hidden">Loading...</span>
                         </div>
@@ -58,7 +57,7 @@
 
                 <!-- No Services Found -->
                 <tr *ngIf="!isLoading && filteredServices.length === 0">
-                    <td class="text-center" colspan="5">No Services Found</td>
+                    <td class="text-center" colspan="6">No Services Found</td>
                 </tr>
 
                 <!-- Service Rows -->
@@ -66,15 +65,24 @@
                     *ngFor="let service of filteredServices | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems }; let i = index">
                     <td class="text-center">{{ (p - 1) * itemsPerPage + i + 1 }}</td>
                     <td class="text-center">
-                        <img [src]="baseURL + '/' + service.image" class="img-fluid cursor-pointer"
+                        <img [src]="imageURL + service.image" class="img-fluid cursor-pointer"
                             style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;"
                             *ngIf="service.image && service.image.length" data-bs-toggle="modal"
-                            data-bs-target="#imageModal" (click)="selectedImage = baseURL + '/' + service.image">
+                            data-bs-target="#imageModal" (click)="selectedImage = imageURL + service.image">
                         <span *ngIf="!service.image || service.image.length === 0">No Image</span>
                     </td>
-                    <td>{{ service.title }}</td>
-                    <td>{{ service.description }}</td>
-                    <td class="text-center"> <span class="badge bg-{{service.visible?'success':'warning'}}">{{(service.visible?'visible':'invisible') | uppercase}}</span></td>
+                    <td>
+                        <!-- {{ service.title }} -->
+                         <div [innerHTML]="sanitizeHtml(service.title)" class="description-preview"></div>
+                    </td>
+                    <td>
+                        <div [innerHTML]="sanitizeHtml(service.description)" class="description-preview"></div>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-{{service.visible?'success':'warning'}}">
+                            {{(service.visible?'visible':'invisible') | uppercase}}
+                        </span>
+                    </td>
                     <td class="text-center">
                         <button class="btn btn-sm btn-info me-1" (click)="editService(service)">
                             <i class="ri-edit-box-line"></i>
@@ -95,8 +103,8 @@
 </div>
 
 <!-- Add Service Modal -->
-<div class="modal fade" id="AddServiceModal" tabindex="-1" aria-labelledby="AddServiceModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+<div class="modal fade" id="AddServiceModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="AddServiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title fw-medium" id="AddServiceModalLabel">Add Service</h4>
@@ -106,34 +114,63 @@
             <div class="modal-body">
                 <form #serviceForm="ngForm">
                     <!-- Service Title -->
-                    <div class="mb-3">
+                    <!-- <div class="mb-3">
                         <label for="serviceTitle" class="form-label">Service Title</label>
                         <input type="text" class="form-control" id="serviceTitle" placeholder="Enter service title"
                             [(ngModel)]="newService.title" name="serviceTitle" #serviceTitle="ngModel" required>
                         <div *ngIf="serviceTitle.invalid && serviceTitle.touched" class="text-danger">
                             Service title is required!
                         </div>
-                    </div>
-                    <!-- <div class="mb-3">
-                        <label for="editServiceTitle" class="form-label">Visible</label>
-                        <div class="form-check form-switch switch-lg ms-3 mt-2">
-                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="newService.visible" [ngModelOptions]="{standalone: true}">
-                        </div>
                     </div> -->
+
                     <div class="mb-3">
-    <app-toggle 
-        [isActive]="newService.visible" 
-        [onText]="'Visible'" 
-        [offText]="'Hidden'" 
-        class="ms-3 mt-2"
-        (changed)="newService.visible=!newService.visible">
-    </app-toggle>
+    <label for="serviceTitle" class="form-label">Service Title</label>
+    <div class="form-control p-0" style="height: auto;">
+        <ngx-editor-menu [editor]="addTitleEditor" [toolbar]="toolbar"></ngx-editor-menu>
+        <ngx-editor 
+            [editor]="addTitleEditor" 
+            [(ngModel)]="newService.title" 
+            name="serviceTitle"
+            #serviceTitle="ngModel"
+            placeholder="Enter service title..."
+            [disabled]="false"
+            required>
+        </ngx-editor>
+    </div>
+    <div *ngIf="serviceTitle.invalid && serviceTitle.touched" class="text-danger">
+        Service title is required!
+    </div>
 </div>
+
+                    <!-- Visibility Toggle -->
+                    <div class="mb-3">
+                        <label class="form-label">Visibility</label>
+                        <div>
+                            <app-toggle 
+                                [isActive]="newService.visible" 
+                                [onText]="'Visible'" 
+                                [offText]="'Hidden'" 
+                                class="ms-3 mt-2"
+                                (changed)="newService.visible=!newService.visible">
+                            </app-toggle>
+                        </div>
+                    </div>
+
+                    <!-- Rich Text Description -->
                     <div class="mb-3">
                         <label for="serviceDescription" class="form-label">Description</label>
-                        <textarea class="form-control" id="serviceDescription" rows="3" placeholder="Enter description"
-                            [(ngModel)]="newService.description" name="serviceDescription" #serviceDescription="ngModel"
-                            required></textarea>
+                        <div class="form-control p-0" style="height: auto;">
+                            <ngx-editor-menu [editor]="addEditor" [toolbar]="toolbar"></ngx-editor-menu>
+                            <ngx-editor 
+                                [editor]="addEditor" 
+                                [(ngModel)]="newService.description" 
+                                name="serviceDescription"
+                                #serviceDescription="ngModel"
+                                placeholder="Enter service description..."
+                                [disabled]="false"
+                                required>
+                            </ngx-editor>
+                        </div>
                         <div *ngIf="serviceDescription.invalid && serviceDescription.touched" class="text-danger">
                             Description is required!
                         </div>
@@ -157,9 +194,10 @@
     </div>
 </div>
 
+<!-- Edit Service Modal -->
 <div class="modal fade" id="EditServiceModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog"
     aria-labelledby="modalTitleId" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-md" role="document">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title fw-medium" id="EditServiceModalLabel">Edit Service</h4>
@@ -167,40 +205,63 @@
             </div>
             <div class="modal-body">
                 <form>
-                    <div class="mb-3">
+                    <!-- Service Title -->
+                    <!-- <div class="mb-3">
                         <label for="editServiceTitle" class="form-label">Service Title</label>
                         <input type="text" class="form-control" id="editServiceTitle" placeholder="Enter service title"
                             [(ngModel)]="editingService.title" name="editServiceTitle" required>
-                    </div>
-
-                    <!-- <div class="mb-3">
-                        <label for="editServiceTitle" class="form-label">Visible</label>
-                        <div class="form-check form-switch switch-lg ms-3 ">
-                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" [(ngModel)]="editingService.visible" [ngModelOptions]="{standalone: true}">
-                        </div>
                     </div> -->
 
                     <div class="mb-3">
-    <app-toggle 
-        [isActive]="editingService.visible" 
-        [onText]="'Visible'" 
-        [offText]="'Hidden'" 
-        class="ms-3"
-        (changed)="editingService.visible=!editingService.visible">
-    </app-toggle>
+    <label for="editServiceTitle" class="form-label">Service Title</label>
+    <div class="form-control p-0" style="height: auto;">
+        <ngx-editor-menu [editor]="editTitleEditor" [toolbar]="toolbar"></ngx-editor-menu>
+        <ngx-editor 
+            [editor]="editTitleEditor" 
+            [(ngModel)]="editingService.title" 
+            name="editServiceTitle"
+            placeholder="Enter service title..."
+            [disabled]="false"
+            required>
+        </ngx-editor>
+    </div>
 </div>
 
+                    <!-- Visibility Toggle -->
                     <div class="mb-3">
-                        <label for="editServiceDescription" class="form-label">Description</label>
-                        <textarea class="form-control" id="editServiceDescription" rows="3"
-                            placeholder="Enter description" [(ngModel)]="editingService.description"
-                            name="editServiceDescription" required></textarea>
+                        <label class="form-label">Visibility</label>
+                        <div>
+                            <app-toggle 
+                                [isActive]="editingService.visible" 
+                                [onText]="'Visible'" 
+                                [offText]="'Hidden'" 
+                                class="ms-3"
+                                (changed)="editingService.visible=!editingService.visible">
+                            </app-toggle>
+                        </div>
                     </div>
 
+                    <!-- Rich Text Description -->
+                    <div class="mb-3">
+                        <label for="editServiceDescription" class="form-label">Description</label>
+                        <div class="form-control p-0" style="height: auto;">
+                            <ngx-editor-menu [editor]="editEditor" [toolbar]="toolbar"></ngx-editor-menu>
+                            <ngx-editor 
+                                [editor]="editEditor" 
+                                [(ngModel)]="editingService.description" 
+                                name="editServiceDescription"
+                                placeholder="Enter service description..."
+                                [disabled]="false"
+                                required>
+                            </ngx-editor>
+                        </div>
+                    </div>
+
+                    <!-- Current Image Display -->
                     <div class="mb-3">
                         <label for="editServiceImage" class="form-label">Current Image</label>
                         <div *ngIf="editingService.currentImage && editingService.currentImage.length" class="mb-2">
-                            <img [src]="baseURL + '/' + editingService.currentImage" class="img-thumbnail"
+                            <img [src]="imageURL + editingService.currentImage" class="img-thumbnail"
                                 style="max-height: 100px; max-width: 100px;">
                         </div>
                         <div *ngIf="!editingService.currentImage || editingService.currentImage.length === 0"
@@ -209,6 +270,7 @@
                         </div>
                     </div>
 
+                    <!-- New Image Upload -->
                     <div class="mb-3">
                         <label for="editServiceImage" class="form-label">Upload New Image</label>
                         <input type="file" class="form-control" id="editServiceImage"

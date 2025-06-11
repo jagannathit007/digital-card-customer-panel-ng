@@ -12,99 +12,108 @@ import { common } from 'src/app/core/constants/common';
   templateUrl: './business-services.component.html',
   styleUrl: './business-services.component.scss'
 })
-export class BusinessServicesComponent implements OnInit{
-
+export class BusinessServicesComponent implements OnInit {
   constructor(
-    private businessCardService:BusinessCardService,
-    private modal:ModalService,
-    private storage:AppStorage
-  ){}
+    private businessCardService: BusinessCardService,
+    private modal: ModalService,
+    private storage: AppStorage
+  ) {}
 
-  businessCardId:any
-  ngOnInit(){
-    this.businessCardId=this.storage.get(common.BUSINESS_CARD)
-    this.payLoad.businessCardId=this.businessCardId
-    this.selectedServices.businessCardId=this.businessCardId
-    this._getServices()
-  }
+  businessCardId: any;
+  imagePreviewUrl: string | null = null; // New property to cache blob URL
 
-  payLoad:any={
-    search:'',
-    page:1,
-    limit:10,
-    businessCardId:''
-  }
-
-  onChange(){
-    this.payLoad.page=1
+  ngOnInit() {
+    this.businessCardId = this.storage.get(common.BUSINESS_CARD);
+    this.payLoad.businessCardId = this.businessCardId;
+    this.selectedServices.businessCardId = this.businessCardId;
     this._getServices();
   }
 
-  onPageChange(page:number){
-    this.payLoad.page=page;
-    this._getServices()
+  payLoad: any = {
+    search: '',
+    page: 1,
+    limit: 10,
+    businessCardId: ''
+  };
+
+  onChange() {
+    this.payLoad.page = 1;
+    this._getServices();
   }
 
-  _reset(){
-    this.payLoad={
-      search:'',
-      page:1,
-      limit:10,
-      businessCardId:this.businessCardId
-    }
-    this.selectedServices={
-      _id:'',
-      title:'',
-      image:null as File | null,
-      description:'',
-      businessCardId:this.businessCardId 
-    }
-    this._getServices()
+  onPageChange(page: number) {
+    this.payLoad.page = page;
+    this._getServices();
   }
 
-  services:any
-  isLoading:boolean=false
-  _getServices=async()=>{
+  _reset() {
+    this.payLoad = {
+      search: '',
+      page: 1,
+      limit: 10,
+      businessCardId: this.businessCardId
+    };
+    this.selectedServices = {
+      _id: '',
+      title: '',
+      image: null as File | null,
+      description: '',
+      businessCardId: this.businessCardId
+    };
+    this.imagePreviewUrl = null; // Reset preview URL
+    this._getServices();
+  }
+
+  services: any;
+  isLoading: boolean = false;
+  _getServices = async () => {
     try {
-      this.isLoading=false
-      let response=await this.businessCardService.getServices(this.payLoad)
-      if(response){
-        this.services=response
+      this.isLoading = true;
+      let response = await this.businessCardService.getServices(this.payLoad);
+      if (response) {
+        this.services = response;
       }
-      this.isLoading=false
+      this.isLoading = false;
     } catch (error) {
-      this.isLoading=false
-      console.log('Something went Wrong',error)
+      this.isLoading = false;
+      console.log('Something went Wrong', error);
     }
-  }
+  };
 
-  selectedServices:any={
-    _id:null,
-    title:'',
-    image:null as File | null,
-    description:'',
-    businessCardId:''
-  }
-  imageBaseURL = environment.baseURL+ '/';
+  selectedServices: any = {
+    _id: null,
+    title: '',
+    image: null as File | null,
+    description: '',
+    businessCardId: ''
+  };
+  imageBaseURL = environment.imageURL;
 
-  onOpenUpdateModal(item:any){ 
-    this.selectedServices=item; 
-    this.selectedServices.businessCardId=this.businessCardId
+  onOpenUpdateModal(item: any) {
+    this.selectedServices = { ...item }; // Deep copy to avoid mutating original
+    this.selectedServices.businessCardId = this.businessCardId;
+    this.imagePreviewUrl = item.image instanceof File ? URL.createObjectURL(item.image) : null; // Set preview URL for existing file
     this.modal.open('create-services');
   }
 
-  onOpenCraeteModal(){
+  onOpenCraeteModal() {
+    this._reset(); // Reset form before opening
     this.modal.open('create-services');
   }
 
-  onCloseModal(modal:string){
+  onCloseModal(modal: string) {
     this.modal.close(modal);
-    this._reset()
+    this._reset();
   }
 
-  onUploadImage(event:any){
+  onUploadImage(event: any) {
     const file = event.target.files[0] as File;
     this.selectedServices.image = file;
+    if (file) {
+      this.imagePreviewUrl = URL.createObjectURL(file); // Cache blob URL
+    } else {
+      this.imagePreviewUrl = null;
+    }
   }
 
   showImage(image: any) {
@@ -116,49 +125,54 @@ export class BusinessServicesComponent implements OnInit{
     windowData.moveTo(0, 0);
   }
 
-  onCreateService(){
-    const formdata=new FormData()
-    formdata.append('title',this.selectedServices.title)
-    formdata.append('description',this.selectedServices.description);
-    if(this.selectedServices.businessCardId){
-      formdata.append('businessCardId',this.selectedServices.businessCardId)
+  onCreateService() {
+    const formdata = new FormData();
+    formdata.append('title', this.selectedServices.title);
+    formdata.append('description', this.selectedServices.description);
+    if (this.selectedServices.businessCardId) {
+      formdata.append('businessCardId', this.selectedServices.businessCardId);
     }
-    if(this.selectedServices.image){
-      formdata.append('image',this.selectedServices.image)
+    if (this.selectedServices.image) {
+      formdata.append('image', this.selectedServices.image);
     }
-    if(this.selectedServices._id){
-      formdata.append('id',this.selectedServices._id)
+    if (this.selectedServices._id) {
+      formdata.append('id', this.selectedServices._id);
     }
-    this._createServices(formdata)
+    this._createServices(formdata);
   }
 
-  _createServices=async(data:any)=>{
+  _createServices = async (data: any) => {
     try {
-      await this.businessCardService.createServices(data)
-      this._reset()
+      await this.businessCardService.createServices(data);
+      this._reset();
       this.modal.close('create-services');
     } catch (error) {
-      console.log('Something went Wrong',error)
+      console.log('Something went Wrong', error);
     }
-  }
-  
-  
-  _deleteServices=async(id:string)=>{
+  };
+
+  _deleteServices = async (id: string) => {
     try {
-      const confirm=await swalHelper.delete();
-      if(confirm.isConfirmed){
-        await this.businessCardService.deleteServices({businessCardId:this.businessCardId,id:id})
+      const confirm = await swalHelper.delete();
+      if (confirm.isConfirmed) {
+        await this.businessCardService.deleteServices({ businessCardId: this.businessCardId, id: id });
       }
-      this._reset()
+      this._reset();
     } catch (error) {
-      console.log('Something went Wrong',error)
+      console.log('Something went Wrong', error);
     }
-  }
+  };
 
   getImagePreview(img: any): string {
-    if (img instanceof File) {
-      return URL.createObjectURL(img);
+    if (img instanceof File && this.imagePreviewUrl) {
+      return this.imagePreviewUrl; // Use cached URL
     }
-    return this.imageBaseURL + (img );
+    return this.imageBaseURL + img;
+  }
+
+  ngOnDestroy() {
+    if (this.imagePreviewUrl) {
+      URL.revokeObjectURL(this.imagePreviewUrl); // Clean up blob URL
+    }
   }
 }

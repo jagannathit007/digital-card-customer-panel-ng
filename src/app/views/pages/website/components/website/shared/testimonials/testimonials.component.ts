@@ -17,7 +17,7 @@ import { WebsiteBuilderService } from 'src/app/services/website-builder.service'
   styleUrl: './testimonials.component.scss',
 })
 export class TestimonialsComponent implements OnInit {
-  baseURL = environment.baseURL;
+  baseURL = environment.imageURL;
   searchTerm: string = '';
   itemsPerPage: number = 10;
   totalItems: number = 0;

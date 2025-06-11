@@ -20,6 +20,9 @@ export class OffersComponent {
   ) { }
 
   businessCardId: any;
+  // Add this property to cache blob URL
+  private cachedBlobUrl: string | null = null;
+
   ngOnInit() {
     this.businessCardId = this.storage.get(common.BUSINESS_CARD);
     this.payLoad.businessCardId = this.businessCardId;
@@ -45,6 +48,9 @@ export class OffersComponent {
   }
 
   _reset() {
+    // Clean up blob URL when resetting
+    this.cleanupBlobUrl();
+    
     this.payLoad = {
       search: '',
       page: 1,
@@ -93,9 +99,11 @@ export class OffersComponent {
     businessCardId: '',
     visible:true
   }
-  imageBaseURL = environment.baseURL + '/';
+  imageBaseURL = environment.imageURL;
 
   onOpenCreateModal() {
+    this.cleanupBlobUrl(); // Clean up previous blob URL
+    
     this.selectedOffer = {
       _id: null,
       title: '',
@@ -111,13 +119,21 @@ export class OffersComponent {
   }
 
   onCloseModal(modal: string) {
+    this.cleanupBlobUrl(); // Clean up blob URL when closing modal
     this.modal.close(modal);
     this._reset();
   }
 
   onUploadImage(event: any) {
+    this.cleanupBlobUrl(); // Clean up previous blob URL
+    
     const file = event.target.files[0] as File;
     this.selectedOffer.image = file;
+    
+    // Create new blob URL and cache it
+    if (file) {
+      this.cachedBlobUrl = URL.createObjectURL(file);
+    }
   }
 
   showImage(image: any) {
@@ -132,6 +148,8 @@ export class OffersComponent {
   existingImage: string = '';
 
   onOpenUpdateModal(item: any) {
+    this.cleanupBlobUrl(); // Clean up previous blob URL
+    
     this.selectedOffer = { ...item };
     this.existingImage = item.image;
     this.selectedOffer.businessCardId = this.businessCardId;
@@ -184,16 +202,31 @@ export class OffersComponent {
     }
   }
 
+  // Fixed method - now returns cached blob URL
   getImagePreview(img: any): string {
     if (img instanceof File) {
-      return URL.createObjectURL(img);
+      return this.cachedBlobUrl || ''; // Return cached blob URL
     }
     return this.imageBaseURL + (img);
   }
 
   removeImage() {
+    this.cleanupBlobUrl(); // Clean up blob URL when removing image
     this.selectedOffer.image = null;
     this.existingImage = '';
+  }
+
+  // Add cleanup method
+  private cleanupBlobUrl() {
+    if (this.cachedBlobUrl) {
+      URL.revokeObjectURL(this.cachedBlobUrl);
+      this.cachedBlobUrl = null;
+    }
+  }
+
+  // Add ngOnDestroy to cleanup blob URLs
+  ngOnDestroy() {
+    this.cleanupBlobUrl();
   }
 
   // Add this new method
@@ -217,6 +250,4 @@ export class OffersComponent {
     this.offersVisible=!this.offersVisible
     this._updateOffersVisibility();
   }
-
-
 }

@@ -82,7 +82,7 @@ export class OurCertificateComponent implements OnInit {
     this.fileInput.nativeElement.value = '';
   }
 
-  imageBaseURL = environment.baseURL + '/';
+  imageBaseURL = environment.imageURL;
   getImagePreview(img: any): string {
     if (img instanceof File) {
       if (!this.objectURLCache.has(img)) {

@@ -83,12 +83,12 @@ export class WebsiteComponent{
         icon:'ri-phone-fill'
       },
       {
-        title: "products enquiry",
+        title: "Products Enquiry",
         href: "products-enquiry",
         icon:'ri-instance-fill'
       },
       {
-        title: "GetInTouch enquiry",
+        title: "GetInTouch Enquiry",
         href: "getintouch-enquiry",
         icon:'ri-chat-3-line'
       },

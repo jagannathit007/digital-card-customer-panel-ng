@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { Editor, Toolbar } from 'ngx-editor';
+import { NgxEditorModule } from 'ngx-editor';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { common } from 'src/app/core/constants/common';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { AuthService } from 'src/app/services/auth.service';
@@ -15,8 +18,8 @@ import { WebsiteBuilderService } from 'src/app/services/website-builder.service'
   templateUrl: './our-clients.component.html',
   styleUrl: './our-clients.component.scss',
 })
-export class OurClientsComponent implements OnInit {
-  baseURL = environment.baseURL;
+export class OurClientsComponent implements OnInit, OnDestroy {
+  baseURL = environment.imageURL;
   searchTerm: string = '';
   itemsPerPage: number = 10;
   totalItems: number = 0;
@@ -28,11 +31,27 @@ export class OurClientsComponent implements OnInit {
   clientID: string = '';
   selectedImage: string = '';
 
-  newClient:any = {
+  // ngx-editor instances
+  addEditor!: Editor; // For name in add/edit modal
+  editEditor!: Editor;
+
+  // Editor toolbar configuration
+  toolbar: Toolbar = [
+    ['bold', 'italic'],
+    ['underline', 'strike'],
+    ['code', 'blockquote'],
+    ['ordered_list', 'bullet_list'],
+    [{ heading: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }],
+    ['link', 'image'],
+    ['text_color', 'background_color'],
+    ['align_left', 'align_center', 'align_right', 'align_justify'],
+  ];
+
+  newClient: any = {
     name: '',
     url: '',
     image: null as File | null,
-    visible:true
+    visible: true,
   };
 
   editingClient = {
@@ -41,15 +60,32 @@ export class OurClientsComponent implements OnInit {
     url: '',
     image: null as File | null,
     currentImage: '',
-    visible:true
+    visible: true,
   };
 
-  constructor(private storage: AppStorage, public authService: AuthService,public modal:ModalService,private websiteService:WebsiteBuilderService) {}
+  constructor(
+    private storage: AppStorage,
+    public authService: AuthService,
+    public modal: ModalService,
+    private websiteService: WebsiteBuilderService,
+    private cdr: ChangeDetectorRef,
+    private sanitizer: DomSanitizer
+  ) {}
 
-  businessCardId:any
+  businessCardId: any;
+
   async ngOnInit() {
-    this.businessCardId=this.storage.get(common.BUSINESS_CARD)
+    // Initialize editors
+    this.addEditor = new Editor();
+    this.editEditor = new Editor();
+    this.businessCardId = this.storage.get(common.BUSINESS_CARD);
     await this.fetchWebsiteDetails();
+  }
+
+  ngOnDestroy(): void {
+    // Destroy editors to prevent memory leaks
+    this.addEditor.destroy();
+    this.editEditor.destroy();
   }
 
   async fetchWebsiteDetails() {
@@ -61,7 +97,8 @@ export class OurClientsComponent implements OnInit {
         this.clientsList = results.clients ? [...results.clients] : [];
         this.filteredClients = [...this.clientsList];
         this.totalItems = this.clientsList.length;
-        this.clientVisible=results.clientVisible
+        this.clientVisible = results.clientVisible;
+        this.cdr.markForCheck();
       } else {
         swalHelper.showToast('Failed to fetch clients!', 'warning');
       }
@@ -70,6 +107,7 @@ export class OurClientsComponent implements OnInit {
       swalHelper.showToast('Error fetching clients!', 'error');
     } finally {
       this.isLoading = false;
+      this.cdr.markForCheck();
     }
   }
 
@@ -94,10 +132,10 @@ export class OurClientsComponent implements OnInit {
         this.clientsList = [result, ...this.clientsList];
         this.filteredClients = [...this.clientsList];
         this.totalItems = this.clientsList.length;
-        
+
         await this.fetchWebsiteDetails();
         this.resetForm();
-        this.modal.close('AddClientModal')
+        this.modal.close('AddClientModal');
         swalHelper.showToast('Client added successfully!', 'success');
       }
     } catch (error) {
@@ -105,6 +143,7 @@ export class OurClientsComponent implements OnInit {
       swalHelper.showToast('Error adding client!', 'error');
     } finally {
       this.isLoading = false;
+      this.cdr.markForCheck();
     }
   }
 
@@ -127,9 +166,10 @@ export class OurClientsComponent implements OnInit {
       url: client.url || '',
       image: null,
       currentImage: client.image || '',
-      visible:client.visible
+      visible: client.visible,
     };
     this.modal.open('EditClientModal');
+    this.cdr.markForCheck();
   }
 
   async updateClient() {
@@ -156,9 +196,9 @@ export class OurClientsComponent implements OnInit {
           this.clientsList[index] = result;
           this.filteredClients = [...this.clientsList];
         }
-        
+
         await this.fetchWebsiteDetails();
-        this.modal.close('EditClientModal')
+        this.modal.close('EditClientModal');
         swalHelper.showToast('Client updated successfully!', 'success');
       }
     } catch (error) {
@@ -166,33 +206,35 @@ export class OurClientsComponent implements OnInit {
       swalHelper.showToast('Error updating client!', 'error');
     } finally {
       this.isLoading = false;
+      this.cdr.markForCheck();
     }
   }
 
-  prepareDeleteClient=async(clientID: string)=>{
+  prepareDeleteClient = async (clientID: string) => {
     this.clientID = clientID;
-    const confirm=await swalHelper.delete();
-      if(confirm.isConfirmed){
-        this.confirmDeleteClient();
-      }
-  }
+    const confirm = await swalHelper.delete();
+    if (confirm.isConfirmed) {
+      this.confirmDeleteClient();
+    }
+    this.cdr.markForCheck();
+  };
 
   async confirmDeleteClient() {
     this.isLoading = true;
     try {
       let businessCardId = this.storage.get(common.BUSINESS_CARD);
-      const data = { 
-        businessCardId: businessCardId, 
-        clientId: this.clientID 
+      const data = {
+        businessCardId: businessCardId,
+        clientId: this.clientID,
       };
-      
+
       const result = await this.authService.deleteClients(data);
-      
+
       if (result) {
         this.clientsList = this.clientsList.filter(c => c._id !== this.clientID);
         this.filteredClients = [...this.clientsList];
         this.totalItems = this.clientsList.length;
-        
+
         await this.fetchWebsiteDetails();
         swalHelper.success('Client deleted successfully!');
       }
@@ -201,15 +243,16 @@ export class OurClientsComponent implements OnInit {
       swalHelper.showToast('Error deleting client!', 'error');
     } finally {
       this.isLoading = false;
+      this.cdr.markForCheck();
     }
   }
 
   validateClient(client: any): boolean {
-    if (!client.name.trim()) {
+    const strippedName = this.stripHtml(client.name).trim();
+    if (!strippedName) {
       swalHelper.showToast('Client name is required!', 'warning');
       return false;
     }
-    
     return true;
   }
 
@@ -218,31 +261,51 @@ export class OurClientsComponent implements OnInit {
       this.filteredClients = [...this.clientsList];
     } else {
       this.filteredClients = this.clientsList.filter(client =>
-        client.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        this.stripHtml(client.name).toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         (client.url && client.url.toLowerCase().includes(this.searchTerm.toLowerCase()))
       );
     }
     this.totalItems = this.filteredClients.length;
+    this.cdr.markForCheck();
   }
 
   onItemsPerPageChange() {
     this.p = 1;
+    this.cdr.markForCheck();
   }
 
   pageChangeEvent(event: number) {
     this.p = event;
+    this.cdr.markForCheck();
   }
 
   resetForm() {
-    this.newClient = { name: '', url: '', image: null };
+    this.newClient = { name: '', url: '', image: null, visible: true };
+    this.cdr.markForCheck();
   }
 
-  OnCloseModal(modal:string){
-    this.modal.close(modal)
+  OnCloseModal(modal: string) {
+    this.modal.close(modal);
   }
 
-  clientVisible:boolean=false
-  _updateVisibility=async()=>{
-    await this.websiteService.updateVisibility({clientVisible:this.clientVisible,businessCardId:this.businessCardId})
+  clientVisible: boolean = false;
+
+  _updateVisibility = async () => {
+    await this.websiteService.updateVisibility({
+      clientVisible: this.clientVisible,
+      businessCardId: this.businessCardId,
+    });
+  };
+
+sanitizeHtml(content: any): any {
+    if (!content) return '';
+    return content.replace(/<[^>]*>/g, '');
+  }
+
+  // Helper method to strip HTML tags for validation and search
+  stripHtml(html: string): string {
+    const tmp = document.createElement('DIV');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
   }
 }

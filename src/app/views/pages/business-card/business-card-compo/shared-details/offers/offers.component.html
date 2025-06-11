@@ -44,7 +44,7 @@
         <th class="text-center" [width]="'20%'">Image</th>
         <th [width]="'25%'">Description</th>
         <th>Terms</th>
-        <th class="text-center">Visible</th>
+        <!-- <th class="text-center">Visible</th> -->
         <th class="text-center" [width]="'15%'">
           <i class="ri-tools-fill"></i>
         </th>
@@ -101,7 +101,7 @@
           <img
             src="{{ imageBaseURL }}{{ item.image }}"
             alt=""
-            style="width: 10%; height: 10%; cursor: pointer"
+            style="width: 100px; height: 100px; cursor: pointer; object-fit: cover;"
             *ngIf="item.image != ''"
             (click)="showImage(item.image)"
           />
@@ -109,11 +109,11 @@
         </td>
         <td>{{ item.description }}</td>
         <td>{{ item.terms }}</td>
-        <td class="text-center">
+        <!-- <td class="text-center">
           <span class="badge bg-{{ item.visible ? 'success' : 'warning' }}">{{
             (item.visible ? "visible" : "invisible") | uppercase
           }}</span>
-        </td>
+        </td> -->
         <td class="text-center">
           <button class="btn btn-sm btn-info" (click)="onOpenUpdateModal(item)">
             <i class="ri-edit-fill"></i>
@@ -161,7 +161,7 @@
         ></button>
       </div>
       <form action="" (ngSubmit)="onCreateOffer()" ngNativeValidate>
-        <div class="modal-body">
+        <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
           <div class="row">
             <div class="col-md-12">
               <span class="fw-bold">Offer title</span>
@@ -225,18 +225,20 @@
                 />
               </div>
             </div>
-            <div class="col-md-4 mt-4">
+            <!-- <div class="col-md-4 mt-4">
               <span class="fw-bold">Visibility</span>
               <div class="form-check form-switch switch-lg ms-3 mt-2">
                 <input
                   class="form-check-input"
                   type="checkbox"
                   role="switch"
+                  [ngModelOptions]="{ standalone: true }"
                   id="offersVisibilitySwitch"
                   [(ngModel)]="selectedOffer.visible"
+                  [ngModelOptions]="{ standalone: true }"
                 />
               </div>
-            </div>
+            </div> -->
 
             <div class="col-md-12 mt-4">
               <span class="fw-bold">Description</span>

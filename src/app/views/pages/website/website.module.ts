@@ -25,6 +25,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
 import { ToggleComponent } from '../../partials/toggle/toggle.component';
 import { DebounceDirective } from 'src/app/core/directives/debounce';
+import { NgxEditorModule } from 'ngx-editor';
+
 
 @NgModule({
   declarations: [
@@ -53,6 +55,7 @@ import { DebounceDirective } from 'src/app/core/directives/debounce';
     TooltipDirective,
     ToggleComponent,
     DebounceDirective,
+    NgxEditorModule
   ]
 })
 export class WebsiteModule { }

@@ -14,13 +14,18 @@ declare var $: any;
   styleUrl: './personal-details.component.scss',
 })
 export class PersonalDetailsComponent implements OnInit {
-  baseURL = environment.baseURL;
+  baseURL = environment.imageURL;
   newSocialMedia = { name: '', link: '', image: '' }; 
   socialMediaImage: File | undefined;
   socialMediaOptions = SOCIAL_MEDIA_LINKS; 
   selectedSocialMedia: string | undefined;
   personalDetails: any;
   isEditMode: boolean = false;
+
+   
+  showUpdateModal: boolean = false;
+  playStoreLink = 'https://play.google.com/store/apps/details?id=com.itfuturz.digitalcard&pcampaignid=web_share';
+
 
   constructor(
     private authService: AuthService,
@@ -30,6 +35,29 @@ export class PersonalDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.getCards();
+        this.checkShowUpdateModal();
+
+  }
+
+  checkShowUpdateModal() {
+    const modalAcknowledged = localStorage.getItem('app_update_acknowledged');
+    if (!modalAcknowledged) {
+      setTimeout(() => {
+        this.showUpdateModal = true;
+      }, 1000);
+    }
+  }
+
+  
+onModalAcknowledge() {
+  localStorage.setItem('app_update_acknowledged', 'true');
+  this.showUpdateModal = false;
+}
+
+    copyPlayStoreLink() {
+    navigator.clipboard.writeText(this.playStoreLink).then(() => {
+      swalHelper.showToast('Link copied to clipboard!', 'success');
+    });
   }
 
   enableEdit() {

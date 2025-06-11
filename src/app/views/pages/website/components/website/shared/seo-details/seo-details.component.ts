@@ -13,7 +13,7 @@ import { environment } from 'src/env/env.local';
   styleUrl: './seo-details.component.scss',
 })
 export class SeoDetailsComponent implements OnInit {
-  baseURL = environment.baseURL;
+  baseURL = environment.imageURL;
   isLoading: boolean = false;
   seo: any = {
     metaTitle: '',
@@ -40,7 +40,7 @@ export class SeoDetailsComponent implements OnInit {
           metaTitle: results.seo.metaTitle || '',
           metaKeywords: results.seo.metaKeywords || '',
           metaDescription: results.seo.metaDescription || '',
-          metaImage: results.seo.metaImage ? this.baseURL +"/"+ results.seo.metaImage : null,
+          metaImage: results.seo.metaImage ? this.baseURL + results.seo.metaImage : null,
         };
 
         if (this.seo.metaImage) {

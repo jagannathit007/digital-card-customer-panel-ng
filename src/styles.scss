@@ -29,3 +29,11 @@ body{
   .form-check-input:focus {
     box-shadow: none !important;
   }
+
+  // this is to override the default ProseMirror styles of ngx editor apply hieght
+  .ProseMirror {
+  min-height: 100px;
+  max-height: 100px;
+  height: auto;
+  overflow-y: auto;
+}
