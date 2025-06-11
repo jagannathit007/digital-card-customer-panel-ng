@@ -1,0 +1,26 @@
+<!-- Simple Profile Alert Modal -->
+<div *ngIf="showModal" class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50">
+  <div class="tw-bg-white tw-p-6 tw-rounded-lg tw-shadow-lg tw-text-center tw-max-w-sm tw-mx-4">
+    
+    <!-- Alert Icon -->
+    <div class="tw-mb-4">
+      <div class="tw-mx-auto tw-w-12 tw-h-12 tw-bg-red-100 tw-rounded-full tw-flex tw-items-center tw-justify-center">
+        <svg class="tw-w-6 tw-h-6 tw-text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Alert Message -->
+    <h3 class="tw-text-lg tw-font-medium tw-text-gray-900 tw-mb-2">Alert</h3>
+    <p class="tw-text-gray-600 tw-mb-6">Please fill your full profile details</p>
+
+    <!-- Button -->
+    <button 
+      class="tw-bg-blue-600 tw-text-white tw-px-6 tw-py-2 tw-rounded tw-hover:tw-bg-blue-700 tw-transition-colors tw-duration-200 tw-font-medium"
+      (click)="goToProfile()">
+      Go to Profile
+    </button>
+    
+  </div>
+</div>
