@@ -21,16 +21,36 @@ export class AuthService {
     this.headers = [];
     let token = this.storage.get(common.TOKEN);
     if (token != null) {
+      this.headers.push({ "origin-domain": window.location.origin });
       this.headers.push({ Authorization: `Bearer ${token}` });
     }
   };
-
   private addBusinessCardId(data: any) {
     let businessCardId = this.storage.get(common.BUSINESS_CARD);
     if (businessCardId != null) {
       data.businessCardId = businessCardId;
     }
     return data;
+  }
+
+  async getRawInformation() {
+    try {
+      this.getHeaders();
+      let domain = window.location.origin;
+      let response = await this.apiManager.request(
+        { url: apiEndpoints.GET_RAW, method: 'POST' },
+        { url: domain },
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
   }
 
   async getBusinessCards() {
@@ -64,11 +84,10 @@ export class AuthService {
         this.headers
       );
       if (response.status == 200 && response.data != null) {
-        // this.storage.clearAll();
-        // this.storage.set(common.TOKEN, response.data);
-        // return true;
-          const acknowledged = this.storage.get('app_update_acknowledged');
-        this.storage.clearAll();
+        this.storage.clearKey(common.TOKEN);
+        this.storage.clearKey(common.BUSINESS_CARD);
+        this.storage.clearKey(common.USER_DATA);
+        const acknowledged = this.storage.get('app_update_acknowledged');
         if (acknowledged) {
           this.storage.set('app_update_acknowledged', acknowledged);
         }
@@ -110,7 +129,7 @@ export class AuthService {
   async updateProfile(data: any) {
     try {
       // console.log(data);
-      
+
       this.getHeaders();
       let response = await this.apiManager.request(
         {
@@ -541,7 +560,7 @@ export class AuthService {
   async getSubscriptionData(businessCardId: string): Promise<any[]> {
     try {
       const businessCards = await this.getBusinessCards();
-      
+
       if (!businessCards || !businessCardId) {
         return [];
       }
@@ -549,7 +568,7 @@ export class AuthService {
       // Find the matching business card and extract subscription data
       if (Array.isArray(businessCards)) {
         const targetCard = businessCards.find(card => card._id === businessCardId);
-        
+
         if (targetCard?.subscription && Array.isArray(targetCard.subscription)) {
           return targetCard.subscription.map((sub: any) => ({
             _id: sub._id,
@@ -615,7 +634,7 @@ export class AuthService {
   async upadteAiToggle(businessCardId: string, isAIFeatureAllowed: boolean) {
     try {
       // console.log(businessCardId, isAIFeatureAllowed);
-      
+
       this.getHeaders();
       let response = await this.apiManager.request(
         // change it...
@@ -627,7 +646,7 @@ export class AuthService {
         this.headers
       );
       // console.log(response);
-      
+
       if (response.status === 200 && response.data != null) {
         return response.data;
       } else {
@@ -666,13 +685,13 @@ export class AuthService {
     }
   }
 
-// WEBSITE MODULE ALL SERVICES
+  // WEBSITE MODULE ALL SERVICES
   // home section /UPDATE/
   async updateHomeDetails(data: any) {
     try {
       this.getHeaders();
-      data = this.addBusinessCardId(data); 
-      
+      data = this.addBusinessCardId(data);
+
       let response = await this.apiManager.request(
         {
           url: apiEndpoints.WEBSITE_HOME_UPDATE,
@@ -681,7 +700,7 @@ export class AuthService {
         data,
         this.headers
       );
-      
+
       if (response.status == 200 && response.data != null) {
         return response.data;
       } else {
@@ -699,7 +718,7 @@ export class AuthService {
   //   try {
   //     this.getHeaders();
   //     data = this.addBusinessCardId(data); 
-      
+
   //     let response = await this.apiManager.request(
   //       {
   //         url: apiEndpoints.WEBSITE_OUR_PRODUCTS_ADD,
@@ -708,7 +727,7 @@ export class AuthService {
   //       data,
   //       this.headers
   //     );
-      
+
   //     if (response.status == 200 && response.data != null) {
   //       return response.data;
   //     } else {
@@ -720,12 +739,12 @@ export class AuthService {
   //     return null;
   //   }
   // }
-  
+
   async updateProducts(data: any) {
     try {
       this.getHeaders();
-      data = this.addBusinessCardId(data); 
-      
+      data = this.addBusinessCardId(data);
+
       let response = await this.apiManager.request(
         {
           url: apiEndpoints.WEBSITE_OUR_PRODUCTS_UPDATE,
@@ -734,7 +753,7 @@ export class AuthService {
         data,
         this.headers
       );
-      
+
       if (response.status == 200 && response.data != null) {
         return response.data;
       } else {
@@ -746,12 +765,12 @@ export class AuthService {
       return null;
     }
   }
-  
+
   async deleteProducts(data: any) {
     try {
       this.getHeaders();
-      data = this.addBusinessCardId(data); 
-      
+      data = this.addBusinessCardId(data);
+
       let response = await this.apiManager.request(
         {
           url: apiEndpoints.WEBSITE_OUR_PRODUCTS_DELETE,
@@ -760,7 +779,7 @@ export class AuthService {
         data,
         this.headers
       );
-      
+
       if (response.status == 200 && response.data != null) {
         return response.data;
       } else {
@@ -773,12 +792,12 @@ export class AuthService {
     }
   }
 
-   // our-team ADD/UPDATE/DELETE
-   async addTeams(data: any) {
+  // our-team ADD/UPDATE/DELETE
+  async addTeams(data: any) {
     try {
       this.getHeaders();
-      data = this.addBusinessCardId(data); 
-      
+      data = this.addBusinessCardId(data);
+
       let response = await this.apiManager.request(
         {
           url: apiEndpoints.WEBSITE_OUR_TEAM_ADD,
@@ -787,7 +806,7 @@ export class AuthService {
         data,
         this.headers
       );
-      
+
       if (response.status == 200 && response.data != null) {
         return response.data;
       } else {
@@ -799,11 +818,11 @@ export class AuthService {
       return null;
     }
   }
-  
+
   async updateTeams(data: any) {
     try {
       this.getHeaders();
-      data = this.addBusinessCardId(data); 
+      data = this.addBusinessCardId(data);
       let response = await this.apiManager.request(
         {
           url: apiEndpoints.WEBSITE_OUR_TEAM_UPDATE,
@@ -812,7 +831,7 @@ export class AuthService {
         data,
         this.headers
       );
-      
+
       if (response.status == 200 && response.data != null) {
         return response.data;
       } else {
@@ -824,12 +843,12 @@ export class AuthService {
       return null;
     }
   }
-  
+
   async deleteTeams(data: any) {
     try {
       this.getHeaders();
-      data = this.addBusinessCardId(data); 
-      
+      data = this.addBusinessCardId(data);
+
       let response = await this.apiManager.request(
         {
           url: apiEndpoints.WEBSITE_OUR_TEAM_DELETE,
@@ -838,7 +857,7 @@ export class AuthService {
         data,
         this.headers
       );
-      
+
       if (response.status == 200 && response.data != null) {
         return response.data;
       } else {
@@ -851,92 +870,92 @@ export class AuthService {
     }
   }
 
-    // our-services ADD/UPDATE/DELETE
-    async addServices(data: any) {
-      try {
-        this.getHeaders();
-        data = this.addBusinessCardId(data); 
-        
-        let response = await this.apiManager.request(
-          {
-            url: apiEndpoints.WEBSITE_OUR_SERVICS_ADD,
-            method: 'POST',
-          },
-          data,
-          this.headers
-        );
-        
-        if (response.status == 200 && response.data != null) {
-          return response.data;
-        } else {
-          swalHelper.showToast(response.message, 'warning');
-          return null;
-        }
-      } catch (err) {
-        swalHelper.showToast('Something went wrong!', 'error');
-        return null;
-      }
-    }
-    
-    async updateServices(data: any) {
-      try {
-        this.getHeaders();
-        data = this.addBusinessCardId(data); 
-        
-        let response = await this.apiManager.request(
-          {
-            url: apiEndpoints.WEBSITE_OUR_SERVICS_UPDATE,
-            method: 'POST',
-          },
-          data,
-          this.headers
-        );
-        
-        if (response.status == 200 && response.data != null) {
-          return response.data;
-        } else {
-          swalHelper.showToast(response.message, 'warning');
-          return null;
-        }
-      } catch (err) {
-        swalHelper.showToast('Something went wrong!', 'error');
-        return null;
-      }
-    }
-    
-    async deleteServices(data: any) {
-      try {
-        this.getHeaders();
-        data = this.addBusinessCardId(data); 
-        
-        let response = await this.apiManager.request(
-          {
-            url: apiEndpoints.WEBSITE_OUR_SERVICS_DELETE,
-            method: 'POST',
-          },
-          data,
-          this.headers
-        );
-        
-        if (response.status == 200 && response.data != null) {
-          return response.data;
-        } else {
-          swalHelper.showToast(response.message, 'warning');
-          return null;
-        }
-      } catch (err) {
-        swalHelper.showToast('Something went wrong!', 'error');
-        return null;
-      }
-    }
-  
+  // our-services ADD/UPDATE/DELETE
+  async addServices(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data);
 
-      // our-clients ADD/UPDATE/DELETE
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_OUR_SERVICS_ADD,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async updateServices(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data);
+
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_OUR_SERVICS_UPDATE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async deleteServices(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data);
+
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_OUR_SERVICS_DELETE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+
+  // our-clients ADD/UPDATE/DELETE
   async addClients(data: any) {
     try {
       this.getHeaders();
-      data = this.addBusinessCardId(data); 
-      
+      data = this.addBusinessCardId(data);
+
       let response = await this.apiManager.request(
         {
           url: apiEndpoints.WEBSITE_OUR_CLIENTS_ADD,
@@ -945,7 +964,7 @@ export class AuthService {
         data,
         this.headers
       );
-      
+
       if (response.status == 200 && response.data != null) {
         return response.data;
       } else {
@@ -957,12 +976,12 @@ export class AuthService {
       return null;
     }
   }
-  
+
   async updateClients(data: any) {
     try {
       this.getHeaders();
-      data = this.addBusinessCardId(data); 
-      
+      data = this.addBusinessCardId(data);
+
       let response = await this.apiManager.request(
         {
           url: apiEndpoints.WEBSITE_OUR_CLIENTS_UPDATE,
@@ -971,7 +990,7 @@ export class AuthService {
         data,
         this.headers
       );
-      
+
       if (response.status == 200 && response.data != null) {
         return response.data;
       } else {
@@ -983,12 +1002,12 @@ export class AuthService {
       return null;
     }
   }
-  
+
   async deleteClients(data: any) {
     try {
       this.getHeaders();
-      data = this.addBusinessCardId(data); 
-      
+      data = this.addBusinessCardId(data);
+
       let response = await this.apiManager.request(
         {
           url: apiEndpoints.WEBSITE_OUR_CLIENTS_DELETE,
@@ -997,7 +1016,7 @@ export class AuthService {
         data,
         this.headers
       );
-      
+
       if (response.status == 200 && response.data != null) {
         return response.data;
       } else {
@@ -1014,8 +1033,8 @@ export class AuthService {
   async addTestimonials(data: any) {
     try {
       this.getHeaders();
-      data = this.addBusinessCardId(data); 
-      
+      data = this.addBusinessCardId(data);
+
       let response = await this.apiManager.request(
         {
           url: apiEndpoints.WEBSITE_TESTIMONIALS_ADD,
@@ -1024,59 +1043,7 @@ export class AuthService {
         data,
         this.headers
       );
-      
-      if (response.status == 200 && response.data != null) {
-        return response.data;
-      } else {
-        swalHelper.showToast(response.message, 'warning');
-        return null;
-      }
-    } catch (err) {
-      swalHelper.showToast('Something went wrong!', 'error');
-      return null;
-    }
-  }
-  
-  async updateTestimonials(data: any) {
-    try {
-      this.getHeaders();
-      data = this.addBusinessCardId(data); 
-      
-      let response = await this.apiManager.request(
-        {
-          url: apiEndpoints.WEBSITE_TESTIMONIALS_UPDATE,
-          method: 'POST',
-        },
-        data,
-        this.headers
-      );
-      
-      if (response.status == 200 && response.data != null) {
-        return response.data;
-      } else {
-        swalHelper.showToast(response.message, 'warning');
-        return null;
-      }
-    } catch (err) {
-      swalHelper.showToast('Something went wrong!', 'error');
-      return null;
-    }
-  }
-  
-  async deleteTestimonials(data: any) {
-    try {
-      this.getHeaders();
-      data = this.addBusinessCardId(data); 
-      
-      let response = await this.apiManager.request(
-        {
-          url: apiEndpoints.WEBSITE_TESTIMONIALS_DELETE,
-          method: 'POST',
-        },
-        data,
-        this.headers
-      );
-      
+
       if (response.status == 200 && response.data != null) {
         return response.data;
       } else {
@@ -1089,12 +1056,64 @@ export class AuthService {
     }
   }
 
-  
+  async updateTestimonials(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data);
+
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_TESTIMONIALS_UPDATE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async deleteTestimonials(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data);
+
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_TESTIMONIALS_DELETE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+
   // SEO details /UPDATE/
   async updateSeoDetails(data: any) {
     try {
       this.getHeaders();
-      data = this.addBusinessCardId(data); 
+      data = this.addBusinessCardId(data);
       let response = await this.apiManager.request(
         {
           url: apiEndpoints.WEBSITE_SEO_UPDATE,
@@ -1105,7 +1124,7 @@ export class AuthService {
       );
 
 
-      
+
       if (response.status == 200 && response.data != null) {
         return response.data;
       } else {
@@ -1118,7 +1137,7 @@ export class AuthService {
     }
   }
 
-  
+
   // contact details /ADD/UPDATE/DELETE
   async updateSocialLink(businessCardId: string, socialLinks: any) {
     try {
@@ -1134,7 +1153,7 @@ export class AuthService {
         this.headers
       );
       // console.log(response);
-      
+
       if (response.status === 200 && response.data != null) {
         return response.data;
       } else {
@@ -1162,7 +1181,7 @@ export class AuthService {
         this.headers
       );
       // console.log(response);
-      
+
       if (response.status === 200 && response.data != null) {
         return response.data;
       } else {
@@ -1188,7 +1207,7 @@ export class AuthService {
         { businessCardId, contactId, ...data },
         this.headers
       );
-      
+
       if (response.status === 200 && response.data != null) {
         return response.data;
       } else {
@@ -1207,7 +1226,7 @@ export class AuthService {
       this.getHeaders();
 
       let response = await this.apiManager.request(
-     
+
         {
           url: `${apiEndpoints.WEBSITE_CONTACT_DELETE}`,
           method: 'POST'
@@ -1216,7 +1235,7 @@ export class AuthService {
         this.headers
       );
 
-      
+
       if (response.status === 200 && response.data != null) {
         return response.data;
       } else {
@@ -1230,7 +1249,7 @@ export class AuthService {
     }
   }
 
-  async handleTokenLogin(data:any) {
+  async handleTokenLogin(data: any) {
     try {
       this.getHeaders();
       let response = await this.apiManager.request(

@@ -1,79 +1,92 @@
 <div class="container py-5">
-  <div class="row g-4">    
-    <div class="col-lg-6 mx-auto">
-      <div class="card shadow-sm rounded-4 h-100 border border-1">
-        <div class="card-header bg-white border-0 pt-4 ps-4">
+  <div class="row">    
+    <div class="col-lg-">
+      <div class="card shadow-sm rounded-3">
+        <div class="card-header bg-white border-bottom py-4 px-4">
           <div class="d-flex align-items-center">
-            <div class="bg-info bg-opacity-10 p-2 rounded-3 me-3">
-              <i class="ri-lock-line text-info fs-4"></i>
+            <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
+              <i class="ri-lock-line text-primary fs-4"></i>
             </div>
-            <h3 class="mb-0 fw-bold text-dark">Change Password</h3>
+            <div>
+              <h3 class="h4 mb-1 fw-bold text-dark">Change Password</h3>
+              <p class="text-muted mb-0">Update your account password</p>
+            </div>
           </div>
         </div>
         <div class="card-body p-4">
-          <form ngNativeValidate (ngSubmit)="onPasswordUpdate()">
+          <form (ngSubmit)="onPasswordUpdate()" ngNativeValidate>
             <!-- Old Password -->
-            <div class="mb-4">
-              <label for="oldPassword" class="form-label fw-semibold">Old Password</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0">
-                  <i class="ri-key-line text-muted"></i>
+            <div class="mb-3">
+              <label for="oldPassword" class="form-label fw-semibold">Current Password</label>
+              <div class="input-group has-validation">
+                <span class="input-group-text bg-light">
+                  <i class="ri-key-2-line text-muted"></i>
                 </span>
                 <input 
                   type="password" 
-                  [(ngModel)]="passwordForm.oldPassword" 
-                  [ngModelOptions]="{standalone: true}" 
-                  class="form-control form-control-lg border-start-0 ps-0" 
+                  [(ngModel)]="passwordForm.oldPassword"
+                  [ngModelOptions]="{standalone: true}"
+                  class="form-control form-control-lg" 
                   id="oldPassword" 
                   required
                   placeholder="Enter current password"
                 />
+                <div class="invalid-feedback">
+                  Please enter your current password
+                </div>
               </div>
             </div>
             
             <!-- New Password -->
-            <div class="mb-4">
+            <div class="mb-3">
               <label for="newPassword" class="form-label fw-semibold">New Password</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0">
+              <div class="input-group has-validation">
+                <span class="input-group-text bg-light">
                   <i class="ri-lock-password-line text-muted"></i>
                 </span>
                 <input 
                   type="password" 
-                  [(ngModel)]="passwordForm.newPassword" 
-                  [ngModelOptions]="{standalone: true}" 
-                  class="form-control form-control-lg border-start-0 ps-0" 
+                  
+                  [(ngModel)]="passwordForm.newPassword"
+                  [ngModelOptions]="{standalone: true}"
+                  class="form-control form-control-lg" 
                   id="newPassword" 
                   required
+                  minlength="8"
                   placeholder="Enter new password"
                 />
+                <div class="invalid-feedback">
+                  Password must be at least 8 characters
+                </div>
               </div>
+              <div class="form-text">Minimum 8 characters with at least one number and special character</div>
             </div>
             
             <!-- Confirm Password -->
             <div class="mb-4">
-              <label for="confirmPassword" class="form-label fw-semibold">Confirm Password</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0">
+              <label for="confirmPassword" class="form-label fw-semibold">Confirm New Password</label>
+              <div class="input-group has-validation">
+                <span class="input-group-text bg-light">
                   <i class="ri-checkbox-circle-line text-muted"></i>
                 </span>
                 <input 
                   type="password" 
-                  [(ngModel)]="passwordForm.confirmPassword" 
-                  [ngModelOptions]="{standalone: true}" 
-                  class="form-control form-control-lg border-start-0 ps-0" 
+                  [(ngModel)]="passwordForm.confirmPassword"
+                  [ngModelOptions]="{standalone: true}"
+                  class="form-control form-control-lg" 
                   id="confirmPassword" 
                   required
                   placeholder="Confirm new password"
                 />
+               
               </div>
             </div>
             
-            <!-- Change Password Button -->
-            <div class="d-flex justify-content-end mt-4">
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-between align-items-center mt-4 pt-2 border-top">
               <button 
                 type="submit" 
-                class="btn btn-info btn-lg px-4 py-2 text-white d-flex align-items-center"
+                class="btn btn-primary px-4"
               >
                 <i class="ri-lock-password-fill me-2"></i> Update Password
               </button>

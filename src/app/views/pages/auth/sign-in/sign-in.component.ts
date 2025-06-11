@@ -34,11 +34,17 @@ export class SignInComponent implements OnInit {
   }
 
   async ngOnInit(){
+    let data = await this.authService.getRawInformation();
+    if(data!=null){
+      this.storage.set("apps", data);
+      this.whileLabelName = data.name;
+      this.emailId = data.emailId;
+    }
   }
 
-  whileLabelName = environment.whiteLabelName;
+  whileLabelName = "";
   isPassword: boolean = false; 
-  emailId = 'info@itfuturz.com';
+  emailId = '';
 
   
   loginForm = new FormGroup({
