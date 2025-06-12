@@ -17,6 +17,7 @@ export class ShareHistoryService {
     this.headers = [];
     let token = this.storage.get(common.TOKEN);
     if (token != null) {
+      this.headers.push({ "origin-domain": window.location.origin });
       this.headers.push({ Authorization: `Bearer ${token}` });
     }
   };

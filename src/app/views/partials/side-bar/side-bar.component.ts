@@ -24,7 +24,7 @@ export class SideBarComponent implements OnInit, AfterViewInit {
   subscriptionData: any[] = [];
   filteredMenuList: any[] = [];
 
-  whiteLabelName: string = environment.whiteLabelName;
+  whiteLabelName: string = '';
 
   constructor(
     private router: Router,
@@ -34,6 +34,10 @@ export class SideBarComponent implements OnInit, AfterViewInit {
     public appWorker: AppWorker
   ) {
     this.currentBcardId = this.storage.get(common.BUSINESS_CARD);
+    let result = this.storage.get("apps");
+    if(result!=null){
+      this.whiteLabelName = result.name;
+    }
   }
 
   async ngOnInit() {

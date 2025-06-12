@@ -2,6 +2,8 @@ import { environment } from '../../../env/env.local';
 
 class ApiEndpoints {
   private PATH: string = `${environment.baseURL}/${environment.route}`;
+  
+  public GET_RAW: string = `${this.PATH}/get-raw`;
   public SIGN_IN: string = `${this.PATH}/sign-in`;
   public GET_PROFILE: string = `${this.PATH}/profile`;
   public UPDATE_PROFILE: string = `${this.PATH}/update-profile`;

@@ -1,12 +1,9 @@
 <nav id="sidebar" class="sidebar js-sidebar" [class.collapsed]="!appWorker.isSliderOpen">
   <div class="sidebar-content js-simplebar" style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
-    <a class="sidebar-brand" style="color:#126f8a; background: aliceblue; padding: 7px 20px;"
+    <a class="sidebar-brand" style="color:#126f8a; background: aliceblue; padding: 11px 20px;"
       [routerLink]="'business-cards'">
       <span class="align-middle">
-        <!-- <div class="text-truncate">{{whiteLabelName}}</div> -->
-
-  <img src="/assets/logo/companylogo (1).png" alt="Company Logo" class="company-logo img-fluid" />
-
+        <div class="text-truncate">{{whiteLabelName}}</div>
         <div style="font-size: 12px;">
           {{ authService.profileData!=null ? authService.profileData.name : '--' }}
         </div>
