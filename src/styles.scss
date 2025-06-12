@@ -31,7 +31,7 @@ body{
   // this is to override the default ProseMirror styles of ngx editor apply hieght
   .ProseMirror {
   min-height: 100px;
-  max-height: 100px;
+  max-height: 200px;
   height: auto;
   overflow-y: auto;
 }
