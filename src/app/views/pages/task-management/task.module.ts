@@ -26,6 +26,8 @@ import { AddTeamMemberComponent } from "../../partials/task-managemnt/common-com
 import { SendingMailComponent } from "../../partials/task-managemnt/common-components/sendingMail/sendingMail.component";
 import { ChangeMemberRoleComponent } from '../../partials/task-managemnt/common-components/changeMEmberRole/changeMEmberRole.component';
 import { CustomdataComponent } from '../../partials/task-managemnt/common-components/customdata/customdata.component';
+// ! AI COMPENENTS
+import { AiassistantComponent } from '../../partials/task-managemnt/common-components/aiassistant/aiassistant.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,7 @@ import { CustomdataComponent } from '../../partials/task-managemnt/common-compon
     MydaytaskComponent,
     MyweektaskComponent,
     MyalltaskComponent,
-    MemberprofileComponent
+    MemberprofileComponent,
   ],
   imports: [
     CommonModule,
@@ -52,7 +54,8 @@ import { CustomdataComponent } from '../../partials/task-managemnt/common-compon
     AddTeamMemberComponent,
     SendingMailComponent,
     ChangeMemberRoleComponent,
-    CustomdataComponent
+    CustomdataComponent,
+    AiassistantComponent
   ]
 })
 export class TaskModule { }

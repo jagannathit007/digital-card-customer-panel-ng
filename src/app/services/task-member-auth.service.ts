@@ -1,3 +1,4 @@
+import { AiassistantComponent } from './../views/partials/task-managemnt/common-components/aiassistant/aiassistant.component';
 import { Injectable } from '@angular/core';
 import { swalHelper } from '../core/constants/swal-helper';
 import { apiEndpoints } from '../core/constants/api-endpoints';
@@ -147,4 +148,31 @@ export class TaskMemberAuthService {
       return false;
     }
   }
+
+  // TODO : ADDING THE AI-ASSISTENET SERVICE
+  async Aiassistant(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.AI_ASSISTANT,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data != 0) {
+        swalHelper.success(response.message);
+        return true;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
+
 }

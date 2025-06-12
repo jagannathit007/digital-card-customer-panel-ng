@@ -1,0 +1,90 @@
+<!-- Floating AI Assistant Button -->
+<div class="floating-ai-button" (click)="openModal()">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1V3H9V1L3 7V9H21ZM12 8C15.87 8 19 11.13 19 15C19 18.87 15.87 22 12 22C8.13 22 5 18.87 5 15C5 11.13 8.13 8 12 8ZM12 10C9.24 10 7 12.24 7 15C7 17.76 9.24 20 12 20C14.76 20 17 17.76 17 15C17 12.24 14.76 10 12 10ZM12 12C13.66 12 15 13.34 15 15C15 16.66 13.66 18 12 18C10.34 18 9 16.66 9 15C9 13.34 10.34 12 12 12Z" fill="white"/>
+  </svg>
+</div>
+
+<!-- AI Assistant Modal -->
+<div class="modal-overlay" *ngIf="isModalOpen" (click)="onBackdropClick($event)">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <!-- Close Button -->
+    <button class="close-button" (click)="closeModal()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z" fill="#666"/>
+      </svg>
+    </button>
+
+    <!-- AI Avatar -->
+    <div class="ai-avatar">
+      <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1V3H9V1L3 7V9H21ZM12 8C15.87 8 19 11.13 19 15C19 18.87 15.87 22 12 22C8.13 22 5 18.87 5 15C5 11.13 8.13 8 12 8ZM12 10C9.24 10 7 12.24 7 15C7 17.76 9.24 20 12 20C14.76 20 17 17.76 17 15C17 12.24 14.76 10 12 10ZM12 12C13.66 12 15 13.34 15 15C15 16.66 13.66 18 12 18C10.34 18 9 16.66 9 15C9 13.34 10.34 12 12 12Z" fill="#4A90E2"/>
+      </svg>
+    </div>
+
+    <!-- Title -->
+    <h2 class="modal-title">AI Assistant</h2>
+
+    <!-- Initial State - Show when modal first opens -->
+    <div class="initial-state" *ngIf="!hasStarted">
+      <p class="welcome-text">Hello! I'm your AI assistant.</p>
+      <p class="instruction-text">Click "Start" to begin our conversation</p>
+      
+      <!-- Start Button -->
+      <button class="start-button" (click)="startListening()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 5V19L19 12L8 5Z" fill="white"/>
+        </svg>
+        Start
+      </button>
+    </div>
+
+    <!-- Conversation State - Show after clicking start -->
+    <div class="conversation-state" *ngIf="hasStarted">
+      <!-- Status Text -->
+      <div class="status-text">
+        <p *ngIf="isListening" class="listening">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="pulse-icon">
+            <circle cx="12" cy="12" r="10" fill="#ff4444"/>
+          </svg>
+          Listening... Please speak now
+        </p>
+        <p *ngIf="recognizedText && !isListening && !isProcessing" class="recognized">
+          You said: "{{ recognizedText }}"
+        </p>
+        <p *ngIf="isProcessing" class="processing">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="spin-icon">
+            <path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z" fill="#4A90E2"/>
+          </svg>
+          Processing your request...
+        </p>
+        <p *ngIf="!isListening && !recognizedText && !isProcessing" class="waiting">
+          I'm ready to help you!
+        </p>
+      </div>
+
+      <!-- Try Again Button (show when not listening and not processing) -->
+      <button 
+        class="try-again-button" 
+        *ngIf="!isListening && !isProcessing"
+        (click)="startListening()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 14C13.66 14 15 12.66 15 11V5C15 3.34 13.66 2 12 2C10.34 2 9 3.34 9 5V11C9 12.66 10.34 14 12 14ZM17.3 11C17.3 14 15 16.1 12 16.1C9 16.1 6.7 14 6.7 11H5C5 14.4 7.9 17.1 11 17.7V21H13V17.7C16.1 17.1 19 14.4 19 11H17.3Z" fill="white"/>
+        </svg>
+        Speak Again
+      </button>
+    </div>
+
+    <!-- Voice Commands Help -->
+    <div class="voice-commands-help" *ngIf="hasStarted">
+      <h4>Try saying:</h4>
+      <ul>
+        <li>"Go to my profile page"</li>
+        <li>"Go to dashboard"</li>
+        <li>"Go to settings"</li>
+        <li>"Go to users"</li>
+        <li>"Logout"</li>
+      </ul>
+    </div>
+  </div>
+</div>
