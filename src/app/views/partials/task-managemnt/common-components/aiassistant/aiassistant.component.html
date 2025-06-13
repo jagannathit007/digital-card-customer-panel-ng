@@ -1,150 +1,204 @@
 <!-- Floating AI Assistant Button (ai3.gif) -->
-<div class="tw-fixed tw-bottom-6 tw-right-6 tw-z-50 tw-cursor-pointer tw-transition-transform tw-duration-300 hover:tw-scale-110" 
+<div class="tw-fixed tw-bottom-6 tw-right-6 tw-z-50 tw-cursor-pointer tw-transition-all tw-duration-300 hover:tw-scale-110 hover:tw-rotate-12" 
      (click)="openWelcomeModal()">
-  <img src="../../../../../../assets/images/ai3.gif" 
-       alt="AI Assistant" 
-       class="tw-w-16 tw-h-16 tw-rounded-full tw-shadow-lg tw-shadow-blue-500/25 hover:tw-shadow-blue-500/40 tw-transition-shadow tw-duration-300">
+  <div class="tw-relative">
+    <img src="../../../../../../assets/images/ai3.gif" 
+         alt="AI Assistant" 
+         class="tw-w-16 tw-h-16 tw-rounded-full tw-shadow-xl tw-shadow-blue-500/30 hover:tw-shadow-blue-500/50 tw-transition-all tw-duration-300 tw-border-2 tw-border-white">
+    <div class="tw-absolute -tw-top-1 -tw-right-1 tw-w-4 tw-h-4 tw-bg-green-500 tw-rounded-full tw-animate-pulse tw-border-2 tw-border-white"></div>
+  </div>
 </div>
 
 <!-- Welcome Modal (First Modal) -->
-<div class="tw-fixed tw-inset-0 tw-z-[1000] tw-flex tw-items-center tw-justify-center tw-bg-black/60 tw-backdrop-blur-sm" 
+<div class="tw-fixed tw-inset-0 tw-z-[1000] tw-flex tw-items-center tw-justify-center tw-bg-gradient-to-br tw-from-black/60 tw-via-blue-900/20 tw-to-purple-900/20 tw-backdrop-blur-md" 
      *ngIf="isWelcomeModalOpen" 
      (click)="onBackdropClick($event)">
-  <div class="tw-bg-white tw-rounded-3xl tw-p-8 tw-max-w-md tw-w-11/12 tw-max-h-[80vh] tw-overflow-y-auto tw-relative tw-shadow-2xl tw-animate-in tw-slide-in-from-bottom-4 tw-duration-300" 
+  <div class="tw-bg-white tw-rounded-3xl tw-p-8 tw-max-w-md tw-w-11/12 tw-max-h-[85vh] tw-overflow-y-auto tw-relative tw-shadow-2xl tw-animate-in tw-slide-in-from-bottom-6 tw-fade-in tw-duration-500 tw-border tw-border-gray-100" 
        (click)="$event.stopPropagation()">
     
     <!-- Close Button -->
-    <button class="tw-absolute tw-top-4 tw-right-4 tw-p-2 tw-rounded-full tw-bg-gray-100 hover:tw-bg-gray-200 tw-transition-colors tw-duration-200" 
+    <button class="tw-absolute tw-top-4 tw-right-4 tw-p-3 tw-rounded-full tw-bg-gray-50 hover:tw-bg-gray-100 tw-transition-all tw-duration-200 tw-group" 
             (click)="closeWelcomeModal()">
-      <svg class="tw-w-5 tw-h-5 tw-text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="tw-w-5 tw-h-5 tw-text-gray-500 group-hover:tw-text-gray-700 tw-transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
       </svg>
     </button>
 
     <!-- AI Avatar (ai4.gif) -->
-    <div class="tw-text-center tw-mb-6">
-      <img src="../../../../../../assets/images/ai4.gif" 
-           alt="AI Assistant" 
-           class="tw-w-24 tw-h-24 tw-mx-auto tw-mb-4 tw-animate-pulse">
+    <div class="tw-text-center tw-mb-8">
+      <div class="tw-relative tw-inline-block">
+        <img src="../../../../../../assets/images/ai4.gif" 
+             alt="AI Assistant" 
+             class="tw-w-28 tw-h-28 tw-mx-auto tw-mb-4 tw-animate-pulse tw-drop-shadow-lg">
+        <div class="tw-absolute tw-inset-0 tw-bg-gradient-to-tr tw-from-blue-500/20 tw-to-purple-500/20 tw-rounded-full tw-animate-pulse"></div>
+      </div>
     </div>
 
     <!-- Welcome Message -->
-    <div class="tw-text-center tw-mb-8">
-      <h2 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-mb-4">AI Assistant</h2>
-      <p class="tw-text-lg tw-text-blue-600 tw-font-medium tw-mb-2">I can help you write more professionally.</p>
-      <p class="tw-text-gray-600">Click the start button to begin.</p>
+    <div class="tw-text-center tw-mb-10">
+      <h2 class="tw-text-3xl tw-font-bold tw-bg-gradient-to-r tw-from-blue-600 tw-to-purple-600 tw-bg-clip-text tw-text-transparent tw-mb-4">AI Assistant</h2>
+      <p class="tw-text-lg tw-text-blue-600 tw-font-medium tw-mb-3">I can help you work more professionally</p>
+      <p class="tw-text-gray-600 tw-leading-relaxed">Speak naturally and I'll assist you with reports, tasks, and much more!</p>
     </div>
 
     <!-- Start Button -->
     <div class="tw-text-center">
-      <button class="tw-bg-gradient-to-r tw-from-blue-500 tw-to-blue-600 tw-text-white tw-px-8 tw-py-4 tw-rounded-full tw-font-medium tw-text-lg tw-shadow-lg tw-shadow-blue-500/30 hover:tw-shadow-blue-500/50 hover:tw-scale-105 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-gap-3 tw-mx-auto"
+      <button class="tw-bg-gradient-to-r tw-from-blue-500 tw-via-blue-600 tw-to-purple-600 tw-text-white tw-px-10 tw-py-4 tw-rounded-full tw-font-semibold tw-text-lg tw-shadow-xl tw-shadow-blue-500/30 hover:tw-shadow-blue-500/50 hover:tw-scale-105 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-gap-3 tw-mx-auto tw-group"
               (click)="openInteractionModal()">
-        <svg class="tw-w-5 tw-h-5" fill="currentColor" viewBox="0 0 24 24">
+        <svg class="tw-w-6 tw-h-6 group-hover:tw-scale-110 tw-transition-transform" fill="currentColor" viewBox="0 0 24 24">
           <path d="M8 5v14l11-7z"/>
         </svg>
-        Start
+        Start Conversation
       </button>
     </div>
   </div>
 </div>
 
 <!-- Interaction Modal (Second Modal) -->
-<div class="tw-fixed tw-inset-0 tw-z-[1000] tw-flex tw-items-center tw-justify-center tw-bg-black/60 tw-backdrop-blur-sm" 
+<div class="tw-fixed tw-inset-0 tw-z-[1000] tw-flex tw-items-center tw-justify-center tw-bg-gradient-to-br tw-from-black/60 tw-via-blue-900/20 tw-to-purple-900/20 tw-backdrop-blur-md" 
      *ngIf="isInteractionModalOpen" 
      (click)="onBackdropClick($event)">
-  <div class="tw-bg-white tw-rounded-3xl tw-p-8 tw-max-w-md tw-w-11/12 tw-max-h-[80vh] tw-overflow-y-auto tw-relative tw-shadow-2xl tw-animate-in tw-slide-in-from-bottom-4 tw-duration-300" 
+  <div class="tw-bg-white tw-rounded-3xl tw-p-8 tw-max-w-lg tw-w-11/12 tw-max-h-[90vh] tw-overflow-y-auto tw-relative tw-shadow-2xl tw-animate-in tw-slide-in-from-bottom-6 tw-fade-in tw-duration-500 tw-border tw-border-gray-100" 
        (click)="$event.stopPropagation()">
     
     <!-- Close Button -->
-    <button class="tw-absolute tw-top-4 tw-right-4 tw-p-2 tw-rounded-full tw-bg-gray-100 hover:tw-bg-gray-200 tw-transition-colors tw-duration-200" 
+    <button class="tw-absolute tw-top-4 tw-right-4 tw-p-3 tw-rounded-full tw-bg-gray-50 hover:tw-bg-gray-100 tw-transition-all tw-duration-200 tw-group" 
             (click)="closeInteractionModal()">
-      <svg class="tw-w-5 tw-h-5 tw-text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="tw-w-5 tw-h-5 tw-text-gray-500 group-hover:tw-text-gray-700 tw-transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
       </svg>
     </button>
 
     <!-- AI Avatar -->
     <div class="tw-text-center tw-mb-6">
-      <img src="../../../../../../assets/images/ai4.gif" 
-           alt="AI Assistant" 
-           class="tw-w-20 tw-h-20 tw-mx-auto tw-mb-4"
-           [class.tw-animate-pulse]="isListening">
+      <div class="tw-relative tw-inline-block">
+        <img src="../../../../../../assets/images/ai4.gif" 
+             alt="AI Assistant" 
+             class="tw-w-24 tw-h-24 tw-mx-auto tw-mb-4 tw-drop-shadow-lg"
+             [class.tw-animate-pulse]="isListening"
+             [class.tw-animate-bounce]="isSpeaking">
+        <div class="tw-absolute tw-inset-0 tw-bg-gradient-to-tr tw-from-blue-500/10 tw-to-purple-500/10 tw-rounded-full" 
+             [class.tw-animate-ping]="isListening"></div>
+      </div>
     </div>
 
     <!-- Status Display -->
-    <div class="tw-text-center tw-mb-6 tw-min-h-[80px] tw-flex tw-flex-col tw-justify-center">
+    <div class="tw-text-center tw-mb-8 tw-min-h-[120px] tw-flex tw-flex-col tw-justify-center tw-space-y-4">
       
       <!-- Listening State -->
-      <div *ngIf="isListening" class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-4">
+      <div *ngIf="isListening" class="tw-space-y-4">
         <div class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-text-red-500 tw-font-medium">
           <div class="tw-w-3 tw-h-3 tw-bg-red-500 tw-rounded-full tw-animate-ping"></div>
-          <span>Listening... Please speak now</span>
+          <span class="tw-text-lg">Listening... Please speak now</span>
         </div>
         
         <!-- Live Speech Text Display -->
-        <div *ngIf="recognizedText" class="tw-bg-gray-50 tw-p-3 tw-rounded-lg tw-max-w-full tw-break-words">
-          <p class="tw-text-sm tw-text-gray-600 tw-mb-1">You are saying:</p>
-          <p class="tw-text-base tw-text-gray-800">"{{ recognizedText }}"</p>
+        <div *ngIf="recognizedText" class="tw-bg-gradient-to-r tw-from-gray-50 tw-to-blue-50 tw-p-4 tw-rounded-xl tw-border tw-border-gray-200 tw-shadow-sm">
+          <p class="tw-text-sm tw-text-gray-600 tw-mb-2 tw-font-medium">You are saying:</p>
+          <p class="tw-text-base tw-text-gray-800 tw-font-medium">"{{ recognizedText }}"</p>
         </div>
-        
-        <!-- Stop Listening Button -->
-        <button class="tw-bg-gradient-to-r tw-from-red-500 tw-to-red-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-full tw-font-medium tw-text-sm tw-shadow-lg tw-shadow-red-500/30 hover:tw-shadow-red-500/50 hover:tw-scale-105 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-gap-2"
+      </div>
+
+      <!-- Speaking State -->
+      <div *ngIf="isSpeaking" class="tw-space-y-4">
+        <div class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-text-blue-600 tw-font-medium">
+          <div class="tw-w-4 tw-h-4 tw-border-2 tw-border-blue-600 tw-border-t-transparent tw-rounded-full tw-animate-spin"></div>
+          <span class="tw-text-lg">AI is speaking... Please wait</span>
+        </div>
+      </div>
+
+      <!-- Recognized Text (after listening stopped) -->
+      <div *ngIf="recognizedText && !isListening && !isProcessing && !isSpeaking" class="tw-text-blue-600 tw-font-medium">
+        <p class="tw-text-sm tw-text-gray-500 tw-mb-3 tw-font-medium">You said:</p>
+        <div class="tw-bg-gradient-to-r tw-from-blue-50 tw-to-indigo-50 tw-p-4 tw-rounded-xl tw-border tw-border-blue-200 tw-shadow-sm">
+          <p class="tw-text-lg tw-text-blue-800 tw-font-medium">"{{ recognizedText }}"</p>
+        </div>
+      </div>
+
+      <!-- Processing State -->
+      <div *ngIf="isProcessing && !isSpeaking" class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-text-blue-600 tw-font-medium">
+        <div class="tw-w-5 tw-h-5 tw-border-2 tw-border-blue-600 tw-border-t-transparent tw-rounded-full tw-animate-spin"></div>
+        <span class="tw-text-lg">Processing your request...</span>
+      </div>
+
+      <!-- Ready State -->
+      <div *ngIf="!isListening && !recognizedText && !isProcessing && !isSpeaking" class="tw-text-center tw-space-y-2">
+        <p class="tw-text-xl tw-font-semibold tw-text-gray-700">I'm ready to help you!</p>
+        <p class="tw-text-sm tw-text-gray-500">Click "Start Speaking" to begin</p>
+      </div>
+    </div>
+
+    <!-- Action Buttons Container -->
+    <div class="tw-space-y-4">
+      
+      <!-- Stop Listening Button (when listening) -->
+      <div *ngIf="isListening" class="tw-flex tw-justify-center tw-gap-3">
+        <button class="tw-bg-gradient-to-r tw-from-red-500 tw-to-red-600 tw-text-white tw-px-6 tw-py-3 tw-rounded-full tw-font-medium tw-shadow-lg tw-shadow-red-500/30 hover:tw-shadow-red-500/50 hover:tw-scale-105 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-gap-2"
                 (click)="stopListening()">
           <svg class="tw-w-4 tw-h-4" fill="currentColor" viewBox="0 0 24 24">
             <path d="M6 6h12v12H6z"/>
           </svg>
-          Stop
+          Stop Listening
+        </button>
+      </div>
+      
+      <!-- Stop Speech Button (when speaking) -->
+      <div *ngIf="isSpeaking" class="tw-flex tw-justify-center tw-gap-3">
+        <button class="tw-bg-gradient-to-r tw-from-orange-500 tw-to-orange-600 tw-text-white tw-px-6 tw-py-3 tw-rounded-full tw-font-medium tw-shadow-lg tw-shadow-orange-500/30 hover:tw-shadow-orange-500/50 hover:tw-scale-105 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-gap-2"
+                (click)="stopCurrentSpeech()">
+          <svg class="tw-w-4 tw-h-4" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M6 6h12v12H6z"/>
+          </svg>
+          Stop Speech
         </button>
       </div>
 
-      <!-- Recognized Text (after listening stopped) -->
-      <div *ngIf="recognizedText && !isListening && !isProcessing" class="tw-text-blue-600 tw-font-medium">
-        <p class="tw-text-sm tw-text-gray-500 tw-mb-2">You said:</p>
-        <p class="tw-text-lg tw-bg-blue-50 tw-p-3 tw-rounded-lg">"{{ recognizedText }}"</p>
+      <!-- Start Speaking Button (when ready) -->
+      <div *ngIf="!isListening && !isProcessing && !isSpeaking" class="tw-flex tw-justify-center">
+        <button class="tw-bg-gradient-to-r tw-from-green-500 tw-to-green-600 tw-text-white tw-px-8 tw-py-4 tw-rounded-full tw-font-semibold tw-text-lg tw-shadow-lg tw-shadow-green-500/30 hover:tw-shadow-green-500/50 hover:tw-scale-105 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-gap-3"
+                [disabled]="isApiCallInProgress"
+                [class.tw-opacity-50]="isApiCallInProgress"
+                [class.tw-cursor-not-allowed]="isApiCallInProgress"
+                (click)="startListening()">
+          <svg class="tw-w-5 tw-h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
+          </svg>
+          Start Speaking
+        </button>
       </div>
 
-      <!-- Processing State -->
-      <div *ngIf="isProcessing" class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-text-blue-600 tw-font-medium">
-        <div class="tw-w-5 tw-h-5 tw-border-2 tw-border-blue-600 tw-border-t-transparent tw-rounded-full tw-animate-spin"></div>
-        <span>Processing your request...</span>
+      <!-- Close Now Button (when processing/speaking) -->
+      <div *ngIf="isSpeaking || isProcessing" class="tw-flex tw-justify-center">
+        <button class="tw-bg-gradient-to-r tw-from-gray-500 tw-to-gray-600 tw-text-white tw-px-6 tw-py-3 tw-rounded-full tw-font-medium tw-shadow-lg hover:tw-scale-105 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-gap-2"
+                (click)="closeInteractionModal()">
+          <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+          Close Now
+        </button>
       </div>
-
-      <!-- Ready State -->
-      <div *ngIf="!isListening && !recognizedText && !isProcessing" class="tw-text-gray-600">
-        <p class="tw-text-lg">I'm ready to help you!</p>
-        <p class="tw-text-sm">Click "Speak Again" to start</p>
-      </div>
-    </div>
-
-    <!-- Speak Again Button -->
-    <div class="tw-text-center tw-mb-6" *ngIf="!isListening && !isProcessing">
-      <button class="tw-bg-gradient-to-r tw-from-green-500 tw-to-green-600 tw-text-white tw-px-6 tw-py-3 tw-rounded-full tw-font-medium tw-shadow-lg tw-shadow-green-500/30 hover:tw-shadow-green-500/50 hover:tw-scale-105 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-gap-3 tw-mx-auto"
-              [disabled]="isApiCallInProgress"
-              [class.tw-opacity-50]="isApiCallInProgress"
-              [class.tw-cursor-not-allowed]="isApiCallInProgress"
-              (click)="startListening()">
-        <svg class="tw-w-4 tw-h-4" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
-        </svg>
-        Speak Again
-      </button>
     </div>
 
     <!-- Voice Commands Help -->
-    <div class="tw-border-t tw-border-gray-200 tw-pt-6">
-      <h4 class="tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-3 tw-text-center">Available Commands:</h4>
-      <div class="tw-space-y-2">
-        <div class="tw-bg-blue-50 tw-text-blue-700 tw-px-3 tw-py-2 tw-rounded-lg tw-text-xs tw-flex tw-items-center tw-gap-2">
-          <span class="tw-text-blue-500">💬</span>
-          "Generate member details report"
+    <div class="tw-border-t tw-border-gray-200 tw-pt-6 tw-mt-8">
+      <h4 class="tw-text-sm tw-font-semibold tw-text-gray-700 tw-mb-4 tw-text-center tw-flex tw-items-center tw-justify-center tw-gap-2">
+        <svg class="tw-w-4 tw-h-4 tw-text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+        </svg>
+        Try These Commands:
+      </h4>
+      <div class="tw-grid tw-gap-3">
+        <div class="tw-bg-gradient-to-r tw-from-blue-50 tw-to-blue-100 tw-text-blue-800 tw-px-4 tw-py-3 tw-rounded-xl tw-text-sm tw-flex tw-items-center tw-gap-3 tw-border tw-border-blue-200">
+          <span class="tw-text-blue-600 tw-text-lg">💬</span>
+          <span class="tw-font-medium">"Generate member details report"</span>
         </div>
-        <div class="tw-bg-green-50 tw-text-green-700 tw-px-3 tw-py-2 tw-rounded-lg tw-text-xs tw-flex tw-items-center tw-gap-2">
-          <span class="tw-text-green-500">📋</span>
-          "Create team task for project"
+        <div class="tw-bg-gradient-to-r tw-from-green-50 tw-to-green-100 tw-text-green-800 tw-px-4 tw-py-3 tw-rounded-xl tw-text-sm tw-flex tw-items-center tw-gap-3 tw-border tw-border-green-200">
+          <span class="tw-text-green-600 tw-text-lg">📋</span>
+          <span class="tw-font-medium">"Create team task for project"</span>
         </div>
-        <div class="tw-bg-purple-50 tw-text-purple-700 tw-px-3 tw-py-2 tw-rounded-lg tw-text-xs tw-flex tw-items-center tw-gap-2">
-          <span class="tw-text-purple-500">✅</span>
-          "Create personal task"
+        <div class="tw-bg-gradient-to-r tw-from-purple-50 tw-to-purple-100 tw-text-purple-800 tw-px-4 tw-py-3 tw-rounded-xl tw-text-sm tw-flex tw-items-center tw-gap-3 tw-border tw-border-purple-200">
+          <span class="tw-text-purple-600 tw-text-lg">✅</span>
+          <span class="tw-font-medium">"Create personal task"</span>
         </div>
       </div>
     </div>
