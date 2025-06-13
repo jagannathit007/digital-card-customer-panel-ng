@@ -705,7 +705,7 @@ export class AiassistantComponent implements OnInit, OnDestroy {
       
       // Try to use English voice
       const voices = this.speechSynthesis.getVoices();
-      const preferredVoice = voices.find(voice => voice.lang.includes('en'));
+      const preferredVoice = voices.find(voice => voice.lang.includes('hi'));
       if (preferredVoice) {
         utterance.voice = preferredVoice;
       }
