@@ -75,15 +75,32 @@
     <div class="tw-text-center tw-mb-6 tw-min-h-[80px] tw-flex tw-flex-col tw-justify-center">
       
       <!-- Listening State -->
-      <div *ngIf="isListening" class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-text-red-500 tw-font-medium">
-        <div class="tw-w-3 tw-h-3 tw-bg-red-500 tw-rounded-full tw-animate-ping"></div>
-        <span>Listening... Please speak now</span>
+      <div *ngIf="isListening" class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-4">
+        <div class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-text-red-500 tw-font-medium">
+          <div class="tw-w-3 tw-h-3 tw-bg-red-500 tw-rounded-full tw-animate-ping"></div>
+          <span>Listening... Please speak now</span>
+        </div>
+        
+        <!-- Live Speech Text Display -->
+        <div *ngIf="recognizedText" class="tw-bg-gray-50 tw-p-3 tw-rounded-lg tw-max-w-full tw-break-words">
+          <p class="tw-text-sm tw-text-gray-600 tw-mb-1">You are saying:</p>
+          <p class="tw-text-base tw-text-gray-800">"{{ recognizedText }}"</p>
+        </div>
+        
+        <!-- Stop Listening Button -->
+        <button class="tw-bg-gradient-to-r tw-from-red-500 tw-to-red-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-full tw-font-medium tw-text-sm tw-shadow-lg tw-shadow-red-500/30 hover:tw-shadow-red-500/50 hover:tw-scale-105 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-gap-2"
+                (click)="stopListening()">
+          <svg class="tw-w-4 tw-h-4" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M6 6h12v12H6z"/>
+          </svg>
+          Stop
+        </button>
       </div>
 
-      <!-- Recognized Text -->
+      <!-- Recognized Text (after listening stopped) -->
       <div *ngIf="recognizedText && !isListening && !isProcessing" class="tw-text-blue-600 tw-font-medium">
         <p class="tw-text-sm tw-text-gray-500 tw-mb-2">You said:</p>
-        <p class="tw-text-lg">"{{ recognizedText }}"</p>
+        <p class="tw-text-lg tw-bg-blue-50 tw-p-3 tw-rounded-lg">"{{ recognizedText }}"</p>
       </div>
 
       <!-- Processing State -->
@@ -119,7 +136,7 @@
       <div class="tw-space-y-2">
         <div class="tw-bg-blue-50 tw-text-blue-700 tw-px-3 tw-py-2 tw-rounded-lg tw-text-xs tw-flex tw-items-center tw-gap-2">
           <span class="tw-text-blue-500">💬</span>
-          "Generate report for member details"
+          "Generate member details report"
         </div>
         <div class="tw-bg-green-50 tw-text-green-700 tw-px-3 tw-py-2 tw-rounded-lg tw-text-xs tw-flex tw-items-center tw-gap-2">
           <span class="tw-text-green-500">📋</span>
