@@ -1,90 +1,141 @@
-<!-- Floating AI Assistant Button -->
-<div class="floating-ai-button" (click)="openModal()">
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1V3H9V1L3 7V9H21ZM12 8C15.87 8 19 11.13 19 15C19 18.87 15.87 22 12 22C8.13 22 5 18.87 5 15C5 11.13 8.13 8 12 8ZM12 10C9.24 10 7 12.24 7 15C7 17.76 9.24 20 12 20C14.76 20 17 17.76 17 15C17 12.24 14.76 10 12 10ZM12 12C13.66 12 15 13.34 15 15C15 16.66 13.66 18 12 18C10.34 18 9 16.66 9 15C9 13.34 10.34 12 12 12Z" fill="white"/>
-  </svg>
+<!-- Floating AI Assistant Button (ai3.gif) -->
+<div class="tw-fixed tw-bottom-6 tw-right-6 tw-z-50 tw-cursor-pointer tw-transition-transform tw-duration-300 hover:tw-scale-110" 
+     (click)="openWelcomeModal()">
+  <img src="../../../../../../assets/images/ai3.gif" 
+       alt="AI Assistant" 
+       class="tw-w-16 tw-h-16 tw-rounded-full tw-shadow-lg tw-shadow-blue-500/25 hover:tw-shadow-blue-500/40 tw-transition-shadow tw-duration-300">
 </div>
 
-<!-- AI Assistant Modal -->
-<div class="modal-overlay" *ngIf="isModalOpen" (click)="onBackdropClick($event)">
-  <div class="modal-container" (click)="$event.stopPropagation()">
+<!-- Welcome Modal (First Modal) -->
+<div class="tw-fixed tw-inset-0 tw-z-[1000] tw-flex tw-items-center tw-justify-center tw-bg-black/60 tw-backdrop-blur-sm" 
+     *ngIf="isWelcomeModalOpen" 
+     (click)="onBackdropClick($event)">
+  <div class="tw-bg-white tw-rounded-3xl tw-p-8 tw-max-w-md tw-w-11/12 tw-max-h-[80vh] tw-overflow-y-auto tw-relative tw-shadow-2xl tw-animate-in tw-slide-in-from-bottom-4 tw-duration-300" 
+       (click)="$event.stopPropagation()">
+    
     <!-- Close Button -->
-    <button class="close-button" (click)="closeModal()">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z" fill="#666"/>
+    <button class="tw-absolute tw-top-4 tw-right-4 tw-p-2 tw-rounded-full tw-bg-gray-100 hover:tw-bg-gray-200 tw-transition-colors tw-duration-200" 
+            (click)="closeWelcomeModal()">
+      <svg class="tw-w-5 tw-h-5 tw-text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
       </svg>
     </button>
 
-    <!-- AI Avatar -->
-    <div class="ai-avatar">
-      <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1V3H9V1L3 7V9H21ZM12 8C15.87 8 19 11.13 19 15C19 18.87 15.87 22 12 22C8.13 22 5 18.87 5 15C5 11.13 8.13 8 12 8ZM12 10C9.24 10 7 12.24 7 15C7 17.76 9.24 20 12 20C14.76 20 17 17.76 17 15C17 12.24 14.76 10 12 10ZM12 12C13.66 12 15 13.34 15 15C15 16.66 13.66 18 12 18C10.34 18 9 16.66 9 15C9 13.34 10.34 12 12 12Z" fill="#4A90E2"/>
-      </svg>
+    <!-- AI Avatar (ai4.gif) -->
+    <div class="tw-text-center tw-mb-6">
+      <img src="../../../../../../assets/images/ai4.gif" 
+           alt="AI Assistant" 
+           class="tw-w-24 tw-h-24 tw-mx-auto tw-mb-4 tw-animate-pulse">
     </div>
 
-    <!-- Title -->
-    <h2 class="modal-title">AI Assistant</h2>
+    <!-- Welcome Message -->
+    <div class="tw-text-center tw-mb-8">
+      <h2 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-mb-4">AI Assistant</h2>
+      <p class="tw-text-lg tw-text-blue-600 tw-font-medium tw-mb-2">I can help you write more professionally.</p>
+      <p class="tw-text-gray-600">Click the start button to begin.</p>
+    </div>
 
-    <!-- Initial State - Show when modal first opens -->
-    <div class="initial-state" *ngIf="!hasStarted">
-      <p class="welcome-text">Hello! I'm your AI assistant.</p>
-      <p class="instruction-text">Click "Start" to begin our conversation</p>
-      
-      <!-- Start Button -->
-      <button class="start-button" (click)="startListening()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M8 5V19L19 12L8 5Z" fill="white"/>
+    <!-- Start Button -->
+    <div class="tw-text-center">
+      <button class="tw-bg-gradient-to-r tw-from-blue-500 tw-to-blue-600 tw-text-white tw-px-8 tw-py-4 tw-rounded-full tw-font-medium tw-text-lg tw-shadow-lg tw-shadow-blue-500/30 hover:tw-shadow-blue-500/50 hover:tw-scale-105 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-gap-3 tw-mx-auto"
+              (click)="openInteractionModal()">
+        <svg class="tw-w-5 tw-h-5" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z"/>
         </svg>
         Start
       </button>
     </div>
+  </div>
+</div>
 
-    <!-- Conversation State - Show after clicking start -->
-    <div class="conversation-state" *ngIf="hasStarted">
-      <!-- Status Text -->
-      <div class="status-text">
-        <p *ngIf="isListening" class="listening">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="pulse-icon">
-            <circle cx="12" cy="12" r="10" fill="#ff4444"/>
-          </svg>
-          Listening... Please speak now
-        </p>
-        <p *ngIf="recognizedText && !isListening && !isProcessing" class="recognized">
-          You said: "{{ recognizedText }}"
-        </p>
-        <p *ngIf="isProcessing" class="processing">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="spin-icon">
-            <path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z" fill="#4A90E2"/>
-          </svg>
-          Processing your request...
-        </p>
-        <p *ngIf="!isListening && !recognizedText && !isProcessing" class="waiting">
-          I'm ready to help you!
-        </p>
+<!-- Interaction Modal (Second Modal) -->
+<div class="tw-fixed tw-inset-0 tw-z-[1000] tw-flex tw-items-center tw-justify-center tw-bg-black/60 tw-backdrop-blur-sm" 
+     *ngIf="isInteractionModalOpen" 
+     (click)="onBackdropClick($event)">
+  <div class="tw-bg-white tw-rounded-3xl tw-p-8 tw-max-w-md tw-w-11/12 tw-max-h-[80vh] tw-overflow-y-auto tw-relative tw-shadow-2xl tw-animate-in tw-slide-in-from-bottom-4 tw-duration-300" 
+       (click)="$event.stopPropagation()">
+    
+    <!-- Close Button -->
+    <button class="tw-absolute tw-top-4 tw-right-4 tw-p-2 tw-rounded-full tw-bg-gray-100 hover:tw-bg-gray-200 tw-transition-colors tw-duration-200" 
+            (click)="closeInteractionModal()">
+      <svg class="tw-w-5 tw-h-5 tw-text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+
+    <!-- AI Avatar -->
+    <div class="tw-text-center tw-mb-6">
+      <img src="../../../../../../assets/images/ai4.gif" 
+           alt="AI Assistant" 
+           class="tw-w-20 tw-h-20 tw-mx-auto tw-mb-4"
+           [class.tw-animate-pulse]="isListening">
+    </div>
+
+    <!-- Status Display -->
+    <div class="tw-text-center tw-mb-6 tw-min-h-[80px] tw-flex tw-flex-col tw-justify-center">
+      
+      <!-- Listening State -->
+      <div *ngIf="isListening" class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-text-red-500 tw-font-medium">
+        <div class="tw-w-3 tw-h-3 tw-bg-red-500 tw-rounded-full tw-animate-ping"></div>
+        <span>Listening... Please speak now</span>
       </div>
 
-      <!-- Try Again Button (show when not listening and not processing) -->
-      <button 
-        class="try-again-button" 
-        *ngIf="!isListening && !isProcessing"
-        (click)="startListening()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 14C13.66 14 15 12.66 15 11V5C15 3.34 13.66 2 12 2C10.34 2 9 3.34 9 5V11C9 12.66 10.34 14 12 14ZM17.3 11C17.3 14 15 16.1 12 16.1C9 16.1 6.7 14 6.7 11H5C5 14.4 7.9 17.1 11 17.7V21H13V17.7C16.1 17.1 19 14.4 19 11H17.3Z" fill="white"/>
+      <!-- Recognized Text -->
+      <div *ngIf="recognizedText && !isListening && !isProcessing" class="tw-text-blue-600 tw-font-medium">
+        <p class="tw-text-sm tw-text-gray-500 tw-mb-2">You said:</p>
+        <p class="tw-text-lg">"{{ recognizedText }}"</p>
+      </div>
+
+      <!-- Processing State -->
+      <div *ngIf="isProcessing" class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-text-blue-600 tw-font-medium">
+        <div class="tw-w-5 tw-h-5 tw-border-2 tw-border-blue-600 tw-border-t-transparent tw-rounded-full tw-animate-spin"></div>
+        <span>Processing your request...</span>
+      </div>
+
+      <!-- Ready State -->
+      <div *ngIf="!isListening && !recognizedText && !isProcessing" class="tw-text-gray-600">
+        <p class="tw-text-lg">I'm ready to help you!</p>
+        <p class="tw-text-sm">Click "Speak Again" to start</p>
+      </div>
+    </div>
+
+    <!-- Speak Again Button -->
+    <div class="tw-text-center tw-mb-6" *ngIf="!isListening && !isProcessing">
+      <button class="tw-bg-gradient-to-r tw-from-green-500 tw-to-green-600 tw-text-white tw-px-6 tw-py-3 tw-rounded-full tw-font-medium tw-shadow-lg tw-shadow-green-500/30 hover:tw-shadow-green-500/50 hover:tw-scale-105 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-gap-3 tw-mx-auto"
+              [disabled]="isApiCallInProgress"
+              [class.tw-opacity-50]="isApiCallInProgress"
+              [class.tw-cursor-not-allowed]="isApiCallInProgress"
+              (click)="startListening()">
+        <svg class="tw-w-4 tw-h-4" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
         </svg>
         Speak Again
       </button>
     </div>
 
     <!-- Voice Commands Help -->
-    <div class="voice-commands-help" *ngIf="hasStarted">
-      <h4>Try saying:</h4>
-      <ul>
-        <li>"Go to my profile page"</li>
-        <li>"Go to dashboard"</li>
-        <li>"Go to settings"</li>
-        <li>"Go to users"</li>
-        <li>"Logout"</li>
-      </ul>
+    <div class="tw-border-t tw-border-gray-200 tw-pt-6">
+      <h4 class="tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-3 tw-text-center">Available Commands:</h4>
+      <div class="tw-space-y-2">
+        <div class="tw-bg-blue-50 tw-text-blue-700 tw-px-3 tw-py-2 tw-rounded-lg tw-text-xs tw-flex tw-items-center tw-gap-2">
+          <span class="tw-text-blue-500">💬</span>
+          "Generate report for member details"
+        </div>
+        <div class="tw-bg-green-50 tw-text-green-700 tw-px-3 tw-py-2 tw-rounded-lg tw-text-xs tw-flex tw-items-center tw-gap-2">
+          <span class="tw-text-green-500">📋</span>
+          "Create team task for project"
+        </div>
+        <div class="tw-bg-purple-50 tw-text-purple-700 tw-px-3 tw-py-2 tw-rounded-lg tw-text-xs tw-flex tw-items-center tw-gap-2">
+          <span class="tw-text-purple-500">✅</span>
+          "Create personal task"
+        </div>
+      </div>
     </div>
   </div>
+</div>
+
+<!-- Hidden GIF References (for preloading) -->
+<div class="tw-hidden">
+  <img src="../../../../../../assets/images/ai1.gif" alt="">
+  <img src="../../../../../../assets/images/ai2.gif" alt="">
 </div>

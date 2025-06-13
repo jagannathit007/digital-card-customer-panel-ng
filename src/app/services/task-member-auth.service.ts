@@ -150,7 +150,7 @@ export class TaskMemberAuthService {
   }
 
   // TODO : ADDING THE AI-ASSISTENET SERVICE
-  async Aiassistant(data: any) {
+  async processAICommand(data: any) {
     try {
       this.getHeaders();
       let response = await this.apiManager.request(

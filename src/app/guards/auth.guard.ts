@@ -239,11 +239,11 @@ export class AuthGuard implements CanActivate {
     const teamMemberData = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA); // Team member data
     
     const currentUrl = state.url;
-    console.log('AuthGuard: Checking access for URL:', currentUrl);
+    // console.log('AuthGuard: Checking access for URL:', currentUrl);
 
     // ==== TEAM MEMBER AUTHENTICATION ====
     if (teamMemberToken && teamMemberData) {
-      console.log('AuthGuard: Team member found:', teamMemberData.role);
+      // console.log('AuthGuard: Team member found:', teamMemberData.role);
       
       const validRoles = ['member', 'leader', 'manager', 'editor', 'admin'];
       
@@ -255,48 +255,48 @@ export class AuthGuard implements CanActivate {
 
       // Admin team member gets access to everything
       if (teamMemberData.role === 'admin') {
-        console.log('AuthGuard: Admin team member - full access granted');
+        // console.log('AuthGuard: Admin team member - full access granted');
         return true;
       }
 
       // Regular team members can only access task-management routes
       if (currentUrl.includes('task-management')) {
-        console.log('AuthGuard: Team member accessing task-management - access granted');
+        // console.log('AuthGuard: Team member accessing task-management - access granted');
         return true;
       }
 
       // If team member tries to access non-task-management, redirect to task-management
-      console.log('AuthGuard: Team member trying non-task-management route - redirecting');
+      // console.log('AuthGuard: Team member trying non-task-management route - redirecting');
       this.router.navigate(['/task-management/teamtask']);
       return false;
     }
 
     // ==== ADMIN AUTHENTICATION ====
     if (!token) {
-      console.log('AuthGuard: No tokens found - redirecting to admin login');
+      // console.log('AuthGuard: No tokens found - redirecting to admin login');
       this.router.navigate(['/auth/login']);
       return false;
     }
 
-    console.log('AuthGuard: Admin token found - checking permissions');
+    // console.log('AuthGuard: Admin token found - checking permissions');
 
     // Get required product from route data
     const requiredProduct = route.data['requiredProduct'];
-    console.log('AuthGuard: Required product:', requiredProduct);
+    // console.log('AuthGuard: Required product:', requiredProduct);
 
     // Routes that don't need subscription check
     if (!requiredProduct || 
         requiredProduct === 'account-settings' || 
         requiredProduct === 'profile' || 
         requiredProduct === 'customers') {
-      console.log('AuthGuard: Admin accessing free route - access granted');
+      // console.log('AuthGuard: Admin accessing free route - access granted');
       return true;
     }
 
     // Check if we have business card ID for subscription check
     const currentBcardId = this.storage.get(common.BUSINESS_CARD);
     if (!currentBcardId) {
-      console.log('AuthGuard: No business card ID - redirecting to admin login');
+      // console.log('AuthGuard: No business card ID - redirecting to admin login');
       this.router.navigate(['/auth/login']);
       return false;
     }
@@ -305,7 +305,7 @@ export class AuthGuard implements CanActivate {
     try {
       const subscriptionData = await this.authService.getSubscriptionData(currentBcardId);
       const products = subscriptionData.map(item => item.product);
-      console.log('AuthGuard: User products:', products);
+      // console.log('AuthGuard: User products:', products);
 
       let hasAccess = false;
 
@@ -330,12 +330,12 @@ export class AuthGuard implements CanActivate {
       }
 
       if (!hasAccess) {
-        console.log('AuthGuard: Admin lacks required subscription - access denied');
+        // console.log('AuthGuard: Admin lacks required subscription - access denied');
         this.router.navigate(['/auth/login']);
         return false;
       }
 
-      console.log('AuthGuard: Admin has required subscription - access granted');
+      // console.log('AuthGuard: Admin has required subscription - access granted');
       return true;
 
     } catch (error) {

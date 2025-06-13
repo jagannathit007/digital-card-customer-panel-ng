@@ -178,7 +178,7 @@ public GET_JOINED_BOARDS: string = `${this.PATH}/task/board/joined`;
 public GET_ALL_AVAILABLE_MEMBERS: string = `${this.PATH}/task/board/members/available`;
 
 // ! AI ASSISTETNT
-public AI_ASSISTANT: string = `${this.PATH}/ai/process-user-voice`;
+public AI_ASSISTANT: string = `${this.PATH}/task/ai/process-user-voice`;
 
 
 
