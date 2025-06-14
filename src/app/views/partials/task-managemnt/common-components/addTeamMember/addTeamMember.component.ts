@@ -1,5 +1,5 @@
 import { TaskService } from 'src/app/services/task.service';
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, ChangeDetectorRef, SimpleChanges, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { TaskMemberAuthService } from 'src/app/services/task-member-auth.service';
@@ -28,6 +28,10 @@ export class AddTeamMemberComponent {
   @Output() closeModalEvent = new EventEmitter<void>();
   @Output() memberAdded = new EventEmitter<TeamMemberData>();
 
+  //! ADD THIS LINE CHANDAN
+ @Input() prefilledData: Partial<TeamMemberData> = {};
+
+
   memberData: TeamMemberData = {
     name: '',
     emailId: '',
@@ -52,6 +56,33 @@ export class AddTeamMemberComponent {
 
   ngOnInit(): void {
     this.showAvailableRoles();
+
+    // chandan - Apply prefilled data on init
+    this.applyPrefilledData();
+  }
+
+  // chandan - Handle changes to prefilled data
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['prefilledData'] && !changes['prefilledData'].firstChange) {
+      this.applyPrefilledData();
+    }
+  }
+
+  // chandan add this line for autoprefiled data in the form
+  private applyPrefilledData(): void {
+    if (this.prefilledData) {
+      // chandan - Map AI keywords to form fields
+      if (this.prefilledData.name) {
+        this.memberData.name = this.prefilledData.name;
+      }
+      if (this.prefilledData.emailId) {
+        this.memberData.emailId = this.prefilledData.emailId;
+      }
+      if (this.prefilledData.role) {
+        this.memberData.role = this.prefilledData.role;
+      }      
+      this.cdr.markForCheck();
+    }
   }
 
   closeModal(): void {

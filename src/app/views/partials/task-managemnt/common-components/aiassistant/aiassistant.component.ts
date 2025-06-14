@@ -13,6 +13,9 @@ import { Router } from '@angular/router';
 import { TaskMemberAuthService } from 'src/app/services/task-member-auth.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 
+// ! this service for automaticalyy open the modal of ai action types
+import { ModalCommunicationService } from 'src/app/services/modal-communication.service';
+
 interface SpeechRecognitionEvent extends Event {
   results: SpeechRecognitionResultList;
   resultIndex: number;
@@ -88,7 +91,8 @@ export class AiassistantComponent implements OnInit, OnDestroy {
     private modal: ModalService,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    private TaskMemberAuthService: TaskMemberAuthService
+    private TaskMemberAuthService: TaskMemberAuthService,
+    private modalCommunicationService: ModalCommunicationService
   ) {}
 
   ngOnInit() {
@@ -403,6 +407,11 @@ export class AiassistantComponent implements OnInit, OnDestroy {
           } else {
             await this.speakText(response.response.message);
             swalHelper.success(response.response.message);
+
+            // chandan - Handle modal opening based on action type
+            this.handleModalOpening(response.response.data);
+
+
           }
           
         } else if (response.response.status === 500) {
@@ -462,4 +471,25 @@ export class AiassistantComponent implements OnInit, OnDestroy {
       }
     }
   }
+
+  // ! this line for openening the modal based on ai response
+  private handleModalOpening(data: any): void {
+    if (!data || !data.action_type) {
+      return;
+    }
+
+    const validActionTypes = ['team_member_add', 'report_generation', 'team_task_creation', 'personal_task_creation'];
+    
+    if (validActionTypes.includes(data.action_type)) {
+      console.log('chandan - Opening modal for action type:', data.action_type);
+      
+      this.modalCommunicationService.triggerModal({
+        actionType: data.action_type,
+        keywords: data.keywords || {}
+      });
+    } else {
+      console.log('chandan - Unknown action type, ignoring:', data.action_type);
+    }
+  }
+
 }

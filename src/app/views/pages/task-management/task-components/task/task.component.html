@@ -1,4 +1,42 @@
-<div class="task-container">
+<!-- <div class="task-container">
   <router-outlet></router-outlet>
   <app-aiassistant *ngIf="isAdmin"></app-aiassistant>
+   <app-add-team-member></app-add-team-member>
+
+</div> -->
+
+
+<div class="task-container">
+  <router-outlet></router-outlet>
+  
+  <app-aiassistant *ngIf="isAdmin"></app-aiassistant>
+  
+  <!-- chandan - Add team member modal - only show when triggered -->
+  <app-add-team-member 
+    *ngIf="isAddTeamMemberModalOpen"
+    [prefilledData]="currentModalData"
+    (closeModalEvent)="onAddTeamMemberModalClose()"
+    (memberAdded)="onTeamMemberAdded($event)">
+  </app-add-team-member>
+  
+  <!-- chandan - Placeholder for other modals when they are created -->
+  <!-- 
+  <app-report-generation
+    *ngIf="isReportGenerationModalOpen"
+    [prefilledData]="currentModalData"
+    (closeModalEvent)="onReportGenerationModalClose()">
+  </app-report-generation>
+  
+  <app-team-task-creation
+    *ngIf="isTeamTaskCreationModalOpen"
+    [prefilledData]="currentModalData"
+    (closeModalEvent)="onTeamTaskCreationModalClose()">
+  </app-team-task-creation>
+  
+  <app-personal-task-creation
+    *ngIf="isPersonalTaskCreationModalOpen"
+    [prefilledData]="currentModalData"
+    (closeModalEvent)="onPersonalTaskCreationModalClose()">
+  </app-personal-task-creation>
+  -->
 </div>
