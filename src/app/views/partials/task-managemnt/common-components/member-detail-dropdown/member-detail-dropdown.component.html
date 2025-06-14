@@ -1,0 +1,201 @@
+<div class="tw-relative tw-w-full tw-max-w-md">
+  
+  <!-- Main Dropdown Button -->
+  <button 
+    type="button"
+    (click)="toggleDropdown()"
+    class="tw-w-full tw-bg-white tw-border tw-border-gray-300 tw-rounded-lg tw-px-4 tw-py-3 tw-text-left tw-shadow-sm hover:tw-border-gray-400 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-gray-500 focus:tw-border-gray-500 tw-transition-all tw-duration-200">
+    
+    <div class="tw-flex tw-items-center tw-justify-between">
+      <div class="tw-flex tw-items-center tw-space-x-3">
+        <svg class="tw-w-5 tw-h-5 tw-text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"></path>
+        </svg>
+        <span class="tw-text-gray-700 tw-font-medium">
+          {{ selectedMembers.length > 0 ? selectedMembers.length + ' members selected' : 'Select team members' }}
+        </span>
+      </div>
+      
+      <div class="tw-flex tw-items-center tw-space-x-2">
+        <span *ngIf="selectedMembers.length > 0" 
+              class="tw-bg-gray-100 tw-text-gray-800 tw-text-xs tw-font-medium tw-px-2 tw-py-1 tw-rounded-full tw-border tw-border-gray-300">
+          {{ selectedMembers.length }}
+        </span>
+        
+        <svg class="tw-w-5 tw-h-5 tw-text-gray-400 tw-transition-transform tw-duration-200" 
+             [class.tw-rotate-180]="isDropdownOpen"
+             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </div>
+    </div>
+  </button>
+
+  <!-- Dropdown Content -->
+  <div *ngIf="isDropdownOpen" 
+       class="dropdown-content tw-absolute tw-z-50 tw-w-full tw-mt-2 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-max-h-[600px] tw-overflow-hidden">
+    
+    <!-- Search Section -->
+    <div class="tw-p-4 tw-border-b tw-border-gray-100">
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-3">
+        <h4 class="tw-text-sm tw-font-medium tw-text-gray-900">Team Members</h4>
+        <button *ngIf="selectedMembers.length > 0" 
+                (click)="clearAllAndClose()"
+                class="tw-text-xs tw-text-gray-600 hover:tw-text-gray-800 tw-font-medium tw-transition-colors tw-px-2 tw-py-1 tw-rounded hover:tw-bg-gray-100">
+          Clear All
+        </button>
+      </div>
+      
+      <div class="tw-relative">
+        <input 
+          type="text"
+          [(ngModel)]="searchQuery"
+          (input)="onSearch()"
+          placeholder="Search members..."
+          class="tw-w-full tw-pl-10 tw-pr-4 tw-py-2 tw-border tw-border-gray-200 tw-rounded-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-gray-500 focus:tw-border-gray-500 tw-text-sm">
+        
+        <svg class="tw-absolute tw-left-3 tw-top-2.5 tw-w-4 tw-h-4 tw-text-gray-400" 
+             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Members List -->
+    <div class="tw-max-h-96 tw-overflow-y-auto" (scroll)="onScroll($event)">
+      
+      <!-- Loading at top for initial load -->
+      <div *ngIf="isLoading && teamMembers.length === 0" 
+           class="tw-p-6 tw-text-center">
+        <div class="tw-inline-flex tw-items-center tw-text-sm tw-text-gray-500">
+          <svg class="tw-animate-spin tw-w-5 tw-h-5 tw-mr-2" 
+               fill="none" viewBox="0 0 24 24">
+            <circle class="tw-opacity-25" cx="12" cy="12" r="10" 
+                    stroke="currentColor" stroke-width="4"></circle>
+            <path class="tw-opacity-75" fill="currentColor" 
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Loading...
+        </div>
+      </div>
+      
+      <!-- No members found -->
+      <div *ngIf="!isLoading && teamMembers.length === 0" 
+           class="tw-p-6 tw-text-center tw-text-gray-500 tw-text-sm">
+        <svg class="tw-w-12 tw-h-12 tw-text-gray-300 tw-mx-auto tw-mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" 
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"></path>
+        </svg>
+        <p>No data found</p>
+      </div>
+
+      <!-- Members List -->
+      <div *ngFor="let member of teamMembers; trackBy: trackByMemberId" 
+           class="member-item tw-flex tw-items-center tw-p-3 hover:tw-bg-gray-50 tw-cursor-pointer tw-transition-all tw-duration-150"
+           [class.tw-bg-gray-100]="isMemberSelected(member)"
+           [class.tw-font-semibold]="isMemberSelected(member)"
+           [class.tw-border-l-4]="isMemberSelected(member)"
+           [class.tw-border-gray-400]="isMemberSelected(member)"
+           (click)="toggleMember(member)">
+        
+        <!-- Checkbox -->
+        <div class="tw-flex-shrink-0 tw-mr-3">
+          <div class="tw-w-5 tw-h-5 tw-border-2 tw-rounded tw-flex tw-items-center tw-justify-center tw-transition-all tw-duration-200"
+               [class.tw-bg-gray-600]="isMemberSelected(member)"
+               [class.tw-border-gray-600]="isMemberSelected(member)"
+               [class.tw-border-gray-300]="!isMemberSelected(member)">
+            <svg *ngIf="isMemberSelected(member)" 
+                 class="tw-w-3 tw-h-3 tw-text-white" 
+                 fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" 
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" 
+                    clip-rule="evenodd"></path>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Profile Image -->
+        <div class="tw-flex-shrink-0 tw-mr-3">
+          <img [src]="getProfileImageUrl(member.profileImage)" 
+               [alt]="member.name"
+               class="tw-w-10 tw-h-10 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-200">
+        </div>
+
+        <!-- Member Info -->
+        <div class="tw-flex-1 tw-min-w-0">
+          <div class="tw-flex tw-items-center tw-justify-between">
+            <p class="tw-text-sm tw-font-medium tw-text-gray-900 tw-truncate"
+               [class.tw-font-semibold]="isMemberSelected(member)">
+              {{ member.name }}
+            </p>
+            
+            <span [class]="getRoleColor(member.role)"
+                  class="tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-capitalize tw-flex-shrink-0 tw-ml-2">
+              {{ member.role }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scroll Loading Indicator -->
+      <div *ngIf="isLoading && teamMembers.length > 0" 
+           class="tw-p-4 tw-text-center tw-border-t tw-border-gray-100">
+        <div class="tw-inline-flex tw-items-center tw-text-sm tw-text-gray-500">
+          <svg class="tw-animate-spin tw-w-4 tw-h-4 tw-mr-2" 
+               fill="none" viewBox="0 0 24 24">
+            <circle class="tw-opacity-25" cx="12" cy="12" r="10" 
+                    stroke="currentColor" stroke-width="4"></circle>
+            <path class="tw-opacity-75" fill="currentColor" 
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Loading...
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Button Footer - Shows when ANY members are selected -->
+    <div *ngIf="selectedMembers && selectedMembers.length > 0" 
+         class="tw-p-4 tw-border-t tw-border-gray-100 tw-bg-gray-50">
+      
+      <!-- Selected members count -->
+      <div class="tw-mb-3">
+        <p class="tw-text-xs tw-text-gray-600 tw-mb-2">Selected Members:</p>
+        <div class="tw-flex tw-flex-wrap tw-gap-1 tw-max-h-20 tw-overflow-y-auto">
+          <span *ngFor="let member of selectedMembers" 
+                class="tw-inline-flex tw-items-center tw-bg-white tw-border tw-border-gray-300 tw-text-gray-700 tw-text-xs tw-px-2 tw-py-1 tw-rounded-full tw-shadow-sm">
+            {{ member.name }}
+            <button (click)="toggleMember(member); $event.stopPropagation()"
+                    class="tw-ml-1 tw-text-gray-400 hover:tw-text-gray-600 tw-transition-colors">
+              <svg class="tw-w-3 tw-h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+              </svg>
+            </button>
+          </span>
+        </div>
+      </div>
+      
+      <!-- Add Button -->
+      <button 
+        type="button"
+        (click)="addSelectedMembers()"
+        class="tw-w-full  tw-bg-gray-700  hover:tw-bg-gray-800 focus:tw-bg-gray-800 tw-text-white tw-font-medium tw-py-2.5 tw-px-4 tw-rounded-md tw-transition-all tw-duration-200 tw-flex tw-items-center tw-justify-center tw-shadow-sm hover:tw-shadow-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-gray-500 focus:tw-ring-offset-2">
+        
+        <svg class="tw-w-4 tw-h-4 tw-mr-2" 
+             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        
+        Add {{ selectedMembers.length }} Member{{ selectedMembers.length > 1 ? 's' : '' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Backdrop -->
+  <div *ngIf="isDropdownOpen" 
+       class="tw-fixed tw-inset-0 tw-z-40"
+       (click)="closeDropdown()">
+  </div>
+</div>

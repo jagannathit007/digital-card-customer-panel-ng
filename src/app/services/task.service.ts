@@ -45,6 +45,30 @@ export class TaskService {
     }
   }
 
+
+  async GetSelectableTeamMembers(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.GET_ALL_SELECTABLE_TEAMMEMBERS,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
   async AddTeamMember(data: any) {
     try {
       this.getHeaders();

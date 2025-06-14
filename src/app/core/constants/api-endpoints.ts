@@ -160,6 +160,9 @@ public TEAM_MEMBER_PROFILE: string = `${this.PATH}/task/get-current-user`;
 public REINVITE_USER: string = `${this.PATH}/task/teamMember/resend-invitation`;
 
 public GET_ALL_MEMBERS: string = `${this.PATH}/task/teamMember/getAll`;
+// ! this api endpoint adding by chandan
+public GET_ALL_SELECTABLE_TEAMMEMBERS: string = `${this.PATH}/task/teamMember/getSelectableTeamMembers`;
+
 public ADD_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/add`;
 public UPDATE_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/update`;
 public DELETE_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/delete`;

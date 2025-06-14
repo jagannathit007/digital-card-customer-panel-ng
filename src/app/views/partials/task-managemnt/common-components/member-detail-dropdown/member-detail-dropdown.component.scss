@@ -1,0 +1,279 @@
+/* Clean minimal styles for member dropdown - White and Grey only */
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* Smooth dropdown animation */
+.dropdown-content {
+  animation: slideDown 0.25s ease-out;
+  transform-origin: top;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scaleY(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+/* Enhanced scrollbar styling - minimal grey */
+.tw-overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db #f9fafb;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f9fafb;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: #9ca3af;
+    }
+  }
+}
+
+/* Enhanced member item interactions - minimal and clean */
+.member-item {
+  position: relative;
+  transition: all 0.15s ease-in-out;
+  
+  &:hover {
+    background-color: #f8fafc;
+    font-weight: 500;
+  }
+
+  &.tw-bg-gray-100 {
+    background-color: #f3f4f6;
+    
+    &:hover {
+      background-color: #e5e7eb;
+    }
+  }
+
+  /* Bold look for selected items */
+  &.tw-font-semibold {
+    font-weight: 600;
+  }
+}
+
+/* Button enhancements - minimal grey theme */
+button {
+  transition: all 0.15s ease-in-out;
+}
+
+/* Add button specific styling - grey theme */
+.tw-bg-gray-700 {
+  &:hover {
+    background-color: #374151;
+  }
+  
+  &:active {
+    background-color: #1f2937;
+  }
+}
+
+/* Profile image enhancements */
+.tw-w-10.tw-h-10 {
+  transition: all 0.15s ease-in-out;
+  
+  .member-item:hover & {
+    border-color: #9ca3af;
+  }
+}
+
+/* Checkbox animation - grey theme */
+.tw-w-5.tw-h-5 {
+  transition: all 0.15s ease-in-out;
+  
+  &.tw-bg-gray-600 {
+    background-color: #4b5563;
+    border-color: #4b5563;
+  }
+}
+
+/* Role badge enhancements - minimal white/grey */
+.tw-px-2.tw-py-1.tw-rounded-full {
+  transition: all 0.15s ease-in-out;
+  font-weight: 500;
+  
+  &.tw-bg-white {
+    background-color: #ffffff;
+    border-color: #d1d5db;
+  }
+  
+  &.tw-bg-gray-100 {
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+  }
+  
+  &.tw-bg-gray-50 {
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+  }
+}
+
+/* Selected members section styling */
+.tw-max-h-20.tw-overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db #f9fafb;
+  
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f9fafb;
+    border-radius: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 2px;
+    
+    &:hover {
+      background: #9ca3af;
+    }
+  }
+}
+
+/* Loading spinner enhancement */
+.tw-animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Search input focus effects - grey theme */
+input[type="text"] {
+  transition: all 0.2s ease-in-out;
+  
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.1);
+    border-color: #6b7280;
+  }
+}
+
+/* Clear button styling - minimal grey */
+button.tw-text-gray-600 {
+  &:hover {
+    background-color: #f3f4f6;
+    color: #374151;
+    border-radius: 4px;
+    padding: 4px 8px;
+  }
+}
+
+/* Selected member badge in button */
+.tw-bg-gray-100.tw-text-gray-800 {
+  background-color: #f3f4f6;
+  color: #1f2937;
+  border: 1px solid #d1d5db;
+}
+
+/* Hover effects for better UX */
+.member-item:hover {
+  .tw-text-gray-900 {
+    color: #111827;
+  }
+}
+
+/* Focus states */
+button:focus {
+  outline: none;
+}
+
+.tw-ring-gray-500:focus {
+  --tw-ring-color: rgb(107 114 128 / 0.5);
+}
+
+/* Loading state improvements */
+.tw-text-gray-500 {
+  color: #6b7280;
+}
+
+/* No data state styling */
+.tw-text-gray-300 {
+  color: #d1d5db;
+}
+
+/* Responsive design improvements */
+@media (max-width: 640px) {
+  :host {
+    width: 100%;
+  }
+  
+  .tw-max-w-md {
+    max-width: 100%;
+  }
+  
+  .dropdown-content {
+    max-height: 80vh;
+  }
+  
+  .dropdown-content {
+    max-height: 600px !important;
+  }
+  
+  .tw-max-h-96 {
+    max-height: 384px !important;
+  }
+  
+  .member-item {
+    padding: 12px;
+  }
+}
+
+/* Ensure consistent spacing and animations */
+.member-item {
+  &.tw-border-l-4 {
+    border-left-width: 4px;
+    padding-left: 12px;
+  }
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition: background-color 0.15s ease-in-out, 
+              color 0.15s ease-in-out, 
+              border-color 0.15s ease-in-out,
+              font-weight 0.15s ease-in-out;
+}
+
+/* Badge container styling */
+.tw-inline-flex.tw-items-center {
+  &:hover {
+    background-color: #f3f4f6;
+  }
+}
+
+/* Dropdown shadow enhancement */
+.tw-shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 
+              0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Selected state border styling */
+.tw-border-gray-400 {
+  border-color: #9ca3af;
+}
