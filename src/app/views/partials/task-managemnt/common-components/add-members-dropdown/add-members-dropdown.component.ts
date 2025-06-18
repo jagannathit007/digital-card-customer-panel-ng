@@ -1,4 +1,13 @@
-import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Output,
+  EventEmitter,
+  ChangeDetectorRef,
+  OnDestroy,
+  signal,
+  Input,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
@@ -19,17 +28,19 @@ interface TeamMember {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './add-members-dropdown.component.html',
-  styleUrl: './add-members-dropdown.component.scss'
+  styleUrl: './add-members-dropdown.component.scss',
 })
 export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
-
   @Output() selectedMembersChange = new EventEmitter<TeamMember[]>();
   @Output() onMemberAdded = new EventEmitter<TeamMember[]>();
+
+  @Input() placement: Partial<string> = 'bottom';
+  @Input() size: Partial<string> = 'medium';
 
   teamMembers: TeamMember[] = [];
   selectedMembers: TeamMember[] = [];
   isDropdownOpen = false;
-  isLoading = false;
+  isLoading = signal(false);
   currentPage = 1;
   hasMoreData = true;
   searchQuery = '';
@@ -47,70 +58,68 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
 
   toggleDropdown(): void {
     this.isDropdownOpen = !this.isDropdownOpen;
-    
+
     if (this.isDropdownOpen && this.teamMembers.length === 0) {
       this.loadTeamMembers(1, true);
     }
   }
 
-  async loadTeamMembers(page: number = 1, reset: boolean = false): Promise<void> {
-    if (this.isLoading) return;
+  async loadTeamMembers(
+    page: number = 1,
+    reset: boolean = false
+  ): Promise<void> {
+    if (this.isLoading()) return;
 
-    try {
-      this.isLoading = true;
-      
-      const response = await this.TaskService.GetSelectableTeamMembers({
-        page: page,
-        limit: 10,
-        search: this.searchQuery.trim()
-      });
+    this.isLoading.set(true);
 
-      if (response?.users && Array.isArray(response.users)) {
-        const newMembers = response.users;
-        
-        if (reset) {
-          this.teamMembers = [...newMembers];
-        } else {
-          // Avoid duplicates when loading more
-          const existingIds = new Set(this.teamMembers.map(m => m._id));
-          const uniqueNewMembers = newMembers.filter((m: TeamMember) => !existingIds.has(m._id));
-          this.teamMembers = [...this.teamMembers, ...uniqueNewMembers];
-        }
+    const response = await this.TaskService.GetSelectableTeamMembers({
+      page: page,
+      limit: 10,
+      search: this.searchQuery.trim(),
+    });
 
-        if (response.pagination) {
-          this.currentPage = parseInt(response.pagination.currentPage.toString());
-          this.hasMoreData = response.pagination.hasNextPage === true;
-        } else {
-          this.currentPage = page;
-          this.hasMoreData = newMembers.length >= 10;
-        }
+    if (response?.users && Array.isArray(response.users)) {
+      const newMembers = response.users;
+
+      if (reset) {
+        this.teamMembers = [...newMembers];
       } else {
-        if (reset) {
-          this.teamMembers = [];
-        }
-        this.hasMoreData = false;
+        // Avoid duplicates when loading more
+        const existingIds = new Set(this.teamMembers.map((m) => m._id));
+        const uniqueNewMembers = newMembers.filter(
+          (m: TeamMember) => !existingIds.has(m._id)
+        );
+        this.teamMembers = [...this.teamMembers, ...uniqueNewMembers];
       }
-      
-    } catch (error) {
-      console.error('Error loading team members:', error);
-      swalHelper.showToast('Failed to load team members', 'error');
-      
+
+      if (response.pagination) {
+        this.currentPage = parseInt(response.pagination.currentPage.toString());
+        this.hasMoreData = response.pagination.hasNextPage === true;
+      } else {
+        this.currentPage = page;
+        this.hasMoreData = newMembers.length >= 10;
+      }
+
+      this.isLoading.set(false);
+    } else {
       if (reset) {
         this.teamMembers = [];
       }
       this.hasMoreData = false;
-    } finally {
-      this.isLoading = false;
+      this.isLoading.set(false);
     }
   }
 
   onScroll(event: any): void {
-    if (this.isLoading || !this.hasMoreData) return;
+    if (this.isLoading() || !this.hasMoreData) return;
 
     const element = event.target;
     const threshold = 50;
-    
-    if (element.scrollHeight - element.scrollTop <= element.clientHeight + threshold) {
+
+    if (
+      element.scrollHeight - element.scrollTop <=
+      element.clientHeight + threshold
+    ) {
       this.loadTeamMembers(this.currentPage + 1, false);
     }
   }
@@ -131,8 +140,8 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
   }
 
   toggleMember(member: TeamMember): void {
-    const index = this.selectedMembers.findIndex(m => m._id === member._id);
-    
+    const index = this.selectedMembers.findIndex((m) => m._id === member._id);
+
     if (index > -1) {
       this.selectedMembers.splice(index, 1);
     } else {
@@ -141,28 +150,26 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
 
     // Create completely new array reference to force Angular change detection
     this.selectedMembers = JSON.parse(JSON.stringify(this.selectedMembers));
-    
+
     // Force immediate UI update with multiple detection cycles
     this.cdr.markForCheck();
     this.cdr.detectChanges();
-    
+
     setTimeout(() => {
       this.cdr.markForCheck();
       this.cdr.detectChanges();
     }, 0);
-    
+
     setTimeout(() => {
       this.cdr.detectChanges();
     }, 10);
-    
+
     // Emit the change
-    this.selectedMembersChange.emit([...this.selectedMembers]);
-    
-    console.log('Selected members count:', this.selectedMembers.length);
+    // this.selectedMembersChange.emit([...this.selectedMembers]);
   }
 
   isMemberSelected(member: TeamMember): boolean {
-    return this.selectedMembers.some(m => m._id === member._id);
+    return this.selectedMembers.some((m) => m._id === member._id);
   }
 
   addSelectedMembers(): void {
@@ -172,12 +179,17 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
     }
 
     this.closeDropdown();
-    swalHelper.success(`Added ${this.selectedMembers.length} member${this.selectedMembers.length > 1 ? 's' : ''} successfully`);
-    
+    // swalHelper.showToast(
+    //   `Added ${this.selectedMembers.length} member${
+    //     this.selectedMembers.length > 1 ? 's' : ''
+    //   } successfully`,
+    //   'success'
+    // );
+
     // Emit the selected members
-    this.selectedMembersChange.emit([...this.selectedMembers]);
+    // this.selectedMembersChange.emit([...this.selectedMembers]);
     this.onMemberAdded.emit([...this.selectedMembers]);
-    
+
     // Optional: Clear selection after adding
     // this.selectedMembers = [];
   }
@@ -186,18 +198,20 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
     if (!profileImage) {
       return `${environment.imageURL}/uploads/task_management/profiles/default-profile-image.png`;
     }
-    
+
     if (profileImage.startsWith('http')) {
       return profileImage;
     }
-    
-    const cleanPath = profileImage.startsWith('/') ? profileImage.substring(1) : profileImage;
+
+    const cleanPath = profileImage.startsWith('/')
+      ? profileImage.substring(1)
+      : profileImage;
     return `${environment.imageURL}/${cleanPath}`;
   }
 
   getRoleColor(role: string): string {
     const roleToCheck = role.toLowerCase().trim();
-    
+
     // Minimal white and grey colors only
     switch (roleToCheck) {
       case 'admin':
@@ -223,15 +237,15 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
     this.selectedMembers = [];
     this.searchQuery = ''; // Reset search query
     this.selectedMembersChange.emit([]);
-    
+
     // Reset team members to initial state
     this.teamMembers = [];
     this.currentPage = 1;
     this.hasMoreData = true;
-    
+
     // Force change detection
     this.cdr.detectChanges();
-    
+
     // Reload members
     this.loadTeamMembers(1, true);
   }
@@ -240,15 +254,15 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
     this.selectedMembers = [];
     this.searchQuery = ''; // Reset search query
     this.selectedMembersChange.emit([]);
-    
+
     // Reset team members to initial state
     this.teamMembers = [];
     this.currentPage = 1;
     this.hasMoreData = true;
-    
+
     // Force change detection
     this.cdr.detectChanges();
-    
+
     // Don't close dropdown - just reload members
     this.loadTeamMembers(1, true);
   }
