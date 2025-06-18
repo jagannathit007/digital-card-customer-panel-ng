@@ -183,6 +183,9 @@ public GET_ALL_AVAILABLE_MEMBERS: string = `${this.PATH}/task/board/members/avai
 // ! AI ASSISTETNT
 public AI_ASSISTANT: string = `${this.PATH}/task/ai/process-user-voice`;
 
+//  ! Task Module Comment Mention api
+public ADD_COMMENT: string = `${this.PATH}/task/team/comment/add`;
+
 
 
 }
