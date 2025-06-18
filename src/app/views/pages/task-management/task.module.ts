@@ -27,6 +27,7 @@ import { SendingMailComponent } from "../../partials/task-managemnt/common-compo
 import { ChangeMemberRoleComponent } from '../../partials/task-managemnt/common-components/changeMEmberRole/changeMEmberRole.component';
 import { CustomdataComponent } from '../../partials/task-managemnt/common-components/customdata/customdata.component';
 import { MemberDetailDropdownComponent } from '../../partials/task-managemnt/common-components/add-members-dropdown/add-members-dropdown.component';
+import { AddCommentsComponent } from '../../partials/task-managemnt/common-components/add-comments/add-comments.component';
 // ! AI COMPENENTS
 import { AiassistantComponent } from '../../partials/task-managemnt/common-components/aiassistant/aiassistant.component';
 
@@ -57,7 +58,8 @@ import { AiassistantComponent } from '../../partials/task-managemnt/common-compo
     ChangeMemberRoleComponent,
     CustomdataComponent,
     AiassistantComponent,
-    MemberDetailDropdownComponent
+    MemberDetailDropdownComponent,
+    AddCommentsComponent
   ]
 })
 export class TaskModule { }
