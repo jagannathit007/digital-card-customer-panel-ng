@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -20,6 +20,7 @@ interface TeamMember {
 }
 
 interface CreateBoardData {
+  boardId?: string;
   name: string;
   description: string;
   categories: string[];
@@ -36,6 +37,9 @@ interface CreateBoardData {
 export class CreateBoardComponent implements OnInit {
   @Output() closeModalEvent = new EventEmitter<void>();
   @Output() boardCreated = new EventEmitter<CreateBoardData>();
+  @Input() boardData: any = null;
+  isEditMode = false;
+  originalBoardId: string | null = null;
   createBoardForm!: FormGroup;
   selectedMembers: TeamMember[] = [];
   isSubmitting = false;
@@ -44,6 +48,12 @@ export class CreateBoardComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
+
+    if (this.boardData) {
+      this.isEditMode = true;
+      this.originalBoardId = this.boardData._id;
+      this.populateFormForEdit();
+    }
   }
 
   private initializeForm(): void {
@@ -153,6 +163,46 @@ export class CreateBoardComponent implements OnInit {
     return labels[fieldName] || fieldName;
   }
 
+  private populateFormForEdit(): void {
+    if (this.boardData) {
+      // Populate basic fields
+      this.createBoardForm.patchValue({
+        name: this.boardData.name,
+        description: this.boardData.description,
+      });
+
+      // Clear existing categories and add from board data
+      while (this.categoriesArray.length > 0) {
+        this.categoriesArray.removeAt(0);
+      }
+
+      // Add categories from board data (filter out deleted ones)
+      const validCategories =
+        this.boardData.categories?.filter((cat: any) => !cat.isDeleted) || [];
+      validCategories.forEach((category: any) => {
+        this.categoriesArray.push(
+          this.fb.control(category.name, [
+            Validators.required,
+            Validators.minLength(1),
+            Validators.maxLength(50),
+          ])
+        );
+      });
+
+      // If no categories, add one empty category
+      if (this.categoriesArray.length === 0) {
+        this.addCategory();
+      }
+
+      // Set selected members (you'll need to pass these to your member dropdown component)
+      if (this.boardData.members) {
+        this.selectedMembers = this.boardData.members.filter(
+          (member: any) => !member.isDeleted
+        );
+      }
+    }
+  }
+
   async onSubmit() {
     if (this.createBoardForm.valid) {
       this.isSubmitting = true;
@@ -164,33 +214,34 @@ export class CreateBoardComponent implements OnInit {
       );
       const members = this.selectedMembers.map((member) => member._id);
 
-      const boardData: CreateBoardData = {
+      const boardData: any = {
         name: formValue.name.trim(),
         description: formValue.description.trim(),
         categories: categories,
         members: members,
       };
 
-      // Log the data instead of calling API
-      console.log('Create Board Data:', boardData);
+      // Add board ID if in edit mode
+      if (this.isEditMode && this.originalBoardId) {
+        boardData.boardId = this.originalBoardId;
+      }
+
+      console.log(
+        this.isEditMode ? 'Update Board Data:' : 'Create Board Data:',
+        boardData
+      );
       console.log('Selected Members Details:', this.selectedMembers);
 
-      const response = await this.taskService.createNewBoard(boardData);
+      // Call appropriate API method based on mode
+      const response = this.isEditMode
+        ? await this.taskService.UpdateBoard(boardData) // You'll need to implement this
+        : await this.taskService.createNewBoard(boardData);
 
-      if(response){
+      if (response) {
         this.isSubmitting = false;
-
         this.boardCreated.emit(boardData);
         this.resetForm();
       }
-
-      // Simulate API call delay
-      // setTimeout(() => {
-      //   this.isSubmitting = false;
-
-      //   this.boardCreated.emit(boardData);
-      //   this.resetForm();
-      // }, 1500);
     } else {
       // Mark all fields as touched to show validation errors
       this.createBoardForm.markAllAsTouched();
@@ -202,17 +253,19 @@ export class CreateBoardComponent implements OnInit {
   }
 
   resetForm(): void {
-    this.createBoardForm.reset();
-    this.selectedMembers = [];
+  this.createBoardForm.reset();
+  this.selectedMembers = [];
+  this.isEditMode = false;
+  this.originalBoardId = null;
 
-    // Reset categories array
-    while (this.categoriesArray.length > 1) {
-      this.categoriesArray.removeAt(1);
-    }
-
-    // Re-initialize form
-    this.initializeForm();
+  // Reset categories array
+  while (this.categoriesArray.length > 0) {
+    this.categoriesArray.removeAt(0);
   }
+
+  // Re-initialize form
+  this.initializeForm();
+}
 
   onCancel(): void {
     this.resetForm();

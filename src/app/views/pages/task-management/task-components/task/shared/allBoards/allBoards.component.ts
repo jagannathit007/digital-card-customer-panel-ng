@@ -94,6 +94,8 @@ export class AllBoardsComponent implements OnInit {
   originalSelectedMemberIds = signal<string[]>([]);
   hasSelectedMembersChanged = signal(false);
   showCreateBoardModal = signal(false);
+  showActionDropdown = signal<string>('');
+editingBoard = signal<Board | null>(null);
 
   // Computed values
   filteredBoards = computed(() => {
@@ -129,141 +131,6 @@ export class AllBoardsComponent implements OnInit {
     this.currentUser = this.taskPermissionsService.getCurrentUser();
     // this.loadDummyData();
     this.loadData();
-  }
-
-  private loadDummyData() {
-    // Dummy boards data
-    const dummyBoards: Board[] = [
-      {
-        _id: '1',
-        name: 'Development Board',
-        description:
-          'In this board all the development related tasks will be assigned to team members for efficient project management and tracking.',
-        categories: [
-          { _id: '1', name: 'Frontend', isDeleted: false },
-          { _id: '2', name: 'Backend', isDeleted: false },
-          { _id: '3', name: 'R&D', isDeleted: false },
-        ],
-        members: [
-          {
-            _id: '1',
-            name: 'John Doe',
-            emailId: 'john@example.com',
-            role: 'leader',
-            profileImage:
-              'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-            isDeleted: false,
-          },
-          {
-            _id: '2',
-            name: 'Jane Smith',
-            emailId: 'jane@example.com',
-            role: 'developer',
-            profileImage:
-              'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
-            isDeleted: false,
-          },
-        ],
-        createdAt: '2025-01-15T10:30:00Z',
-        type: 'board',
-      },
-      {
-        _id: '2',
-        name: 'Sales Board',
-        description:
-          'Sales related activities and lead management board for tracking customer interactions.',
-        categories: [
-          { _id: '4', name: 'Lead', isDeleted: false },
-          { _id: '5', name: 'Inquiry', isDeleted: false },
-          { _id: '6', name: 'Follow-up', isDeleted: false },
-        ],
-        members: [
-          {
-            _id: '3',
-            name: 'Mike Johnson',
-            emailId: 'mike@example.com',
-            role: 'manager',
-            profileImage:
-              'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-            isDeleted: false,
-          },
-        ],
-        createdAt: '2025-01-10T14:20:00Z',
-        type: 'task',
-      },
-      {
-        _id: '3',
-        name: 'Marketing Campaigns',
-        description:
-          'Strategic marketing initiatives and campaign management for brand awareness and lead generation activities across multiple channels.',
-        categories: [
-          { _id: '7', name: 'Social Media', isDeleted: false },
-          { _id: '8', name: 'Email Marketing', isDeleted: false },
-        ],
-        members: [
-          {
-            _id: '4',
-            name: 'Sarah Wilson',
-            emailId: 'sarah@example.com',
-            role: 'editor',
-            profileImage:
-              'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-            isDeleted: false,
-          },
-          {
-            _id: '5',
-            name: 'David Brown',
-            emailId: 'david@example.com',
-            role: 'developer',
-            profileImage:
-              'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face',
-            isDeleted: false,
-          },
-          {
-            _id: '6',
-            name: 'Emma Davis',
-            emailId: 'emma@example.com',
-            role: 'designer',
-            profileImage:
-              'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
-            isDeleted: false,
-          },
-        ],
-        createdAt: '2025-01-08T09:15:00Z',
-        type: 'task',
-      },
-    ];
-
-    // Dummy team members data
-    const dummyTeamMembers: TeamMember[] = [
-      {
-        _id: '7',
-        name: 'Alex Turner',
-        emailId: 'alex@example.com',
-        role: 'developer',
-        profileImage:
-          'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&h=150&fit=crop&crop=face',
-        experience: '3 years',
-        skills: ['React', 'Node.js'],
-        isActive: true,
-        isVerified: true,
-      },
-      {
-        _id: '8',
-        name: 'Lisa Chen',
-        emailId: 'lisa@example.com',
-        role: 'designer',
-        profileImage:
-          'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&fit=crop&crop=face',
-        experience: '5 years',
-        skills: ['UI/UX', 'Figma'],
-        isActive: true,
-        isVerified: true,
-      },
-    ];
-
-    this.boards.set(dummyBoards);
-    this.teamMembers.set(dummyTeamMembers);
   }
 
   private async loadData() {
@@ -314,8 +181,9 @@ export class AllBoardsComponent implements OnInit {
   }
 
   onCreateBoardModalClose() {
-    this.showCreateBoardModal.set(false);
-  }
+  this.showCreateBoardModal.set(false);
+  this.editingBoard.set(null); // Reset editing board
+}
 
   onBoardCreated(board: any) {
     // this.boards().push(board);
@@ -404,19 +272,55 @@ export class AllBoardsComponent implements OnInit {
     return '';
   }
 
-  onShowCategories(board: Board, event: Event) {
-    event.stopPropagation();
-    this.selectedBoard.set(board);
-
-    // Store original categories for comparison
-    const originalCats = board.categories.filter((cat) => !cat.isDeleted);
-    this.originalCategories.set([...originalCats]);
-    this.editingCategories.set([...originalCats]);
-    this.newCategories.set([]);
-    this.hasChanges.set(false);
-
-    this.showCategoriesModal.set(true);
+  toggleActionDropdown(boardId: string) {
+  if (this.showActionDropdown() === boardId) {
+    this.showActionDropdown.set('');
+  } else {
+    this.showActionDropdown.set(boardId);
   }
+}
+
+onEditBoard(board: Board, event: Event) {
+  event.stopPropagation();
+  this.editingBoard.set(board);
+  this.showCreateBoardModal.set(true);
+  this.showActionDropdown.set('');
+}
+
+onDeleteBoard(board: Board, event: Event) {
+  event.stopPropagation();
+  
+  swalHelper
+    .confirmation(
+      `Delete Board`,
+      `Are you sure you want to delete "${board.name}"? This action cannot be undone.`,
+      'warning'
+    )
+    .then((result) => {
+      if (result.isConfirmed) {
+        console.log('Board to delete:', board);
+        // Add your delete logic here later
+      }
+    });
+  
+  this.showActionDropdown.set('');
+}
+
+  onShowCategories(board: Board, event: Event) {
+  event.stopPropagation();
+  this.selectedBoard.set(board);
+  this.showActionDropdown.set(''); // Close dropdown
+
+  // Store original categories for comparison
+  const originalCats = board.categories.filter((cat) => !cat.isDeleted);
+  this.originalCategories.set([...originalCats]);
+  this.editingCategories.set([...originalCats]);
+  this.newCategories.set([]);
+  this.hasChanges.set(false);
+
+  this.showCategoriesModal.set(true);
+}
+
 
   onShowMembers(board: Board, event: Event) {
     event.stopPropagation();
@@ -661,8 +565,9 @@ export class AllBoardsComponent implements OnInit {
   }
 
   onDocumentClick() {
-    this.selectedBoard.set(null);
-  }
+  this.selectedBoard.set(null);
+  this.showActionDropdown.set(''); // Close dropdown on document click
+}
 
   allCategoriesToShow = computed(() => {
     return [...this.editingCategories(), ...this.newCategories()];

@@ -36,6 +36,7 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
 
   @Input() placement: Partial<string> = 'bottom';
   @Input() size: Partial<string> = 'medium';
+  @Input() boardId: string | null = null;
 
   teamMembers: TeamMember[] = [];
   selectedMembers: TeamMember[] = [];
@@ -76,6 +77,8 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
       page: page,
       limit: 10,
       search: this.searchQuery.trim(),
+      boardId: this.boardId,
+      type:this.boardId ? 'board_update' : 'board_create'
     });
 
     if (response?.users && Array.isArray(response.users)) {
