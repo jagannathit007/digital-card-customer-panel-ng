@@ -661,12 +661,6 @@ export class AllBoardsComponent implements OnInit {
     });
   }
 
-  truncateDescription(description: string, maxLength: number = 60): string {
-    return description.length > maxLength
-      ? description.substring(0, maxLength) + '...'
-      : description;
-  }
-
   onDescriptionHover(description: string) {
     this.hoveredDescription.set(description);
   }

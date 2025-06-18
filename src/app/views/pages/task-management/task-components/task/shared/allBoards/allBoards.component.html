@@ -52,13 +52,13 @@
   <!-- Boards Grid -->
   <div class="tw-max-w-7xl tw-mx-auto">
     <div
-      class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 xl:tw-grid-cols-4 tw-gap-6"
+      class="tw-flex tw-flex-wrap tw-gap-6"
     >
       <!-- Add New Board Card -->
       <div
         *ngIf="!loading && taskPermissionsService.getCurrentUserRoleRank() >= 4"
         (click)="onCreateNewBoard()"
-        class="tw-group tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border-2 tw-border-dashed tw-border-gray-200 tw-p-8 tw-cursor-pointer tw-transition-all tw-duration-300 hover:tw-border-blue-400 hover:tw-shadow-lg hover:tw-scale-105 tw-flex tw-flex-col tw-items-center tw-justify-center tw-min-h-[300px]"
+        class="tw-group tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border-2 tw-border-dashed tw-border-gray-200 tw-p-8 tw-cursor-pointer tw-transition-all tw-duration-300 hover:tw-border-blue-400 hover:tw-shadow-lg hover:tw-scale-105 tw-flex tw-flex-col tw-items-center tw-justify-center tw-min-h-[300px] tw-min-w-[300px] tw-max-h-[300px] tw-max-w-[300px]"
       >
         <div
           class="tw-w-16 tw-h-16 tw-bg-blue-100 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mb-4 tw-transition-all tw-duration-300 group-hover:tw-bg-blue-200 group-hover:tw-scale-110"
@@ -90,7 +90,7 @@
       <!-- Board Cards -->
       <div
         *ngFor="let board of filteredBoards()"
-        class="tw-group tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border tw-border-gray-100 tw-cursor-pointer tw-transition-all tw-duration-300 hover:tw-shadow-xl hover:tw-scale-105 tw-relative tw-min-h-[300px]"
+        class="tw-group tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border tw-border-gray-100 tw-cursor-pointer tw-transition-all tw-duration-300 hover:tw-shadow-xl hover:tw-scale-105 tw-relative tw-min-h-[300px] tw-min-w-[300px] tw-max-h-[300px] tw-max-w-[300px] tw-overflow-x-auto"
         [class.tw-ring-2]="selectedBoard()?._id === board._id"
         [class.tw-ring-blue-500]="selectedBoard()?._id === board._id"
         [class.tw-animate-pulse]="expandingBoardId() === board._id"
@@ -100,7 +100,8 @@
         <div class="tw-p-6 tw-pb-4">
           <div class="tw-flex tw-justify-between tw-items-start tw-mb-3">
             <h3
-              class="tw-text-xl tw-font-bold tw-text-gray-900 tw-leading-tight"
+              class="tw-text-xl tw-font-bold tw-text-gray-900 tw-leading-tight tw-line-clamp-2 tw-overflow-hidden tw-text-ellipsis hover:tw-cursor-pointer"
+              title={{board.name}}
             >
               {{ board.name }}
             </h3>
@@ -130,11 +131,10 @@
           <!-- Description with Tooltip -->
           <div class="tw-relative">
             <p
-              class="tw-text-gray-600 tw-text-sm tw-leading-relaxed"
-              (mouseenter)="onDescriptionHover(board.description)"
-              (mouseleave)="onDescriptionLeave()"
+              class="tw-text-gray-600 tw-text-sm tw-leading-relaxed tw-line-clamp-2 tw-overflow-hidden tw-text-ellipsis hover:tw-cursor-pointer"
+              title={{board.description}}
             >
-              {{ truncateDescription(board.description) }}
+              {{ board.description }}
             </p>
 
             <!-- Tooltip -->
@@ -153,12 +153,13 @@
           </div>
         </div>
 
+        <div class="tw-m-auto tw-mt-2">
         <!-- Categories Pills -->
         <div class="tw-px-6 tw-pb-4">
           <div class="tw-flex tw-flex-wrap tw-gap-2">
             <span
               *ngFor="
-                let category of board.categories.slice(0, 3);
+                let category of board.categories.slice(0, 2);
                 trackBy: trackByCategoryId
               "
               class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium tw-bg-blue-100 tw-text-blue-800"
@@ -167,10 +168,10 @@
               {{ category.name }}
             </span>
             <span
-              *ngIf="getNonDeletedCategoriesCount(board.categories) > 3"
+              *ngIf="getNonDeletedCategoriesCount(board.categories) > 2"
               class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium tw-bg-gray-100 tw-text-gray-600"
             >
-              +{{ getNonDeletedCategoriesCount(board.categories) - 3 }} more
+              +{{ getNonDeletedCategoriesCount(board.categories) - 2 }} more
             </span>
           </div>
         </div>
@@ -188,6 +189,8 @@
             </span>
           </div>
         </div>
+      </div>
+
 
         <!-- Joined Members Component -->
         <div class="tw-absolute tw-bottom-6 tw-right-6">
