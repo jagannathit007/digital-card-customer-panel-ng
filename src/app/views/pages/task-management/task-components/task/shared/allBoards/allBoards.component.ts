@@ -15,6 +15,7 @@ import { JoinedMembersComponent } from 'src/app/views/partials/task-managemnt/co
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
 import { AddTeamMemberComponent } from '../../../../../../partials/task-managemnt/common-components/addTeamMember/addTeamMember.component';
+import { CreateBoardComponent } from "../../../../../../partials/task-managemnt/common-components/create-board/create-board.component";
 
 interface Category {
   _id: string;
@@ -61,7 +62,8 @@ interface TeamMember {
     FormsModule,
     JoinedMembersComponent,
     AddTeamMemberComponent,
-  ],
+    CreateBoardComponent
+],
   templateUrl: './allBoards.component.html',
   styleUrl: './allBoards.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -91,6 +93,7 @@ export class AllBoardsComponent implements OnInit {
   selectedMemberIds = signal<string[]>([]);
   originalSelectedMemberIds = signal<string[]>([]);
   hasSelectedMembersChanged = signal(false);
+  showCreateBoardModal = signal(false);
 
   // Computed values
   filteredBoards = computed(() => {
@@ -306,7 +309,19 @@ export class AllBoardsComponent implements OnInit {
   }
 
   onCreateNewBoard() {
-    this.router.navigate(['/create-board']);
+    // this.router.navigate(['/create-board']);
+    this.showCreateBoardModal.set(true);
+  }
+
+  onCreateBoardModalClose() {
+    this.showCreateBoardModal.set(false);
+  }
+
+  onBoardCreated(board: any) {
+    // this.boards().push(board);
+    console.log("board created from all boards page  : ", board)
+    this.loadData();
+    this.showCreateBoardModal.set(false);
   }
 
   async availableTeamMembersToAdd(board: Board | null) {

@@ -998,3 +998,9 @@
   (closeModalEvent)="onAddMemberModalClose()"
   (memberAdded)="onMemberCreated($event)"
 ></app-add-team-member>
+
+<app-create-board
+  *ngIf="showCreateBoardModal()"
+  (closeModalEvent)="onCreateBoardModalClose()"
+  (boardCreated)="onBoardCreated($event)"
+></app-create-board>

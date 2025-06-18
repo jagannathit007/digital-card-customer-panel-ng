@@ -15,15 +15,16 @@ interface TeamMember {
 }
 
 @Component({
-  selector: 'app-member-detail-dropdown',
+  selector: 'add-members-dropdown',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './member-detail-dropdown.component.html',
-  styleUrl: './member-detail-dropdown.component.scss'
+  templateUrl: './add-members-dropdown.component.html',
+  styleUrl: './add-members-dropdown.component.scss'
 })
 export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
 
   @Output() selectedMembersChange = new EventEmitter<TeamMember[]>();
+  @Output() onMemberAdded = new EventEmitter<TeamMember[]>();
 
   teamMembers: TeamMember[] = [];
   selectedMembers: TeamMember[] = [];
@@ -175,6 +176,7 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
     
     // Emit the selected members
     this.selectedMembersChange.emit([...this.selectedMembers]);
+    this.onMemberAdded.emit([...this.selectedMembers]);
     
     // Optional: Clear selection after adding
     // this.selectedMembers = [];

@@ -1,0 +1,120 @@
+// Custom styles for create-board component
+// Most styling is handled by Tailwind classes in the template
+
+.create-board-modal {
+  // Custom scrollbar for modal body
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #94a3b8;
+    }
+  }
+}
+
+// Animation for modal entrance
+.modal-enter {
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// Subtle focus states for better accessibility
+.focus-ring {
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(71, 85, 105, 0.1);
+  }
+}
+
+// Custom input states
+.input-error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.input-success {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+// Loading state for submit button
+.btn-loading {
+  position: relative;
+  color: transparent;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16px;
+    height: 16px;
+    margin: -8px 0 0 -8px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 640px) {
+  .create-board-modal {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+  }
+}
+
+// Dark mode support (if needed)
+@media (prefers-color-scheme: dark) {
+  .create-board-modal {
+    &::-webkit-scrollbar-track {
+      background: #374151;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #6b7280;
+      
+      &:hover {
+        background: #9ca3af;
+      }
+    }
+  }
+}
+
+// Smooth transitions for interactive elements
+button, input, textarea, select {
+  transition: all 0.2s ease-in-out;
+}
+
+// Enhanced focus visibility for accessibility
+*:focus-visible {
+  outline: 2px solid #475569;
+  outline-offset: 2px;
+}

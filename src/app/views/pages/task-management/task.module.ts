@@ -26,7 +26,7 @@ import { AddTeamMemberComponent } from "../../partials/task-managemnt/common-com
 import { SendingMailComponent } from "../../partials/task-managemnt/common-components/sendingMail/sendingMail.component";
 import { ChangeMemberRoleComponent } from '../../partials/task-managemnt/common-components/changeMEmberRole/changeMEmberRole.component';
 import { CustomdataComponent } from '../../partials/task-managemnt/common-components/customdata/customdata.component';
-import { MemberDetailDropdownComponent } from '../../partials/task-managemnt/common-components/member-detail-dropdown/member-detail-dropdown.component';
+import { MemberDetailDropdownComponent } from '../../partials/task-managemnt/common-components/add-members-dropdown/add-members-dropdown.component';
 // ! AI COMPENENTS
 import { AiassistantComponent } from '../../partials/task-managemnt/common-components/aiassistant/aiassistant.component';
 
