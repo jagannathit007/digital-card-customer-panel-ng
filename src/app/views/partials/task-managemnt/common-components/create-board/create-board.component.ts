@@ -9,6 +9,7 @@ import {
 } from '@angular/forms';
 import { environment } from 'src/env/env.local';
 import { MemberDetailDropdownComponent } from '../add-members-dropdown/add-members-dropdown.component';
+import { TaskService } from 'src/app/services/task.service';
 
 interface TeamMember {
   _id: string;
@@ -39,7 +40,7 @@ export class CreateBoardComponent implements OnInit {
   selectedMembers: TeamMember[] = [];
   isSubmitting = false;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private taskService: TaskService) {}
 
   ngOnInit(): void {
     this.initializeForm();
@@ -98,7 +99,7 @@ export class CreateBoardComponent implements OnInit {
   }
 
   getImageUrl(url: string): string {
-      return `${environment.imageURL}${url}`;
+    return `${environment.imageURL}${url}`;
   }
 
   isFieldInvalid(fieldName: string): boolean {
@@ -152,7 +153,7 @@ export class CreateBoardComponent implements OnInit {
     return labels[fieldName] || fieldName;
   }
 
-  onSubmit(): void {
+  async onSubmit() {
     if (this.createBoardForm.valid) {
       this.isSubmitting = true;
 
@@ -174,13 +175,22 @@ export class CreateBoardComponent implements OnInit {
       console.log('Create Board Data:', boardData);
       console.log('Selected Members Details:', this.selectedMembers);
 
-      // Simulate API call delay
-      setTimeout(() => {
+      const response = await this.taskService.createNewBoard(boardData);
+
+      if(response){
         this.isSubmitting = false;
 
         this.boardCreated.emit(boardData);
         this.resetForm();
-      }, 1500);
+      }
+
+      // Simulate API call delay
+      // setTimeout(() => {
+      //   this.isSubmitting = false;
+
+      //   this.boardCreated.emit(boardData);
+      //   this.resetForm();
+      // }, 1500);
     } else {
       // Mark all fields as touched to show validation errors
       this.createBoardForm.markAllAsTouched();

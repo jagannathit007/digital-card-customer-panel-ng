@@ -58,8 +58,14 @@
   <!-- Dropdown Content -->
   <div
     *ngIf="isDropdownOpen"
-    class="dropdown-content tw-absolute tw-z-50 tw-w-full tw-mt-2 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-max-h-[600px] tw-overflow-hidden"
-  >
+    class="dropdown-content tw-absolute tw-z-50 tw-w-full tw-mt-2 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-overflow-hidden"
+[ngClass]="{
+  'tw-bottom-[55px]': placement === 'top',
+  'tw-min-h-[100px] tw-max-h-[400px]': size === 'medium',
+  'tw-max-h-[600px]': size !== 'medium'
+}"  >
+      <!-- class="dropdown-content tw-absolute tw-z-50 tw-w-full tw-mt-2 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-overflow-hidden" -->
+
     <!-- Search Section -->
     <div class="tw-p-4 tw-border-b tw-border-gray-100">
       <div class="tw-flex tw-items-center tw-justify-between tw-mb-3">
@@ -99,10 +105,10 @@
     </div>
 
     <!-- Members List -->
-    <div class="tw-max-h-96 tw-overflow-y-auto" (scroll)="onScroll($event)">
+    <div class=" tw-overflow-y-auto" (scroll)="onScroll($event)" [class]="size ==='medium' ? 'tw-max-h-40' : 'tw-max-h-96'">
       <!-- Loading at top for initial load -->
       <div
-        *ngIf="isLoading && teamMembers.length === 0"
+        *ngIf="isLoading() && teamMembers.length === 0"
         class="tw-p-6 tw-text-center"
       >
         <div class="tw-inline-flex tw-items-center tw-text-sm tw-text-gray-500">
@@ -131,7 +137,7 @@
 
       <!-- No members found -->
       <div
-        *ngIf="!isLoading && teamMembers.length === 0"
+        *ngIf="!isLoading() && teamMembers.length === 0"
         class="tw-p-6 tw-text-center tw-text-gray-500 tw-text-sm"
       >
         <svg
@@ -214,7 +220,7 @@
 
       <!-- Scroll Loading Indicator -->
       <div
-        *ngIf="isLoading && teamMembers.length > 0"
+        *ngIf="isLoading() && teamMembers.length > 0"
         class="tw-p-4 tw-text-center tw-border-t tw-border-gray-100"
       >
         <div class="tw-inline-flex tw-items-center tw-text-sm tw-text-gray-500">
