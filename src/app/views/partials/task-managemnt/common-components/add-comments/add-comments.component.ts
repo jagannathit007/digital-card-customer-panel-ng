@@ -15,7 +15,7 @@ interface MentionTag {
   name: string;
   startPos: number;
   endPos: number;
-  uniqueId: string; // Add unique identifier for each mention instance
+  uniqueId: string;
 }
 
 interface ChatData {
@@ -109,6 +109,9 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   usersPerPage: number = 5;
   isLoading: boolean = false;
   
+  // Keyboard navigation
+  selectedUserIndex: number = 0;
+  
   // Mention tracking
   private mentionTags: MentionTag[] = [];
   private lastAtPosition: number = -1;
@@ -146,7 +149,11 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
 
   onInputChange(event: any): void {
     const input = event.target;
-    const value = input.textContent || '';
+    
+    // Preserve mention tags during input changes
+    this.preserveMentionTags(input);
+    
+    const value = this.getPlainTextContent(input);
     const cursorPos = this.getCursorPosition(input);
     
     this.inputText = value;
@@ -159,6 +166,7 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
       this.lastAtPosition = mentionMatch.startPos;
       this.showMentionDropdown(input, mentionMatch.startPos);
       this.filterUsers(mentionMatch.query);
+      this.selectedUserIndex = 0; // Reset selection to first user
     } else {
       this.hideDropdown();
     }
@@ -167,17 +175,80 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   onKeyDown(event: KeyboardEvent): void {
     const input = event.target as HTMLElement;
     
-    if (event.key === 'Backspace') {
-      this.handleBackspace(event, input);
-    } else if (event.key === 'Enter' && !event.shiftKey) {
+    // Handle Ctrl+Enter for message submission
+    if (event.key === 'Enter' && event.ctrlKey) {
       event.preventDefault();
       this.sendMessage();
-    } else if (event.key === ' ' && this.showDropdown) {
-      // Prevent dropdown from reopening on space
-      this.hideDropdown();
-    } else if (this.showDropdown) {
-      this.handleDropdownNavigation(event);
+      return;
     }
+    
+    // Handle dropdown navigation
+    if (this.showDropdown) {
+      this.handleDropdownNavigation(event);
+      return;
+    }
+    
+    // Handle regular Enter without dropdown
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      // Don't send message on regular Enter - only on Ctrl+Enter
+      return;
+    }
+    
+    if (event.key === 'Backspace') {
+      this.handleBackspace(event, input);
+    }
+  }
+
+  private preserveMentionTags(input: HTMLElement): void {
+    // Find all mention spans and update their positions
+    const mentionSpans = input.querySelectorAll('[data-mention-id]');
+    const newMentionTags: MentionTag[] = [];
+    
+    mentionSpans.forEach(span => {
+      const uniqueId = span.getAttribute('data-mention-id');
+      const existingTag = this.mentionTags.find(t => t.uniqueId === uniqueId);
+      
+      if (existingTag) {
+        // Calculate new position
+        const range = document.createRange();
+        range.selectNode(span);
+        
+        const beforeRange = document.createRange();
+        beforeRange.selectNodeContents(input);
+        beforeRange.setEnd(range.startContainer, range.startOffset);
+        
+        const startPos = beforeRange.toString().length;
+        const endPos = startPos + existingTag.name.length + 1; // +1 for @
+        
+        newMentionTags.push({
+          ...existingTag,
+          startPos,
+          endPos
+        });
+      }
+    });
+    
+    this.mentionTags = newMentionTags;
+  }
+
+  private getPlainTextContent(input: HTMLElement): string {
+    let text = '';
+    
+    for (let node of Array.from(input.childNodes)) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        text += node.textContent || '';
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        const element = node as HTMLElement;
+        if (element.hasAttribute('data-mention-id')) {
+          text += element.textContent || '';
+        } else {
+          text += element.textContent || '';
+        }
+      }
+    }
+    
+    return text;
   }
 
   private handleBackspace(event: KeyboardEvent, input: HTMLElement): void {
@@ -193,10 +264,42 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   }
 
   private handleDropdownNavigation(event: KeyboardEvent): void {
-    if (event.key === 'Escape') {
-      this.hideDropdown();
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.selectedUserIndex = Math.min(this.selectedUserIndex + 1, this.filteredUsers.length - 1);
+        this.scrollToSelectedUser();
+        break;
+        
+      case 'ArrowUp':
+        event.preventDefault();
+        this.selectedUserIndex = Math.max(this.selectedUserIndex - 1, 0);
+        this.scrollToSelectedUser();
+        break;
+        
+      case 'Enter':
+        event.preventDefault();
+        if (this.filteredUsers[this.selectedUserIndex]) {
+          this.selectUser(this.filteredUsers[this.selectedUserIndex]);
+        }
+        break;
+        
+      case 'Escape':
+        event.preventDefault();
+        this.hideDropdown();
+        break;
     }
-    // Add more navigation if needed
+  }
+
+  private scrollToSelectedUser(): void {
+    setTimeout(() => {
+      const dropdown = document.querySelector('.mention-dropdown-list');
+      const selectedItem = dropdown?.querySelector(`[data-user-index="${this.selectedUserIndex}"]`);
+      
+      if (selectedItem && dropdown) {
+        selectedItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    });
   }
 
   private findMentionAtCursor(text: string, cursorPos: number): { query: string; startPos: number } | null {
@@ -223,7 +326,6 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   }
 
   private isAfterCompletedMention(text: string, atPos: number): boolean {
-    // Simply check if this @ position is part of an existing mention tag
     return this.mentionTags.some(tag => 
       atPos >= tag.startPos && atPos < tag.endPos
     );
@@ -238,6 +340,7 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   private showMentionDropdown(input: HTMLElement, atPosition: number): void {
     this.showDropdown = true;
     this.currentPage = 1;
+    this.selectedUserIndex = 0; // Always start with first user selected
     
     // Calculate dropdown position relative to the input element
     const inputRect = input.getBoundingClientRect();
@@ -280,6 +383,7 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   private hideDropdown(): void {
     this.showDropdown = false;
     this.lastAtPosition = -1;
+    this.selectedUserIndex = 0;
     document.removeEventListener('click', this.closeDropdown.bind(this));
   }
 
@@ -298,12 +402,18 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
         .filter(user => user.name.toLowerCase().includes(query.toLowerCase()))
         .slice(0, this.usersPerPage);
     }
+    
+    // Reset selection if current index is out of bounds
+    if (this.selectedUserIndex >= this.filteredUsers.length) {
+      this.selectedUserIndex = Math.max(0, this.filteredUsers.length - 1);
+    }
+    
     this.cdr.detectChanges();
   }
 
   selectUser(user: User): void {
     const input = this.chatInput.nativeElement;
-    const text = input.textContent || '';
+    const text = this.getPlainTextContent(input);
     const cursorPos = this.getCursorPosition(input);
     
     // Find the @ symbol position
@@ -349,9 +459,13 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     this.hideDropdown();
   }
 
+  onUserHover(index: number): void {
+    this.selectedUserIndex = index;
+  }
+
   public removeMentionTag(tag: MentionTag): void {
     const input = this.chatInput.nativeElement;
-    const text = input.textContent || '';
+    const text = this.getPlainTextContent(input);
     
     // Remove mention from text
     const beforeMention = text.substring(0, tag.startPos);
@@ -552,6 +666,7 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     this.mentionedMembers = [];
     this.selectedUsers = [];
     this.isProcessingMention = false;
+    this.selectedUserIndex = 0;
     this.hideDropdown();
     
     const input = this.chatInput.nativeElement;
