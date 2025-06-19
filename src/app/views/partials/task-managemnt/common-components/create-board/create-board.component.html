@@ -31,7 +31,7 @@
           </div>
           <div>
             <h2 class="tw-text-xl tw-font-semibold tw-text-gray-900">
-              {{ isEditMode ? 'Edit Board' : 'Create New Board' }}
+              {{ isEditMode ? "Edit Board" : "Create New Board" }}
             </h2>
             <p class="tw-text-sm tw-text-gray-500">
               Set up your project board with team members and categories
@@ -144,6 +144,7 @@
         </div>
 
         <!-- Categories -->
+        <!-- Categories -->
         <div class="tw-space-y-3">
           <div class="tw-flex tw-items-center tw-justify-between">
             <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">
@@ -152,14 +153,26 @@
                 >(at least one required)</span
               >
             </label>
+          </div>
+
+          <!-- Add Category Input -->
+          <div class="tw-flex tw-items-center tw-space-x-2">
+            <input
+              type="text"
+              [(ngModel)]="newCategoryName"
+              [ngModelOptions]="{ standalone: true }"
+              (keydown.enter)="addCategoryFromInput()"
+              placeholder="Enter category name..."
+              class="tw-flex-1 tw-px-4 tw-py-2.5 tw-border tw-border-gray-300 tw-rounded-lg tw-shadow-sm focus:tw-ring-2 focus:tw-ring-slate-500 focus:tw-border-slate-500 tw-transition-all tw-duration-200"
+            />
             <button
               type="button"
-              (click)="addCategory()"
-              [disabled]="categoriesArray.length >= 10"
-              class="tw-inline-flex tw-items-center tw-px-3 tw-py-1.5 tw-bg-slate-100 hover:tw-bg-slate-200 tw-text-slate-700 tw-text-sm tw-font-medium tw-rounded-md tw-transition-colors tw-duration-200 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
+              (click)="addCategoryFromInput()"
+              [disabled]="!newCategoryName.trim() || isCategoryisDuplicate()"
+              class="tw-flex-shrink-0 tw-p-2.5 tw-bg-slate-200 hover:tw-bg-slate-300 tw-text-slate-700 tw-rounded-lg tw-transition-colors tw-duration-200 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
             >
               <svg
-                class="tw-w-4 tw-h-4 tw-mr-1"
+                class="tw-w-4 tw-h-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -171,66 +184,83 @@
                   d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                 ></path>
               </svg>
-              Add Category
             </button>
           </div>
 
-          <div class="tw-space-y-3" formArrayName="categories">
-            <div
-              *ngFor="let category of categoriesArray.controls; let i = index"
-              class="tw-flex tw-items-start tw-space-x-3"
+          <!-- duplicate category name Error -->
+          <p
+            *ngIf="isCategoryisDuplicate()"
+            class="tw-text-sm tw-text-yellow-500 tw-flex tw-items-center tw-mt-1"
+          >
+            <svg
+              class="tw-w-4 tw-h-4 tw-mr-1"
+              fill="currentColor"
+              viewBox="0 0 20 20"
             >
-              <div class="tw-flex-1">
-                <input
-                  type="text"
-                  [formControlName]="i"
-                  [placeholder]="'Category ' + (i + 1) + '...'"
-                  class="tw-w-full tw-px-4 tw-py-2.5 tw-border tw-border-gray-300 tw-rounded-lg tw-shadow-sm focus:tw-ring-2 focus:tw-ring-slate-500 focus:tw-border-slate-500 tw-transition-all tw-duration-200"
-                  [class.tw-border-red-300]="isCategoryInvalid(i)"
-                  [class.tw-ring-red-500]="isCategoryInvalid(i)"
-                  [class.focus:tw-ring-red-500]="isCategoryInvalid(i)"
-                />
-                <p
-                  *ngIf="isCategoryInvalid(i)"
-                  class="tw-text-sm tw-text-red-600 tw-flex tw-items-center tw-mt-1"
+              <path
+                fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            Entered category is already exist in the current category list
+          </p>
+
+          <!-- Categories Display -->
+          <div *ngIf="categories.length > 0" class="tw-space-y-2">
+            <p class="tw-text-sm tw-font-medium tw-text-gray-700">
+              Categories ({{ categories.length }})
+            </p>
+            <div class="tw-flex tw-flex-wrap tw-gap-2">
+              <div
+                *ngFor="let category of categories; let i = index"
+                class="tw-inline-flex tw-items-center tw-bg-slate-100 tw-border tw-border-slate-200 tw-rounded-full tw-px-3 tw-py-1.5 tw-text-sm"
+              >
+                <span class="tw-text-gray-700 tw-font-medium">{{
+                  category.name
+                }}</span>
+                <button
+                  type="button"
+                  (click)="removeCategory(i)"
+                  [disabled]="categories.length <= 1"
+                  class="tw-ml-2 tw-flex-shrink-0 tw-w-4 tw-h-4 tw-text-gray-400 hover:tw-text-red-600 tw-transition-colors tw-duration-200 disabled:tw-opacity-30 disabled:tw-cursor-not-allowed disabled:hover:tw-text-gray-400"
                 >
                   <svg
-                    class="tw-w-4 tw-h-4 tw-mr-1"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
+                    class="tw-w-full tw-h-full"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
                     <path
-                      fill-rule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                      clip-rule="evenodd"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
                     ></path>
                   </svg>
-                  {{ getCategoryError(i) }}
-                </p>
+                </button>
               </div>
-
-              <button
-                type="button"
-                (click)="removeCategory(i)"
-                [disabled]="categoriesArray.length <= 1"
-                class="tw-flex-shrink-0 tw-p-2.5 tw-text-gray-400 hover:tw-text-red-600 hover:tw-bg-red-50 tw-rounded-lg tw-transition-all tw-duration-200 disabled:tw-opacity-30 disabled:tw-cursor-not-allowed disabled:hover:tw-text-gray-400 disabled:hover:tw-bg-transparent"
-              >
-                <svg
-                  class="tw-w-4 tw-h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  ></path>
-                </svg>
-              </button>
             </div>
           </div>
+
+          <!-- Validation Error -->
+          <p
+            *ngIf="categories.length === 0 && showCategoryError"
+            class="tw-text-sm tw-text-red-600 tw-flex tw-items-center tw-mt-1"
+          >
+            <svg
+              class="tw-w-4 tw-h-4 tw-mr-1"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            At least one category is required
+          </p>
 
           <p class="tw-text-xs tw-text-gray-500 tw-flex tw-items-center">
             <svg
@@ -246,8 +276,7 @@
                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               ></path>
             </svg>
-            Categories help organize your board content. You can add up to 10
-            categories.
+            Categories help organize your board content.
           </p>
         </div>
 
@@ -259,11 +288,13 @@
           </label>
 
           <add-members-dropdown
-            placement="top" 
+            placement="top"
             size="medium"
+            [type]="originalBoardId ? 'board_update' : 'board_create'"
             [boardId]="originalBoardId"
             (selectedMembersChange)="onMembersSelected($event)"
-            (onMemberAdded)="onMemberAdded($event)">
+            (onMemberAdded)="onMemberAdded($event)"
+          >
           </add-members-dropdown>
 
           <!-- Selected Members Display -->
@@ -345,66 +376,74 @@
         </button>
 
         <button
-  type="submit"
-  (click)="onSubmit()"
-  [disabled]="createBoardForm.invalid || isSubmitting"
-  class="tw-px-6 tw-py-2.5 tw-bg-slate-600 hover:tw-bg-slate-700 focus:tw-bg-slate-700 tw-text-white tw-font-medium tw-rounded-lg tw-transition-all tw-duration-200 tw-flex tw-items-center tw-justify-center tw-min-w-[140px] focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-slate-500 focus:tw-ring-offset-2 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
->
-  <svg
-    *ngIf="isSubmitting"
-    class="tw-animate-spin tw-w-4 tw-h-4 tw-mr-2"
-    fill="none"
-    viewBox="0 0 24 24"
-  >
-    <circle
-      class="tw-opacity-25"
-      cx="12"
-      cy="12"
-      r="10"
-      stroke="currentColor"
-      stroke-width="4"
-    ></circle>
-    <path
-      class="tw-opacity-75"
-      fill="currentColor"
-      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-    ></path>
-  </svg>
+          type="submit"
+          (click)="onSubmit()"
+          [disabled]="createBoardForm.invalid || isSubmitting"
+          class="tw-px-6 tw-py-2.5 tw-bg-slate-600 hover:tw-bg-slate-700 focus:tw-bg-slate-700 tw-text-white tw-font-medium tw-rounded-lg tw-transition-all tw-duration-200 tw-flex tw-items-center tw-justify-center tw-min-w-[140px] focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-slate-500 focus:tw-ring-offset-2 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
+        >
+          <svg
+            *ngIf="isSubmitting"
+            class="tw-animate-spin tw-w-4 tw-h-4 tw-mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="tw-opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="tw-opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
 
-  <!-- Edit mode icon -->
-  <svg
-    *ngIf="!isSubmitting && isEditMode"
-    class="tw-w-4 tw-h-4 tw-mr-2"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-    ></path>
-  </svg>
+          <!-- Edit mode icon -->
+          <svg
+            *ngIf="!isSubmitting && isEditMode"
+            class="tw-w-4 tw-h-4 tw-mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+            ></path>
+          </svg>
 
-  <!-- Create mode icon -->
-  <svg
-    *ngIf="!isSubmitting && !isEditMode"
-    class="tw-w-4 tw-h-4 tw-mr-2"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-    ></path>
-  </svg>
+          <!-- Create mode icon -->
+          <svg
+            *ngIf="!isSubmitting && !isEditMode"
+            class="tw-w-4 tw-h-4 tw-mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            ></path>
+          </svg>
 
-  {{ isSubmitting ? (isEditMode ? "Updating..." : "Creating...") : (isEditMode ? "Update Board" : "Create Board") }}
-</button>
+          {{
+            isSubmitting
+              ? isEditMode
+                ? "Updating..."
+                : "Creating..."
+              : isEditMode
+              ? "Update Board"
+              : "Create Board"
+          }}
+        </button>
       </div>
     </div>
   </div>
