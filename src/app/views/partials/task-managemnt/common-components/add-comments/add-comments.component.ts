@@ -1,6 +1,8 @@
 import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TaskService } from 'src/app/services/task.service';
+import { environment } from 'src/env/env.local';
 
 interface User {
   _id: string;
@@ -37,65 +39,11 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   @ViewChild('chatInput', { static: false }) chatInput!: ElementRef<HTMLDivElement>;
   @Output() messageSent = new EventEmitter<ChatData>();
 
-  // Dummy data
-  private allUsers: User[] = [
-    {
-      _id: "684d4f7009a3bb3f943af737",
-      name: "wregtrtgh",
-      profileImage: "images/logo.png",
-      role: "manager",
-      id: "684d4f7009a3bb3f943af737"
-    },
-    {
-      _id: "6847fe94b500d38c3460e9d3",
-      name: "abcd",
-      profileImage: "images/logo.png",
-      role: "manager",
-      id: "6847fe94b500d38c3460e9d3"
-    },
-    {
-      _id: "6847fe94b500d38c3460e9d4",
-      name: "Alice Johnson",
-      profileImage: "images/logo.png",
-      role: "developer",
-      id: "6847fe94b500d38c3460e9d4"
-    },
-    {
-      _id: "6847fe94b500d38c3460e9d5",
-      name: "Bob Smith",
-      profileImage: "images/logo.png",
-      role: "designer",
-      id: "6847fe94b500d38c3460e9d5"
-    },
-    {
-      _id: "6847fe94b500d38c3460e9d6",
-      name: "Charlie Brown",
-      profileImage: "images/logo.png",
-      role: "tester",
-      id: "6847fe94b500d38c3460e9d6"
-    },
-    {
-      _id: "6847fe94b500d38c3460e9d7",
-      name: "David Wilson",
-      profileImage: "images/logo.png",
-      role: "manager",
-      id: "6847fe94b500d38c3460e9d7"
-    },
-    {
-      _id: "6847fe94b500d38c3460e9d8",
-      name: "Emma Davis",
-      profileImage: "images/logo.png",
-      role: "developer",
-      id: "6847fe94b500d38c3460e9d8"
-    },
-    {
-      _id: "6847fe94b500d38c3460e9d9",
-      name: "Frank Miller",
-      profileImage: "images/logo.png",
-      role: "designer",
-      id: "6847fe94b500d38c3460e9d9"
-    }
-  ];
+  // API data properties
+  boardId: string = '';
+  private allUsers: User[] = [];
+  private totalUsers: number = 0;
+  private hasMoreUsers: boolean = true;
 
   // Component state
   inputText: string = '';
@@ -106,8 +54,9 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   dropdownPosition = { top: 0, left: 0 };
   currentMentionQuery: string = '';
   currentPage: number = 1;
-  usersPerPage: number = 5;
+  usersPerPage: number = 10;
   isLoading: boolean = false;
+  searchQuery: string = '';
   
   // Keyboard navigation
   selectedUserIndex: number = 0;
@@ -117,7 +66,7 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   private lastAtPosition: number = -1;
   private isProcessingMention: boolean = false;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef, private taskService: TaskService) {}
 
   ngOnInit(): void {
     console.log("Chat component initialized");
@@ -128,23 +77,86 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     document.removeEventListener('click', this.closeDropdown.bind(this));
   }
 
-  loadUsers(page: number = 1): void {
+  async loadUsers(page: number = 1, search: string = ''): Promise<void> {
+    if (this.isLoading) return;
+    
     this.isLoading = true;
     
-    setTimeout(() => {
-      const startIndex = (page - 1) * this.usersPerPage;
-      const endIndex = startIndex + this.usersPerPage;
-      const paginatedUsers = this.allUsers.slice(startIndex, endIndex);
-      
-      if (page === 1) {
-        this.filteredUsers = paginatedUsers;
+    try {
+      const response = await this.taskService.GetSelectableTeamMembers({
+        page: page,
+        limit: this.usersPerPage,
+        search: search.trim(),
+        boardId: this.boardId,
+        type: this.boardId ? 'board_update' : 'board_create'
+      });
+
+      console.log("API Response:", response);
+
+      // Handle different possible response structures
+      let users: User[] = [];
+      let pagination: any = null;
+
+      if (response && response.data && response.data.users) {
+        // Structure: { data: { users: [...], pagination: {...} } }
+        users = response.data.users;
+        pagination = response.data.pagination;
+      } else if (response && response.data && Array.isArray(response.data)) {
+        // Structure: { data: [...] }
+        users = response.data;
+      } else if (response && Array.isArray(response)) {
+        // Structure: [...]
+        users = response;
+      } else if (response && response.users) {
+        // Structure: { users: [...], pagination: {...} }
+        users = response.users;
+        pagination = response.pagination;
       } else {
-        this.filteredUsers = [...this.filteredUsers, ...paginatedUsers];
+        console.warn('Invalid API response structure:', response);
+        users = [];
       }
-      
+
+      if (users.length > 0) {
+        if (page === 1) {
+          // First page - replace all users
+          this.allUsers = users;
+          this.filteredUsers = [...users];
+        } else {
+          // Subsequent pages - append users
+          this.allUsers = [...this.allUsers, ...users];
+          this.filteredUsers = [...this.filteredUsers, ...users];
+        }
+
+        // Update pagination info
+        if (pagination) {
+          this.totalUsers = parseInt(pagination.totalUsers) || users.length;
+          this.hasMoreUsers = pagination.hasNextPage || false;
+        } else {
+          this.totalUsers = users.length;
+          this.hasMoreUsers = users.length === this.usersPerPage;
+        }
+        
+        console.log(`Loaded ${users.length} users, total: ${this.totalUsers}`);
+        console.log('Filtered Users:', this.filteredUsers);
+        console.log('Show Dropdown:', this.showDropdown);
+      } else {
+        console.warn('No users found in response');
+        if (page === 1) {
+          this.allUsers = [];
+          this.filteredUsers = [];
+        }
+      }
+    } catch (error) {
+      console.error('Error loading users:', error);
+      // Fallback to empty array on error
+      if (page === 1) {
+        this.allUsers = [];
+        this.filteredUsers = [];
+      }
+    } finally {
       this.isLoading = false;
       this.cdr.detectChanges();
-    }, 300);
+    }
   }
 
   onInputChange(event: any): void {
@@ -342,6 +354,8 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     this.currentPage = 1;
     this.selectedUserIndex = 0; // Always start with first user selected
     
+    console.log('Showing dropdown with users:', this.filteredUsers);
+    
     // Calculate dropdown position relative to the input element
     const inputRect = input.getBoundingClientRect();
     const containerRect = input.closest('.tw-relative')?.getBoundingClientRect() || inputRect;
@@ -374,6 +388,9 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
       };
     }
     
+    // Force change detection
+    this.cdr.detectChanges();
+    
     // Add click outside listener
     setTimeout(() => {
       document.addEventListener('click', this.closeDropdown.bind(this));
@@ -394,21 +411,23 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     this.hideDropdown();
   }
 
-  private filterUsers(query: string): void {
-    if (query.trim() === '') {
-      this.filteredUsers = this.allUsers.slice(0, this.usersPerPage);
-    } else {
-      this.filteredUsers = this.allUsers
-        .filter(user => user.name.toLowerCase().includes(query.toLowerCase()))
-        .slice(0, this.usersPerPage);
-    }
+  // Updated filterUsers method to use API
+  private async filterUsers(query: string): Promise<void> {
+    this.searchQuery = query;
+    this.currentPage = 1;
+    
+    console.log('Filtering users with query:', query);
+    
+    // Reset filtered users and load from API
+    this.filteredUsers = [];
+    await this.loadUsers(1, query);
     
     // Reset selection if current index is out of bounds
     if (this.selectedUserIndex >= this.filteredUsers.length) {
       this.selectedUserIndex = Math.max(0, this.filteredUsers.length - 1);
     }
     
-    this.cdr.detectChanges();
+    console.log('After filtering, filteredUsers:', this.filteredUsers);
   }
 
   selectUser(user: User): void {
@@ -608,14 +627,12 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     }
   }
 
-  loadMoreUsers(): void {
-    if (this.isLoading) return;
+  // Updated loadMoreUsers method for API pagination
+  async loadMoreUsers(): Promise<void> {
+    if (this.isLoading || !this.hasMoreUsers) return;
     
-    const maxPage = Math.ceil(this.allUsers.length / this.usersPerPage);
-    if (this.currentPage < maxPage) {
-      this.currentPage++;
-      this.loadUsers(this.currentPage);
-    }
+    this.currentPage++;
+    await this.loadUsers(this.currentPage, this.searchQuery);
   }
 
   sendMessage(): void {
@@ -667,6 +684,9 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     this.selectedUsers = [];
     this.isProcessingMention = false;
     this.selectedUserIndex = 0;
+    this.searchQuery = '';
+    this.currentPage = 1;
+    this.hasMoreUsers = true;
     this.hideDropdown();
     
     const input = this.chatInput.nativeElement;
@@ -675,7 +695,18 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   }
 
   getProfileImageUrl(imagePath: string): string {
-    return imagePath.includes('http') ? imagePath : `assets/${imagePath}`;
+    if (!imagePath) {
+      return `${environment.imageURL}/uploads/task_management/profiles/default-profile-image.png`;
+    }
+
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+
+    const cleanPath = imagePath.startsWith('/')
+      ? imagePath.substring(1)
+      : imagePath;
+    return `${environment.imageURL}/${cleanPath}`;
   }
 
   trackByUserId(index: number, user: User): string {
