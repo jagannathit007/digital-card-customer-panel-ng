@@ -36,6 +36,7 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
 
   @Input() placement: Partial<string> = 'bottom';
   @Input() size: Partial<string> = 'medium';
+  @Input() type: Partial<string> = 'task_update';
   @Input() boardId: string | null = null;
 
   teamMembers: TeamMember[] = [];
@@ -61,13 +62,14 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
     this.isDropdownOpen = !this.isDropdownOpen;
 
     if (this.isDropdownOpen && this.teamMembers.length === 0) {
-      this.loadTeamMembers(1, true);
+      this.loadTeamMembers(1, true, true);
     }
   }
 
   async loadTeamMembers(
     page: number = 1,
-    reset: boolean = false
+    reset: boolean = false,
+    firstTime = false
   ): Promise<void> {
     if (this.isLoading()) return;
 
@@ -78,8 +80,12 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
       limit: 10,
       search: this.searchQuery.trim(),
       boardId: this.boardId,
-      type:this.boardId ? 'board_update' : 'board_create'
+      type: this.type,
     });
+
+    if (firstTime && response.assignedMembers.length > 0) {
+      this.selectedMembers = response.assignedMembers;
+    }
 
     if (response?.users && Array.isArray(response.users)) {
       const newMembers = response.users;

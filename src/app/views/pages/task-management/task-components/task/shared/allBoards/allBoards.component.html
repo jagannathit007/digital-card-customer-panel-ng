@@ -51,9 +51,7 @@
 
   <!-- Boards Grid -->
   <div class="tw-max-w-7xl tw-mx-auto">
-    <div
-      class="tw-flex tw-flex-wrap tw-gap-6"
-    >
+    <div class="tw-flex tw-flex-wrap tw-gap-6">
       <!-- Add New Board Card -->
       <div
         *ngIf="!loading && taskPermissionsService.getCurrentUserRoleRank() >= 4"
@@ -101,7 +99,7 @@
           <div class="tw-flex tw-justify-between tw-items-start tw-mb-3">
             <h3
               class="tw-text-xl tw-font-bold tw-text-gray-900 tw-leading-tight tw-line-clamp-2 tw-overflow-hidden tw-text-ellipsis hover:tw-cursor-pointer"
-              title={{board.name}}
+              title="{{ board.name }}"
             >
               {{ board.name }}
             </h3>
@@ -127,62 +125,102 @@
               </svg>
             </button> -->
             <!-- Action Dropdown -->
-<div class="tw-relative" (click)="$event.stopPropagation()">
-  <button
-    (click)="toggleActionDropdown(board._id)"
-    class="tw-p-2 tw-rounded-lg tw-text-gray-400 hover:tw-text-blue-600 hover:tw-bg-blue-50 tw-transition-all tw-duration-200"
-    title="Board Actions"
-  >
-    <svg class="tw-w-5 tw-h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zM12 13a1 1 0 110-2 1 1 0 010 2zM12 20a1 1 0 110-2 1 1 0 010 2z"></path>
-    </svg>
-  </button>
-  
-  <!-- Dropdown Menu -->
-  <div
-    *ngIf="showActionDropdown() === board._id"
-    class="tw-absolute tw-right-0 tw-top-full tw-mt-2 tw-w-48 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-200 tw-py-2 tw-z-50"
-  >
-    <button
-      (click)="onShowCategories(board, $event)"
-      class="tw-w-full tw-px-4 tw-py-2 tw-text-left tw-text-sm tw-text-gray-700 hover:tw-bg-gray-100 tw-flex tw-items-center tw-gap-3"
-    >
-      <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.99 1.99 0 013 12V7a4 4 0 014-4z"></path>
-      </svg>
-      Manage Categories
-    </button>
-    
-    <button
-      *ngIf="taskPermissionsService.getCurrentUserRoleRank() >= 4"
-      (click)="onEditBoard(board, $event)"
-      class="tw-w-full tw-px-4 tw-py-2 tw-text-left tw-text-sm tw-text-gray-700 hover:tw-bg-gray-100 tw-flex tw-items-center tw-gap-3"
-    >
-      <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-      </svg>
-      Edit Board
-    </button>
-    
-    <button
-      *ngIf="taskPermissionsService.getCurrentUserRoleRank() >= 4"
-      (click)="onDeleteBoard(board, $event)"
-      class="tw-w-full tw-px-4 tw-py-2 tw-text-left tw-text-sm tw-text-red-600 hover:tw-bg-red-50 tw-flex tw-items-center tw-gap-3"
-    >
-      <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-      </svg>
-      Delete Board
-    </button>
-  </div>
-</div>
+            <div class="tw-relative" (click)="$event.stopPropagation()">
+              <button
+                (click)="toggleActionDropdown(board._id)"
+                class="tw-p-2 tw-rounded-lg tw-text-gray-400 hover:tw-text-blue-600 hover:tw-bg-blue-50 tw-transition-all tw-duration-200"
+                title="Board Actions"
+              >
+                <svg
+                  class="tw-w-5 tw-h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zM12 13a1 1 0 110-2 1 1 0 010 2zM12 20a1 1 0 110-2 1 1 0 010 2z"
+                  ></path>
+                </svg>
+              </button>
+
+              <!-- Dropdown Menu -->
+              <div
+                *ngIf="showActionDropdown() === board._id"
+                class="tw-absolute tw-right-0 tw-top-full tw-mt-2 tw-w-48 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-200 tw-py-2 tw-z-50"
+              >
+                <button
+                  (click)="onShowCategories(board, $event)"
+                  class="tw-w-full tw-px-4 tw-py-2 tw-text-left tw-text-sm tw-text-gray-700 hover:tw-bg-gray-100 tw-flex tw-items-center tw-gap-3"
+                >
+                  <svg
+                    class="tw-w-4 tw-h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.99 1.99 0 013 12V7a4 4 0 014-4z"
+                    ></path>
+                  </svg>
+                  Manage Categories
+                </button>
+
+                <button
+                  *ngIf="taskPermissionsService.getCurrentUserRoleRank() >= 4"
+                  (click)="onEditBoard(board, $event)"
+                  class="tw-w-full tw-px-4 tw-py-2 tw-text-left tw-text-sm tw-text-gray-700 hover:tw-bg-gray-100 tw-flex tw-items-center tw-gap-3"
+                >
+                  <svg
+                    class="tw-w-4 tw-h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    ></path>
+                  </svg>
+                  Edit Board
+                </button>
+
+                <button
+                  *ngIf="taskPermissionsService.getCurrentUserRoleRank() >= 4"
+                  (click)="onDeleteBoard(board, $event)"
+                  class="tw-w-full tw-px-4 tw-py-2 tw-text-left tw-text-sm tw-text-red-600 hover:tw-bg-red-50 tw-flex tw-items-center tw-gap-3"
+                >
+                  <svg
+                    class="tw-w-4 tw-h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    ></path>
+                  </svg>
+                  Delete Board
+                </button>
+              </div>
+            </div>
           </div>
 
           <!-- Description with Tooltip -->
           <div class="tw-relative">
             <p
               class="tw-text-gray-600 tw-text-sm tw-leading-relaxed tw-line-clamp-2 tw-overflow-hidden tw-text-ellipsis hover:tw-cursor-pointer"
-              title={{board.description}}
+              title="{{ board.description }}"
             >
               {{ board.description }}
             </p>
@@ -204,43 +242,42 @@
         </div>
 
         <div class="tw-m-auto tw-mt-2">
-        <!-- Categories Pills -->
-        <div class="tw-px-6 tw-pb-4">
-          <div class="tw-flex tw-flex-wrap tw-gap-2">
-            <span
-              *ngFor="
-                let category of board.categories.slice(0, 2);
-                trackBy: trackByCategoryId
-              "
-              class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium tw-bg-blue-100 tw-text-blue-800"
-              [class.tw-hidden]="category.isDeleted"
+          <!-- Categories Pills -->
+          <div class="tw-px-6 tw-pb-4">
+            <div class="tw-flex tw-flex-wrap tw-gap-2">
+              <span
+                *ngFor="
+                  let category of board.categories.slice(0, 2);
+                  trackBy: trackByCategoryId
+                "
+                class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium tw-bg-blue-100 tw-text-blue-800"
+                [class.tw-hidden]="category.isDeleted"
+              >
+                {{ category.name }}
+              </span>
+              <span
+                *ngIf="getNonDeletedCategoriesCount(board.categories) > 2"
+                class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium tw-bg-gray-100 tw-text-gray-600"
+              >
+                +{{ getNonDeletedCategoriesCount(board.categories) - 2 }} more
+              </span>
+            </div>
+          </div>
+
+          <!-- Board Footer -->
+          <div class="tw-px-6 tw-pb-6 tw-mt-auto">
+            <div
+              class="tw-flex tw-justify-between tw-items-center tw-text-sm tw-text-gray-500 tw-mb-4"
             >
-              {{ category.name }}
-            </span>
-            <span
-              *ngIf="getNonDeletedCategoriesCount(board.categories) > 2"
-              class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium tw-bg-gray-100 tw-text-gray-600"
-            >
-              +{{ getNonDeletedCategoriesCount(board.categories) - 2 }} more
-            </span>
+              <span>Created: {{ formatDate(board.createdAt) }}</span>
+              <span
+                class="tw-px-2 tw-py-1 tw-bg-green-100 tw-text-green-700 tw-rounded-full tw-text-xs tw-font-medium"
+              >
+                {{ board.type }}
+              </span>
+            </div>
           </div>
         </div>
-
-        <!-- Board Footer -->
-        <div class="tw-px-6 tw-pb-6 tw-mt-auto">
-          <div
-            class="tw-flex tw-justify-between tw-items-center tw-text-sm tw-text-gray-500 tw-mb-4"
-          >
-            <span>Created: {{ formatDate(board.createdAt) }}</span>
-            <span
-              class="tw-px-2 tw-py-1 tw-bg-green-100 tw-text-green-700 tw-rounded-full tw-text-xs tw-font-medium"
-            >
-              {{ board.type }}
-            </span>
-          </div>
-        </div>
-      </div>
-
 
         <!-- Joined Members Component -->
         <div class="tw-absolute tw-bottom-6 tw-right-6">
@@ -753,9 +790,13 @@
                 let member of allMembersDetails;
                 trackBy: trackByCategoryId
               "
-              class="tw-group tw-relative tw-flex tw-items-center tw-justify-between  tw-rounded-xl tw-transition-all tw-duration-200"
-              [class.tw-p-4]="member._id !== taskPermissionsService.getCurrentUser()?._id"
-              [class.tw-border]="member._id !== taskPermissionsService.getCurrentUser()?._id"
+              class="tw-group tw-relative tw-flex tw-items-center tw-justify-between tw-rounded-xl tw-transition-all tw-duration-200"
+              [class.tw-p-4]="
+                member._id !== taskPermissionsService.getCurrentUser()?._id
+              "
+              [class.tw-border]="
+                member._id !== taskPermissionsService.getCurrentUser()?._id
+              "
               [class.tw-border-blue-200]="
                 isMemberSelected(member._id) && !isMemberDisabled(member)
               "
