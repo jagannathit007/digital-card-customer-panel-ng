@@ -1,27 +1,3 @@
-// import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy } from '@angular/core';
-// import { Modal } from 'bootstrap';
-// import { common } from 'src/app/core/constants/common';
-// import { AppStorage } from 'src/app/core/utilities/app-storage';
-// import { TaskService } from 'src/app/services/task.service';
-// import { swalHelper } from 'src/app/core/constants/swal-helper';
-// import { environment } from 'src/env/env.local';
-
-// @Component({
-//   selector: 'app-add-comments',
-//   standalone: true,
-//   imports: [],
-//   templateUrl: './add-comments.component.html',
-//   styleUrl: './add-comments.component.scss'
-// })
-// export class AddCommentsComponent implements OnInit {
-  
-//   ngOnInit(): void {
-//     console.log("there is chatpage")
-//   }
-
-// }
-
-
 import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -39,6 +15,7 @@ interface MentionTag {
   name: string;
   startPos: number;
   endPos: number;
+  uniqueId: string; // Add unique identifier for each mention instance
 }
 
 interface ChatData {
@@ -117,34 +94,6 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
       profileImage: "images/logo.png",
       role: "designer",
       id: "6847fe94b500d38c3460e9d9"
-    },
-     {
-      _id: "6847fe94b500d38c3460e9d6",
-      name: "Charlie Brown",
-      profileImage: "images/logo.png",
-      role: "tester",
-      id: "6847fe94b500d38c3460e9d6"
-    },
-    {
-      _id: "6847fe94b500d38c3460e9d7",
-      name: "David Wilson",
-      profileImage: "images/logo.png",
-      role: "manager",
-      id: "6847fe94b500d38c3460e9d7"
-    },
-    {
-      _id: "6847fe94b500d38c3460e9d8",
-      name: "Emma Davis",
-      profileImage: "images/logo.png",
-      role: "developer",
-      id: "6847fe94b500d38c3460e9d8"
-    },
-    {
-      _id: "6847fe94b500d38c3460e9d9",
-      name: "Frank Miller",
-      profileImage: "images/logo.png",
-      role: "designer",
-      id: "6847fe94b500d38c3460e9d9"
     }
   ];
 
@@ -162,7 +111,8 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   
   // Mention tracking
   private mentionTags: MentionTag[] = [];
-  private lastCursorPosition: number = 0;
+  private lastAtPosition: number = -1;
+  private isProcessingMention: boolean = false;
 
   constructor(private cdr: ChangeDetectorRef) {}
 
@@ -178,7 +128,6 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   loadUsers(page: number = 1): void {
     this.isLoading = true;
     
-    // Simulate API call with pagination
     setTimeout(() => {
       const startIndex = (page - 1) * this.usersPerPage;
       const endIndex = startIndex + this.usersPerPage;
@@ -201,14 +150,14 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     const cursorPos = this.getCursorPosition(input);
     
     this.inputText = value;
-    this.lastCursorPosition = cursorPos;
 
-    // Check for @ mention
+    // Always check for mentions
     const mentionMatch = this.findMentionAtCursor(value, cursorPos);
     
-    if (mentionMatch) {
+    if (mentionMatch && !this.isAfterCompletedMention(value, mentionMatch.startPos)) {
       this.currentMentionQuery = mentionMatch.query;
-      this.showMentionDropdown(mentionMatch.startPos);
+      this.lastAtPosition = mentionMatch.startPos;
+      this.showMentionDropdown(input, mentionMatch.startPos);
       this.filterUsers(mentionMatch.query);
     } else {
       this.hideDropdown();
@@ -223,6 +172,9 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     } else if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       this.sendMessage();
+    } else if (event.key === ' ' && this.showDropdown) {
+      // Prevent dropdown from reopening on space
+      this.hideDropdown();
     } else if (this.showDropdown) {
       this.handleDropdownNavigation(event);
     }
@@ -230,7 +182,6 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
 
   private handleBackspace(event: KeyboardEvent, input: HTMLElement): void {
     const cursorPos = this.getCursorPosition(input);
-    const textContent = input.textContent || '';
     
     // Check if cursor is at the end of a mention tag
     const mentionTag = this.findMentionTagAtPosition(cursorPos - 1);
@@ -242,8 +193,10 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   }
 
   private handleDropdownNavigation(event: KeyboardEvent): void {
-    // Handle arrow keys and enter for dropdown navigation
-    // Implementation for keyboard navigation in dropdown
+    if (event.key === 'Escape') {
+      this.hideDropdown();
+    }
+    // Add more navigation if needed
   }
 
   private findMentionAtCursor(text: string, cursorPos: number): { query: string; startPos: number } | null {
@@ -263,27 +216,60 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     // Extract query after @
     const query = text.substring(atPos + 1, cursorPos);
     
+    // Don't show dropdown if query contains spaces (completed mention)
+    if (query.includes(' ')) return null;
+    
     return { query, startPos: atPos };
+  }
+
+  private isAfterCompletedMention(text: string, atPos: number): boolean {
+    // Simply check if this @ position is part of an existing mention tag
+    return this.mentionTags.some(tag => 
+      atPos >= tag.startPos && atPos < tag.endPos
+    );
   }
 
   private findMentionTagAtPosition(pos: number): MentionTag | null {
     return this.mentionTags.find(tag => 
-      pos >= tag.startPos && pos <= tag.endPos
+      pos >= tag.startPos && pos < tag.endPos
     ) || null;
   }
 
-  private showMentionDropdown(atPosition: number): void {
+  private showMentionDropdown(input: HTMLElement, atPosition: number): void {
     this.showDropdown = true;
     this.currentPage = 1;
     
-    // Calculate dropdown position
-    const input = this.chatInput.nativeElement;
-    const rect = input.getBoundingClientRect();
+    // Calculate dropdown position relative to the input element
+    const inputRect = input.getBoundingClientRect();
+    const containerRect = input.closest('.tw-relative')?.getBoundingClientRect() || inputRect;
     
-    this.dropdownPosition = {
-      top: rect.bottom + 5,
-      left: rect.left
-    };
+    // Get cursor position within the input
+    const range = document.createRange();
+    const selection = window.getSelection();
+    
+    if (selection && selection.rangeCount > 0) {
+      const currentRange = selection.getRangeAt(0);
+      
+      // Create a temporary element at cursor position
+      const tempSpan = document.createElement('span');
+      tempSpan.textContent = '|';
+      currentRange.insertNode(tempSpan);
+      
+      const spanRect = tempSpan.getBoundingClientRect();
+      tempSpan.remove();
+      
+      // Position dropdown relative to container
+      this.dropdownPosition = {
+        top: spanRect.bottom - containerRect.top + 5,
+        left: spanRect.left - containerRect.left
+      };
+    } else {
+      // Fallback positioning
+      this.dropdownPosition = {
+        top: inputRect.height + 5,
+        left: 0
+      };
+    }
     
     // Add click outside listener
     setTimeout(() => {
@@ -293,6 +279,7 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
 
   private hideDropdown(): void {
     this.showDropdown = false;
+    this.lastAtPosition = -1;
     document.removeEventListener('click', this.closeDropdown.bind(this));
   }
 
@@ -317,25 +304,27 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   selectUser(user: User): void {
     const input = this.chatInput.nativeElement;
     const text = input.textContent || '';
-    const cursorPos = this.lastCursorPosition;
+    const cursorPos = this.getCursorPosition(input);
     
     // Find the @ symbol position
     const mentionMatch = this.findMentionAtCursor(text, cursorPos);
     
     if (mentionMatch) {
-      // Replace @query with @username
+      // Replace @query with @username and add space
       const beforeMention = text.substring(0, mentionMatch.startPos);
       const afterMention = text.substring(cursorPos);
       const mentionText = `@${user.name}`;
       
-      const newText = beforeMention + mentionText + afterMention;
+      const newText = beforeMention + mentionText + ' ' + afterMention;
       
-      // Create mention tag
+      // Create unique mention tag with timestamp for uniqueness
+      const uniqueId = `${user.id}_${Date.now()}_${Math.random()}`;
       const newTag: MentionTag = {
         id: user.id,
         name: user.name,
         startPos: mentionMatch.startPos,
-        endPos: mentionMatch.startPos + mentionText.length
+        endPos: mentionMatch.startPos + mentionText.length,
+        uniqueId: uniqueId
       };
       
       // Update mention tags
@@ -347,8 +336,14 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
         this.selectedUsers.push(user);
       }
       
-      // Update input
+      // Update input with proper spacing
       this.updateInputWithMentions(newText);
+      
+      // Set cursor position after the mention and space
+      setTimeout(() => {
+        const newCursorPos = mentionMatch.startPos + mentionText.length + 1;
+        this.setCursorPosition(input, newCursorPos);
+      }, 50);
     }
     
     this.hideDropdown();
@@ -363,10 +358,24 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     const afterMention = text.substring(tag.endPos);
     const newText = beforeMention + afterMention;
     
-    // Remove from arrays
-    this.mentionTags = this.mentionTags.filter(t => t.id !== tag.id);
-    this.mentionedMembers = this.mentionedMembers.filter(id => id !== tag.id);
-    this.selectedUsers = this.selectedUsers.filter(user => user.id !== tag.id);
+    // Remove only this specific mention tag using uniqueId
+    this.mentionTags = this.mentionTags.filter(t => t.uniqueId !== tag.uniqueId);
+    
+    // Check if this user has any other mentions remaining
+    const hasOtherMentions = this.mentionTags.some(t => t.id === tag.id);
+    if (!hasOtherMentions) {
+      this.mentionedMembers = this.mentionedMembers.filter(id => id !== tag.id);
+      this.selectedUsers = this.selectedUsers.filter(user => user.id !== tag.id);
+    }
+    
+    // Update mention tag positions after removal
+    const removedLength = tag.endPos - tag.startPos;
+    this.mentionTags.forEach(t => {
+      if (t.startPos > tag.endPos) {
+        t.startPos -= removedLength;
+        t.endPos -= removedLength;
+      }
+    });
     
     // Update input
     this.updateInputWithMentions(newText);
@@ -378,8 +387,19 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   private updateInputWithMentions(text: string): void {
     const input = this.chatInput.nativeElement;
     
+    // Store current cursor position before clearing
+    const currentCursorPos = this.getCursorPosition(input);
+    
     // Clear and set new content
     input.innerHTML = '';
+    
+    if (this.mentionTags.length === 0) {
+      // No mentions, just add text
+      const textNode = document.createTextNode(text);
+      input.appendChild(textNode);
+      this.inputText = text;
+      return;
+    }
     
     let lastIndex = 0;
     const sortedTags = [...this.mentionTags].sort((a, b) => a.startPos - b.startPos);
@@ -387,24 +407,37 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     sortedTags.forEach(tag => {
       // Add text before mention
       if (lastIndex < tag.startPos) {
-        const textNode = document.createTextNode(text.substring(lastIndex, tag.startPos));
-        input.appendChild(textNode);
+        const textBefore = text.substring(lastIndex, tag.startPos);
+        if (textBefore) {
+          const textNode = document.createTextNode(textBefore);
+          input.appendChild(textNode);
+        }
       }
       
-      // Add mention tag
+      // Add mention tag as styled span
       const mentionSpan = document.createElement('span');
       mentionSpan.className = 'tw-bg-blue-100 tw-text-blue-800 tw-px-2 tw-py-1 tw-rounded tw-font-medium tw-inline-block tw-mx-1';
       mentionSpan.textContent = `@${tag.name}`;
       mentionSpan.contentEditable = 'false';
-      input.appendChild(mentionSpan);
+      mentionSpan.setAttribute('data-mention-id', tag.uniqueId);
       
+      // Add click handler for removal
+      mentionSpan.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.removeMentionTag(tag);
+      });
+      
+      input.appendChild(mentionSpan);
       lastIndex = tag.endPos;
     });
     
-    // Add remaining text
+    // Add remaining text after last mention
     if (lastIndex < text.length) {
-      const textNode = document.createTextNode(text.substring(lastIndex));
-      input.appendChild(textNode);
+      const remainingText = text.substring(lastIndex);
+      if (remainingText) {
+        const textNode = document.createTextNode(remainingText);
+        input.appendChild(textNode);
+      }
     }
     
     this.inputText = text;
@@ -426,15 +459,32 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     const range = document.createRange();
     const selection = window.getSelection();
     
-    if (element.childNodes.length > 0) {
-      range.setStart(element.childNodes[0], Math.min(position, element.textContent?.length || 0));
-    } else {
-      range.setStart(element, 0);
+    let charCount = 0;
+    let nodeStack: Node[] = [element];
+    let node: Node | undefined;
+    let foundPosition = false;
+    
+    while (!foundPosition && (node = nodeStack.pop())) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const nextCharCount = charCount + (node.textContent?.length || 0);
+        if (position >= charCount && position <= nextCharCount) {
+          range.setStart(node, position - charCount);
+          range.setEnd(node, position - charCount);
+          foundPosition = true;
+        }
+        charCount = nextCharCount;
+      } else {
+        // Add child nodes to stack in reverse order
+        for (let i = node.childNodes.length - 1; i >= 0; i--) {
+          nodeStack.push(node.childNodes[i]);
+        }
+      }
     }
     
-    range.collapse(true);
-    selection?.removeAllRanges();
-    selection?.addRange(range);
+    if (foundPosition) {
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }
   }
 
   onDropdownScroll(event: any): void {
@@ -485,7 +535,6 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   }
 
   private showSuccessMessage(): void {
-    // You can replace this with your preferred notification system
     const successDiv = document.createElement('div');
     successDiv.className = 'tw-fixed tw-top-4 tw-right-4 tw-bg-green-500 tw-text-white tw-px-4 tw-py-2 tw-rounded tw-shadow-lg tw-z-50 tw-transition-all tw-duration-300';
     successDiv.textContent = 'Message sent successfully!';
@@ -502,6 +551,7 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     this.mentionTags = [];
     this.mentionedMembers = [];
     this.selectedUsers = [];
+    this.isProcessingMention = false;
     this.hideDropdown();
     
     const input = this.chatInput.nativeElement;
@@ -510,11 +560,10 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   }
 
   getProfileImageUrl(imagePath: string): string {
-    // You can modify this based on your actual image serving logic
     return imagePath.includes('http') ? imagePath : `assets/${imagePath}`;
   }
 
   trackByUserId(index: number, user: User): string {
-  return user.id;
-}
+    return user.id;
+  }
 }
