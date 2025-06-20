@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TaskService } from 'src/app/services/task.service';
@@ -40,8 +40,12 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   @ViewChild('chatInput', { static: false }) chatInput!: ElementRef<HTMLDivElement>;
   @Output() messageSent = new EventEmitter<ChatData>();
 
+  @Input() boardId: string = '';
+  @Input() taskId: string = '';
+  @Input() type: string = 'board'; 
+
   // API data properties
-  boardId: string = '';
+  // boardId: string = '';
   private allUsers: User[] = [];
   private totalUsers: number = 0;
   private hasMoreUsers: boolean = true;
@@ -645,12 +649,20 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
       processedText = processedText.replace(mentionPattern, `*${tag.name}*`);
     });
     
+    // const chatData: ChatData = {
+    //   taskId: '',
+    //   text: processedText,
+    //   mentionedMembers: [...this.mentionedMembers],
+    //   type: 'board',
+    //   boardId: '6836fc455260ac3ab0ed07a5'
+    // };
+
     const chatData: ChatData = {
-      taskId: '',
+      taskId: this.taskId || '', 
       text: processedText,
       mentionedMembers: [...this.mentionedMembers],
-      type: 'board',
-      boardId: '6836fc455260ac3ab0ed07a5'
+      type: this.type || 'board', 
+      boardId: this.boardId || ''
     };
     
    try {

@@ -5,6 +5,16 @@ import { environment } from 'src/env/env.local';
 import { ModalService } from 'src/app/core/utilities/modal';
 import { TaskService } from 'src/app/services/task.service';
 
+// Define ChatData interface (adjust fields as needed)
+interface ChatData {
+  taskId: string;
+  text: string;
+  mentionedMembers: string[];
+  type: string;
+  boardId: string;
+}
+
+
 @Component({
   selector: 'app-teamtask',
   templateUrl: './teamtask.component.html',
@@ -13,7 +23,9 @@ import { TaskService } from 'src/app/services/task.service';
 export class TeamtaskComponent {
 
     baseURL = environment.baseURL;
-
+    myBoardId: string = '6836fc455260ac3ab0ed07a5'; 
+    myTaskId: string = 'dummy-task-id'; 
+    
   constructor(
     private storage: AppStorage,
     private cdr: ChangeDetectorRef,
@@ -24,4 +36,9 @@ export class TeamtaskComponent {
   async ngOnInit() {
   }
 
+    onCommentAdded(comment: ChatData) {
+    // You can show a toast, reload comments, etc.
+    console.log('Comment added:', comment);
+    // Example: swalHelper.success('Comment added successfully!');
+  }
 }
