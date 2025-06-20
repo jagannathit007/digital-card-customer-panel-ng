@@ -13,6 +13,8 @@ import { TooltipDirective } from '../../partials/tooltip/tooltip.directive';
 import { ToggleComponent } from '../../partials/toggle/toggle.component';
 import { DebounceDirective } from 'src/app/core/directives/debounce';
 
+import { DragDropModule } from '@angular/cdk/drag-drop';
+
 
 import { TaskComponent } from './task-components/task/task.component';
 import { AllmembersComponent } from './task-components/task/shared/allmembers/allmembers.component';
@@ -30,6 +32,7 @@ import { MemberDetailDropdownComponent } from '../../partials/task-managemnt/com
 import { AddCommentsComponent } from '../../partials/task-managemnt/common-components/add-comments/add-comments.component';
 // ! AI COMPENENTS
 import { AiassistantComponent } from '../../partials/task-managemnt/common-components/aiassistant/aiassistant.component';
+import { TeamTaskCardComponent } from "../../partials/task-managemnt/common-components/team-task-card/team-task-card.component";
 
 @NgModule({
   declarations: [
@@ -50,6 +53,7 @@ import { AiassistantComponent } from '../../partials/task-managemnt/common-compo
     NgxPaginationModule,
     NgSelectModule,
     FormsModule,
+    DragDropModule,
     TooltipDirective,
     ToggleComponent,
     DebounceDirective,
@@ -59,7 +63,8 @@ import { AiassistantComponent } from '../../partials/task-managemnt/common-compo
     CustomdataComponent,
     AiassistantComponent,
     MemberDetailDropdownComponent,
-    AddCommentsComponent
-  ]
+    AddCommentsComponent,
+    TeamTaskCardComponent
+]
 })
 export class TaskModule { }

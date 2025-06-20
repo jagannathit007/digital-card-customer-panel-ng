@@ -1,1 +1,230 @@
-<p>team-task-card works!</p>
+<div class="task-card tw-relative tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-p-4 tw-cursor-pointer tw-transition-all tw-duration-200 hover:tw-shadow-md hover:tw-border-gray-300 tw-group"
+     [class.tw-ring-2]="isSelected"
+     [class.tw-ring-blue-500]="isSelected"
+     [class.tw-border-blue-300]="isSelected"
+     [class.tw-opacity-50]="isDragging"
+     [class.tw-transform]="isDragging"
+     [class.tw-rotate-3]="isDragging"
+     [class.tw-scale-105]="isDragging"
+     [class.tw-shadow-2xl]="isDragging"
+     [class.tw-z-50]="isDragging"
+     (click)="onCardClick($event)"
+     (dblclick)="onCardDoubleClick()"
+     (mouseenter)="onMouseEnter()"
+     (mouseleave)="onMouseLeave()"
+     (cdkDragStarted)="onDragStart()"
+     (cdkDragEnded)="onDragEnd()">
+
+  <!-- Drag Preview (shown when dragging) -->
+  <div *ngIf="isDragging" 
+       class="tw-absolute tw-inset-0 tw-bg-gray-200 tw-rounded-lg tw-opacity-50 tw-border-2 tw-border-dashed tw-border-gray-400 tw-flex tw-items-center tw-justify-center tw-z-10">
+    <span class="tw-text-gray-600 tw-font-medium tw-text-sm">Moving...</span>
+  </div>
+
+  <!-- Task Header -->
+  <div class="tw-flex tw-items-start tw-justify-between tw-mb-3">
+    <!-- Status Badge -->
+    <span class="tw-inline-flex tw-items-center tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium tw-flex-shrink-0"
+          [class]="getStatusColor(task.status)">
+      {{ task.status }}
+    </span>
+
+    <!-- Visibility Icon -->
+    <div class="tw-ml-2 tw-flex-shrink-0">
+      <svg *ngIf="task.visibility === 'private'" 
+           class="tw-w-4 tw-h-4 tw-text-gray-400" 
+           fill="none" 
+           stroke="currentColor" 
+           viewBox="0 0 24 24">
+        <path stroke-linecap="round" 
+              stroke-linejoin="round" 
+              stroke-width="2" 
+              [attr.d]="getVisibilityIcon()">
+        </path>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Task Title -->
+  <h4 class="tw-font-medium tw-text-gray-900 tw-text-sm tw-mb-2 tw-leading-tight">
+    {{ task.title }}
+  </h4>
+
+  <!-- Task Description (if exists) -->
+  <p *ngIf="task.description" 
+     class="tw-text-xs tw-text-gray-600 tw-mb-3 tw-line-clamp-2 tw-leading-relaxed">
+    {{ task.description }}
+  </p>
+
+  <!-- Categories -->
+  <div *ngIf="task.categories && task.categories.length > 0" 
+       class="tw-flex tw-flex-wrap tw-gap-1 tw-mb-3">
+    
+    <!-- Display up to 2 categories -->
+    <span *ngFor="let category of displayCategories()"
+          class="tw-inline-flex tw-items-center tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium"
+          [class]="category.color">
+      {{ category.name }}
+    </span>
+
+    <!-- Show +X if more than 2 categories -->
+    <span *ngIf="additionalCategoriesCount() > 0"
+          class="tw-inline-flex tw-items-center tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium tw-bg-gray-100 tw-text-gray-600">
+      +{{ additionalCategoriesCount() }}
+    </span>
+  </div>
+
+  <!-- Due Date Indicator -->
+  <div *ngIf="getDueDateIndicator().show" 
+       class="tw-flex tw-items-center tw-gap-1 tw-mb-3">
+    <svg class="tw-w-3 tw-h-3" 
+         [class]="getDueDateIndicator().color" 
+         fill="none" 
+         stroke="currentColor" 
+         viewBox="0 0 24 24">
+      <path stroke-linecap="round" 
+            stroke-linejoin="round" 
+            stroke-width="2" 
+            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z">
+      </path>
+    </svg>
+    <span class="tw-text-xs tw-font-medium" 
+          [class]="getDueDateIndicator().color">
+      {{ getDueDateIndicator().text }}
+    </span>
+  </div>
+
+  <!-- Card Footer -->
+  <div class="tw-flex tw-items-center tw-justify-between tw-pt-2 tw-border-t tw-border-gray-100">
+    
+    <!-- Action Icons (left side) -->
+    <div class="tw-flex tw-items-center tw-gap-3">
+      <!-- Comments -->
+      <div *ngIf="task.comments > 0" 
+           class="tw-flex tw-items-center tw-gap-1 tw-text-gray-500">
+        <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" 
+                stroke-linejoin="round" 
+                stroke-width="2" 
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+          </path>
+        </svg>
+        <span class="tw-text-xs tw-font-medium">{{ task.comments }}</span>
+      </div>
+
+      <!-- Attachments -->
+      <div *ngIf="task.attachments > 0" 
+           class="tw-flex tw-items-center tw-gap-1 tw-text-gray-500">
+        <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" 
+                stroke-linejoin="round" 
+                stroke-width="2" 
+                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13">
+          </path>
+        </svg>
+        <span class="tw-text-xs tw-font-medium">{{ task.attachments }}</span>
+      </div>
+    </div>
+
+    <!-- Team Members (right side) -->
+    <div class="tw-flex tw-items-center tw-gap-1">
+      <!-- Display up to 2 members -->
+      <div *ngFor="let member of displayMembers()" 
+           class="tw-relative tw-group">
+        <div class="tw-w-6 tw-h-6 tw-rounded-full tw-overflow-hidden tw-border-2 tw-border-white tw-shadow-sm">
+          <img *ngIf="member.profileImage; else memberInitials"
+               [src]="member.profileImage"
+               [alt]="member.name"
+               class="tw-w-full tw-h-full tw-object-cover"
+               (error)="onImageError($event)">
+          
+          <ng-template #memberInitials>
+            <div class="tw-w-full tw-h-full tw-bg-blue-500 tw-text-white tw-text-xs tw-font-medium tw-flex tw-items-center tw-justify-center">
+              {{ getMemberInitials(member) }}
+            </div>
+          </ng-template>
+        </div>
+
+        <!-- Tooltip -->
+        <div class="tw-absolute tw-bottom-8 tw-left-1/2 tw-transform tw--translate-x-1/2 tw-bg-gray-900 tw-text-white tw-text-xs tw-px-2 tw-py-1 tw-rounded tw-opacity-0 tw-group-hover:tw-opacity-100 tw-transition-opacity tw-duration-200 tw-whitespace-nowrap tw-z-20 tw-pointer-events-none">
+          <div class="tw-font-medium">{{ member.name }}</div>
+          <div class="tw-text-gray-300">{{ member.role }}</div>
+          <!-- Tooltip arrow -->
+          <div class="tw-absolute tw-top-full tw-left-1/2 tw-transform tw--translate-x-1/2 tw-border-4 tw-border-transparent tw-border-t-gray-900"></div>
+        </div>
+      </div>
+
+      <!-- Show +N if more than 2 members -->
+      <div *ngIf="additionalMembersCount() > 0"
+           class="tw-w-6 tw-h-6 tw-rounded-full tw-bg-gray-200 tw-text-gray-600 tw-text-xs tw-font-medium tw-flex tw-items-center tw-justify-center tw-border-2 tw-border-white tw-shadow-sm">
+        +{{ additionalMembersCount() }}
+      </div>
+
+      <!-- No members indicator -->
+      <div *ngIf="!task.assignedTo || task.assignedTo.length === 0"
+           class="tw-w-6 tw-h-6 tw-rounded-full tw-bg-gray-100 tw-border-2 tw-border-white tw-shadow-sm tw-flex tw-items-center tw-justify-center">
+        <svg class="tw-w-3 tw-h-3 tw-text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" 
+                stroke-linejoin="round" 
+                stroke-width="2" 
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z">
+          </path>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inline Action Bar (appears on hover or selection) -->
+  <div *ngIf="(showActions() || isSelected) && !isDragging"
+       class="task-actions tw-absolute tw-bottom-2 tw-left-2 tw-right-2 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-px-3 tw-py-2 tw-z-30 tw-opacity-0 tw-group-hover:tw-opacity-100 tw-transition-all tw-duration-200"
+       [class.tw-opacity-100]="isSelected">
+    
+    <div class="tw-flex tw-items-center tw-justify-between tw-gap-2">
+      <!-- Action Buttons -->
+      <div class="tw-flex tw-items-center tw-gap-1">
+        <!-- Complete/Restore Button -->
+        <button *ngIf="canShowCompleteAction()"
+                (click)="onCompleteClick($event)"
+                class="tw-p-1.5 tw-bg-green-100 tw-text-green-700 tw-rounded-md tw-text-xs tw-font-medium hover:tw-bg-green-200 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-1"
+                title="Mark as Complete">
+          <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          <span class="tw-hidden sm:tw-inline">Complete</span>
+        </button>
+
+        <button *ngIf="canShowRestoreAction()"
+                (click)="onCompleteClick($event)"
+                class="tw-p-1.5 tw-bg-blue-100 tw-text-blue-700 tw-rounded-md tw-text-xs tw-font-medium hover:tw-bg-blue-200 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-1"
+                title="Restore Task">
+          <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
+          </svg>
+          <span class="tw-hidden sm:tw-inline">Restore</span>
+        </button>
+
+        <!-- Delete Button -->
+        <button *ngIf="canShowDeleteAction()"
+                (click)="onDeleteClick($event)"
+                class="tw-p-1.5 tw-bg-red-100 tw-text-red-700 tw-rounded-md tw-text-xs tw-font-medium hover:tw-bg-red-200 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-1"
+                title="Delete Task">
+          <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          <span class="tw-hidden sm:tw-inline">Delete</span>
+        </button>
+      </div>
+
+      <!-- Open Button -->
+      <button
+        (click)="onOpenClick($event)"
+        class="tw-p-1.5 tw-bg-blue-600 tw-text-white tw-rounded-md tw-text-xs tw-font-medium hover:tw-bg-blue-700 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-1"
+        title="Open Task">
+        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+        </svg>
+        <span class="tw-hidden sm:tw-inline">Open</span>
+      </button>
+    </div>
+  </div>
+</div>

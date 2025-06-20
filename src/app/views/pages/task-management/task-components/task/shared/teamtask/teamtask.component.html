@@ -1,1 +1,243 @@
-<p>teamtask works!</p>
+<div class="tw-min-h-screen tw-bg-slate-50 tw-p-6" (click)="onDocumentClick($event)">
+  <div class="tw-max-w-full tw-mx-auto">
+    <!-- Board Header -->
+    <div class="tw-mb-6">
+      <h1 class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-mb-2">Team Task Board</h1>
+      <p class="tw-text-gray-600">Manage your team's tasks efficiently</p>
+    </div>
+
+    <!-- Kanban Board -->
+    <div class="tw-flex tw-gap-6 tw-overflow-x-auto tw-pb-4" 
+         cdkDropList 
+         cdkDropListOrientation="horizontal"
+         [cdkDropListData]="editableColumns()"
+         (cdkDropListDropped)="onColumnDrop($event)">
+      
+      <!-- FIXED: Updated cdkDropListGroup for cross-column drag -->
+      <div cdkDropListGroup class="tw-flex tw-gap-6 tw-w-full">
+        
+        <!-- Editable Columns -->
+        <div *ngFor="let column of editableColumns(); trackBy: trackByColumnId"
+             class="tw-flex-shrink-0 tw-w-80 tw-transition-all tw-duration-300 tw-ease-in-out"
+             cdkDrag 
+             [cdkDragData]="column">
+          
+          <!-- Column Container -->
+          <div class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-h-fit tw-max-h-[calc(100vh-200px)] tw-transition-all tw-duration-200">
+            
+            <!-- Column Header -->
+            <div class="tw-p-4 tw-border-b tw-border-gray-100">
+              <div class="tw-flex tw-items-center tw-justify-between">
+                <!-- Column Title -->
+                <div class="tw-flex tw-items-center tw-flex-1">
+                  <div *ngIf="editingColumnId() !== column._id" 
+                       class="tw-flex tw-items-center tw-gap-2 tw-flex-1">
+                    <h3 class="tw-font-semibold tw-text-gray-900 tw-text-sm">
+                      {{ column.title }}
+                    </h3>
+                    <span class="tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-px-2 tw-py-1 tw-rounded-full">
+                      {{ column.tasks.length }}
+                    </span>
+                  </div>
+                  
+                  <!-- Edit Title Input -->
+                  <div *ngIf="editingColumnId() === column._id" class="tw-flex-1">
+                    <input
+                      type="text"
+                      [value]="newColumnTitle()"
+                      (input)="onColumnTitleInput($event)"
+                      (keydown.enter)="saveColumnRename(column._id)"
+                      (keydown.escape)="cancelColumnRename()"
+                      (blur)="saveColumnRename(column._id)"
+                      [attr.data-column-id]="column._id"
+                      class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-font-semibold tw-text-gray-900 tw-bg-transparent tw-border tw-border-blue-300 tw-rounded tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+
+                <!-- Column Actions -->
+                <div class="tw-relative column-menu-container" *ngIf="column.canEdit">
+                  <button
+                    (click)="toggleColumnMenu(column._id, $event)"
+                    class="tw-p-1 tw-rounded tw-text-gray-400 hover:tw-text-gray-600 hover:tw-bg-gray-100 tw-transition-colors tw-duration-200">
+                    <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01"></path>
+                    </svg>
+                  </button>
+
+                  <!-- Dropdown Menu -->
+                  <div *ngIf="activeColumnMenu() === column._id"
+                       class="tw-absolute tw-right-0 tw-top-8 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-z-50 tw-min-w-48">
+                    <div class="tw-py-1">
+                      <button
+                        (click)="startRenameColumn(column._id)"
+                        class="tw-w-full tw-px-4 tw-py-2 tw-text-left tw-text-sm tw-text-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-200">
+                        <svg class="tw-w-4 tw-h-4 tw-inline tw-mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        Rename Column
+                      </button>
+                      
+                      <button
+                        (click)="addColumn('left', column._id)"
+                        class="tw-w-full tw-px-4 tw-py-2 tw-text-left tw-text-sm tw-text-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-200">
+                        <svg class="tw-w-4 tw-h-4 tw-inline tw-mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Add Column Left
+                      </button>
+                      
+                      <button
+                        (click)="addColumn('right', column._id)"
+                        class="tw-w-full tw-px-4 tw-py-2 tw-text-left tw-text-sm tw-text-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-200">
+                        <svg class="tw-w-4 tw-h-4 tw-inline tw-mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Add Column Right
+                      </button>
+                      
+                      <div class="tw-border-t tw-border-gray-100 tw-my-1"></div>
+                      
+                      <button
+                        (click)="deleteColumn(column._id)"
+                        [disabled]="column.tasks.length > 0"
+                        [class.tw-opacity-50]="column.tasks.length > 0"
+                        [class.tw-cursor-not-allowed]="column.tasks.length > 0"
+                        class="tw-w-full tw-px-4 tw-py-2 tw-text-left tw-text-sm tw-text-red-600 hover:tw-bg-red-50 tw-transition-colors tw-duration-200 disabled:hover:tw-bg-transparent">
+                        <svg class="tw-w-4 tw-h-4 tw-inline tw-mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        Delete Column
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tasks Container -->
+            <div class="tw-p-4 tw-space-y-3 tw-max-h-[calc(100vh-300px)] tw-overflow-y-auto tw-transition-all tw-duration-200"
+                 cdkDropList
+                 [id]="column._id"
+                 [cdkDropListData]="column.tasks"
+                 (cdkDropListDropped)="onTaskDrop($event, column._id)"
+                 [class.tw-bg-blue-50]="isDragging() && draggedTask()?.columnId !== column._id"
+                 [class.tw-border-2]="isDragging() && draggedTask()?.columnId !== column._id"
+                 [class.tw-border-blue-300]="isDragging() && draggedTask()?.columnId !== column._id"
+                 [class.tw-border-dashed]="isDragging() && draggedTask()?.columnId !== column._id">
+              
+              <!-- Task Cards -->
+              <div *ngFor="let task of column.tasks; trackBy: trackByTaskId"
+                   class="tw-transition-all tw-duration-300 tw-ease-in-out">
+                <app-team-task-card
+                  [task]="task"
+                  [isSelected]="selectedTask()?._id === task._id"
+                  [isDragging]="isDragging() && draggedTask()?._id === task._id"
+                  (taskClick)="selectTask(task, $event)"
+                  (taskDoubleClick)="onTaskDoubleClick(task)"
+                  (taskComplete)="completeTask(task)"
+                  (taskDelete)="deleteTask(task)"
+                  (taskOpen)="openTask(task)"
+                  (dragStarted)="onDragStarted(task)"
+                  (dragEnded)="onDragEnded()"
+                  cdkDrag
+                  [cdkDragData]="task">
+                </app-team-task-card>
+              </div>
+
+              <!-- Drop Placeholder -->
+              <div *ngIf="isDragging() && column.tasks.length === 0" 
+                   class="tw-h-20 tw-border-2 tw-border-dashed tw-border-blue-300 tw-rounded-lg tw-bg-blue-50 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-text-sm tw-font-medium tw-transition-all tw-duration-200">
+                Drop task here
+              </div>
+
+              <!-- Add New Task Button -->
+              <button
+                (click)="addNewTask(column._id)"
+                class="tw-w-full tw-p-4 tw-border-2 tw-border-dashed tw-border-gray-300 tw-rounded-lg tw-text-gray-500 hover:tw-border-blue-400 hover:tw-text-blue-600 tw-transition-all tw-duration-200 tw-flex tw-items-center tw-justify-center tw-gap-2 hover:tw-bg-blue-50">
+                <svg class="tw-w-5 tw-h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Add New Task
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fixed Columns (Completed & Deleted) -->
+        <div *ngFor="let column of fixedColumns(); trackBy: trackByColumnId"
+             class="tw-flex-shrink-0 tw-w-80 tw-transition-all tw-duration-300 tw-ease-in-out">
+          
+          <!-- Column Container -->
+          <div class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-h-fit tw-max-h-[calc(100vh-200px)] tw-transition-all tw-duration-200">
+            
+            <!-- Column Header -->
+            <div class="tw-p-4 tw-border-b tw-border-gray-100">
+              <div class="tw-flex tw-items-center tw-justify-between">
+                <div class="tw-flex tw-items-center tw-gap-2">
+                  <h3 class="tw-font-semibold tw-text-gray-900 tw-text-sm">
+                    {{ column.title }}
+                  </h3>
+                  <span class="tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-px-2 tw-py-1 tw-rounded-full">
+                    {{ column.tasks.length }}
+                  </span>
+                  <svg class="tw-w-4 tw-h-4 tw-text-gray-400 tw-ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tasks Container -->
+            <div class="tw-p-4 tw-space-y-3 tw-max-h-[calc(100vh-300px)] tw-overflow-y-auto tw-transition-all tw-duration-200"
+                 cdkDropList
+                 [id]="column._id"
+                 [cdkDropListData]="column.tasks"
+                 (cdkDropListDropped)="onTaskDrop($event, column._id)"
+                 [class.tw-bg-blue-50]="isDragging() && draggedTask()?.columnId !== column._id"
+                 [class.tw-border-2]="isDragging() && draggedTask()?.columnId !== column._id"
+                 [class.tw-border-blue-300]="isDragging() && draggedTask()?.columnId !== column._id"
+                 [class.tw-border-dashed]="isDragging() && draggedTask()?.columnId !== column._id">
+              
+              <!-- Task Cards -->
+              <div *ngFor="let task of column.tasks; trackBy: trackByTaskId"
+                   class="tw-transition-all tw-duration-300 tw-ease-in-out">
+                <app-team-task-card
+                  [task]="task"
+                  [isSelected]="selectedTask()?._id === task._id"
+                  [isDragging]="isDragging() && draggedTask()?._id === task._id"
+                  (taskClick)="selectTask(task, $event)"
+                  (taskDoubleClick)="onTaskDoubleClick(task)"
+                  (taskComplete)="completeTask(task)"
+                  (taskDelete)="deleteTask(task)"
+                  (taskOpen)="openTask(task)"
+                  (dragStarted)="onDragStarted(task)"
+                  (dragEnded)="onDragEnded()"
+                  cdkDrag
+                  [cdkDragData]="task">
+                </app-team-task-card>
+              </div>
+
+              <!-- Drop Placeholder -->
+              <div *ngIf="isDragging() && column.tasks.length === 0" 
+                   class="tw-h-20 tw-border-2 tw-border-dashed tw-border-blue-300 tw-rounded-lg tw-bg-blue-50 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-text-sm tw-font-medium tw-transition-all tw-duration-200">
+                Drop task here
+              </div>
+
+              <!-- Add New Task Button (for fixed columns too) -->
+              <button
+                (click)="addNewTask(column._id)"
+                class="tw-w-full tw-p-4 tw-border-2 tw-border-dashed tw-border-gray-300 tw-rounded-lg tw-text-gray-500 hover:tw-border-blue-400 hover:tw-text-blue-600 tw-transition-all tw-duration-200 tw-flex tw-items-center tw-justify-center tw-gap-2 hover:tw-bg-blue-50">
+                <svg class="tw-w-5 tw-h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Add New Task
+              </button>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
