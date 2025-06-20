@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TaskService } from 'src/app/services/task.service';
 import { environment } from 'src/env/env.local';
+import { swalHelper } from 'src/app/core/constants/swal-helper';
 
 interface User {
   _id: string;
@@ -45,6 +46,8 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   private totalUsers: number = 0;
   private hasMoreUsers: boolean = true;
 
+  // message sent button property
+  isSending = false;
   // Component state
   inputText: string = '';
   showDropdown: boolean = false;
@@ -69,7 +72,6 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   constructor(private cdr: ChangeDetectorRef, private taskService: TaskService) {}
 
   ngOnInit(): void {
-    console.log("Chat component initialized");
     this.loadUsers();
   }
 
@@ -91,24 +93,18 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
         type: this.boardId ? 'board_update' : 'board_create'
       });
 
-      console.log("API Response:", response);
-
       // Handle different possible response structures
       let users: User[] = [];
       let pagination: any = null;
 
       if (response && response.data && response.data.users) {
-        // Structure: { data: { users: [...], pagination: {...} } }
         users = response.data.users;
         pagination = response.data.pagination;
       } else if (response && response.data && Array.isArray(response.data)) {
-        // Structure: { data: [...] }
         users = response.data;
       } else if (response && Array.isArray(response)) {
-        // Structure: [...]
         users = response;
       } else if (response && response.users) {
-        // Structure: { users: [...], pagination: {...} }
         users = response.users;
         pagination = response.pagination;
       } else {
@@ -135,10 +131,6 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
           this.totalUsers = users.length;
           this.hasMoreUsers = users.length === this.usersPerPage;
         }
-        
-        console.log(`Loaded ${users.length} users, total: ${this.totalUsers}`);
-        console.log('Filtered Users:', this.filteredUsers);
-        console.log('Show Dropdown:', this.showDropdown);
       } else {
         console.warn('No users found in response');
         if (page === 1) {
@@ -169,6 +161,18 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     const cursorPos = this.getCursorPosition(input);
     
     this.inputText = value;
+
+      // If input is empty, reset all mention-related state
+  if (!this.inputText.trim()) {
+    this.mentionTags = [];
+    this.mentionedMembers = [];
+    this.selectedUsers = [];
+    this.isProcessingMention = false;
+    this.selectedUserIndex = 0;
+    this.hideDropdown();
+    this.cdr.detectChanges();
+    return;
+  }
 
     // Always check for mentions
     const mentionMatch = this.findMentionAtCursor(value, cursorPos);
@@ -353,9 +357,7 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     this.showDropdown = true;
     this.currentPage = 1;
     this.selectedUserIndex = 0; // Always start with first user selected
-    
-    console.log('Showing dropdown with users:', this.filteredUsers);
-    
+        
     // Calculate dropdown position relative to the input element
     const inputRect = input.getBoundingClientRect();
     const containerRect = input.closest('.tw-relative')?.getBoundingClientRect() || inputRect;
@@ -416,7 +418,6 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     this.searchQuery = query;
     this.currentPage = 1;
     
-    console.log('Filtering users with query:', query);
     
     // Reset filtered users and load from API
     this.filteredUsers = [];
@@ -427,7 +428,6 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
       this.selectedUserIndex = Math.max(0, this.filteredUsers.length - 1);
     }
     
-    console.log('After filtering, filteredUsers:', this.filteredUsers);
   }
 
   selectUser(user: User): void {
@@ -635,7 +635,7 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     await this.loadUsers(this.currentPage, this.searchQuery);
   }
 
-  sendMessage(): void {
+  async sendMessage(): Promise<void> {
     if (!this.inputText.trim()) return;
     
     // Convert @mentions to *mentions* format
@@ -649,33 +649,24 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
       taskId: '',
       text: processedText,
       mentionedMembers: [...this.mentionedMembers],
-      type: '',
-      boardId: ''
+      type: 'board',
+      boardId: '6836fc455260ac3ab0ed07a5'
     };
     
-    console.log('Message Data:', chatData);
-    
-    // Show success message
-    this.showSuccessMessage();
-    
-    // Emit the data
-    this.messageSent.emit(chatData);
-    
-    // Reset form
+   try {
+      await this.taskService.AddComment(chatData); 
+      swalHelper.showToast('Message sent successfully!', 'success');
+      this.messageSent.emit(chatData);
+    } catch (error) {
+      swalHelper.showToast('Failed to send comment:', 'error');
+    } finally {
+      this.isSending = false;
+      this.cdr.detectChanges();
+    }
+    // Reset form after sending
     this.resetForm();
   }
 
-  private showSuccessMessage(): void {
-    const successDiv = document.createElement('div');
-    successDiv.className = 'tw-fixed tw-top-4 tw-right-4 tw-bg-green-500 tw-text-white tw-px-4 tw-py-2 tw-rounded tw-shadow-lg tw-z-50 tw-transition-all tw-duration-300';
-    successDiv.textContent = 'Message sent successfully!';
-    
-    document.body.appendChild(successDiv);
-    
-    setTimeout(() => {
-      successDiv.remove();
-    }, 3000);
-  }
 
   private resetForm(): void {
     this.inputText = '';

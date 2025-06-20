@@ -2,7 +2,7 @@
 <div class="tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-200 tw-max-w-2xl tw-mx-auto tw-p-6">
   
   <!-- Header -->
-  <div class="tw-flex tw-items-center tw-justify-between tw-mb-4 tw-pb-3 tw-border-b tw-border-gray-100">
+  <div class="tw-flex tw-items-center tw-justify-between tw-mb-4  tw-border-b tw-border-gray-100">
     <h3 class="tw-text-lg tw-font-semibold tw-text-gray-800">Add Comment</h3>
     <div class="tw-flex tw-items-center tw-space-x-2">
       <span class="tw-text-sm tw-text-gray-500">{{ selectedUsers.length }} mentioned</span>
@@ -41,7 +41,7 @@
       <!-- Send Button -->
       <div class="tw-absolute tw-bottom-2 tw-right-2">
         <button (click)="sendMessage()"
-                [disabled]="!inputText.trim()"
+                [disabled]="!inputText.trim() || isSending"
                 class="tw-bg-blue-500 hover:tw-bg-blue-600 disabled:tw-bg-gray-300 disabled:tw-cursor-not-allowed tw-text-white tw-p-2 tw-rounded-lg tw-transition-colors tw-duration-200 tw-shadow-sm"
                 title="Send message (Ctrl+Enter)">
           <svg class="tw-w-4 tw-h-4" fill="currentColor" viewBox="0 0 20 20">
