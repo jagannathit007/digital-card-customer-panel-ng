@@ -1,0 +1,63 @@
+<!-- Header (fixed position with automatic content spacing) -->
+<div class="tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-50">
+  <nav class="tw-bg-white tw-shadow-md tw-px-4 tw-py-3">
+    <div class="tw-flex tw-items-center tw-justify-between">
+      <!-- Sidebar Toggle Button -->
+      <button class="tw-p-2 tw-rounded-md tw-hover:bg-gray-100 tw-transition-colors" (click)="appWorker.toggleSlider()">
+        <i class="fas fa-bars tw-text-gray-600"></i>
+      </button>
+
+      <!-- Mobile Bottom Container (hidden on larger screens) -->
+      <div class="tw-md:hidden tw-fixed tw-bottom-0 tw-left-0 tw-right-0 tw-bg-white tw-shadow-lg tw-py-2 tw-px-3">
+        <div class="tw-flex tw-gap-3 tw-items-center">
+          <!-- Mobile content goes here -->
+        </div>
+      </div>
+
+      <!-- Profile Section -->
+      <div class="tw-relative">
+        <!-- Profile Dropdown Toggle -->
+        <button class="tw-flex tw-items-center tw-space-x-2 tw-p-2 tw-rounded-lg tw-hover:bg-gray-50 tw-transition-colors tw-outline-none" 
+                (click)="toggleDropdown()" 
+                #profileButton>
+          @if (memberDetails != null && memberDetails.profileImage && memberDetails.profileImage) {
+            <img
+              class="tw-w-8 tw-h-8 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-200"
+              src="{{ imageUrl }}{{ memberDetails.profileImage }}"
+              alt="Profile Image"
+              (error)="handleImageError($event)"
+            />
+          } @else {
+            <div class="tw-w-8 tw-h-8 tw-rounded-full tw-bg-gray-100 tw-flex tw-items-center tw-justify-center">
+              <i class="ri-user-3-line tw-text-gray-600 tw-text-lg"></i>
+            </div>
+          }
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div class="tw-absolute tw-right-0 tw-top-full tw-mt-2 tw-w-48 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-200 tw-py-2 tw-transform tw-transition-all tw-duration-200"
+             [class.tw-opacity-0]="!isDropdownOpen"
+             [class.tw-opacity-100]="isDropdownOpen"
+             [class.tw-scale-95]="!isDropdownOpen"
+             [class.tw-scale-100]="isDropdownOpen"
+             [class.tw-pointer-events-none]="!isDropdownOpen"
+             *ngIf="isDropdownOpen">
+          <!-- Profile Link -->
+          <a class="tw-flex tw-items-center tw-px-4 tw-py-2 tw-text-gray-700 tw-hover:bg-gray-50 tw-transition-colors tw-no-underline " 
+             [routerLink]="['/task-management/profile']"
+             (click)="closeDropdown()">
+            <i class="ri-user-3-line tw-mr-3 tw-text-gray-500"></i>
+            Profile
+          </a>
+          
+          <!-- Logout Link -->
+          <button class="tw-w-full tw-flex tw-items-center tw-px-4 tw-py-2 tw-text-red-600 tw-hover:bg-red-50 tw-transition-colors tw-text-left" 
+                  (click)="logout(); closeDropdown()">
+            <i class="ri-logout-circle-r-line tw-mr-3"></i>
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+</div>

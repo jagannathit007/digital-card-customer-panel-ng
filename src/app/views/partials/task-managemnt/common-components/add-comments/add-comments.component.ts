@@ -1,6 +1,9 @@
-import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ChangeDetectorRef, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TaskService } from 'src/app/services/task.service';
+import { environment } from 'src/env/env.local';
+import { swalHelper } from 'src/app/core/constants/swal-helper';
 
 interface User {
   _id: string;
@@ -15,7 +18,7 @@ interface MentionTag {
   name: string;
   startPos: number;
   endPos: number;
-  uniqueId: string; // Add unique identifier for each mention instance
+  uniqueId: string;
 }
 
 interface ChatData {
@@ -37,66 +40,18 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   @ViewChild('chatInput', { static: false }) chatInput!: ElementRef<HTMLDivElement>;
   @Output() messageSent = new EventEmitter<ChatData>();
 
-  // Dummy data
-  private allUsers: User[] = [
-    {
-      _id: "684d4f7009a3bb3f943af737",
-      name: "wregtrtgh",
-      profileImage: "images/logo.png",
-      role: "manager",
-      id: "684d4f7009a3bb3f943af737"
-    },
-    {
-      _id: "6847fe94b500d38c3460e9d3",
-      name: "abcd",
-      profileImage: "images/logo.png",
-      role: "manager",
-      id: "6847fe94b500d38c3460e9d3"
-    },
-    {
-      _id: "6847fe94b500d38c3460e9d4",
-      name: "Alice Johnson",
-      profileImage: "images/logo.png",
-      role: "developer",
-      id: "6847fe94b500d38c3460e9d4"
-    },
-    {
-      _id: "6847fe94b500d38c3460e9d5",
-      name: "Bob Smith",
-      profileImage: "images/logo.png",
-      role: "designer",
-      id: "6847fe94b500d38c3460e9d5"
-    },
-    {
-      _id: "6847fe94b500d38c3460e9d6",
-      name: "Charlie Brown",
-      profileImage: "images/logo.png",
-      role: "tester",
-      id: "6847fe94b500d38c3460e9d6"
-    },
-    {
-      _id: "6847fe94b500d38c3460e9d7",
-      name: "David Wilson",
-      profileImage: "images/logo.png",
-      role: "manager",
-      id: "6847fe94b500d38c3460e9d7"
-    },
-    {
-      _id: "6847fe94b500d38c3460e9d8",
-      name: "Emma Davis",
-      profileImage: "images/logo.png",
-      role: "developer",
-      id: "6847fe94b500d38c3460e9d8"
-    },
-    {
-      _id: "6847fe94b500d38c3460e9d9",
-      name: "Frank Miller",
-      profileImage: "images/logo.png",
-      role: "designer",
-      id: "6847fe94b500d38c3460e9d9"
-    }
-  ];
+  @Input() boardId: string = '';
+  @Input() taskId: string = '';
+  @Input() type: string = 'board'; 
 
+  // API data properties
+  // boardId: string = '';
+  private allUsers: User[] = [];
+  private totalUsers: number = 0;
+  private hasMoreUsers: boolean = true;
+
+  // message sent button property
+  isSending = false;
   // Component state
   inputText: string = '';
   showDropdown: boolean = false;
@@ -106,18 +61,21 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   dropdownPosition = { top: 0, left: 0 };
   currentMentionQuery: string = '';
   currentPage: number = 1;
-  usersPerPage: number = 5;
+  usersPerPage: number = 10;
   isLoading: boolean = false;
+  searchQuery: string = '';
+  
+  // Keyboard navigation
+  selectedUserIndex: number = 0;
   
   // Mention tracking
   private mentionTags: MentionTag[] = [];
   private lastAtPosition: number = -1;
   private isProcessingMention: boolean = false;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef, private taskService: TaskService) {}
 
   ngOnInit(): void {
-    console.log("Chat component initialized");
     this.loadUsers();
   }
 
@@ -125,31 +83,100 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     document.removeEventListener('click', this.closeDropdown.bind(this));
   }
 
-  loadUsers(page: number = 1): void {
+  async loadUsers(page: number = 1, search: string = ''): Promise<void> {
+    if (this.isLoading) return;
+    
     this.isLoading = true;
     
-    setTimeout(() => {
-      const startIndex = (page - 1) * this.usersPerPage;
-      const endIndex = startIndex + this.usersPerPage;
-      const paginatedUsers = this.allUsers.slice(startIndex, endIndex);
-      
-      if (page === 1) {
-        this.filteredUsers = paginatedUsers;
+    try {
+      const response = await this.taskService.GetSelectableTeamMembers({
+        page: page,
+        limit: this.usersPerPage,
+        search: search.trim(),
+        boardId: this.boardId,
+        type: this.boardId ? 'board_update' : 'board_create'
+      });
+
+      // Handle different possible response structures
+      let users: User[] = [];
+      let pagination: any = null;
+
+      if (response && response.data && response.data.users) {
+        users = response.data.users;
+        pagination = response.data.pagination;
+      } else if (response && response.data && Array.isArray(response.data)) {
+        users = response.data;
+      } else if (response && Array.isArray(response)) {
+        users = response;
+      } else if (response && response.users) {
+        users = response.users;
+        pagination = response.pagination;
       } else {
-        this.filteredUsers = [...this.filteredUsers, ...paginatedUsers];
+        console.warn('Invalid API response structure:', response);
+        users = [];
       }
-      
+
+      if (users.length > 0) {
+        if (page === 1) {
+          // First page - replace all users
+          this.allUsers = users;
+          this.filteredUsers = [...users];
+        } else {
+          // Subsequent pages - append users
+          this.allUsers = [...this.allUsers, ...users];
+          this.filteredUsers = [...this.filteredUsers, ...users];
+        }
+
+        // Update pagination info
+        if (pagination) {
+          this.totalUsers = parseInt(pagination.totalUsers) || users.length;
+          this.hasMoreUsers = pagination.hasNextPage || false;
+        } else {
+          this.totalUsers = users.length;
+          this.hasMoreUsers = users.length === this.usersPerPage;
+        }
+      } else {
+        console.warn('No users found in response');
+        if (page === 1) {
+          this.allUsers = [];
+          this.filteredUsers = [];
+        }
+      }
+    } catch (error) {
+      console.error('Error loading users:', error);
+      // Fallback to empty array on error
+      if (page === 1) {
+        this.allUsers = [];
+        this.filteredUsers = [];
+      }
+    } finally {
       this.isLoading = false;
       this.cdr.detectChanges();
-    }, 300);
+    }
   }
 
   onInputChange(event: any): void {
     const input = event.target;
-    const value = input.textContent || '';
+    
+    // Preserve mention tags during input changes
+    this.preserveMentionTags(input);
+    
+    const value = this.getPlainTextContent(input);
     const cursorPos = this.getCursorPosition(input);
     
     this.inputText = value;
+
+      // If input is empty, reset all mention-related state
+  if (!this.inputText.trim()) {
+    this.mentionTags = [];
+    this.mentionedMembers = [];
+    this.selectedUsers = [];
+    this.isProcessingMention = false;
+    this.selectedUserIndex = 0;
+    this.hideDropdown();
+    this.cdr.detectChanges();
+    return;
+  }
 
     // Always check for mentions
     const mentionMatch = this.findMentionAtCursor(value, cursorPos);
@@ -159,6 +186,7 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
       this.lastAtPosition = mentionMatch.startPos;
       this.showMentionDropdown(input, mentionMatch.startPos);
       this.filterUsers(mentionMatch.query);
+      this.selectedUserIndex = 0; // Reset selection to first user
     } else {
       this.hideDropdown();
     }
@@ -167,17 +195,80 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   onKeyDown(event: KeyboardEvent): void {
     const input = event.target as HTMLElement;
     
-    if (event.key === 'Backspace') {
-      this.handleBackspace(event, input);
-    } else if (event.key === 'Enter' && !event.shiftKey) {
+    // Handle Ctrl+Enter for message submission
+    if (event.key === 'Enter' && event.ctrlKey) {
       event.preventDefault();
       this.sendMessage();
-    } else if (event.key === ' ' && this.showDropdown) {
-      // Prevent dropdown from reopening on space
-      this.hideDropdown();
-    } else if (this.showDropdown) {
-      this.handleDropdownNavigation(event);
+      return;
     }
+    
+    // Handle dropdown navigation
+    if (this.showDropdown) {
+      this.handleDropdownNavigation(event);
+      return;
+    }
+    
+    // Handle regular Enter without dropdown
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      // Don't send message on regular Enter - only on Ctrl+Enter
+      return;
+    }
+    
+    if (event.key === 'Backspace') {
+      this.handleBackspace(event, input);
+    }
+  }
+
+  private preserveMentionTags(input: HTMLElement): void {
+    // Find all mention spans and update their positions
+    const mentionSpans = input.querySelectorAll('[data-mention-id]');
+    const newMentionTags: MentionTag[] = [];
+    
+    mentionSpans.forEach(span => {
+      const uniqueId = span.getAttribute('data-mention-id');
+      const existingTag = this.mentionTags.find(t => t.uniqueId === uniqueId);
+      
+      if (existingTag) {
+        // Calculate new position
+        const range = document.createRange();
+        range.selectNode(span);
+        
+        const beforeRange = document.createRange();
+        beforeRange.selectNodeContents(input);
+        beforeRange.setEnd(range.startContainer, range.startOffset);
+        
+        const startPos = beforeRange.toString().length;
+        const endPos = startPos + existingTag.name.length + 1; // +1 for @
+        
+        newMentionTags.push({
+          ...existingTag,
+          startPos,
+          endPos
+        });
+      }
+    });
+    
+    this.mentionTags = newMentionTags;
+  }
+
+  private getPlainTextContent(input: HTMLElement): string {
+    let text = '';
+    
+    for (let node of Array.from(input.childNodes)) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        text += node.textContent || '';
+      } else if (node.nodeType === Node.ELEMENT_NODE) {
+        const element = node as HTMLElement;
+        if (element.hasAttribute('data-mention-id')) {
+          text += element.textContent || '';
+        } else {
+          text += element.textContent || '';
+        }
+      }
+    }
+    
+    return text;
   }
 
   private handleBackspace(event: KeyboardEvent, input: HTMLElement): void {
@@ -193,10 +284,42 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   }
 
   private handleDropdownNavigation(event: KeyboardEvent): void {
-    if (event.key === 'Escape') {
-      this.hideDropdown();
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.selectedUserIndex = Math.min(this.selectedUserIndex + 1, this.filteredUsers.length - 1);
+        this.scrollToSelectedUser();
+        break;
+        
+      case 'ArrowUp':
+        event.preventDefault();
+        this.selectedUserIndex = Math.max(this.selectedUserIndex - 1, 0);
+        this.scrollToSelectedUser();
+        break;
+        
+      case 'Enter':
+        event.preventDefault();
+        if (this.filteredUsers[this.selectedUserIndex]) {
+          this.selectUser(this.filteredUsers[this.selectedUserIndex]);
+        }
+        break;
+        
+      case 'Escape':
+        event.preventDefault();
+        this.hideDropdown();
+        break;
     }
-    // Add more navigation if needed
+  }
+
+  private scrollToSelectedUser(): void {
+    setTimeout(() => {
+      const dropdown = document.querySelector('.mention-dropdown-list');
+      const selectedItem = dropdown?.querySelector(`[data-user-index="${this.selectedUserIndex}"]`);
+      
+      if (selectedItem && dropdown) {
+        selectedItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    });
   }
 
   private findMentionAtCursor(text: string, cursorPos: number): { query: string; startPos: number } | null {
@@ -223,7 +346,6 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   }
 
   private isAfterCompletedMention(text: string, atPos: number): boolean {
-    // Simply check if this @ position is part of an existing mention tag
     return this.mentionTags.some(tag => 
       atPos >= tag.startPos && atPos < tag.endPos
     );
@@ -238,7 +360,8 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   private showMentionDropdown(input: HTMLElement, atPosition: number): void {
     this.showDropdown = true;
     this.currentPage = 1;
-    
+    this.selectedUserIndex = 0; // Always start with first user selected
+        
     // Calculate dropdown position relative to the input element
     const inputRect = input.getBoundingClientRect();
     const containerRect = input.closest('.tw-relative')?.getBoundingClientRect() || inputRect;
@@ -271,6 +394,9 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
       };
     }
     
+    // Force change detection
+    this.cdr.detectChanges();
+    
     // Add click outside listener
     setTimeout(() => {
       document.addEventListener('click', this.closeDropdown.bind(this));
@@ -280,6 +406,7 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   private hideDropdown(): void {
     this.showDropdown = false;
     this.lastAtPosition = -1;
+    this.selectedUserIndex = 0;
     document.removeEventListener('click', this.closeDropdown.bind(this));
   }
 
@@ -290,20 +417,26 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     this.hideDropdown();
   }
 
-  private filterUsers(query: string): void {
-    if (query.trim() === '') {
-      this.filteredUsers = this.allUsers.slice(0, this.usersPerPage);
-    } else {
-      this.filteredUsers = this.allUsers
-        .filter(user => user.name.toLowerCase().includes(query.toLowerCase()))
-        .slice(0, this.usersPerPage);
+  // Updated filterUsers method to use API
+  private async filterUsers(query: string): Promise<void> {
+    this.searchQuery = query;
+    this.currentPage = 1;
+    
+    
+    // Reset filtered users and load from API
+    this.filteredUsers = [];
+    await this.loadUsers(1, query);
+    
+    // Reset selection if current index is out of bounds
+    if (this.selectedUserIndex >= this.filteredUsers.length) {
+      this.selectedUserIndex = Math.max(0, this.filteredUsers.length - 1);
     }
-    this.cdr.detectChanges();
+    
   }
 
   selectUser(user: User): void {
     const input = this.chatInput.nativeElement;
-    const text = input.textContent || '';
+    const text = this.getPlainTextContent(input);
     const cursorPos = this.getCursorPosition(input);
     
     // Find the @ symbol position
@@ -349,9 +482,13 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     this.hideDropdown();
   }
 
+  onUserHover(index: number): void {
+    this.selectedUserIndex = index;
+  }
+
   public removeMentionTag(tag: MentionTag): void {
     const input = this.chatInput.nativeElement;
-    const text = input.textContent || '';
+    const text = this.getPlainTextContent(input);
     
     // Remove mention from text
     const beforeMention = text.substring(0, tag.startPos);
@@ -494,17 +631,15 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     }
   }
 
-  loadMoreUsers(): void {
-    if (this.isLoading) return;
+  // Updated loadMoreUsers method for API pagination
+  async loadMoreUsers(): Promise<void> {
+    if (this.isLoading || !this.hasMoreUsers) return;
     
-    const maxPage = Math.ceil(this.allUsers.length / this.usersPerPage);
-    if (this.currentPage < maxPage) {
-      this.currentPage++;
-      this.loadUsers(this.currentPage);
-    }
+    this.currentPage++;
+    await this.loadUsers(this.currentPage, this.searchQuery);
   }
 
-  sendMessage(): void {
+  async sendMessage(): Promise<void> {
     if (!this.inputText.trim()) return;
     
     // Convert @mentions to *mentions* format
@@ -514,37 +649,36 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
       processedText = processedText.replace(mentionPattern, `*${tag.name}*`);
     });
     
+    // const chatData: ChatData = {
+    //   taskId: '',
+    //   text: processedText,
+    //   mentionedMembers: [...this.mentionedMembers],
+    //   type: 'board',
+    //   boardId: '6836fc455260ac3ab0ed07a5'
+    // };
+
     const chatData: ChatData = {
-      taskId: '',
+      taskId: this.taskId || '', 
       text: processedText,
       mentionedMembers: [...this.mentionedMembers],
-      type: '',
-      boardId: ''
+      type: this.type || 'board', 
+      boardId: this.boardId || ''
     };
     
-    console.log('Message Data:', chatData);
-    
-    // Show success message
-    this.showSuccessMessage();
-    
-    // Emit the data
-    this.messageSent.emit(chatData);
-    
-    // Reset form
+   try {
+      await this.taskService.AddComment(chatData); 
+      swalHelper.showToast('Message sent successfully!', 'success');
+      this.messageSent.emit(chatData);
+    } catch (error) {
+      swalHelper.showToast('Failed to send comment:', 'error');
+    } finally {
+      this.isSending = false;
+      this.cdr.detectChanges();
+    }
+    // Reset form after sending
     this.resetForm();
   }
 
-  private showSuccessMessage(): void {
-    const successDiv = document.createElement('div');
-    successDiv.className = 'tw-fixed tw-top-4 tw-right-4 tw-bg-green-500 tw-text-white tw-px-4 tw-py-2 tw-rounded tw-shadow-lg tw-z-50 tw-transition-all tw-duration-300';
-    successDiv.textContent = 'Message sent successfully!';
-    
-    document.body.appendChild(successDiv);
-    
-    setTimeout(() => {
-      successDiv.remove();
-    }, 3000);
-  }
 
   private resetForm(): void {
     this.inputText = '';
@@ -552,6 +686,10 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     this.mentionedMembers = [];
     this.selectedUsers = [];
     this.isProcessingMention = false;
+    this.selectedUserIndex = 0;
+    this.searchQuery = '';
+    this.currentPage = 1;
+    this.hasMoreUsers = true;
     this.hideDropdown();
     
     const input = this.chatInput.nativeElement;
@@ -560,7 +698,18 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   }
 
   getProfileImageUrl(imagePath: string): string {
-    return imagePath.includes('http') ? imagePath : `assets/${imagePath}`;
+    if (!imagePath) {
+      return `${environment.imageURL}/uploads/task_management/profiles/default-profile-image.png`;
+    }
+
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+
+    const cleanPath = imagePath.startsWith('/')
+      ? imagePath.substring(1)
+      : imagePath;
+    return `${environment.imageURL}/${cleanPath}`;
   }
 
   trackByUserId(index: number, user: User): string {
