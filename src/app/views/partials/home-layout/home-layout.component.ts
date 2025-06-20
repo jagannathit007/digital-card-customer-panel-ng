@@ -5,10 +5,14 @@ import { HeaderComponent } from '../header/header.component';
 import { MemberheaderComponent } from '../../partials/memberheader/memberheader.component';
 import { RouterOutlet } from '@angular/router';
 import { FooterComponent } from '../footer/footer.component';
-import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { common } from 'src/app/core/constants/common';
 import { FormsModule } from '@angular/forms';
+import { AdminHeaderComponent } from '../admin-header/admin-header.component';
+import { TaskPermissionsService } from 'src/app/services/task-permissions.service';
+import { Router, NavigationEnd } from '@angular/router';
+
+
 
 @Component({
   selector: 'app-home-layout',
@@ -20,6 +24,7 @@ import { FormsModule } from '@angular/forms';
     HeaderComponent,
     MemberheaderComponent,
     FooterComponent,
+    AdminHeaderComponent,
     FormsModule
   ],
   templateUrl: './home-layout.component.html',
@@ -27,10 +32,27 @@ import { FormsModule } from '@angular/forms';
 })
 export class HomeLayoutComponent implements OnInit {
   
-  constructor(private storage:AppStorage){}
+  constructor(
+    private storage:AppStorage,
+    private TaskPermissionsService:TaskPermissionsService,
+    private router: Router
+  ){
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.currentRoute = event.urlAfterRedirects;
+      }
+    });
+  }
+
   businessId:any
+  isAdmin = false;
+  currentRoute: string = '';
+
+
   ngOnInit(): void {
     this.businessId=this.storage.get(common.BUSINESS_CARD);
+    this.isAdmin = this.TaskPermissionsService.isAdminLevelPermission();
+    this.currentRoute = this.router.url;
   }
 
   @HostListener('window:keydown', ['$event'])
