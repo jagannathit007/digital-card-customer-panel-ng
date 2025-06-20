@@ -16,6 +16,8 @@ import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
 import { AddTeamMemberComponent } from '../../../../../../partials/task-managemnt/common-components/addTeamMember/addTeamMember.component';
 import { CreateBoardComponent } from "../../../../../../partials/task-managemnt/common-components/create-board/create-board.component";
+import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
+import { AppStorage } from 'src/app/core/utilities/app-storage';
 
 interface Category {
   _id: string;
@@ -124,7 +126,8 @@ editingBoard = signal<Board | null>(null);
   constructor(
     private router: Router,
     private taskService: TaskService,
-    public taskPermissionsService: TaskPermissionsService
+    public taskPermissionsService: TaskPermissionsService,
+    public storage: AppStorage
   ) {}
 
   ngOnInit() {
@@ -167,9 +170,12 @@ editingBoard = signal<Board | null>(null);
   onOpenBoard(board: Board) {
     this.expandingBoardId.set(board._id);
 
+    teamMemberCommon
+    this.storage.set(teamMemberCommon.BOARD_DATA, board);
+
     // Simulate animation delay before navigation
     setTimeout(() => {
-      this.router.navigate(['/task-management/members-task'], {
+      this.router.navigate(['/task-management/teamtask'], {
         queryParams: { boardId: board._id },
       });
     }, 500);

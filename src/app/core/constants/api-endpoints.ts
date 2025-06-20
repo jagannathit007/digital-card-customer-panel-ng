@@ -177,6 +177,7 @@ public DELETE_BOARD: string = `${this.PATH}/task/board/delete`;
 public UPDATE_BOARD_MEMBERS: string = `${this.PATH}/task/board/member/update`;
 public UPDATE_BOARD_CATEGORIES: string = `${this.PATH}/task/board/categories/update`;
 public GET_BOARDS_FOR_ADMIN: string = `${this.PATH}/task/board/all`;
+public GET_BOARDS_NAMES: string = `${this.PATH}/task/board/allNames`;
 public GET_JOINED_BOARDS: string = `${this.PATH}/task/board/joined`;
 public GET_ALL_AVAILABLE_MEMBERS: string = `${this.PATH}/task/board/members/available`;
 

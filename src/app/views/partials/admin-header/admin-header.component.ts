@@ -9,10 +9,10 @@ import { AsyncPipe, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SharedService } from 'src/app/services/shared.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { TaskService } from 'src/app/services/task.service';
 import { TaskMemberAuthService } from 'src/app/services/task-member-auth.service';
 import { TeamMemberData } from '../task-managemnt/common-components/addTeamMember/addTeamMember.component';
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
-
 
 @Component({
   selector: 'app-admin-header',
@@ -29,11 +29,17 @@ export class AdminHeaderComponent implements OnInit {
   showDefaultIcon: boolean = false; 
   imageUrl = environment.imageURL;
   memberDetails: any;
+  
+  // NEW PROPERTIES FOR BOARDS DROPDOWN
+  isBoardsDropdownOpen = false;
+  boardsList: any[] = [];
+  currentBoardId: string = '';
 
     constructor(
       public appWorker: AppWorker,
       private storage: AppStorage,
       public authService: AuthService,
+      public TaskService: TaskService,
       public taskMemberAuthService: TaskMemberAuthService,
       private cdr: ChangeDetectorRef,
       private sharedService: SharedService
@@ -45,9 +51,12 @@ export class AdminHeaderComponent implements OnInit {
   
     async ngOnInit() {
       this.onInitFunction();
+      await this.getBoardsNames(); // Make sure this loads the boards
+      this.getCurrentBoardFromStorage(); // Get current board ID
   
       this.sharedService.refreshHeader$.subscribe(() => {
         this.onInitFunction();
+        this.getCurrentBoardFromStorage(); // Refresh current board on header refresh
       });
   
       // Add dropdown animation listeners after view init
@@ -56,24 +65,60 @@ export class AdminHeaderComponent implements OnInit {
       }, 100);
     }
   
-    // Dropdown toggle functionality
-toggleDropdown() {
-  this.isDropdownOpen = !this.isDropdownOpen;
-}
+    // NEW METHODS FOR BOARDS DROPDOWN
+    toggleBoardsDropdown() {
+      this.isBoardsDropdownOpen = !this.isBoardsDropdownOpen;
+      // Close profile dropdown if open
+      if (this.isBoardsDropdownOpen) {
+        this.isDropdownOpen = false;
+      }
+    }
 
-// Dropdown close functionality  
-closeDropdown() {
-  this.isDropdownOpen = false;
-}
+    closeBoardsDropdown() {
+      this.isBoardsDropdownOpen = false;
+    }
 
-// Click outside to close dropdown
-@HostListener('document:click', ['$event'])
-onDocumentClick(event: Event) {
-  const target = event.target as HTMLElement;
-  if (!target.closest('.tw-relative')) {
-    this.isDropdownOpen = false;
-  }
-}
+    // UPDATED Dropdown toggle functionality
+    toggleDropdown() {
+      this.isDropdownOpen = !this.isDropdownOpen;
+      // Close boards dropdown if open
+      if (this.isDropdownOpen) {
+        this.isBoardsDropdownOpen = false;
+      }
+    }
+
+    // Dropdown close functionality  
+    closeDropdown() {
+      this.isDropdownOpen = false;
+    }
+
+    // UPDATED Click outside to close dropdown
+    @HostListener('document:click', ['$event'])
+    onDocumentClick(event: Event) {
+      const target = event.target as HTMLElement;
+      
+      // Check if click is outside profile dropdown
+      if (!target.closest('.profile-dropdown-container') && !target.closest('[data-profile-button]')) {
+        this.isDropdownOpen = false;
+      }
+      
+      // Check if click is outside boards dropdown
+      if (!target.closest('.boards-dropdown-container') && !target.closest('[data-boards-button]')) {
+        this.isBoardsDropdownOpen = false;
+      }
+    }
+
+    // UPDATED getBoardsNames method to store the results
+    getBoardsNames = async () => {
+      try {
+        const result = await this.TaskService.GetBoardNames({});
+        this.boardsList = result || []; // Store the boards list
+        return result;
+      } catch (error) {
+        console.error('Error fetching board names:', error);
+        this.boardsList = []; // Set empty array on error
+      }
+    };
 
     getProfile = async () => {
       try {
@@ -187,5 +232,25 @@ onDocumentClick(event: Event) {
     onImageLoad() {
       this.showDefaultIcon = false;
       this.cdr.detectChanges();
+    }
+
+    // NEW METHOD: Get current board from localStorage
+    getCurrentBoardFromStorage() {
+      try {
+        const boardData = this.storage.get(teamMemberCommon.BOARD_DATA);
+        if (boardData && boardData._id) {
+          this.currentBoardId = boardData._id;
+        } else {
+          this.currentBoardId = '';
+        }
+      } catch (error) {
+        console.error('Error getting board from storage:', error);
+        this.currentBoardId = '';
+      }
+    }
+
+    // NEW METHOD: Check if board is currently active
+    isCurrentBoard(boardId: string): boolean {
+      return this.currentBoardId === boardId;
     }
 }

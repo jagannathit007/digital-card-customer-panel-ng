@@ -1,11 +1,77 @@
 <!-- Header (fixed position with automatic content spacing) -->
-<div class="tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-z-50">
+<div class="tw-sticky tw-top-0 tw-left-0 tw-right-0 tw-z-50">
   <nav class="tw-bg-white tw-shadow-md tw-px-4 tw-py-3">
     <div class="tw-flex tw-items-center tw-justify-between">
-      <!-- Sidebar Toggle Button -->
-      <button class="tw-p-2 tw-rounded-md tw-hover:bg-gray-100 tw-transition-colors" (click)="appWorker.toggleSlider()">
-        <i class="fas fa-bars tw-text-gray-600"></i>
-      </button>
+      <!-- Left Side: Hamburger and Boards Dropdown -->
+      <div class="tw-flex tw-items-center tw-space-x-3">
+        <!-- Sidebar Toggle Button -->
+        <button class="tw-p-2 tw-rounded-md tw-hover:bg-gray-100 tw-transition-colors" (click)="appWorker.toggleSlider()">
+          <i class="hamburger tw-text-gray-600"></i>
+        </button>
+
+        <!-- Boards Dropdown -->
+        <div class="tw-relative boards-dropdown-container">
+          <!-- Boards Dropdown Toggle -->
+          <button class="tw-flex tw-items-center tw-space-x-2 tw-px-3 tw-py-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors tw-outline-none tw-border tw-border-gray-300" 
+                  (click)="toggleBoardsDropdown()" 
+                  data-boards-button>
+            <i class="fa-solid fa-th-large tw-text-gray-600 tw-text-sm"></i>
+            <span class="tw-text-gray-700 tw-font-medium">Boards</span>
+            <i class="fa-solid fa-chevron-down tw-text-gray-500 tw-text-xs tw-transition-transform tw-duration-200" 
+               [class.tw-rotate-180]="isBoardsDropdownOpen"></i>
+          </button>
+
+          <!-- Boards Dropdown Menu -->
+          <div class="tw-absolute tw-left-0 tw-top-full tw-mt-2 tw-w-64 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-200 tw-py-2 tw-transform tw-transition-all tw-duration-200 tw-z-50"
+               [class.tw-opacity-0]="!isBoardsDropdownOpen"
+               [class.tw-opacity-100]="isBoardsDropdownOpen"
+               [class.tw-scale-95]="!isBoardsDropdownOpen"
+               [class.tw-scale-100]="isBoardsDropdownOpen"
+               [class.tw-pointer-events-none]="!isBoardsDropdownOpen"
+               *ngIf="isBoardsDropdownOpen">
+            
+            <!-- Home Link -->
+            <a class="tw-flex tw-items-center tw-px-4 tw-py-3 tw-text-gray-700 tw-hover:bg-blue-50 tw-hover:text-blue-600 tw-transition-colors tw-no-underline tw-block tw-border-b tw-border-gray-100" 
+               [routerLink]="['/task-management/boards']"
+               (click)="closeBoardsDropdown()">
+              <i class="fa-solid fa-home tw-mr-3 tw-text-blue-500 tw-w-4"></i>
+              <span class="tw-font-medium">Home</span>
+            </a>
+            
+            <!-- Boards Section Header -->
+            <div class="tw-px-4 tw-py-2 tw-text-xs tw-font-semibold tw-text-gray-500 tw-uppercase tw-tracking-wide">
+              Your Boards
+            </div>
+            
+            <!-- Board Links -->
+            <div class="tw-max-h-64 tw-overflow-y-auto">
+              <ng-container *ngFor="let board of boardsList; let i = index">
+                <a class="tw-flex tw-items-center tw-px-4 tw-py-2 tw-text-gray-700 tw-hover:bg-gray-50 tw-transition-colors tw-no-underline tw-block tw-relative" 
+                   [class.tw-bg-blue-50]="isCurrentBoard(board._id)"
+                   [class.tw-text-blue-600]="isCurrentBoard(board._id)"
+                   [class.tw-font-medium]="isCurrentBoard(board._id)"
+                   [routerLink]="['/task-management/board', board._id]"
+                   (click)="closeBoardsDropdown()">
+                  <i class="fa-solid fa-clipboard-list tw-mr-3 tw-w-4 tw-text-sm" 
+                     [class.tw-text-gray-400]="!isCurrentBoard(board._id)"
+                     [class.tw-text-blue-500]="isCurrentBoard(board._id)"></i>
+                  <span class="tw-truncate tw-flex-1">{{ board.name }}</span>
+                  <!-- Active Board Notification Dot -->
+                  <span *ngIf="isCurrentBoard(board._id)" 
+                        class="tw-w-2 tw-h-2 tw-bg-blue-500 tw-rounded-full tw-ml-2 tw-flex-shrink-0 tw-animate-pulse"></span>
+                </a>
+              </ng-container>
+              
+              <!-- Empty State -->
+              <div *ngIf="!boardsList || boardsList.length === 0" 
+                   class="tw-px-4 tw-py-3 tw-text-gray-500 tw-text-sm tw-text-center">
+                <i class="fa-solid fa-inbox tw-mb-2 tw-text-gray-300 tw-text-lg tw-block"></i>
+                No boards available
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Mobile Bottom Container (hidden on larger screens) -->
       <div class="tw-md:hidden tw-fixed tw-bottom-0 tw-left-0 tw-right-0 tw-bg-white tw-shadow-lg tw-py-2 tw-px-3">
@@ -14,12 +80,27 @@
         </div>
       </div>
 
-      <!-- Profile Section -->
-      <div class="tw-relative">
-        <!-- Profile Dropdown Toggle -->
-        <button class="tw-flex tw-items-center tw-space-x-2 tw-p-2 tw-rounded-lg tw-hover:bg-gray-50 tw-transition-colors tw-outline-none" 
-                (click)="toggleDropdown()" 
-                #profileButton>
+      <!-- Right Side Icons and Profile Section -->
+      <div class="tw-flex tw-items-center tw-space-x-3">
+        <!-- Three Icons on Left -->
+        <button class="tw-p-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors">
+          <i class="fa-solid fa-user-plus tw-text-gray-600 tw-text-lg"></i>
+        </button>
+        
+        <button class="tw-p-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors">
+          <i class="fa-solid fa-comments tw-text-gray-600 tw-text-lg"></i>
+        </button>
+        
+        <button class="tw-p-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors">
+          <i class="fa-solid fa-link tw-text-gray-600 tw-text-lg"></i>
+        </button>
+
+        <!-- Profile Section with Left Border -->
+        <div class="tw-relative tw-pl-3 tw-border-l tw-border-gray-300 profile-dropdown-container">
+          <!-- Profile Dropdown Toggle -->
+          <button class="tw-flex tw-items-center tw-space-x-2 tw-p-2 tw-rounded-lg tw-hover:bg-gray-50 tw-transition-colors tw-outline-none" 
+                  (click)="toggleDropdown()" 
+                  data-profile-button>
           @if (memberDetails != null && memberDetails.profileImage && memberDetails.profileImage) {
             <img
               class="tw-w-8 tw-h-8 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-200"
@@ -34,7 +115,7 @@
           }
         </button>
 
-        <!-- Dropdown Menu -->
+        <!-- Profile Dropdown Menu -->
         <div class="tw-absolute tw-right-0 tw-top-full tw-mt-2 tw-w-48 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-200 tw-py-2 tw-transform tw-transition-all tw-duration-200"
              [class.tw-opacity-0]="!isDropdownOpen"
              [class.tw-opacity-100]="isDropdownOpen"
@@ -43,7 +124,7 @@
              [class.tw-pointer-events-none]="!isDropdownOpen"
              *ngIf="isDropdownOpen">
           <!-- Profile Link -->
-          <a class="tw-flex tw-items-center tw-px-4 tw-py-2 tw-text-gray-700 tw-hover:bg-gray-50 tw-transition-colors tw-no-underline " 
+          <a class="tw-flex tw-items-center tw-px-4 tw-py-2 tw-text-gray-700 tw-hover:bg-gray-50 tw-transition-colors tw-no-underline tw-block" 
              [routerLink]="['/task-management/profile']"
              (click)="closeDropdown()">
             <i class="ri-user-3-line tw-mr-3 tw-text-gray-500"></i>
@@ -59,5 +140,8 @@
         </div>
       </div>
     </div>
-  </nav>
-</div>
+    </div>
+    </nav>
+    </div>
+  
+
