@@ -20,11 +20,11 @@ export class GetInTouchComponent {
     private storage: AppStorage
   ) { }
 
-  payload={
-    page:1,
-    limit:10,
-    search:'',
-    businessCardId:''
+  payload = {
+    page: 1,
+    limit: 10,
+    search: '',
+    businessCardId: ''
   }
 
   ngOnInit(): void {
@@ -32,13 +32,17 @@ export class GetInTouchComponent {
     this._getContactRequests();
   }
 
+  isTitleEditAllowed = false;
+  customContactTitle = "";
+
   _getContactRequests = async () => {
     this.isLoading = true;
-    this.payload.businessCardId=this.businessCardId
+    this.payload.businessCardId = this.businessCardId
     let response = await this.businessCardService.getContactRequest(this.payload)
     if (response) {
-      this.contactRequests = response
-      this.contactRequestVisible=response.contactRequestVisible
+      this.contactRequests = response;
+      this.contactRequestVisible = response.contactRequestVisible;
+      this.customContactTitle = response.contactRequestTitle;
     }
     this.isLoading = false;
 
@@ -46,8 +50,8 @@ export class GetInTouchComponent {
 
   async deleteContactRequest(id: string): Promise<void> {
     const confirm = await swalHelper.delete();
-    if(confirm.isConfirmed){
-      this.businessCardService.deleteContactRequest({businessCardId:this.businessCardId, _id:id})
+    if (confirm.isConfirmed) {
+      this.businessCardService.deleteContactRequest({ businessCardId: this.businessCardId, _id: id })
     }
     this._getContactRequests();
   }
@@ -62,20 +66,34 @@ export class GetInTouchComponent {
     this._getContactRequests()
   }
 
-  contactRequestVisible:boolean=false
+  contactRequestVisible: boolean = false
   async _updateVisibility() {
-     let response= await this.businessCardService.updateVisibility({
-        contactRequestVisible: this.contactRequestVisible,
-        businessCardId: this.businessCardId
-      });
-      if(response){
-        swalHelper.showToast('Visibility successfully updated','success')
-      }
-      this._getContactRequests()
+    let response = await this.businessCardService.updateVisibility({
+      contactRequestVisible: this.contactRequestVisible,
+      businessCardId: this.businessCardId
+    });
+    if (response) {
+      swalHelper.showToast('Visibility successfully updated', 'success')
+    }
+    this._getContactRequests()
   }
 
-  onVisibilityChanged(){
-    this.contactRequestVisible=!this.contactRequestVisible
+  async updateCustomTitle() {
+    if (this.customContactTitle.trim().length > 0) {
+      let response = await this.businessCardService.updateCustomTitle({
+        contactRequestTitle: this.customContactTitle,
+        businessCardId: this.businessCardId
+      });
+      if (response) {
+        this.isTitleEditAllowed = false;
+        swalHelper.showToast('Contact form title updated!', 'success')
+      }
+      this._getContactRequests()
+    }
+  }
+
+  onVisibilityChanged() {
+    this.contactRequestVisible = !this.contactRequestVisible
     this._updateVisibility();
   }
 }

@@ -104,6 +104,7 @@ class ApiEndpoints {
   public UPDATE_BUSINESS_CARD_OFFERS: string = `${this.PATH}/businessCard/updateOffers`;
   public DELETE_BUSINESS_CARD_OFFERS: string = `${this.PATH}/businessCard/deleteOffers`;
   public UPDATE_BUSINESSCARD_VISIBILITY: string = `${this.PATH}/businessCard/update-visibility`;
+  public UPDATE_BUSINESSCARD_CONTACT_FORM_TITLE: string = `${this.PATH}/businessCard/updateContactRequestTitle`;
 
   //get in touch 
   public GET_CONTACT_REQUEST: string = `${this.PATH}/businessCard/getContactRequest`;
