@@ -949,6 +949,84 @@ export class AuthService {
     }
   }
 
+  // Our certification section in website builder
+  async addcertification(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data);
+
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_CERTIFICATES_ADD,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async updatecertification(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data);
+
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_CERTIFICATES_UPDATE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async deletecertification(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data);
+
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_CERTIFICATES_DELETE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
 
   // our-clients ADD/UPDATE/DELETE
   async addClients(data: any) {

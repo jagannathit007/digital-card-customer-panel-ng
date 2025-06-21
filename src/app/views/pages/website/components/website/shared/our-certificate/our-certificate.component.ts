@@ -1,159 +1,276 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { common } from 'src/app/core/constants/common';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Editor, Toolbar } from 'ngx-editor';
+import { DomSanitizer } from '@angular/platform-browser';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { AuthService } from 'src/app/services/auth.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
+import { ModalService } from 'src/app/core/utilities/modal';
 import { WebsiteBuilderService } from 'src/app/services/website-builder.service';
+import { common } from 'src/app/core/constants/common';
 
 @Component({
   selector: 'app-our-certificate',
   templateUrl: './our-certificate.component.html',
   styleUrl: './our-certificate.component.scss'
 })
-export class OurCertificateComponent implements OnInit {
-  @ViewChild('certificateFileInput') fileInput!: ElementRef;
-  private objectURLCache = new Map<File, string>();
-  baseURL = environment.baseURL;
+
+export class OurCertificatesComponent implements OnInit, OnDestroy {
+  imageURL = environment.imageURL;
+  searchTerm: string = '';
+  itemsPerPage: number = 10;
+  totalItems: number = 0;
+  p: number = 1;
   isLoading: boolean = false;
-  
-  otherImages: any[] = [];
-  existingImages: any;
-  otherImagesVisible: boolean = true;
+
+  certificates: any[] = [];
+  filteredCertificates: any[] = [];
+  certificateID: string = '';
+  selectedImage: string = '';
+
+  // ngx-editor instances
+  addEditor!: Editor;
+  editEditor!: Editor;
+  addTitleEditor!: Editor;
+  editTitleEditor!: Editor;
+  toolbar: Toolbar = [
+    ['bold', 'italic'],
+    ['underline', 'strike'],
+    ['code', 'blockquote'],
+    ['ordered_list', 'bullet_list'],
+    [{ heading: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }],
+    ['link', 'image'],
+    ['text_color', 'background_color'],
+    ['align_left', 'align_center', 'align_right', 'align_justify'],
+  ];
+
+  newCertificate: any = {
+    title: '',
+    description: '',
+    image: null as File | null,
+    visible: true
+  };
+
+  editingCertificate = {
+    _id: '',
+    title: '',
+    description: '',
+    image: null as File | null,
+    currentImage: '',
+    visible: true
+  };
+
+  certificationVisible: boolean = true;
   businessCardId: any;
 
   constructor(
-    private storage: AppStorage, 
+    private storage: AppStorage,
     public authService: AuthService,
-    private websiteService: WebsiteBuilderService
+    private cdr: ChangeDetectorRef,
+    public modal: ModalService,
+    private websiteService: WebsiteBuilderService,
+    private sanitizer: DomSanitizer,
   ) {}
 
-  ngOnInit() {
+  async ngOnInit() {
+    this.addEditor = new Editor();
+    this.editEditor = new Editor();
+    this.addTitleEditor = new Editor();
+    this.editTitleEditor = new Editor();
+
     this.businessCardId = this.storage.get(common.BUSINESS_CARD);
-    this.fetchOtherImages();
+    await this.fetchCertificates();
   }
 
-  async fetchOtherImages() {
+  ngOnDestroy(): void {
+    this.addEditor.destroy();
+    this.editEditor.destroy();
+    this.addTitleEditor.destroy();
+    this.editTitleEditor.destroy();
+  }
+
+  async fetchCertificates() {
     this.isLoading = true;
     try {
       let results = await this.authService.getWebsiteDetails(this.businessCardId);
-      if (results && results.otherImages) {
-        // Set the otherImages from the database
-        if (results.otherImages && results.otherImages.length > 0) {
-          this.otherImages = results.otherImages.map((image: string) => image);
-        }
-        
-        // Set visibility state
-        this.otherImagesVisible = results.otherImagesVisible !== undefined ? 
-                                  results.otherImagesVisible : true;
+      if (results) {
+        this.certificates = results.certification ? [...results.certification] : [];
+        this.filteredCertificates = [...this.certificates];
+        this.totalItems = this.certificates.length;
+        this.certificationVisible = results.certificationVisible;
+        this.cdr.markForCheck();
       } else {
-        swalHelper.showToast('Certificate details not found!', 'warning');
+        swalHelper.showToast('Failed to fetch certificates!', 'warning');
       }
     } catch (error) {
-      swalHelper.showToast('Error fetching certificate details!', 'error');
+      swalHelper.showToast('Error fetching certificates!', 'error');
     } finally {
       this.isLoading = false;
+      this.cdr.markForCheck();
     }
   }
 
-  onCertificateImagesSelected(event: any): void {
-    const files: FileList = event.target.files;
-    const newFiles: File[] = Array.from(files);
+  async addCertificate() {
+    if (!this.validateCertificate(this.newCertificate)) return;
 
-    if (!this.otherImages) {
-      this.otherImages = [];
-    }
-
-    const totalImages = this.otherImages?.length + newFiles.length;
-
-    if (totalImages > 15) {
-      swalHelper.showToast('You can upload a maximum of 15 images.','warning');
-      this.fileInput.nativeElement.value = '';
-      return;
-    }
-
-    for (let file of newFiles) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.otherImages.push(file);
-      };
-      reader.readAsDataURL(file);
-    }
-    this.fileInput.nativeElement.value = '';
-  }
-
-  imageBaseURL = environment.imageURL;
-  getImagePreview(img: any): string {
-    if (img instanceof File) {
-      if (!this.objectURLCache.has(img)) {
-        const url = URL.createObjectURL(img);
-        this.objectURLCache.set(img, url);
-      }
-      return this.objectURLCache.get(img)!;
-    }
-    return this.imageBaseURL + (typeof img === 'string' ? img : img.images);
-  }
-
-  removeImage(index: number): void {
-    this.otherImages.splice(index, 1);
-    if (this.otherImages?.length == 0) {
-      this.otherImages = [];
-      this.fileInput.nativeElement.value = '';
-    }
-  }
-
-  async saveOtherImages() {
     this.isLoading = true;
     try {
-      this.otherImages = this.otherImages?.filter((item: any) => {
-        if (typeof item === 'string') {
-          this.existingImages = this.existingImages || [];
-          this.existingImages?.push(item);
-          return false;
-        }
-        return true;
-      });
-      
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append('businessCardId', this.businessCardId);
-      
-      if (this.otherImages && this.otherImages.length > 0) {
-        this.otherImages.forEach(file => {
-          formData.append('otherImages', file, file.name);
-        });
+      formData.append('title', this.newCertificate.title);
+      formData.append('description', this.newCertificate.description || '');
+      if (this.newCertificate.image) {
+        formData.append('file', this.newCertificate.image);
       }
-      
-      if (this.existingImages) {
-        formData.append('existingImages', JSON.stringify(this.existingImages));
-      }
+      formData.append('visible', this.newCertificate.visible.toString());
 
-      let response = await this.websiteService.updateOurCertificates(formData);
-      
-      if (response) {
-        swalHelper.showToast('Certificate images updated successfully!', 'success');
-        this.otherImages = [];
-        this.existingImages = null;
-        this.fetchOtherImages();
-      } else {
-        swalHelper.showToast('Failed to update certificate images!', 'warning');
+      const result = await this.authService.addcertification(formData);
+      if (result) {
+        await this.fetchCertificates();
+        this.resetForm();
+        this.modal.close('AddCertificateModal');
+        swalHelper.showToast('Certificate added successfully!', 'success');
       }
     } catch (error) {
-      console.error('Error updating certificate images:', error);
-      swalHelper.showToast('Something went wrong!', 'error');
+      swalHelper.showToast('Error adding certificate!', 'error');
     } finally {
       this.isLoading = false;
+      this.cdr.markForCheck();
     }
   }
 
-  async updateVisibility() {
-    try {
-      await this.websiteService.updateVisibility({
-        'otherImagesVisible': this.otherImagesVisible,
-        businessCardId: this.businessCardId
-      });
-    } catch (error) {
-      console.error('Error updating visibility:', error);
-      swalHelper.showToast('Failed to update visibility!', 'error');
+  onFileChange(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      this.newCertificate.image = event.target.files[0];
     }
+  }
+
+  onEditFileChange(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      this.editingCertificate.image = event.target.files[0];
+    }
+  }
+
+  editCertificate(cert: any) {
+    this.editingCertificate = {
+      _id: cert._id,
+      title: cert.title,
+      description: cert.description || '',
+      image: null,
+      currentImage: cert.image || '',
+      visible: cert.visible
+    };
+    this.modal.open('EditCertificateModal');
+    this.cdr.markForCheck();
+  }
+
+  async updateCertificate() {
+    if (!this.validateCertificate(this.editingCertificate)) return;
+
+    this.isLoading = true;
+    try {
+      const formData = new FormData();
+      formData.append('businessCardId', this.businessCardId);
+      formData.append('certificateId', this.editingCertificate._id);
+      formData.append('title', this.editingCertificate.title);
+      formData.append('description', this.editingCertificate.description || '');
+      if (this.editingCertificate.image) {
+        formData.append('file', this.editingCertificate.image);
+      }
+      formData.append('visible', this.editingCertificate.visible.toString());
+
+      const result = await this.authService.updatecertification(formData);
+      if (result) {
+        await this.fetchCertificates();
+        this.modal.close('EditCertificateModal');
+        swalHelper.showToast('Certificate updated successfully!', 'success');
+      }
+    } catch (error) {
+      swalHelper.showToast('Error updating certificate!', 'error');
+    } finally {
+      this.isLoading = false;
+      this.cdr.markForCheck();
+    }
+  }
+
+  prepareDeleteCertificate = async (certificateID: string) => {
+    this.certificateID = certificateID;
+    const confirm = await swalHelper.delete();
+    if (confirm.isConfirmed) {
+      this.confirmDeleteCertificate();
+    }
+    this.cdr.markForCheck();
+  }
+
+  async confirmDeleteCertificate() {
+    this.isLoading = true;
+    try {
+      const data = {
+        businessCardId: this.businessCardId,
+        certificateId: this.certificateID
+      };
+      const result = await this.authService.deletecertification(data);
+      if (result) {
+        await this.fetchCertificates();
+        swalHelper.success('Certificate deleted successfully!');
+      }
+    } catch (error) {
+      swalHelper.showToast('Error deleting certificate!', 'error');
+    } finally {
+      this.isLoading = false;
+      this.cdr.markForCheck();
+    }
+  }
+
+  validateCertificate(cert: any): boolean {
+    if (!cert.title.trim()) {
+      swalHelper.showToast('Certificate title is required!', 'warning');
+      return false;
+    }
+    return true;
+  }
+
+  onSearch() {
+    if (!this.searchTerm.trim()) {
+      this.filteredCertificates = [...this.certificates];
+    } else {
+      this.filteredCertificates = this.certificates.filter(cert =>
+        cert.title.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        (cert.description && cert.description.toLowerCase().includes(this.searchTerm.toLowerCase()))
+      );
+    }
+    this.totalItems = this.filteredCertificates.length;
+    this.cdr.markForCheck();
+  }
+
+  onItemsPerPageChange() {
+    this.p = 1;
+    this.cdr.markForCheck();
+  }
+
+  pageChangeEvent(event: number) {
+    this.p = event;
+    this.cdr.markForCheck();
+  }
+
+  resetForm() {
+    this.newCertificate = { title: '', description: '', image: null, visible: true };
+    this.cdr.markForCheck();
+  }
+
+  onCloseModal(modal: string) {
+    this.modal.close(modal);
+  }
+
+  _updateVisibility = async () => {
+    await this.websiteService.updateVisibility({
+      certificationVisible: this.certificationVisible,
+      businessCardId: this.businessCardId
+    });
+  }
+
+  sanitizeHtml(content: any): any {
+    if (!content) return '';
+    return content.replace(/<[^>]*>/g, '');
   }
 }

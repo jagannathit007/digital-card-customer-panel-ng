@@ -122,7 +122,10 @@ class ApiEndpoints {
   public SAVE_EXCEL_CUSTOMER: string = `${this.PATH}/customer/saveExcelCustomer`;
 
   // our Certificates
-  public WEBSITE_CERTIFICATES_ADD: string = `${this.PATH}/website/certificate/otherimages`;
+  public WEBSITE_CERTIFICATES_ADD: string = `${this.PATH}/website/certification/add`;
+  public WEBSITE_CERTIFICATES_UPDATE: string = `${this.PATH}/website/certification/update`;
+  public WEBSITE_CERTIFICATES_DELETE: string = `${this.PATH}/website/certification/delete`;
+
 
   // our Faq
   public WEBSITE_FAQ_ADD: string = `${this.PATH}/website/faq/update`;
