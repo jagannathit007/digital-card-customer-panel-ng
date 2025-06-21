@@ -85,6 +85,7 @@ export class GetInTouchComponent {
         businessCardId: this.businessCardId
       });
       if (response) {
+        this.isTitleEditAllowed = false;
         swalHelper.showToast('Contact form title updated!', 'success')
       }
       this._getContactRequests()
