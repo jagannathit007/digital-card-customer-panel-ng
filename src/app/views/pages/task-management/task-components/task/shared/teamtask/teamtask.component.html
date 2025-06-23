@@ -220,6 +220,8 @@
                 <div
                   *ngFor="let task of column.tasks; trackBy: trackByTaskId"
                   class="tw-transition-all tw-duration-300 tw-ease-in-out"
+                  cdkDrag
+                    [cdkDragData]="task"
                 >
                   <app-team-task-card
                     [task]="task"
@@ -234,19 +236,21 @@
                     (taskOpen)="openTask(task)"
                     (dragStarted)="onDragStarted(task)"
                     (dragEnded)="onDragEnded()"
-                    cdkDrag
-                    [cdkDragData]="task"
                   >
                   </app-team-task-card>
                 </div>
 
                 <!-- Drop Placeholder -->
-                <div
+                <!-- <div
                   *ngIf="isDragging() && column.tasks.length === 0"
                   class="tw-h-20 tw-border-2 tw-border-dashed tw-border-blue-300 tw-rounded-lg tw-bg-blue-50 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-text-sm tw-font-medium tw-transition-all tw-duration-200"
                 >
                   Drop task here
-                </div>
+                </div> -->
+<div
+                *cdkDropListPlaceholder
+                class="tw-my-3 tw-h-20 tw-border-2 tw-border-dashed tw-border-blue-300 tw-rounded-lg tw-bg-blue-50"
+              ></div>
 
                 <div class="tw-absolute tw-bottom-1 tw-right-1 tw-left-1">
                   <div
@@ -356,6 +360,8 @@
                 <div
                   *ngFor="let task of column.tasks; trackBy: trackByTaskId"
                   class="tw-transition-all tw-duration-300 tw-ease-in-out"
+                  cdkDrag
+                    [cdkDragData]="task"
                 >
                   <app-team-task-card
                     [task]="task"
@@ -370,19 +376,15 @@
                     (taskOpen)="openTask(task)"
                     (dragStarted)="onDragStarted(task)"
                     (dragEnded)="onDragEnded()"
-                    cdkDrag
-                    [cdkDragData]="task"
                   >
                   </app-team-task-card>
                 </div>
 
                 <!-- Drop Placeholder -->
                 <div
-                  *ngIf="isDragging() && column.tasks.length === 0"
-                  class="tw-h-20 tw-border-2 tw-border-dashed tw-border-blue-300 tw-rounded-lg tw-bg-blue-50 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-text-sm tw-font-medium tw-transition-all tw-duration-200"
-                >
-                  Drop task here
-                </div>
+                *cdkDropListPlaceholder
+                class="tw-my-3 tw-h-20 tw-border-2 tw-border-dashed tw-border-blue-300 tw-rounded-lg tw-bg-blue-50"
+              ></div>
 
                 <!-- Add New Task Button (for fixed columns too) -->
                 <!-- <button
