@@ -886,3 +886,83 @@
 //     margin-left: -280px;
 //   }
 // }
+
+
+/* Remove default list padding */
+ol, ul {
+  padding-left: 0rem;
+}
+
+/* Sidebar collapse animation for mobile */
+@media (max-width: 768px) {
+  #sidebar {
+    @apply tw-fixed tw-inset-y-0 tw-left-0 tw-z-50 tw-h-screen;
+  }
+  
+  #sidebar.tw--ml-64 {
+    @apply tw--ml-72;
+  }
+}
+
+/* Custom scrollbar for webkit browsers */
+.tw-scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.tw-scrollbar-track-transparent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tw-scrollbar-thumb-gray-200::-webkit-scrollbar-thumb {
+  background-color: #e5e7eb;
+  border-radius: 2px;
+}
+
+.tw-scrollbar-thumb-gray-200::-webkit-scrollbar-thumb:hover {
+  background-color: #d1d5db;
+}
+
+/* Smooth animations for feather icons */
+[data-feather] {
+  transition: all 0.2s ease;
+}
+
+/* Active state enhancement */
+.router-link-active {
+  @apply tw-bg-indigo-50 tw-text-indigo-700 tw-border-l-4 tw-border-indigo-500;
+}
+
+/* Enhanced hover effects for better UX */
+.hover-lift:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo container specific styling */
+.logo-container img {
+  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Prevent text selection on interactive elements */
+.tw-select-none {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Ensure proper text truncation */
+.tw-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Custom animation delays for staggered menu animations */
+.submenu-item-1 { transition-delay: 0.05s; }
+.submenu-item-2 { transition-delay: 0.1s; }
+.submenu-item-3 { transition-delay: 0.15s; }
+.submenu-item-4 { transition-delay: 0.2s; }
+.submenu-item-5 { transition-delay: 0.25s; }
