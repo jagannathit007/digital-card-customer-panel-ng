@@ -176,7 +176,7 @@
   </div>
 </nav> -->
 
-<nav id="sidebar" class="sidebar js-sidebar" [class.collapsed]="!appWorker.isSliderOpen">
+<!-- <nav id="sidebar" class="sidebar js-sidebar" [class.collapsed]="!appWorker.isSliderOpen">
   <div class="sidebar-content js-simplebar" style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
     <a class="sidebar-brand" style="color:#126f8a; background: aliceblue; padding: 7px 20px;"
       [routerLink]="'business-cards'">
@@ -249,6 +249,135 @@
           <a class="sidebar-link user-select-none logout-link" (click)="logout()">
             <i class="align-middle text-danger logout sidebar-icon" data-feather="log-out"></i>
             <span class="align-middle text-danger logout">Logout</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav> -->
+
+
+<nav id="sidebar" class=" tw-z-50 tw-h-screen tw-w-64 tw-bg-white tw-shadow-md tw-transition-all tw-duration-300 tw-ease-in-out" [class.collapsed]="!appWorker.isSliderOpen">
+  <div class="tw-h-full tw-overflow-hidden">
+    <!-- Brand Section -->
+    <a class="tw-flex tw-items-center tw-px-4 tw-py-3 tw-border-b tw-border-gray-100 tw-no-underline" [routerLink]="'business-cards'">
+      <img src="/assets/logo/companylogo (1).png" alt="Company Logo" class="tw-w-10 tw-h-10 tw-object-cover tw-rounded" />
+      <div class="tw-ml-3 tw-text-sm tw-font-medium tw-text-gray-700">
+        {{ authService.profileData?.name || taskMemberAuthService.memberDetails?.name || '--' }}
+      </div>
+    </a>
+
+    <!-- Navigation Items -->
+    <div class="tw-h-[calc(100vh-64px)] tw-overflow-y-auto tw-pb-16">
+      <ul class="tw-space-y-1 tw-px-2 tw-py-4">
+        <ng-container *ngFor="let module of filteredMenuList">
+          <!-- Module Header -->
+          <li class="tw-px-4 tw-py-2 tw-text-xs tw-font-semibold tw-tracking-wider tw-text-gray-500 tw-uppercase">
+            {{module.moduleName}}
+          </li>
+          
+          <!-- Menu Items -->
+          <li class="tw-mt-1" *ngFor="let item of module.menus; let i = index">
+            <ng-container *ngIf="!item.menu">
+              <a class="tw-flex tw-items-center tw-px-4 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-700 tw-rounded-md hover:tw-bg-gray-100 tw-transition-colors tw-duration-200 tw-no-underline" 
+                 [routerLink]="item.link" 
+                 [queryParams]="item.query || {}"
+                 routerLinkActive="tw-bg-gray-50 tw-text-gray-900">
+                <i class="tw-mr-3 tw-w-5 tw-h-5" [class.tw-text-gray-500]="!router.isActive(item.link, false)" 
+                   [class.tw-text-blue-600]="router.isActive(item.link, false)" 
+                   [attr.data-feather]="item?.icon"></i>
+                <span>{{ item.title }}</span>
+              </a>
+            </ng-container>
+
+            <ng-container *ngIf="item.menu">
+              <a class="tw-flex tw-items-center tw-justify-between tw-px-4 tw-py-2 tw-text-sm tw-font-medium tw-rounded-md hover:tw-bg-gray-100 tw-transition-colors tw-duration-200 tw-cursor-pointer tw-no-underline" 
+                 [class.tw-bg-gray-50]="sideBarService.activeSubMenuIndex === i"
+                 [class.tw-text-gray-700]="sideBarService.activeSubMenuIndex !== i"
+                 [class.tw-text-blue-600]="sideBarService.activeSubMenuIndex === i"
+                 (click)="sideBarService.toggleSubMenu(i)">
+                <div class="tw-flex tw-items-center">
+                  <i class="tw-mr-3 tw-w-5 tw-h-5" [class.tw-text-gray-500]="sideBarService.activeSubMenuIndex !== i" 
+                     [class.tw-text-blue-600]="sideBarService.activeSubMenuIndex === i" 
+                     [attr.data-feather]="item?.icon"></i>
+                  <span>{{ item.title }}</span>
+                </div>
+                <i class="ri-arrow-down-s-fill tw-transition-transform tw-duration-200" 
+                   [class.tw-text-gray-400]="sideBarService.activeSubMenuIndex !== i"
+                   [class.tw-text-blue-600]="sideBarService.activeSubMenuIndex === i"
+                   [class.tw-rotate-180]="sideBarService.activeSubMenuIndex === i"></i>
+              </a>
+              
+              <!-- Submenu -->
+              <ul class="tw-pl-4 tw-overflow-hidden tw-transition-all tw-duration-200 tw-ease-in-out" 
+                  [class.tw-max-h-0]="sideBarService.activeSubMenuIndex !== i"
+                  [class.tw-max-h-[500px]]="sideBarService.activeSubMenuIndex === i"
+                  [class.tw-py-1]="sideBarService.activeSubMenuIndex === i">
+                <li class="tw-mt-1" *ngFor="let submenu of item.menu; let subIndex = index">
+                  <ng-container *ngIf="!submenu.menu">
+                    <a class="tw-flex tw-items-center tw-px-4 tw-py-2 tw-text-sm tw-font-medium tw-rounded-md hover:tw-bg-gray-100 tw-transition-colors tw-duration-200 tw-no-underline"
+                      [routerLink]="submenu.link" 
+                      routerLinkActive="tw-bg-gray-100 tw-text-gray-900"
+                      [class.tw-text-gray-600]="!router.isActive(submenu.link, false)"
+                      [class.tw-text-blue-600]="router.isActive(submenu.link, false)">
+                      <i class="tw-mr-3 tw-w-4 tw-h-4" [class.tw-text-gray-400]="!router.isActive(submenu.link, false)" 
+                         [class.tw-text-blue-600]="router.isActive(submenu.link, false)" 
+                         [attr.data-feather]="submenu?.icon"></i>
+                      <span>{{ submenu.title }}</span>
+                    </a>
+                  </ng-container>
+                  <ng-container *ngIf="submenu.menu">
+                    <a class="tw-flex tw-items-center tw-justify-between tw-px-4 tw-py-2 tw-text-sm tw-font-medium tw-rounded-md hover:tw-bg-gray-100 tw-transition-colors tw-duration-200 tw-cursor-pointer tw-no-underline"
+                       [class.tw-bg-gray-50]="sideBarService.activeSubSubMenuIndex === subIndex"
+                       [class.tw-text-gray-600]="sideBarService.activeSubSubMenuIndex !== subIndex"
+                       [class.tw-text-blue-600]="sideBarService.activeSubSubMenuIndex === subIndex"
+                       (click)="sideBarService.toggleSubSubMenu(subIndex)">
+                      <div class="tw-flex tw-items-center">
+                        <i class="tw-mr-3 tw-w-4 tw-h-4" [class.tw-text-gray-400]="sideBarService.activeSubSubMenuIndex !== subIndex" 
+                           [class.tw-text-blue-600]="sideBarService.activeSubSubMenuIndex === subIndex" 
+                           [attr.data-feather]="submenu?.icon"></i>
+                        <span>{{ submenu.title }}</span>
+                      </div>
+                      <i class="ri-arrow-down-s-fill tw-transition-transform tw-duration-200"
+                         [class.tw-text-gray-400]="sideBarService.activeSubSubMenuIndex !== subIndex"
+                         [class.tw-text-blue-600]="sideBarService.activeSubSubMenuIndex === subIndex"
+                         [class.tw-rotate-180]="sideBarService.activeSubSubMenuIndex === subIndex"></i>
+                    </a>
+                    
+                    <!-- Sub-submenu -->
+                    <ul class="tw-pl-4 tw-overflow-hidden tw-transition-all tw-duration-200 tw-ease-in-out"
+                        [class.tw-max-h-0]="sideBarService.activeSubSubMenuIndex !== subIndex"
+                        [class.tw-max-h-[400px]]="sideBarService.activeSubSubMenuIndex === subIndex"
+                        [class.tw-py-1]="sideBarService.activeSubSubMenuIndex === subIndex">
+                      <li *ngFor="let subSubmenu of submenu.menu">
+                        <a class="tw-flex tw-items-center tw-px-4 tw-py-2 tw-text-sm tw-font-medium tw-rounded-md hover:tw-bg-gray-100 tw-transition-colors tw-duration-200 tw-no-underline"
+                          [routerLink]="subSubmenu.link" 
+                          routerLinkActive="tw-bg-gray-100 tw-text-gray-900"
+                          [class.tw-text-gray-500]="!router.isActive(subSubmenu.link, false)"
+                          [class.tw-text-blue-600]="router.isActive(subSubmenu.link, false)">
+                          <i class="tw-mr-3 tw-w-4 tw-h-4" [class.tw-text-gray-400]="!router.isActive(subSubmenu.link, false)" 
+                             [class.tw-text-blue-600]="router.isActive(subSubmenu.link, false)" 
+                             [attr.data-feather]="subSubmenu?.icon"></i>
+                          <span>{{ subSubmenu.title }}</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </ng-container>
+                </li>
+              </ul>
+            </ng-container>
+          </li>
+        </ng-container>
+
+        <!-- Extra & Tools Section -->
+        <li class="tw-px-4 tw-py-2 tw-text-xs tw-font-semibold tw-tracking-wider tw-text-gray-500 tw-uppercase tw-mt-4">
+          Extra & Tools
+        </li>
+        <li class="tw-mt-1">
+          <a class="tw-flex tw-items-center tw-px-4 tw-py-2 tw-text-sm tw-font-medium tw-text-red-600 tw-rounded-md hover:tw-bg-red-50 tw-transition-colors tw-duration-200 tw-cursor-pointer tw-no-underline" 
+             (click)="logout()">
+            <i class="tw-mr-3 tw-w-5 tw-h-5 tw-text-red-500" data-feather="log-out"></i>
+            <span>Logout</span>
           </a>
         </li>
       </ul>

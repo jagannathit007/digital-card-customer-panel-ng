@@ -344,7 +344,7 @@ import { TaskMemberAuthService } from 'src/app/services/task-member-auth.service
 })
 export class SideBarService {
   constructor(
-    private router: Router,
+    public router: Router,
     public authService: AuthService,
     public taskMemberAuthService: TaskMemberAuthService,
     private storage: AppStorage

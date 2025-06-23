@@ -30,7 +30,7 @@ export class SideBarComponent implements OnInit, AfterViewInit {
   whiteLabelName: string = environment.whiteLabelName;
 
   constructor(
-    private router: Router,
+    public router: Router,
     private storage: AppStorage,
     public authService: AuthService,
     public taskMemberAuthService: TaskMemberAuthService,
