@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, HostListener  } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, HostListener, OnDestroy  } from '@angular/core';
 import { environment } from 'src/env/env.local';
 import { TaskPermissionsService } from 'src/app/services/task-permissions.service'; 
 import { AppWorker } from '../../../core/workers/app.worker';
@@ -13,6 +13,9 @@ import { TaskService } from 'src/app/services/task.service';
 import { TaskMemberAuthService } from 'src/app/services/task-member-auth.service';
 import { TeamMemberData } from '../task-managemnt/common-components/addTeamMember/addTeamMember.component';
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-admin-header',
@@ -35,6 +38,9 @@ export class AdminHeaderComponent implements OnInit {
   boardsList: any[] = [];
   currentBoardId: string = '';
 
+    private destroy$ = new Subject<void>();
+  shouldShowElements = false;
+
     constructor(
       public appWorker: AppWorker,
       private storage: AppStorage,
@@ -42,7 +48,8 @@ export class AdminHeaderComponent implements OnInit {
       public TaskService: TaskService,
       public taskMemberAuthService: TaskMemberAuthService,
       private cdr: ChangeDetectorRef,
-      private sharedService: SharedService
+      private sharedService: SharedService,
+      private router: Router
     ) {}
   
     async onInitFunction() {
@@ -50,6 +57,7 @@ export class AdminHeaderComponent implements OnInit {
     }
   
     async ngOnInit() {
+      this.setupRouterListener(); 
       this.onInitFunction();
       await this.getBoardsNames(); // Make sure this loads the boards
       this.getCurrentBoardFromStorage(); // Get current board ID
@@ -64,7 +72,38 @@ export class AdminHeaderComponent implements OnInit {
         this.initializeDropdownAnimations();
       }, 100);
     }
-  
+  private setupRouterListener() {
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((event: NavigationEnd) => {
+        this.checkShouldShowElements(event.url);
+      });
+    
+    // Initial check
+    this.checkShouldShowElements(this.router.url);
+  }
+
+  private checkShouldShowElements(url: string) {
+    // Exact match for /task-management/boards
+    const isBoardsRoute = url === '/task-management/boards';
+    
+    // Check for /teamtask with boardId parameter
+    const isTeamTaskWithBoardId = url.startsWith('/task-management/teamtask?') && 
+                                new URLSearchParams(url.split('?')[1]).has('boardId');
+    
+    this.shouldShowElements = isBoardsRoute || isTeamTaskWithBoardId;
+    console.log('Show elements:', this.shouldShowElements, 'for URL:', url);
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+
     // NEW METHODS FOR BOARDS DROPDOWN
     toggleBoardsDropdown() {
       this.isBoardsDropdownOpen = !this.isBoardsDropdownOpen;

@@ -1,5 +1,5 @@
 <!-- Header (fixed position with automatic content spacing) -->
-<div class="tw-sticky tw-top-0 tw-left-0 tw-right-0 tw-z-50">
+<div class="tw-sticky tw-top-0 tw-left-0 tw-right-0 ">
   <nav class="tw-bg-white tw-shadow-md tw-px-4 tw-py-3">
     <div class="tw-flex tw-items-center tw-justify-between">
       <!-- Left Side: Hamburger and Boards Dropdown -->
@@ -10,7 +10,7 @@
         </button>
 
         <!-- Boards Dropdown -->
-        <div class="tw-relative boards-dropdown-container">
+        <div class="tw-relative boards-dropdown-container" *ngIf="shouldShowElements">
           <!-- Boards Dropdown Toggle -->
           <button class="tw-flex tw-items-center tw-space-x-2 tw-px-3 tw-py-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors tw-outline-none tw-border tw-border-gray-300" 
                   (click)="toggleBoardsDropdown()" 
@@ -73,27 +73,24 @@
         </div>
       </div>
 
-      <!-- Mobile Bottom Container (hidden on larger screens) -->
-      <div class="tw-md:hidden tw-fixed tw-bottom-0 tw-left-0 tw-right-0 tw-bg-white tw-shadow-lg tw-py-2 tw-px-3">
-        <div class="tw-flex tw-gap-3 tw-items-center">
-          <!-- Mobile content goes here -->
-        </div>
-      </div>
-
       <!-- Right Side Icons and Profile Section -->
       <div class="tw-flex tw-items-center tw-space-x-3">
         <!-- Three Icons on Left -->
-        <button class="tw-p-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors">
-          <i class="fa-solid fa-user-plus tw-text-gray-600 tw-text-lg"></i>
-        </button>
-        
-        <button class="tw-p-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors">
-          <i class="fa-solid fa-comments tw-text-gray-600 tw-text-lg"></i>
-        </button>
-        
-        <button class="tw-p-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors">
-          <i class="fa-solid fa-link tw-text-gray-600 tw-text-lg"></i>
-        </button>
+         <div  *ngIf="shouldShowElements">
+           <button class="tw-p-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors">
+             <i class="fa-solid fa-user-plus tw-text-gray-600 tw-text-lg"></i>
+           </button>
+           
+           <button class="tw-p-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors">
+             <i class="fa-solid fa-comments tw-text-gray-600 tw-text-lg"></i>
+           </button>
+           
+           <button class="tw-p-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors">
+             <i class="fa-solid fa-link tw-text-gray-600 tw-text-lg"></i>
+           </button>
+         </div>
+
+  
 
         <!-- Profile Section with Left Border -->
         <div class="tw-relative tw-pl-3 tw-border-l tw-border-gray-300 profile-dropdown-container">
