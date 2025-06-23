@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, HostListener  } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, HostListener, OnDestroy  } from '@angular/core';
 import { environment } from 'src/env/env.local';
 import { TaskPermissionsService } from 'src/app/services/task-permissions.service'; 
 import { AppWorker } from '../../../core/workers/app.worker';
@@ -13,6 +13,10 @@ import { TaskService } from 'src/app/services/task.service';
 import { TaskMemberAuthService } from 'src/app/services/task-member-auth.service';
 import { TeamMemberData } from '../task-managemnt/common-components/addTeamMember/addTeamMember.component';
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { BoardNotificationService } from 'src/app/services/board-notification.service';
 
 @Component({
   selector: 'app-admin-header',
@@ -35,6 +39,9 @@ export class AdminHeaderComponent implements OnInit {
   boardsList: any[] = [];
   currentBoardId: string = '';
 
+    private destroy$ = new Subject<void>();
+  shouldShowElements = false;
+
     constructor(
       public appWorker: AppWorker,
       private storage: AppStorage,
@@ -42,7 +49,9 @@ export class AdminHeaderComponent implements OnInit {
       public TaskService: TaskService,
       public taskMemberAuthService: TaskMemberAuthService,
       private cdr: ChangeDetectorRef,
-      private sharedService: SharedService
+      private sharedService: SharedService,
+      private router: Router,
+      private boardNotificationService: BoardNotificationService
     ) {}
   
     async onInitFunction() {
@@ -50,9 +59,19 @@ export class AdminHeaderComponent implements OnInit {
     }
   
     async ngOnInit() {
+      this.setupRouterListener(); 
       this.onInitFunction();
       await this.getBoardsNames(); // Make sure this loads the boards
       this.getCurrentBoardFromStorage(); // Get current board ID
+
+        // IMPORTANT: Subscribe to board changes for real-time updates
+    this.boardNotificationService.currentBoard$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(boardId => {
+        this.currentBoardId = boardId;
+        this.cdr.detectChanges(); // Force change detection to update UI
+        console.log('Current board updated:', boardId);
+      });
   
       this.sharedService.refreshHeader$.subscribe(() => {
         this.onInitFunction();
@@ -64,7 +83,38 @@ export class AdminHeaderComponent implements OnInit {
         this.initializeDropdownAnimations();
       }, 100);
     }
-  
+  private setupRouterListener() {
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((event: NavigationEnd) => {
+        this.checkShouldShowElements(event.url);
+      });
+    
+    // Initial check
+    this.checkShouldShowElements(this.router.url);
+  }
+
+  private checkShouldShowElements(url: string) {
+    // Exact match for /task-management/boards
+    const isBoardsRoute = url === '/task-management/boards';
+    
+    // Check for /teamtask with boardId parameter
+    const isTeamTaskWithBoardId = url.startsWith('/task-management/teamtask?') && 
+                                new URLSearchParams(url.split('?')[1]).has('boardId');
+    
+    this.shouldShowElements = isBoardsRoute || isTeamTaskWithBoardId;
+    console.log('Show elements:', this.shouldShowElements, 'for URL:', url);
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+
     // NEW METHODS FOR BOARDS DROPDOWN
     toggleBoardsDropdown() {
       this.isBoardsDropdownOpen = !this.isBoardsDropdownOpen;
@@ -236,21 +286,43 @@ export class AdminHeaderComponent implements OnInit {
 
     // NEW METHOD: Get current board from localStorage
     getCurrentBoardFromStorage() {
-      try {
-        const boardData = this.storage.get(teamMemberCommon.BOARD_DATA);
-        if (boardData && boardData._id) {
-          this.currentBoardId = boardData._id;
-        } else {
-          this.currentBoardId = '';
-        }
-      } catch (error) {
-        console.error('Error getting board from storage:', error);
+    try {
+      const boardData = this.storage.get(teamMemberCommon.BOARD_DATA);
+      if (boardData && boardData._id) {
+        this.currentBoardId = boardData._id;
+        // Also update the service to keep them in sync
+        this.boardNotificationService.setCurrentBoard(boardData._id);
+      } else {
         this.currentBoardId = '';
+        this.boardNotificationService.clearCurrentBoard();
       }
+    } catch (error) {
+      console.error('Error getting board from storage:', error);
+      this.currentBoardId = '';
+      this.boardNotificationService.clearCurrentBoard();
     }
+  }
 
-    // NEW METHOD: Check if board is currently active
-    isCurrentBoard(boardId: string): boolean {
-      return this.currentBoardId === boardId;
-    }
+  // Updated method to check if board is currently active
+  isCurrentBoard(boardId: string): boolean {
+    return this.currentBoardId === boardId && this.currentBoardId !== '';
+  }
+
+   onBoardSelect(board: any) {
+    // Store board data
+    this.storage.set(teamMemberCommon.BOARD_DATA, board);
+    
+    // Update current board immediately
+    this.boardNotificationService.setCurrentBoard(board._id);
+    
+    // Close dropdown
+    this.closeBoardsDropdown();
+    
+    // Navigate to board
+    this.router.navigate(['/task-management/teamtask'], {
+      queryParams: { boardId: board._id }
+    });
+  }
+
+
 }
