@@ -72,6 +72,9 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.boardColumns().filter(col => col.canEdit)
   );
 
+  newTaskInputColumnId = signal<string | null>(null);
+newTaskDraftTitle = signal<string>('');
+
   fixedColumns = computed(() => 
     this.boardColumns().filter(col => !col.canEdit)
   );
@@ -585,36 +588,89 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     }
   }
 
-  addNewTask(columnId: string) {
-    const column = this.boardColumns().find(col => col._id === columnId);
-    if (column) {
-      const newTask: Task = {
-        _id: `task-${Date.now()}`,
-        title: 'New Task',
-        description: '',
-        status: column.title.toLowerCase() === 'completed' ? 'completed' : 
-               column.title.toLowerCase() === 'deleted' ? 'deleted' : 'normal',
-        categories: [],
-        assignedTo: [],
-        comments: 0,
-        attachments: 0,
-        position: column.tasks.length,
-        visibility: 'public',
-        columnId: columnId
-      };
+  // addNewTask(columnId: string) {
+  //   const column = this.boardColumns().find(col => col._id === columnId);
+  //   if (column) {
+  //     const newTask: Task = {
+  //       _id: `task-${Date.now()}`,
+  //       title: 'New Task',
+  //       description: '',
+  //       status: column.title.toLowerCase() === 'completed' ? 'completed' : 
+  //              column.title.toLowerCase() === 'deleted' ? 'deleted' : 'normal',
+  //       categories: [],
+  //       assignedTo: [],
+  //       comments: 0,
+  //       attachments: 0,
+  //       position: column.tasks.length,
+  //       visibility: 'public',
+  //       columnId: columnId
+  //     };
       
-      column.tasks.push(newTask);
-      this.boardColumns.update(cols => [...cols]);
+  //     column.tasks.push(newTask);
+  //     this.boardColumns.update(cols => [...cols]);
       
-      console.log('New task created:', newTask);
+  //     console.log('New task created:', newTask);
       
-      setTimeout(() => {
-        this.router.navigate(['/task', newTask._id]);
-      }, 100);
-    }
-  }
+  //     setTimeout(() => {
+  //       this.router.navigate(['/task', newTask._id]);
+  //     }, 100);
+  //   }
+  // }
 
   // Utility methods
+  
+  // ...existing code...
+showNewTaskInput(columnId: string) {
+  // If switching columns, keep the draft title
+  if (this.newTaskInputColumnId() !== columnId) {
+    this.newTaskInputColumnId.set(columnId);
+    // Focus will be handled in template with setTimeout
+  } else {
+    // If clicking again, just focus input
+    this.newTaskInputColumnId.set(columnId);
+  }
+}
+
+onNewTaskTitleInput(event: Event) {
+  const target = event.target as HTMLInputElement;
+  this.newTaskDraftTitle.set(target.value);
+}
+
+submitNewTask(columnId: string) {
+  const title = this.newTaskDraftTitle().trim();
+  if (!title) return;
+  const column = this.boardColumns().find(col => col._id === columnId);
+  if (column) {
+    const newTask: Task = {
+      _id: `task-${Date.now()}`,
+      title,
+      description: '',
+      status: column.title.toLowerCase() === 'completed' ? 'completed' : 
+              column.title.toLowerCase() === 'deleted' ? 'deleted' : 'normal',
+      categories: [],
+      assignedTo: [],
+      comments: 0,
+      attachments: 0,
+      position: column.tasks.length,
+      visibility: 'public',
+      columnId: columnId
+    };
+    column.tasks.push(newTask);
+    this.boardColumns.update(cols => [...cols]);
+    this.newTaskInputColumnId.set(null);
+    this.newTaskDraftTitle.set('');
+    // setTimeout(() => {
+    //   this.router.navigate(['/task', newTask._id]);
+    // }, 100);
+  }
+}
+
+cancelNewTaskInput() {
+  this.newTaskInputColumnId.set(null);
+  // Keep draft title for possible transfer to another column
+}
+// ...existing code...
+  
   getColumnById(columnId: string): BoardColumn | undefined {
     return this.boardColumns().find(col => col._id === columnId);
   }
