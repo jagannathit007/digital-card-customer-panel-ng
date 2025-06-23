@@ -18,6 +18,7 @@ import { AddTeamMemberComponent } from '../../../../../../partials/task-managemn
 import { CreateBoardComponent } from "../../../../../../partials/task-managemnt/common-components/create-board/create-board.component";
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
+import { BoardNotificationService } from 'src/app/services/board-notification.service';
 
 interface Category {
   _id: string;
@@ -127,6 +128,7 @@ editingBoard = signal<Board | null>(null);
     private router: Router,
     private taskService: TaskService,
     public taskPermissionsService: TaskPermissionsService,
+    private boardNotificationService: BoardNotificationService,
     public storage: AppStorage
   ) {}
 
@@ -168,10 +170,14 @@ editingBoard = signal<Board | null>(null);
   }
 
   onOpenBoard(board: Board) {
+
     this.expandingBoardId.set(board._id);
 
-    teamMemberCommon
-    this.storage.set(teamMemberCommon.BOARD_DATA, board);
+    // Store board data in storage
+  this.storage.set(teamMemberCommon.BOARD_DATA, board);
+  
+  // IMPORTANT: Notify the header component about board change
+  this.boardNotificationService.setCurrentBoard(board._id);
 
     // Simulate animation delay before navigation
     setTimeout(() => {

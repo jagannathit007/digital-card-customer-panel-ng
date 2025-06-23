@@ -16,6 +16,7 @@ import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { BoardNotificationService } from 'src/app/services/board-notification.service';
 
 @Component({
   selector: 'app-admin-header',
@@ -49,7 +50,8 @@ export class AdminHeaderComponent implements OnInit {
       public taskMemberAuthService: TaskMemberAuthService,
       private cdr: ChangeDetectorRef,
       private sharedService: SharedService,
-      private router: Router
+      private router: Router,
+      private boardNotificationService: BoardNotificationService
     ) {}
   
     async onInitFunction() {
@@ -61,6 +63,15 @@ export class AdminHeaderComponent implements OnInit {
       this.onInitFunction();
       await this.getBoardsNames(); // Make sure this loads the boards
       this.getCurrentBoardFromStorage(); // Get current board ID
+
+        // IMPORTANT: Subscribe to board changes for real-time updates
+    this.boardNotificationService.currentBoard$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(boardId => {
+        this.currentBoardId = boardId;
+        this.cdr.detectChanges(); // Force change detection to update UI
+        console.log('Current board updated:', boardId);
+      });
   
       this.sharedService.refreshHeader$.subscribe(() => {
         this.onInitFunction();
@@ -275,21 +286,43 @@ export class AdminHeaderComponent implements OnInit {
 
     // NEW METHOD: Get current board from localStorage
     getCurrentBoardFromStorage() {
-      try {
-        const boardData = this.storage.get(teamMemberCommon.BOARD_DATA);
-        if (boardData && boardData._id) {
-          this.currentBoardId = boardData._id;
-        } else {
-          this.currentBoardId = '';
-        }
-      } catch (error) {
-        console.error('Error getting board from storage:', error);
+    try {
+      const boardData = this.storage.get(teamMemberCommon.BOARD_DATA);
+      if (boardData && boardData._id) {
+        this.currentBoardId = boardData._id;
+        // Also update the service to keep them in sync
+        this.boardNotificationService.setCurrentBoard(boardData._id);
+      } else {
         this.currentBoardId = '';
+        this.boardNotificationService.clearCurrentBoard();
       }
+    } catch (error) {
+      console.error('Error getting board from storage:', error);
+      this.currentBoardId = '';
+      this.boardNotificationService.clearCurrentBoard();
     }
+  }
 
-    // NEW METHOD: Check if board is currently active
-    isCurrentBoard(boardId: string): boolean {
-      return this.currentBoardId === boardId;
-    }
+  // Updated method to check if board is currently active
+  isCurrentBoard(boardId: string): boolean {
+    return this.currentBoardId === boardId && this.currentBoardId !== '';
+  }
+
+   onBoardSelect(board: any) {
+    // Store board data
+    this.storage.set(teamMemberCommon.BOARD_DATA, board);
+    
+    // Update current board immediately
+    this.boardNotificationService.setCurrentBoard(board._id);
+    
+    // Close dropdown
+    this.closeBoardsDropdown();
+    
+    // Navigate to board
+    this.router.navigate(['/task-management/teamtask'], {
+      queryParams: { boardId: board._id }
+    });
+  }
+
+
 }
