@@ -17,7 +17,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TaskMemberAuthService } from 'src/app/services/task-member-auth.service';
-import { FcmService } from 'src/app/services/fcm.service';
+// import { FcmService } from 'src/app/services/fcm.service';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { environment } from 'src/env/env.local';
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private taskMemberAuthService: TaskMemberAuthService,
     private storage: AppStorage,
-    private fcmService: FcmService,
+    // private fcmService: FcmService,
     private authService: AuthService
   ) { }
 
@@ -102,20 +102,20 @@ export class LoginComponent implements OnInit {
   }
 
   // fcm token 
-  async getFcmToken(): Promise<string | null> {
-    try {
-      const token = await this.fcmService.requestPermissionAndGetTokenSimple();
-      if (token) {
-        return token;
-      } else {
-        console.warn('No FCM token received');
-        return null;
-      }
-    } catch (error) {
-      console.error('Error getting FCM token:', error);
-      return null;
-    }
-  }
+  // async getFcmToken(): Promise<string | null> {
+  //   try {
+  //     const token = await this.fcmService.requestPermissionAndGetTokenSimple();
+  //     if (token) {
+  //       return token;
+  //     } else {
+  //       console.warn('No FCM token received');
+  //       return null;
+  //     }
+  //   } catch (error) {
+  //     console.error('Error getting FCM token:', error);
+  //     return null;
+  //   }
+  // }
 
   async onSubmit() {
     if (!this.loginForm.valid) {
@@ -128,11 +128,11 @@ export class LoginComponent implements OnInit {
     try {
       const { emailId, password } = this.loginForm.value;
 
-      const fcmToken = await this.getFcmToken();
+      // const fcmToken = await this.getFcmToken();
       const payload = {
         emailId,
         password,
-        fcm: fcmToken,
+        // fcm: fcmToken,
         ...(this.token && { token: this.token })
       };
       const response = await this.taskMemberAuthService.teamMemberSignin(payload);
