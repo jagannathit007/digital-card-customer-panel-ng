@@ -15,7 +15,7 @@ import { JoinedMembersComponent } from 'src/app/views/partials/task-managemnt/co
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
 import { AddTeamMemberComponent } from '../../../../../../partials/task-managemnt/common-components/addTeamMember/addTeamMember.component';
-import { CreateBoardComponent } from "../../../../../../partials/task-managemnt/common-components/create-board/create-board.component";
+import { CreateBoardComponent } from '../../../../../../partials/task-managemnt/common-components/create-board/create-board.component';
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { BoardNotificationService } from 'src/app/services/board-notification.service';
@@ -65,8 +65,8 @@ interface TeamMember {
     FormsModule,
     JoinedMembersComponent,
     AddTeamMemberComponent,
-    CreateBoardComponent
-],
+    CreateBoardComponent,
+  ],
   templateUrl: './allBoards.component.html',
   styleUrl: './allBoards.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -98,7 +98,7 @@ export class AllBoardsComponent implements OnInit {
   hasSelectedMembersChanged = signal(false);
   showCreateBoardModal = signal(false);
   showActionDropdown = signal<string>('');
-editingBoard = signal<Board | null>(null);
+  editingBoard = signal<Board | null>(null);
 
   // Computed values
   filteredBoards = computed(() => {
@@ -170,14 +170,13 @@ editingBoard = signal<Board | null>(null);
   }
 
   onOpenBoard(board: Board) {
-
     this.expandingBoardId.set(board._id);
 
     // Store board data in storage
-  this.storage.set(teamMemberCommon.BOARD_DATA, board);
-  
-  // IMPORTANT: Notify the header component about board change
-  this.boardNotificationService.setCurrentBoard(board._id);
+    this.storage.set(teamMemberCommon.BOARD_DATA, board);
+
+    // IMPORTANT: Notify the header component about board change
+    this.boardNotificationService.setCurrentBoard(board._id);
 
     // Simulate animation delay before navigation
     setTimeout(() => {
@@ -193,13 +192,13 @@ editingBoard = signal<Board | null>(null);
   }
 
   onCreateBoardModalClose() {
-  this.showCreateBoardModal.set(false);
-  this.editingBoard.set(null); // Reset editing board
-}
+    this.showCreateBoardModal.set(false);
+    this.editingBoard.set(null); // Reset editing board
+  }
 
   onBoardCreated(board: any) {
     // this.boards().push(board);
-    console.log("board created from all boards page  : ", board)
+    console.log('board created from all boards page  : ', board);
     this.loadData();
     this.showCreateBoardModal.set(false);
   }
@@ -264,7 +263,11 @@ editingBoard = signal<Board | null>(null);
 
   // Add method to check if member should be disabled
   isMemberDisabled(member: any): boolean {
-    return this.taskPermissionsService.isRoleHigherOrEqual(member.role) || !member.isActive || !member.isVerified;
+    return (
+      this.taskPermissionsService.isRoleHigherOrEqual(member.role) ||
+      !member.isActive ||
+      !member.isVerified
+    );
   }
 
   // Add method to get disabled reason
@@ -285,54 +288,61 @@ editingBoard = signal<Board | null>(null);
   }
 
   toggleActionDropdown(boardId: string) {
-  if (this.showActionDropdown() === boardId) {
-    this.showActionDropdown.set('');
-  } else {
-    this.showActionDropdown.set(boardId);
+    if (this.showActionDropdown() === boardId) {
+      this.showActionDropdown.set('');
+    } else {
+      this.showActionDropdown.set(boardId);
+    }
   }
-}
 
-onEditBoard(board: Board, event: Event) {
-  event.stopPropagation();
-  this.editingBoard.set(board);
-  this.showCreateBoardModal.set(true);
-  this.showActionDropdown.set('');
-}
+  onEditBoard(board: Board, event: Event) {
+    event.stopPropagation();
+    this.editingBoard.set(board);
+    this.showCreateBoardModal.set(true);
+    this.showActionDropdown.set('');
+  }
 
-onDeleteBoard(board: Board, event: Event) {
-  event.stopPropagation();
-  
-  swalHelper
-    .confirmation(
-      `Delete Board`,
-      `Are you sure you want to delete "${board.name}"? This action cannot be undone.`,
-      'warning'
-    )
-    .then((result) => {
-      if (result.isConfirmed) {
-        console.log('Board to delete:', board);
-        // Add your delete logic here later
-      }
-    });
-  
-  this.showActionDropdown.set('');
-}
+  onDeleteBoard(board: Board, event: Event) {
+    event.stopPropagation();
+
+    swalHelper
+      .confirmation(
+        `Delete Board`,
+        `Are you sure you want to delete "${board.name}"? This action cannot be undone.`,
+        'warning'
+      )
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          console.log('Board to delete:', board);
+          const response = await this.taskService.DeleteBoard({
+            boardId: board._id,
+          });
+          if (response) {
+            // Remove the board from the local state
+            this.boards.update((boards) =>
+              boards.filter((b) => b._id !== board._id)
+            );
+          } 
+        }
+      });
+
+    this.showActionDropdown.set('');
+  }
 
   onShowCategories(board: Board, event: Event) {
-  event.stopPropagation();
-  this.selectedBoard.set(board);
-  this.showActionDropdown.set(''); // Close dropdown
+    event.stopPropagation();
+    this.selectedBoard.set(board);
+    this.showActionDropdown.set(''); // Close dropdown
 
-  // Store original categories for comparison
-  const originalCats = board.categories.filter((cat) => !cat.isDeleted);
-  this.originalCategories.set([...originalCats]);
-  this.editingCategories.set([...originalCats]);
-  this.newCategories.set([]);
-  this.hasChanges.set(false);
+    // Store original categories for comparison
+    const originalCats = board.categories.filter((cat) => !cat.isDeleted);
+    this.originalCategories.set([...originalCats]);
+    this.editingCategories.set([...originalCats]);
+    this.newCategories.set([]);
+    this.hasChanges.set(false);
 
-  this.showCategoriesModal.set(true);
-}
-
+    this.showCategoriesModal.set(true);
+  }
 
   onShowMembers(board: Board, event: Event) {
     event.stopPropagation();
@@ -577,9 +587,9 @@ onDeleteBoard(board: Board, event: Event) {
   }
 
   onDocumentClick() {
-  this.selectedBoard.set(null);
-  this.showActionDropdown.set(''); // Close dropdown on document click
-}
+    this.selectedBoard.set(null);
+    this.showActionDropdown.set(''); // Close dropdown on document click
+  }
 
   allCategoriesToShow = computed(() => {
     return [...this.editingCategories(), ...this.newCategories()];

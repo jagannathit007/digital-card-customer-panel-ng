@@ -19,6 +19,7 @@ import { environment } from 'src/env/env.local';
 import { ModalService } from 'src/app/core/utilities/modal';
 import { TaskService } from 'src/app/services/task.service';
 import { DragDropService } from 'src/app/services/drag-drop.service';
+import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 
 export interface TeamMember {
   _id: string;
@@ -37,7 +38,7 @@ export interface TaskCategory {
 export interface Task {
   _id: string;
   title: string;
-  description: string;
+  description?: string;
   status: string;
   categories: TaskCategory[];
   assignedTo: TeamMember[];
@@ -46,7 +47,7 @@ export interface Task {
   position: number;
   dueDate?: Date;
   visibility: 'public' | 'private';
-  columnId: string;
+  column: string;
 }
 
 export interface BoardColumn {
@@ -101,6 +102,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.loadDummyData();
+    this.loadData();
     this.setupKeyboardListeners();
     this.setupDragDropSubscription();
   }
@@ -207,7 +209,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         attachments: 1,
         position: 0,
         visibility: 'public',
-        columnId: 'col1',
+        column: 'col1',
       },
       {
         _id: '2',
@@ -220,7 +222,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         attachments: 3,
         position: 0,
         visibility: 'public',
-        columnId: 'col2',
+        column: 'col2',
       },
       {
         _id: '3',
@@ -233,7 +235,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         attachments: 0,
         position: 1,
         visibility: 'public',
-        columnId: 'col1',
+        column: 'col1',
       },
       {
         _id: '4',
@@ -246,7 +248,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         attachments: 2,
         position: 0,
         visibility: 'public',
-        columnId: 'col4',
+        column: 'col4',
       },
       {
         _id: '5',
@@ -259,7 +261,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         attachments: 4,
         position: 0,
         visibility: 'public',
-        columnId: 'col3',
+        column: 'col3',
       },
     ];
 
@@ -269,7 +271,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         _id: 'col1',
         title: 'Things To Do',
         position: 0,
-        tasks: dummyTasks.filter((t) => t.columnId === 'col1'),
+        tasks: dummyTasks.filter((t) => t.column === 'col1'),
         canEdit: true,
         canDelete: true,
       },
@@ -277,7 +279,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         _id: 'col2',
         title: 'In Progress',
         position: 1,
-        tasks: dummyTasks.filter((t) => t.columnId === 'col2'),
+        tasks: dummyTasks.filter((t) => t.column === 'col2'),
         canEdit: true,
         canDelete: true,
       },
@@ -285,7 +287,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         _id: 'col3',
         title: 'Doing',
         position: 2,
-        tasks: dummyTasks.filter((t) => t.columnId === 'col3'),
+        tasks: dummyTasks.filter((t) => t.column === 'col3'),
         canEdit: true,
         canDelete: true,
       },
@@ -293,7 +295,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         _id: 'col4',
         title: 'Completed',
         position: 3,
-        tasks: dummyTasks.filter((t) => t.columnId === 'col4'),
+        tasks: dummyTasks.filter((t) => t.column === 'col4'),
         canEdit: false,
         canDelete: false,
       },
@@ -307,7 +309,36 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       },
     ];
 
-    this.boardColumns.set(columns);
+    // this.boardColumns.set(columns);
+  }
+
+  async loadData() {
+    const boardDetails = await this.taskService.getBoardDetails({
+      boardId: this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '',
+    });
+
+    if (boardDetails) {
+      console.log('Board details loaded:', boardDetails);
+      this.boardColumns.set(boardDetails.columns);
+
+      this.loadTasks();
+    }
+  }
+
+  async loadTasks() {
+    const boardId = this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '';
+    const tasks = await this.taskService.getBoardsAllTasks({ boardId });
+
+    if (tasks) {
+      console.log('Tasks loaded:', tasks);
+
+      // Update board columns with tasks
+      const columns = this.boardColumns();
+      columns.forEach((column) => {
+        column.tasks = tasks.filter((task: Task) => task.column === column._id);
+      });
+      this.boardColumns.set(columns);
+    }
   }
 
   // Drag and drop event handlers
@@ -315,7 +346,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.isDragging.set(true);
     this.draggedTask.set(task);
     this.clearSelection(); // Clear selection when dragging starts
-    this.dragDropService.startDrag(task, task.columnId);
+    this.dragDropService.startDrag(task, task.column);
   }
 
   onDragEnded() {
@@ -363,7 +394,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   }
 
   // FIXED: Task drop handling for cross-column movement
-  onTaskDrop(event: CdkDragDrop<Task[]>, targetColumnId: string) {
+  async onTaskDrop(event: CdkDragDrop<Task[]>, targetColumnId: string) {
     const columns = [...this.boardColumns()];
     const sourceColumnId = event.previousContainer.id;
 
@@ -406,7 +437,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       // Update the moved task's properties
       const movedTask = targetData[event.currentIndex];
       if (movedTask) {
-        movedTask.columnId = targetColumnId;
+        movedTask.column = targetColumnId;
         this.updateTaskStatus(movedTask, targetColumn);
       }
 
@@ -436,6 +467,34 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       targetColumnId,
       newPosition: event.currentIndex,
     });
+
+    const updateInDatabase = await this.taskService.reorderBoardTasks({
+      // boardId: this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '',
+      // sourceColumnId,
+      toColumn: targetColumnId,
+      taskId: event.container.data[event.currentIndex]?._id,
+      toPosition: event.currentIndex,
+    });
+
+    console.log('Update in database:', updateInDatabase);
+
+    if (!updateInDatabase) {
+      console.error('Failed to update task in database');
+
+      // Fallback: undo the move of local
+      if (sourceColumnId === targetColumnId) {
+        // Revert reordering within same column
+        moveItemInArray(
+          targetColumn.tasks,
+          event.currentIndex,
+          event.previousIndex
+        );
+      } else {
+        // Revert transfer between columns
+        const revertedTask = targetColumn.tasks.splice(event.currentIndex, 1)[0];
+        sourceColumn.tasks.splice(event.previousIndex, 0, revertedTask);
+      }
+    }
   }
 
   private updateTaskStatus(task: Task, column: BoardColumn) {
@@ -607,7 +666,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   private moveTaskToColumn(task: Task, targetColumnId: string) {
     const columns = [...this.boardColumns()];
 
-    const sourceColumn = columns.find((col) => col._id === task.columnId);
+    const sourceColumn = columns.find((col) => col._id === task.column);
     const targetColumn = columns.find((col) => col._id === targetColumnId);
 
     if (sourceColumn && targetColumn) {
@@ -616,7 +675,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         sourceColumn.tasks.splice(taskIndex, 1);
       }
 
-      task.columnId = targetColumnId;
+      task.column = targetColumnId;
       task.position = targetColumn.tasks.length;
       this.updateTaskStatus(task, targetColumn);
       targetColumn.tasks.push(task);
@@ -645,7 +704,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   //       attachments: 0,
   //       position: column.tasks.length,
   //       visibility: 'public',
-  //       columnId: columnId
+  //       column: columnId
   //     };
 
   //     column.tasks.push(newTask);
@@ -678,36 +737,43 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.newTaskDraftTitle.set(target.value);
   }
 
-  submitNewTask(columnId: string) {
+  async submitNewTask(columnId: string) {
     const title = this.newTaskDraftTitle().trim();
     if (!title) return;
     const column = this.boardColumns().find((col) => col._id === columnId);
     if (column) {
-      const newTask: Task = {
-        _id: `task-${Date.now()}`,
+      const response = await this.taskService.AddTeamTask({
         title,
-        description: '',
-        status:
-          column.title.toLowerCase() === 'completed'
-            ? 'completed'
-            : column.title.toLowerCase() === 'deleted'
-            ? 'deleted'
-            : 'normal',
-        categories: [],
-        assignedTo: [],
-        comments: 0,
-        attachments: 0,
+        status: 'normal',
         position: column.tasks.length,
-        visibility: 'public',
-        columnId: columnId,
-      };
-      column.tasks.push(newTask);
-      this.boardColumns.update((cols) => [...cols]);
-      this.newTaskInputColumnId.set(null);
-      this.newTaskDraftTitle.set('');
-      // setTimeout(() => {
-      //   this.router.navigate(['/task', newTask._id]);
-      // }, 100);
+        column: columnId,
+        board: this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '',
+      });
+
+      console.log('New task created:', response);
+
+      if (response) {
+        const newTask: Task = {
+          _id: response._id,
+          title: response.title,
+          description: '',
+          status: response.status,
+          categories: [],
+          assignedTo: [],
+          comments: 0,
+          attachments: 0,
+          position: response.position,
+          visibility: response.visibility,
+          column: columnId,
+        };
+        column.tasks.push(newTask);
+        this.boardColumns.update((cols) => [...cols]);
+        this.newTaskInputColumnId.set(null);
+        this.newTaskDraftTitle.set('');
+        // setTimeout(() => {
+        //   this.router.navigate(['/task', newTask._id]);
+        // }, 100);
+      }
     }
   }
 
@@ -722,15 +788,15 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   }
 
   canMoveToCompleted(task: Task): boolean {
-    return task.columnId !== 'col4';
+    return task.column !== 'col4';
   }
 
   canMoveToDeleted(task: Task): boolean {
-    return task.columnId !== 'col5';
+    return task.column !== 'col5';
   }
 
   canRestoreFromDeleted(task: Task): boolean {
-    return task.columnId === 'col5';
+    return task.column === 'col5';
   }
 
   // Click outside handler

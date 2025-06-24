@@ -18,7 +18,6 @@ export interface TaskCategory {
 export interface Task {
   _id: string;
   title: string;
-  description: string;
   status: string;
   categories: TaskCategory[];
   assignedTo: TeamMember[];
@@ -27,7 +26,7 @@ export interface Task {
   position: number;
   dueDate?: Date;
   visibility: 'public' | 'private';
-  columnId: string;
+  column: string;
 }
 
 @Component({
@@ -108,7 +107,7 @@ export class TeamTaskCardComponent {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     if (diffDays < 0) {
-      return { show: true, color: 'tw-text-red-600', text: 'Overdue' };
+      return { show: true, color: 'tw-text-red-600', text: `${Math.abs(diffDays)}d ago` };
     } else if (diffDays === 0) {
       return { show: true, color: 'tw-text-orange-600', text: 'Due today' };
     } else if (diffDays <= 3) {
@@ -120,15 +119,15 @@ export class TeamTaskCardComponent {
 
   // Check if actions should be shown based on column
   canShowCompleteAction(): boolean {
-    return this.task.columnId !== 'col4'; // Not in completed column
+    return this.task.column !== 'col4'; // Not in completed column
   }
 
   canShowDeleteAction(): boolean {
-    return this.task.columnId !== 'col5'; // Not in deleted column
+    return this.task.column !== 'col5'; // Not in deleted column
   }
 
   canShowRestoreAction(): boolean {
-    return this.task.columnId === 'col5'; // In deleted column
+    return this.task.column === 'col5'; // In deleted column
   }
 
   // Event handlers
@@ -144,15 +143,15 @@ export class TeamTaskCardComponent {
     }
   }
 
-  onMouseEnter() {
-    if (!this.isDragging) {
-      this.showActions.set(true);
-    }
-  }
+  // onMouseEnter() {
+  //   if (!this.isDragging) {
+  //     this.showActions.set(true);
+  //   }
+  // }
 
-  onMouseLeave() {
-    this.showActions.set(false);
-  }
+  // onMouseLeave() {
+  //   this.showActions.set(false);
+  // }
 
   onCompleteClick(event: Event) {
     event.stopPropagation();

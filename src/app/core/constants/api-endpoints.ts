@@ -177,9 +177,17 @@ public DELETE_BOARD: string = `${this.PATH}/task/board/delete`;
 public UPDATE_BOARD_MEMBERS: string = `${this.PATH}/task/board/member/update`;
 public UPDATE_BOARD_CATEGORIES: string = `${this.PATH}/task/board/categories/update`;
 public GET_BOARDS_FOR_ADMIN: string = `${this.PATH}/task/board/all`;
+public GET_BOARD_DETAILS: string = `${this.PATH}/task/board/get-details`;
 public GET_BOARDS_NAMES: string = `${this.PATH}/task/board/allNames`;
 public GET_JOINED_BOARDS: string = `${this.PATH}/task/board/joined`;
 public GET_ALL_AVAILABLE_MEMBERS: string = `${this.PATH}/task/board/members/available`;
+
+// team task
+public GET_BOARD_TASKS: string = `${this.PATH}/task/team/get-all`;
+public REORDER_BOARD_TASKS: string = `${this.PATH}/task/team/reorder`;
+public GET_TASK_DETAILS: string = `${this.PATH}/task/team/get-details`;
+
+public ADD_NEW_TEAM_TASK: string = `${this.PATH}/task/team/add`;
 
 // ! AI ASSISTETNT
 public AI_ASSISTANT: string = `${this.PATH}/task/ai/process-user-voice`;

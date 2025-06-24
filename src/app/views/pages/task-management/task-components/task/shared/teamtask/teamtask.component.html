@@ -198,22 +198,22 @@
 
               <!-- Tasks Container -->
               <div
-                class="tw-p-4 tw-space-y-3 tw-max-h-[calc(100vh-300px)] tw-overflow-y-auto tw-transition-all tw-duration-200 tw-scrollbar-thin tw-scrollbar-track-transparent tw-scrollbar-thumb-gray-300 hover:tw-scrollbar-thumb-gray-400 tw-scroll-smooth tw-snap-x tw-snap-mandatory"
+                class="tw-p-4 tw-space-y-3 tw-min-h-[calc(100vh-300px)] tw-max-h-[calc(100vh-300px)] tw-overflow-y-auto tw-transition-all tw-duration-200 tw-scrollbar-thin tw-scrollbar-track-transparent tw-scrollbar-thumb-gray-300 hover:tw-scrollbar-thumb-gray-400 tw-scroll-smooth tw-snap-x tw-snap-mandatory"
                 cdkDropList
                 [id]="column._id"
                 [cdkDropListData]="column.tasks"
                 (cdkDropListDropped)="onTaskDrop($event, column._id)"
                 [class.tw-bg-blue-50]="
-                  isDragging() && draggedTask()?.columnId !== column._id
+                  isDragging() && draggedTask()?.column !== column._id
                 "
                 [class.tw-border-2]="
-                  isDragging() && draggedTask()?.columnId !== column._id
+                  isDragging() && draggedTask()?.column !== column._id
                 "
                 [class.tw-border-blue-300]="
-                  isDragging() && draggedTask()?.columnId !== column._id
+                  isDragging() && draggedTask()?.column !== column._id
                 "
                 [class.tw-border-dashed]="
-                  isDragging() && draggedTask()?.columnId !== column._id
+                  isDragging() && draggedTask()?.column !== column._id
                 "
               >
                 <!-- Task Cards -->
@@ -221,7 +221,7 @@
                   *ngFor="let task of column.tasks; trackBy: trackByTaskId"
                   class="tw-transition-all tw-duration-300 tw-ease-in-out"
                   cdkDrag
-                    [cdkDragData]="task"
+                  [cdkDragData]="task"
                 >
                   <app-team-task-card
                     [task]="task"
@@ -247,10 +247,10 @@
                 >
                   Drop task here
                 </div> -->
-<div
-                *cdkDropListPlaceholder
-                class="tw-my-3 tw-h-20 tw-border-2 tw-border-dashed tw-border-blue-300 tw-rounded-lg tw-bg-blue-50"
-              ></div>
+                <div
+                  *cdkDropListPlaceholder
+                  class="tw-my-3 tw-h-20 tw-border-2 tw-border-dashed tw-border-blue-300 tw-rounded-lg tw-bg-blue-50"
+                ></div>
 
                 <div class="tw-absolute tw-bottom-1 tw-right-1 tw-left-1">
                   <div
@@ -305,7 +305,7 @@
           >
             <!-- Column Container -->
             <div
-              class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-h-fit tw-max-h-[calc(100vh-200px)] tw-transition-all tw-duration-200"
+              class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-h-fit tw-max-h-[calc(100vh-175px)] tw-transition-all tw-duration-200"
             >
               <!-- Column Header -->
               <div class="tw-p-4 tw-border-b tw-border-gray-100">
@@ -338,22 +338,22 @@
 
               <!-- Tasks Container -->
               <div
-                class="tw-p-4 tw-space-y-3 tw-max-h-[calc(100vh-300px)] tw-overflow-y-auto tw-transition-all tw-duration-200"
+                class="tw-p-4 tw-space-y-3 tw-min-h-[calc(100vh-300px)] tw-max-h-[calc(100vh-240px)] tw-overflow-y-auto tw-transition-all tw-duration-200"
                 cdkDropList
                 [id]="column._id"
                 [cdkDropListData]="column.tasks"
                 (cdkDropListDropped)="onTaskDrop($event, column._id)"
                 [class.tw-bg-blue-50]="
-                  isDragging() && draggedTask()?.columnId !== column._id
+                  isDragging() && draggedTask()?.column !== column._id
                 "
                 [class.tw-border-2]="
-                  isDragging() && draggedTask()?.columnId !== column._id
+                  isDragging() && draggedTask()?.column !== column._id
                 "
                 [class.tw-border-blue-300]="
-                  isDragging() && draggedTask()?.columnId !== column._id
+                  isDragging() && draggedTask()?.column !== column._id
                 "
                 [class.tw-border-dashed]="
-                  isDragging() && draggedTask()?.columnId !== column._id
+                  isDragging() && draggedTask()?.column !== column._id
                 "
               >
                 <!-- Task Cards -->
@@ -361,7 +361,7 @@
                   *ngFor="let task of column.tasks; trackBy: trackByTaskId"
                   class="tw-transition-all tw-duration-300 tw-ease-in-out"
                   cdkDrag
-                    [cdkDragData]="task"
+                  [cdkDragData]="task"
                 >
                   <app-team-task-card
                     [task]="task"
@@ -382,9 +382,9 @@
 
                 <!-- Drop Placeholder -->
                 <div
-                *cdkDropListPlaceholder
-                class="tw-my-3 tw-h-20 tw-border-2 tw-border-dashed tw-border-blue-300 tw-rounded-lg tw-bg-blue-50"
-              ></div>
+                  *cdkDropListPlaceholder
+                  class="tw-my-3 tw-h-20 tw-border-2 tw-border-dashed tw-border-blue-300 tw-rounded-lg tw-bg-blue-50"
+                ></div>
 
                 <!-- Add New Task Button (for fixed columns too) -->
                 <!-- <button
