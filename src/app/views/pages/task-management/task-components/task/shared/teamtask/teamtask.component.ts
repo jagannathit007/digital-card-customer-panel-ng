@@ -483,6 +483,11 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
 
       // Fallback: undo the move of local
       if (sourceColumnId === targetColumnId) {
+        console.log(
+          'Revert reordering within same column',
+          sourceColumnId,
+          targetColumnId
+        );
         // Revert reordering within same column
         moveItemInArray(
           targetColumn.tasks,
@@ -491,8 +496,14 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         );
       } else {
         // Revert transfer between columns
-        const revertedTask = targetColumn.tasks.splice(event.currentIndex, 1)[0];
+        const revertedTask = targetColumn.tasks.splice(
+          event.currentIndex,
+          1
+        )[0];
         sourceColumn.tasks.splice(event.previousIndex, 0, revertedTask);
+
+        // undo status update to last when moving task between column
+        this.updateTaskStatus(revertedTask, sourceColumn);
       }
     }
   }
