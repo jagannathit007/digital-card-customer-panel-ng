@@ -14,6 +14,21 @@
       <p class="tw-text-gray-600">Manage your team's tasks efficiently</p>
     </div> -->
 
+      <!-- page Loader -->
+      <div
+        class="tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-bottom-0 tw-flex tw-items-center tw-justify-center tw-bg-[#0000004d] tw-z-50"
+        *ngIf="isLoading()"
+      >
+        <div
+          class="tw-flex tw-items-center tw-gap-5 tw-bg-white tw-px-8 tw-py-5 tw-rounded"
+        >
+          <span
+            class="tw-animate-spin tw-rounded-full tw-h-5 tw-w-5 tw-border-b-2 tw-border-blue-600"
+          ></span
+          >Loading...
+        </div>
+      </div>
+
       <!-- Kanban Board -->
       <div
         class="tw-flex tw-gap-6 tw-overflow-x-auto tw-pb-4"

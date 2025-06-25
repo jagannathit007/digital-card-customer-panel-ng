@@ -79,6 +79,9 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   editingColumnId = signal<string | null>(null);
   newColumnTitle = signal<string>('');
 
+  // Loading state
+  isLoading = signal<boolean>(true);
+
   // Computed properties
   editableColumns = computed(() =>
     this.boardColumns().filter((col) => col.canEdit)
@@ -338,6 +341,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         column.tasks = tasks.filter((task: Task) => task.column === column._id);
       });
       this.boardColumns.set(columns);
+
+      this.isLoading.set(false);
     }
   }
 
@@ -479,8 +484,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     console.log('Update in database:', updateInDatabase);
 
     if (!updateInDatabase) {
-      console.error('Failed to update task in database');
-
       // Fallback: undo the move of local
       if (sourceColumnId === targetColumnId) {
         console.log(
@@ -578,7 +581,10 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     }
   }
 
-  saveColumnRename(columnId: string) {
+  async saveColumnRename(columnId: string) {
+    const oldTitle = this.boardColumns().find(
+      (col) => col._id === columnId
+    )?.title;
     const title = this.newColumnTitle().trim();
     if (title) {
       const columns = [...this.boardColumns()];
@@ -588,7 +594,18 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         columns[columnIndex].title = title;
         this.boardColumns.set(columns);
 
-        console.log('Column renamed:', { columnId, newTitle: title });
+        const updateInDatabase = await this.taskService.RenameColumn({
+          columnId,
+          newTitle: title,
+          boardId: this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '',
+        });
+
+        if (!updateInDatabase) {
+          columns[columnIndex].title = oldTitle || '';
+          this.boardColumns.set(columns);
+        } else {
+          console.log('Update in database:', updateInDatabase);
+        }
       }
     }
 
@@ -614,34 +631,54 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.closeColumnMenu();
   }
 
-  addColumn(position: 'left' | 'right', referenceColumnId: string) {
+  async addColumn(position: 'left' | 'right', referenceColumnId: string) {
+    this.isLoading.set(false);
+
     const columns = [...this.boardColumns()];
     const refIndex = columns.findIndex((col) => col._id === referenceColumnId);
 
-    const newColumn: BoardColumn = {
-      _id: `col-${Date.now()}`,
+    const updateInDatabase = await this.taskService.AddNewColumn({
+      boardId: this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '',
       title: 'New Column',
-      position: position === 'left' ? refIndex : refIndex + 1,
-      tasks: [],
-      canEdit: true,
-      canDelete: true,
-    };
+      position: position === 'left' ? `${refIndex}` : `${refIndex + 1}`,
+    })
 
-    const insertIndex = position === 'left' ? refIndex : refIndex + 1;
-    columns.splice(insertIndex, 0, newColumn);
+    if(updateInDatabase) {
+      console.log('Update in database:', updateInDatabase);
 
-    columns.forEach((col, index) => {
-      col.position = index;
-    });
+      console.log('Update in database:', updateInDatabase);
 
-    this.boardColumns.set(columns);
-    this.closeColumnMenu();
+      // const newColumn = updateInDatabase.columns[updateInDatabase.columns.length - 1];
+      // columns.splice(position === 'left' ? refIndex : refIndex + 1, 0, newColumn);
+      // this.boardColumns.set(columns);
 
-    setTimeout(() => {
-      this.startRenameColumn(newColumn._id);
-    }, 100);
+      // console.log('Column added:', { position, referenceColumnId, newColumn });
+    }
 
-    console.log('Column added:', { position, referenceColumnId, newColumn });
+    // const newColumn: BoardColumn = {
+    //   _id: `col-${Date.now()}`,
+    //   title: 'New Column',
+    //   position: position === 'left' ? refIndex : refIndex + 1,
+    //   tasks: [],
+    //   canEdit: true,
+    //   canDelete: true,
+    // };
+
+    // const insertIndex = position === 'left' ? refIndex : refIndex + 1;
+    // columns.splice(insertIndex, 0, newColumn);
+
+    // columns.forEach((col, index) => {
+    //   col.position = index;
+    // });
+
+    // this.boardColumns.set(columns);
+    // this.closeColumnMenu();
+
+    // setTimeout(() => {
+    //   this.startRenameColumn(newColumn._id);
+    // }, 100);
+    
+
   }
 
   // Task operations

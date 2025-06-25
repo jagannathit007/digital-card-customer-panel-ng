@@ -182,12 +182,17 @@ public GET_BOARDS_NAMES: string = `${this.PATH}/task/board/allNames`;
 public GET_JOINED_BOARDS: string = `${this.PATH}/task/board/joined`;
 public GET_ALL_AVAILABLE_MEMBERS: string = `${this.PATH}/task/board/members/available`;
 
-// team task
+// team task board routes
 public GET_BOARD_TASKS: string = `${this.PATH}/task/team/get-all`;
 public REORDER_BOARD_TASKS: string = `${this.PATH}/task/team/reorder`;
 public GET_TASK_DETAILS: string = `${this.PATH}/task/team/get-details`;
-
 public ADD_NEW_TEAM_TASK: string = `${this.PATH}/task/team/add`;
+
+// board column routes
+public RENAME_COLUMN: string = `${this.PATH}/task/board/column/name/update`;
+public ADD_NEW_COLUMN: string = `${this.PATH}/task/board/column/create`;
+public DELETE_COLUMN: string = `${this.PATH}/task/board/column/delete`;
+public REORDER_COLUMN: string = `${this.PATH}/task/board/column/reorder`;
 
 // ! AI ASSISTETNT
 public AI_ASSISTANT: string = `${this.PATH}/task/ai/process-user-voice`;
