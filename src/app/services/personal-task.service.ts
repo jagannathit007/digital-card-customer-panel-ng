@@ -34,6 +34,7 @@ export class PersonalTaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
+        swalHelper.showToast('Task added successfully', 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -57,6 +58,7 @@ export class PersonalTaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
+        swalHelper.showToast('Task updated successfully', 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -80,6 +82,7 @@ export class PersonalTaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
+        swalHelper.showToast('Task deleted successfully', 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -103,6 +106,7 @@ export class PersonalTaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
+        swalHelper.showToast('Task status updated successfully', 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -126,6 +130,7 @@ export class PersonalTaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
+        swalHelper.showToast('Task details fetched successfully', 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -149,6 +154,7 @@ export class PersonalTaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
+        swalHelper.showToast('Task stats fetched successfully', 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -173,6 +179,7 @@ export class PersonalTaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
+        swalHelper.showToast('Task details count fetched successfully', 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
