@@ -1,11 +1,225 @@
-<p>mydaytask works!</p>
+<!-- Compact MyDayTask Component Template -->
+<div class="tw-min-h-screen tw-bg-gray-50">
+  <!-- Full Screen Loader -->
+  <div *ngIf="showFullScreenLoader" class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-z-50 tw-flex tw-items-center tw-justify-center">
+    <div class="tw-bg-white tw-rounded-lg tw-p-6 tw-flex tw-flex-col tw-items-center tw-shadow-xl">
+      <div class="tw-animate-spin tw-rounded-full tw-h-8 tw-w-8 tw-border-b-2 tw-border-blue-500"></div>
+      <p class="tw-mt-3 tw-text-gray-600">Updating tasks...</p>
+    </div>
+  </div>
 
-<!-- In your personal-task.component.html -->
-<button (click)="openAddTaskModal()" class="tw-bg-blue-600 tw-text-white tw-px-4 tw-py-2 tw-rounded">
-  Add Task
-</button>
+  <div class="tw-container tw-mx-auto tw-px-4 tw-py-6 tw-max-w-xl tw-h-screen tw-flex tw-flex-col">
+    <!-- Header Section (Compact) -->
+    <div class="tw-text-center tw-mb-6 tw-flex-shrink-0">
+      <h1 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-mb-2">
+        Good {{ getTimeOfDay() }}, {{ userName }}
+      </h1>
+      <p class="tw-text-sm tw-text-gray-600">{{ getCurrentDate() }}</p>
+      <div class="tw-mt-3 tw-w-16 tw-h-0.5 tw-bg-blue-500 tw-mx-auto tw-rounded-full"></div>
+    </div>
 
-<app-personal-task
-  #addTaskModal
-  (taskAdded)="onTaskAdded()">
-</app-personal-task>
+    <!-- Tasks Section (Scrollable) -->
+    <div class="tw-flex-1 tw-mb-4 tw-overflow-hidden">
+      <!-- Initial Loading -->
+      <div *ngIf="isLoading" class="tw-flex tw-justify-center tw-py-8">
+        <div class="tw-animate-spin tw-rounded-full tw-h-6 tw-w-6 tw-border-b-2 tw-border-blue-500"></div>
+      </div>
+
+      <!-- Tasks List -->
+      <div 
+        *ngIf="!isLoading" 
+        class="tw-space-y-2 tw-h-full tw-overflow-y-auto tw-pr-2 mydaytask-container"
+        (scroll)="onScroll($event)"
+        #scrollContainer
+      >
+        <div
+          *ngFor="let task of tasks; trackBy: trackByTaskId"
+          class="task-card tw-bg-white tw-rounded-lg tw-shadow-sm tw-border tw-border-gray-200 tw-p-3 tw-transition-all tw-duration-300 tw-group hover:tw-shadow-md hover:tw-border-blue-200"
+          [class.tw-opacity-70]="task.isCompleted"
+          [class.tw-bg-green-50]="task.isCompleted"
+          [class.tw-border-green-200]="task.isCompleted"
+          [class.completed]="task.isCompleted"
+        >
+          <div class="tw-flex tw-items-start tw-gap-3">
+            <!-- Task Completion Toggle -->
+            <div class="tw-flex-shrink-0 tw-mt-0.5">
+              <button
+                (click)="toggleTaskStatus(task)"
+                [disabled]="task.isCompleted"
+                class="task-checkbox tw-relative tw-w-5 tw-h-5 tw-rounded-full tw-border-2 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-justify-center"
+                [class.tw-border-green-500]="task.isCompleted"
+                [class.tw-bg-green-500]="task.isCompleted"
+                [class.completed]="task.isCompleted"
+                [class.tw-border-gray-300]="!task.isCompleted"
+                [class.hover:tw-border-blue-500]="!task.isCompleted"
+                [class.hover:tw-bg-blue-50]="!task.isCompleted"
+              >
+                <svg
+                  *ngIf="task.isCompleted"
+                  class="tw-w-3 tw-h-3 tw-text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Task Content -->
+            <div class="tw-flex-1 tw-min-w-0">
+              <div class="tw-flex tw-items-start tw-justify-between tw-gap-2">
+                <div class="tw-flex-1">
+                  <p
+                    class="task-title tw-text-gray-800 tw-leading-relaxed tw-whitespace-pre-wrap tw-text-sm"
+                    [class.tw-line-through]="task.isCompleted"
+                    [class.tw-text-gray-500]="task.isCompleted"
+                  >
+                    {{ task.title }}
+                  </p>
+                  
+                  <!-- Due date - shown on hover -->
+                 <!-- Show this block ONLY if task.dueOn exists -->
+<div *ngIf="task.dueOn" class="tw-opacity-0 group-hover:tw-opacity-100 tw-transition-opacity tw-duration-200 tw-mt-1">
+  <span class="tw-text-xs tw-text-gray-500 tw-flex tw-items-center tw-gap-1">
+    <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    {{ formatDate(task.dueOn) }}
+  </span>
+</div>
+
+                  
+                  <span *ngIf="task.isCompleted" class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-text-green-600 tw-font-medium tw-mt-1">
+                    <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Completed
+                  </span>
+                </div>
+
+                <!-- Task Actions -->
+                <div class="tw-flex tw-items-center tw-gap-1 tw-flex-shrink-0 tw-opacity-0 group-hover:tw-opacity-100 tw-transition-opacity tw-duration-200" *ngIf="!task.isCompleted">
+                  <!-- Delete Button -->
+                  <button
+                    (click)="deleteTask(task._id)"
+                    class="tw-p-1.5 tw-text-gray-400 hover:tw-text-red-500 hover:tw-bg-red-50 tw-rounded-md tw-transition-all tw-duration-200"
+                    title="Delete task"
+                  >
+                    <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+
+                  <!-- More Options Dropdown -->
+                  <div class="tw-relative dropdown-container">
+                    <button
+                      (click)="toggleDropdown(task._id)"
+                      class="tw-p-1.5 tw-text-gray-400 hover:tw-text-gray-600 hover:tw-bg-gray-50 tw-rounded-md tw-transition-all tw-duration-200"
+                      title="More options"
+                    >
+                      <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                      </svg>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div
+                      *ngIf="activeDropdownId === task._id"
+                      class="dropdown-menu tw-absolute tw-right-0 tw-top-8 tw-w-40 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-100 tw-py-1 tw-z-10"
+                    >
+                      <button
+                        (click)="startEdit(task)"
+                        class="tw-w-full tw-text-left tw-px-3 tw-py-2 tw-text-xs tw-text-gray-700 hover:tw-bg-blue-50 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-2"
+                      >
+                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        </svg>
+                        Edit Task
+                      </button>
+                      <button
+                        disabled
+                        class="tw-w-full tw-text-left tw-px-3 tw-py-2 tw-text-xs tw-text-gray-400 tw-cursor-not-allowed tw-flex tw-items-center tw-gap-2"
+                      >
+                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Remind Me
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Load More Indicator -->
+        <div *ngIf="isLoadingMore" class="tw-flex tw-justify-center tw-py-4">
+          <div class="tw-animate-spin tw-rounded-full tw-h-5 tw-w-5 tw-border-b-2 tw-border-blue-500"></div>
+        </div>
+
+        <!-- No More Tasks Message -->
+      
+
+        <!-- Empty State -->
+        <div *ngIf="tasks.length === 0 && !isLoading" class="tw-text-center tw-py-12">
+          <div class="tw-mb-4">
+            <svg class="tw-w-12 tw-h-12 tw-mx-auto tw-text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+            </svg>
+          </div>
+          <h3 class="tw-text-lg tw-font-semibold tw-text-gray-700 tw-mb-1">No tasks yet</h3>
+          <p class="tw-text-sm tw-text-gray-500">Add your first task below to get started!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task Input Section (Compact & Fixed) -->
+    <div class="tw-flex-shrink-0 tw-bg-white tw-rounded-lg tw-shadow-md tw-border tw-border-gray-200 tw-p-4">
+      <div class="tw-flex tw-items-end tw-gap-3">
+        <div class="tw-flex-1">
+          <textarea
+            #taskInput
+            [(ngModel)]="newTaskTitle"
+            (keydown)="onKeyDown($event)"
+            (input)="autoResize($event)"
+            [placeholder]="editingTaskId ? 'Update task... (Ctrl+Enter to save)' : 'What needs to be done? (Ctrl+Enter to save)'"
+            class="form-input tw-w-full tw-px-3 tw-py-3 tw-border tw-border-gray-300 tw-rounded-lg tw-resize-none focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500 tw-transition-all tw-duration-200 tw-text-sm tw-placeholder-gray-400"
+            rows="1"
+            style="height: auto; min-height: 44px;"
+          ></textarea>
+        </div>
+        
+        <!-- Send Button -->
+        <button
+          (click)="editingTaskId ? updateTask() : addTask()"
+          [disabled]="!canSendTask()"
+          class="send-button tw-p-3 tw-rounded-lg tw-transition-all tw-duration-200 tw-flex tw-items-center tw-justify-center tw-min-w-[44px] tw-h-11"
+          [class.tw-bg-blue-500]="canSendTask()"
+          [class.tw-text-white]="canSendTask()"
+          [class.hover:tw-bg-blue-600]="canSendTask()"
+          [class.tw-shadow-md]="canSendTask()"
+          [class.tw-bg-gray-200]="!canSendTask()"
+          [class.tw-text-gray-400]="!canSendTask()"
+          [class.tw-cursor-not-allowed]="!canSendTask()"
+        >
+          <svg *ngIf="!isSubmitting" class="tw-w-5 tw-h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+          </svg>
+          <div *ngIf="isSubmitting" class="tw-animate-spin tw-rounded-full tw-h-5 tw-w-5 tw-border-b-2 tw-border-white"></div>
+        </button>
+      </div>
+      
+      <!-- Cancel Edit Button -->
+      <div *ngIf="editingTaskId" class="tw-mt-3 tw-flex tw-justify-end">
+        <button
+          (click)="cancelEdit()"
+          class="tw-px-4 tw-py-1.5 tw-text-xs tw-text-gray-600 hover:tw-text-gray-800 tw-bg-gray-100 hover:tw-bg-gray-200 tw-rounded-md tw-transition-all tw-duration-200"
+        >
+          Cancel Edit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
