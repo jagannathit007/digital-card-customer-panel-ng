@@ -20,6 +20,8 @@ import { ModalService } from 'src/app/core/utilities/modal';
 import { TaskService } from 'src/app/services/task.service';
 import { DragDropService } from 'src/app/services/drag-drop.service';
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
+import { TaskPermissionsService } from './../../../../../../../services/task-permissions.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 export interface TeamMember {
   _id: string;
@@ -78,6 +80,16 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   activeColumnMenu = signal<string | null>(null);
   editingColumnId = signal<string | null>(null);
   newColumnTitle = signal<string>('');
+  boardId = signal<string>('');
+  completedColumnId = signal<string>('');
+  deletedColumnId = signal<string>('');
+
+  showColumnNamePopup = signal<boolean>(false);
+  popupMode = signal<'add' | 'rename'>('add');
+  positionForNewColumn: 'left' | 'right' = 'right';
+  currentColumnId = signal<string | null>(null);
+
+  columnForm!: FormGroup;
 
   // Loading state
   isLoading = signal<boolean>(true);
@@ -99,15 +111,49 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     public modal: ModalService,
     private taskService: TaskService,
+    public taskPermissionsService: TaskPermissionsService,
     private router: Router,
-    private dragDropService: DragDropService
-  ) { }
+    private dragDropService: DragDropService,
+    private fb: FormBuilder
+  ) {}
 
   async ngOnInit() {
+    this.boardId.set(this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '');
+    this.columnForm = this.fb.group({
+      columnName: [
+        '',
+        [Validators.required, this.uniqueColumnNameValidator.bind(this)],
+      ],
+    });
     this.loadDummyData();
     this.loadData();
     this.setupKeyboardListeners();
     this.setupDragDropSubscription();
+  }
+
+  // Add this custom validator
+  private uniqueColumnNameValidator(control: any) {
+    const value = control.value?.trim();
+    if (!value) return null;
+
+    const currentColumnId = this.currentColumnId();
+    const existingColumns = this.boardColumns();
+
+    console.log('existingColumns: ', existingColumns);
+
+    // For rename operation, exclude the current column from validation
+    const isDuplicate = existingColumns.some((column) => {
+      const sameTitle = column.title.toLowerCase() === value.toLowerCase();
+
+      if (this.popupMode() === 'rename') {
+        // Exclude the current column being renamed
+        return sameTitle && column._id !== currentColumnId;
+      }
+
+      return sameTitle;
+    });
+
+    return isDuplicate ? { duplicateName: true } : null;
   }
 
   ngOnDestroy() {
@@ -317,19 +363,32 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
 
   async loadData() {
     const boardDetails = await this.taskService.getBoardDetails({
-      boardId: this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '',
+      boardId: this.boardId(),
     });
 
     if (boardDetails) {
       console.log('Board details loaded:', boardDetails);
       this.boardColumns.set(boardDetails.columns);
 
+      this.completedColumnId.set(
+        boardDetails.columns.find(
+          (col: any) => col.title.toLowerCase() === 'completed'
+        )?._id
+      );
+      this.deletedColumnId.set(
+        boardDetails.columns.find(
+          (col: any) => col.title.toLowerCase() === 'deleted'
+        )?._id
+      );
+
       this.loadTasks();
+    } else {
+      this.isLoading.set(false);
     }
   }
 
   async loadTasks() {
-    const boardId = this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '';
+    const boardId = this.boardId();
     const tasks = await this.taskService.getBoardsAllTasks({ boardId });
 
     if (tasks) {
@@ -341,9 +400,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         column.tasks = tasks.filter((task: Task) => task.column === column._id);
       });
       this.boardColumns.set(columns);
-
-      this.isLoading.set(false);
     }
+    this.isLoading.set(false);
   }
 
   // Drag and drop event handlers
@@ -362,38 +420,110 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     }, 100);
   }
 
+  // old code before improving chat gpt without fallback
+
+  // async onColumnDrop(event: CdkDragDrop<BoardColumn[]>) {
+  //   if (event.previousIndex !== event.currentIndex) {
+  //     const columns = [...this.boardColumns()];
+
+  //     console.log(event.previousIndex, event.currentIndex);
+
+  //     // Only allow reordering of editable columns (not completed/deleted)
+  //     const editableColumns = columns.filter((col) => col.canEdit);
+  //     const fixedColumns = columns.filter((col) => !col.canEdit);
+
+  //     if (
+  //       event.previousIndex < editableColumns.length &&
+  //       event.currentIndex < editableColumns.length
+  //     ) {
+  //       moveItemInArray(
+  //         editableColumns,
+  //         event.previousIndex,
+  //         event.currentIndex
+  //       );
+
+  //       // Update positions with animation support
+  //       editableColumns.forEach((col, index) => {
+  //         col.position = index;
+  //       });
+
+  //       // Recombine arrays
+  //       const reorderedColumns = [...editableColumns, ...fixedColumns];
+  //       this.boardColumns.set(reorderedColumns);
+
+  //       // Trigger change detection for smooth animations
+  //       this.cdr.detectChanges();
+
+  //       this.updateColumnPositions(editableColumns);
+
+  //       console.log(
+  //         'targetColumnId : ',
+  //         event.container.data[event.currentIndex]?._id
+  //       );
+
+  //       const updateInDatabase = await this.taskService.ReorderColumn({
+  //         boardId: this.boardId(),
+  //         columnId: event.container.data[event.currentIndex]?._id,
+  //         newPosition: event.currentIndex,
+  //       });
+
+  //       if (!updateInDatabase) {
+  //         // Fallback: undo the move of local
+  //       }
+  //     }
+  //   }
+  // }
+
+  // old code after improving chat gpt without fallback
+
   // Column operations
-  onColumnDrop(event: CdkDragDrop<BoardColumn[]>) {
-    if (event.previousIndex !== event.currentIndex) {
-      const columns = [...this.boardColumns()];
+  async onColumnDrop(event: CdkDragDrop<BoardColumn[]>) {
+    if (event.previousIndex === event.currentIndex) return;
 
-      // Only allow reordering of editable columns (not completed/deleted)
-      const editableColumns = columns.filter((col) => col.canEdit);
-      const fixedColumns = columns.filter((col) => !col.canEdit);
+    const originalColumns = [...this.boardColumns()];
+    const editableColumns = originalColumns.filter((col) => col.canEdit);
+    const fixedColumns = originalColumns.filter((col) => !col.canEdit);
 
-      if (
-        event.previousIndex < editableColumns.length &&
-        event.currentIndex < editableColumns.length
-      ) {
-        moveItemInArray(
-          editableColumns,
-          event.previousIndex,
-          event.currentIndex
-        );
+    // Safe check: drag happens within editable zone
+    if (
+      event.previousIndex < editableColumns.length &&
+      event.currentIndex < editableColumns.length
+    ) {
+      // Clone editable for manipulation
+      const newEditableColumns = [...editableColumns];
+      moveItemInArray(
+        newEditableColumns,
+        event.previousIndex,
+        event.currentIndex
+      );
 
-        // Update positions with animation support
-        editableColumns.forEach((col, index) => {
-          col.position = index;
+      // Update positions
+      newEditableColumns.forEach((col, index) => (col.position = index));
+
+      // Merge editable + fixed columns, sorted by position
+      const newColumnList = [...newEditableColumns, ...fixedColumns].sort(
+        (a, b) => a.position - b.position
+      );
+      const previousColumnState = [...originalColumns]; // backup for rollback
+
+      this.boardColumns.set(newColumnList);
+      this.cdr.detectChanges(); // for smooth animation
+
+      const movedColumn = newEditableColumns[event.currentIndex];
+      try {
+        const success = await this.taskService.ReorderColumn({
+          boardId: this.boardId(),
+          columnId: movedColumn._id,
+          newPosition: movedColumn.position,
         });
 
-        // Recombine arrays
-        const reorderedColumns = [...editableColumns, ...fixedColumns];
-        this.boardColumns.set(reorderedColumns);
-
-        // Trigger change detection for smooth animations
-        this.cdr.detectChanges();
-
-        this.updateColumnPositions(editableColumns);
+        if (!success) {
+          this.boardColumns.set(previousColumnState);
+          console.warn('Failed to reorder columns on backend. Reverting...');
+        }
+      } catch (err) {
+        this.boardColumns.set(previousColumnState);
+        console.error('Error reordering column:', err);
       }
     }
   }
@@ -474,7 +604,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     });
 
     const updateInDatabase = await this.taskService.reorderBoardTasks({
-      // boardId: this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '',
+      // boardId: this.boardId(),
       // sourceColumnId,
       toColumn: targetColumnId,
       taskId: event.container.data[event.currentIndex]?._id,
@@ -559,7 +689,9 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     const column = this.boardColumns().find((col) => col._id === columnId);
     if (column && column.canEdit) {
       this.editingColumnId.set(columnId);
-      this.newColumnTitle.set(column.title);
+      this.columnForm.patchValue({
+        columnName: column.title,
+      });
       this.closeColumnMenu();
 
       setTimeout(() => {
@@ -576,16 +708,17 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
 
   onColumnTitleInput(event: Event) {
     const target = event.target as HTMLInputElement;
+    console.log(target.value);
     if (target) {
       this.newColumnTitle.set(target.value);
     }
   }
 
-  async saveColumnRename(columnId: string) {
+  async saveColumnRename(columnId: string, title: string) {
     const oldTitle = this.boardColumns().find(
       (col) => col._id === columnId
     )?.title;
-    const title = this.newColumnTitle().trim();
+
     if (title) {
       const columns = [...this.boardColumns()];
       const columnIndex = columns.findIndex((col) => col._id === columnId);
@@ -597,7 +730,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         const updateInDatabase = await this.taskService.RenameColumn({
           columnId,
           newTitle: title,
-          boardId: this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '',
+          boardId: this.boardId(),
         });
 
         if (!updateInDatabase) {
@@ -610,7 +743,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     }
 
     this.editingColumnId.set(null);
-    this.newColumnTitle.set('');
   }
 
   cancelColumnRename() {
@@ -618,67 +750,114 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.newColumnTitle.set('');
   }
 
-  deleteColumn(columnId: string) {
-    const column = this.boardColumns().find((col) => col._id === columnId);
-    if (column && column.canDelete && column.tasks.length === 0) {
-      const columns = this.boardColumns().filter((col) => col._id !== columnId);
-      this.boardColumns.set(columns);
-
-      console.log('Column deleted:', columnId);
-    } else if (column && column.tasks.length > 0) {
-      alert('Please move all tasks from this column before deleting it.');
-    }
+  async deleteColumn(columnId: string) {
+    const boardDetails = this.boardColumns().find((col) => col._id == columnId);
+    console.log('boardDetails : ', boardDetails);
     this.closeColumnMenu();
+    swalHelper
+      .confirmation(
+        `Delete "${boardDetails?.title}" Board`,
+        `Are you sure you want to this BOARD ?`,
+        'question'
+      )
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          this.isLoading.set(true);
+
+          const column = this.boardColumns().find(
+            (col) => col._id === columnId
+          );
+          if (column && column.canDelete && column.tasks.length === 0) {
+            const response = await this.taskService.DeleteColumn({
+              columnId: columnId,
+              boardId: this.boardId(),
+            });
+
+            if (response) {
+              const columns = this.boardColumns().filter(
+                (col) => col._id !== columnId
+              );
+              this.boardColumns.set(columns);
+
+              console.log('Column deleted:', columnId);
+            }
+          } else if (column && column.tasks.length > 0) {
+            alert('Please move all tasks from this column before deleting it.');
+          }
+          this.isLoading.set(false);
+        }
+      });
   }
 
-  async addColumn(position: 'left' | 'right', referenceColumnId: string) {
-    this.isLoading.set(false);
+  openAddColumnPopup(position: 'left' | 'right', referenceColumnId: string) {
+    this.closeColumnMenu();
+    this.popupMode.set('add');
+    this.currentColumnId.set(referenceColumnId);
+    this.columnForm.reset();
+    this.showColumnNamePopup.set(true);
+    this.positionForNewColumn = position;
+  }
+
+  // For renaming column
+  openRenameColumnPopup(columnId: string) {
+    const column = this.boardColumns().find((col) => col._id === columnId);
+    if (column) {
+      this.closeColumnMenu();
+      this.popupMode.set('rename');
+      this.currentColumnId.set(columnId);
+      this.columnForm.patchValue({
+        columnName: column.title,
+      });
+      this.showColumnNamePopup.set(true);
+    }
+  }
+
+  closeColumnNamePopup() {
+    this.showColumnNamePopup.set(false);
+    this.currentColumnId.set(null);
+    this.columnForm.reset();
+  }
+
+  async handleColumnNameSubmit() {
+    if (this.columnForm.invalid) return;
+
+    const columnName = this.columnForm.get('columnName')?.value.trim();
+
+    if (this.popupMode() === 'rename' && this.currentColumnId()) {
+      await this.saveColumnRename(this.currentColumnId()!, columnName);
+    } else if (this.popupMode() === 'add' && this.currentColumnId()) {
+      await this.addColumn(
+        this.positionForNewColumn,
+        this.currentColumnId()!,
+        columnName
+      );
+    }
+    this.closeColumnNamePopup();
+  }
+
+  async addColumn(
+    position: 'left' | 'right',
+    referenceColumnId: string,
+    title: string
+  ) {
+    this.isLoading.set(true);
 
     const columns = [...this.boardColumns()];
     const refIndex = columns.findIndex((col) => col._id === referenceColumnId);
 
-    const updateInDatabase = await this.taskService.AddNewColumn({
-      boardId: this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '',
-      title: 'New Column',
+    const response = await this.taskService.AddNewColumn({
+      boardId: this.boardId(),
+      title: title,
       position: position === 'left' ? `${refIndex}` : `${refIndex + 1}`,
-    })
+    });
 
-    if (updateInDatabase) {
-      console.log('Update in database:', updateInDatabase);
-
-      console.log('Update in database:', updateInDatabase);
-
-      // const newColumn = updateInDatabase.columns[updateInDatabase.columns.length - 1];
-      // columns.splice(position === 'left' ? refIndex : refIndex + 1, 0, newColumn);
-      // this.boardColumns.set(columns);
-
-      // console.log('Column added:', { position, referenceColumnId, newColumn });
+    if (response) {
+      columns.splice(response.position, 0, response);
+      this.boardColumns.set(columns);
+      console.log('Column added:', { position, referenceColumnId, response });
     }
 
-    // const newColumn: BoardColumn = {
-    //   _id: `col-${Date.now()}`,
-    //   title: 'New Column',
-    //   position: position === 'left' ? refIndex : refIndex + 1,
-    //   tasks: [],
-    //   canEdit: true,
-    //   canDelete: true,
-    // };
-
-    // const insertIndex = position === 'left' ? refIndex : refIndex + 1;
-    // columns.splice(insertIndex, 0, newColumn);
-
-    // columns.forEach((col, index) => {
-    //   col.position = index;
-    // });
-
-    // this.boardColumns.set(columns);
-    // this.closeColumnMenu();
-
-    // setTimeout(() => {
-    //   this.startRenameColumn(newColumn._id);
-    // }, 100);
-
-
+    this.isLoading.set(false);
   }
 
   // Task operations
@@ -694,20 +873,14 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   }
 
   async completeTask(task: Task) {
-    // getting the id of completed name column
-    const completedColumnId = this.boardColumns()
-      .find((col) => col.title.toLowerCase() === 'completed')?._id;
-    if (completedColumnId) {
-      this.moveTaskToColumn(task, completedColumnId);
+    if (this.completedColumnId()) {
+      this.moveTaskToColumn(task, this.completedColumnId());
       this.clearSelection();
     }
   }
   deleteTask(task: Task) {
-    // getting the id of deleted name column
-    const deletedColumnId = this.boardColumns()
-      .find((col) => col.title.toLowerCase() === 'deleted')?._id;
-    if (deletedColumnId) {
-      this.moveTaskToColumn(task, deletedColumnId);
+    if (this.deletedColumnId()) {
+      this.moveTaskToColumn(task, this.deletedColumnId());
       this.clearSelection();
     }
   }
@@ -749,7 +922,9 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         task.column = sourceColumn._id;
         sourceColumn.tasks.push(task);
         this.boardColumns.set(columns);
-        console.error('Failed to update task in database, reverted changes locally.');
+        console.error(
+          'Failed to update task in database, reverted changes locally.'
+        );
       } else {
         console.log('Task moved to column:', {
           taskId: task._id,
@@ -817,7 +992,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         status: 'normal',
         position: column.tasks.length,
         column: columnId,
-        board: this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '',
+        board: this.boardId(),
       });
 
       console.log('New task created:', response);

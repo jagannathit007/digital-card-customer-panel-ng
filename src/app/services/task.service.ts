@@ -7,12 +7,11 @@ import { swalHelper } from '../core/constants/swal-helper';
 import { teamMemberCommon } from '../core/constants/team-members-common';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TaskService {
-
   private headers: any = [];
-  constructor(private apiManager: ApiManager, private storage: AppStorage) { }
+  constructor(private apiManager: ApiManager, private storage: AppStorage) {}
 
   private getHeaders = () => {
     this.headers = [];
@@ -44,7 +43,6 @@ export class TaskService {
       return null;
     }
   }
-
 
   async GetSelectableTeamMembers(data: any) {
     try {
@@ -140,7 +138,6 @@ export class TaskService {
       return false;
     }
   }
-
 
   async ChangeRole(data: any) {
     try {
@@ -424,7 +421,7 @@ export class TaskService {
       return false;
     }
   }
-  
+
   async AddComment(data: any) {
     try {
       this.getHeaders();
@@ -579,6 +576,7 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
+        swalHelper.showToast(response.message, 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -602,6 +600,7 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
+        swalHelper.showToast(response.message, 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -625,6 +624,7 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
+        swalHelper.showToast(response.message, 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');

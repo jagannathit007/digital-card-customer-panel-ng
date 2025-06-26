@@ -14,10 +14,31 @@
       <p class="tw-text-gray-600">Manage your team's tasks efficiently</p>
     </div> -->
 
+      <!-- board not selected design -->
+      <div
+        *ngIf="!boardId()"
+        class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-h-64 tw-bg-white tw-rounded-lg tw-shadow-md tw-p-8 tw-space-y-4"
+      >
+        <i class="ri-dashboard-line tw-text-5xl tw-text-gray-400"></i>
+        <div class="tw-text-lg tw-font-semibold tw-text-gray-700">
+          No Board Selected
+        </div>
+        <div class="tw-text-gray-500 tw-text-sm">
+          Please select a board to view tasks and details.
+        </div>
+        <a
+          routerLink="/task-management/boards"
+          class="tw-inline-flex tw-items-center tw-gap-2 tw-bg-blue-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-shadow hover:tw-bg-blue-700 tw-transition"
+        >
+          <i class="ri-layout-grid-line"></i>
+          Browse Boards
+        </a>
+      </div>
+
       <!-- page Loader -->
       <div
         class="tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-bottom-0 tw-flex tw-items-center tw-justify-center tw-bg-[#0000004d] tw-z-50"
-        *ngIf="isLoading()"
+        *ngIf="isLoading() && boardId()"
       >
         <div
           class="tw-flex tw-items-center tw-gap-5 tw-bg-white tw-px-8 tw-py-5 tw-rounded"
@@ -32,9 +53,11 @@
       <!-- Kanban Board -->
       <div
         class="tw-flex tw-gap-6 tw-overflow-x-auto tw-pb-4"
+        *ngIf="boardId()"
         cdkDropList
         cdkDropListOrientation="horizontal"
         [cdkDropListData]="editableColumns()"
+        [cdkDropListDisabled]="!taskPermissionsService.isBoardLevelPermission()"
         (cdkDropListDropped)="onColumnDrop($event)"
       >
         <!-- FIXED: Updated cdkDropListGroup for cross-column drag -->
@@ -78,9 +101,11 @@
                         type="text"
                         [value]="newColumnTitle()"
                         (input)="onColumnTitleInput($event)"
-                        (keydown.enter)="saveColumnRename(column._id)"
+                        (keydown.enter)="
+                          saveColumnRename(column._id, newColumnTitle())
+                        "
                         (keydown.escape)="cancelColumnRename()"
-                        (blur)="saveColumnRename(column._id)"
+                        (blur)="saveColumnRename(column._id, newColumnTitle())"
                         [attr.data-column-id]="column._id"
                         class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-font-semibold tw-text-gray-900 tw-bg-transparent tw-border tw-border-blue-300 tw-rounded tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500"
                       />
@@ -90,7 +115,10 @@
                   <!-- Column Actions -->
                   <div
                     class="tw-relative column-menu-container"
-                    *ngIf="column.canEdit"
+                    *ngIf="
+                      column.canEdit &&
+                      taskPermissionsService.isBoardLevelPermission()
+                    "
                   >
                     <button
                       (click)="toggleColumnMenu(column._id, $event)"
@@ -114,11 +142,11 @@
                     <!-- Dropdown Menu -->
                     <div
                       *ngIf="activeColumnMenu() === column._id"
-                      class="tw-absolute tw-right-0 tw-top-8 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-z-50 tw-min-w-48"
+                      class="tw-absolute tw-right-0 tw-top-8 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-z-20 tw-min-w-48"
                     >
                       <div class="tw-py-1">
                         <button
-                          (click)="startRenameColumn(column._id)"
+                          (click)="openRenameColumnPopup(column._id)"
                           class="tw-w-full tw-px-4 tw-py-2 tw-text-left tw-text-sm tw-text-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
                         >
                           <svg
@@ -138,7 +166,7 @@
                         </button>
 
                         <button
-                          (click)="addColumn('left', column._id)"
+                          (click)="openAddColumnPopup('left', column._id)"
                           class="tw-w-full tw-px-4 tw-py-2 tw-text-left tw-text-sm tw-text-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
                         >
                           <svg
@@ -158,7 +186,7 @@
                         </button>
 
                         <button
-                          (click)="addColumn('right', column._id)"
+                          (click)="openAddColumnPopup('right', column._id)"
                           class="tw-w-full tw-px-4 tw-py-2 tw-text-left tw-text-sm tw-text-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
                         >
                           <svg
@@ -244,6 +272,8 @@
                     [isDragging]="
                       isDragging() && draggedTask()?._id === task._id
                     "
+                    [completedColumnId]="completedColumnId()"
+                    [deleetdColumnId]="deletedColumnId()"
                     (taskClick)="selectTask(task, $event)"
                     (taskDoubleClick)="onTaskDoubleClick(task)"
                     (taskComplete)="completeTask(task)"
@@ -335,6 +365,7 @@
                       {{ column.tasks.length }}
                     </span>
                     <svg
+                      *ngIf="taskPermissionsService.isBoardLevelPermission()"
                       class="tw-w-4 tw-h-4 tw-text-gray-400 tw-ml-1"
                       fill="none"
                       stroke="currentColor"
@@ -384,6 +415,8 @@
                     [isDragging]="
                       isDragging() && draggedTask()?._id === task._id
                     "
+                    [completedColumnId]="completedColumnId()"
+                    [deleetdColumnId]="deletedColumnId()"
                     (taskClick)="selectTask(task, $event)"
                     (taskDoubleClick)="onTaskDoubleClick(task)"
                     (taskComplete)="completeTask(task)"
@@ -416,5 +449,68 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- column name input popup with modern interactive design -->
+<!-- Modern Column Name Input Popup -->
+<!-- Replace your current popup div with this -->
+<div
+  *ngIf="showColumnNamePopup()"
+  class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-40 tw-p-4"
+  (click)="closeColumnNamePopup()"
+>
+  <div
+    class="tw-bg-white tw-rounded-xl tw-shadow-xl tw-w-full tw-max-w-md tw-overflow-hidden tw-animate-scale-in"
+    (click)="$event.stopPropagation()"
+  >
+    <form [formGroup]="columnForm" (ngSubmit)="handleColumnNameSubmit()">
+      <div class="tw-p-6">
+        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4">
+          {{ popupMode() === "add" ? "Add New Column" : "Rename Column" }}
+        </h3>
+
+        <input
+          type="text"
+          formControlName="columnName"
+          class="tw-w-full tw-px-4 tw-py-3 tw-border tw-border-gray-300 tw-rounded-lg tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-blue-500 tw-outline-none tw-transition-all tw-duration-200"
+          placeholder="Enter column name"
+          autofocus
+        />
+
+        <div
+          *ngIf="
+            columnForm.get('columnName')?.invalid &&
+            (columnForm.get('columnName')?.dirty ||
+              columnForm.get('columnName')?.touched)
+          "
+          class="tw-text-red-500 tw-text-sm tw-mt-1"
+        >
+          <div *ngIf="columnForm.get('columnName')?.errors?.['required']">
+            Column name is required
+          </div>
+          <div *ngIf="columnForm.get('columnName')?.errors?.['duplicateName']">
+            Column name already exists
+          </div>
+        </div>
+
+        <div class="tw-flex tw-justify-end tw-gap-3 tw-mt-6">
+          <button
+            type="button"
+            (click)="closeColumnNamePopup()"
+            class="tw-px-4 tw-py-2 tw-text-gray-700 hover:tw-bg-gray-100 tw-rounded-lg tw-transition-colors tw-duration-200"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            [disabled]="columnForm.invalid"
+            class="tw-px-4 tw-py-2 tw-bg-blue-600 tw-text-white hover:tw-bg-blue-700 tw-rounded-lg tw-transition-colors tw-duration-200 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
+          >
+            {{ popupMode() === "add" ? "Add" : "Save" }}
+          </button>
+        </div>
+      </div>
+    </form>
   </div>
 </div>
