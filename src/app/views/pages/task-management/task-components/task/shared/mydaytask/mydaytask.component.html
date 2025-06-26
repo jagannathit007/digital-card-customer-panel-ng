@@ -1,1 +1,11 @@
 <p>mydaytask works!</p>
+
+<!-- In your personal-task.component.html -->
+<button (click)="openAddTaskModal()" class="tw-bg-blue-600 tw-text-white tw-px-4 tw-py-2 tw-rounded">
+  Add Task
+</button>
+
+<app-personal-task
+  #addTaskModal
+  (taskAdded)="onTaskAdded()">
+</app-personal-task>

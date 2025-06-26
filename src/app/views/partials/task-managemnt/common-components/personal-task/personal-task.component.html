@@ -1,1 +1,218 @@
-<p>personal-task works!</p>
+<!-- add-task-modal.component.html -->
+<div *ngIf="isModalOpen()" class="tw-fixed tw-inset-0 tw-z-50 tw-flex tw-items-center tw-justify-center tw-p-4">
+  <!-- Backdrop -->
+  <div class="tw-absolute tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-transition-opacity tw-duration-300" 
+       (click)="closeModal()"></div>
+  
+  <!-- Modal Content -->
+  <div class="tw-relative tw-bg-white tw-rounded-2xl tw-shadow-2xl tw-w-full tw-max-w-2xl tw-max-h-[85vh] tw-overflow-hidden tw-transform tw-transition-all tw-duration-300 tw-scale-100">
+    <!-- Header -->
+    <div class="tw-flex tw-items-center tw-justify-between tw-p-6 tw-border-b tw-border-gray-100">
+      <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">Add Personal Task</h2>
+      <button (click)="closeModal()" 
+              class="tw-p-2 tw-rounded-full tw-hover:bg-gray-100 tw-transition-colors tw-duration-200">
+        <svg class="tw-w-5 tw-h-5 tw-text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Form Content -->
+    <div class="tw-p-4 tw-max-h-[calc(85vh-140px)] tw-overflow-y-auto tw-pb-2">
+      <div class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-6">
+        
+        <!-- Left Column: Task Details -->
+        <div class="tw-space-y-4">
+          <!-- Task Title Input -->
+          <div>
+            <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">Task Title</label>
+            <input [(ngModel)]="taskTitle" 
+                   type="text" 
+                   placeholder="Enter task title..." 
+                   class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-200 tw-rounded-lg tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-transition-all tw-duration-200"
+                   [class.tw-border-red-300]="showTitleError()">
+            <p *ngIf="showTitleError()" class="tw-text-red-500 tw-text-sm tw-mt-1">Task title is required</p>
+          </div>
+
+          <!-- Selected Date/Time Display -->
+          <div class="tw-bg-gradient-to-br tw-from-blue-50 tw-to-indigo-50 tw-rounded-lg tw-p-4 tw-border tw-border-blue-100">
+            <div class="tw-text-center">
+              <div class="tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1">Selected Date & Time</div>
+              <div class="tw-text-lg tw-font-bold tw-text-gray-800 tw-mb-1">
+                {{selectedDate | date:'MMM d, yyyy'}}
+              </div>
+              <div class="tw-text-2xl tw-font-bold tw-text-blue-600">
+                {{formatTime(selectedHour, selectedMinute)}}
+              </div>
+            </div>
+          </div>
+
+          <!-- Time Picker Section -->
+          <div>
+            <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-3">Set Time</label>
+            <div class="tw-grid tw-grid-cols-2 tw-gap-3">
+              
+              <!-- Clock Interface -->
+              <div class="tw-flex tw-flex-col tw-items-center tw-bg-gray-50 tw-rounded-lg tw-p-3">
+                <!-- <div class="tw-text-xs tw-font-medium tw-text-gray-700 tw-mb-2">Interactive Clock</div> -->
+                <div class="tw-relative tw-w-24 tw-h-24">
+                  <!-- Clock Face -->
+                  <svg class="tw-w-full tw-h-full tw-drop-shadow-sm" viewBox="0 0 200 200">
+                    <!-- Clock Background -->
+                    <circle cx="100" cy="100" r="90" fill="#ffffff" stroke="#e5e7eb" stroke-width="3"/>
+                    
+                    <!-- Hour Markers -->
+                    <g *ngFor="let hour of [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; let i = index">
+                      <line [attr.x1]="getHourMarkerX1(i)" 
+                            [attr.y1]="getHourMarkerY1(i)"
+                            [attr.x2]="getHourMarkerX2(i)" 
+                            [attr.y2]="getHourMarkerY2(i)"
+                            stroke="#6b7280" stroke-width="2"/>
+                      <text [attr.x]="getHourTextX(i)" 
+                            [attr.y]="getHourTextY(i)"
+                            text-anchor="middle" 
+                            dominant-baseline="middle" 
+                            class="tw-text-xs tw-fill-gray-700 tw-font-medium">
+                        {{hour}}
+                      </text>
+                    </g>
+                    
+                    <!-- Hour Hand -->
+                    <line x1="100" y1="100" 
+                          [attr.x2]="getHourHandX()" 
+                          [attr.y2]="getHourHandY()"
+                          stroke="#3b82f6" 
+                          stroke-width="4" 
+                          stroke-linecap="round"/>
+                    
+                    <!-- Minute Hand -->
+                    <line x1="100" y1="100" 
+                          [attr.x2]="getMinuteHandX()" 
+                          [attr.y2]="getMinuteHandY()"
+                          stroke="#ef4444" 
+                          stroke-width="2" 
+                          stroke-linecap="round"/>
+                    
+                    <!-- Center Dot -->
+                    <circle cx="100" cy="100" r="3" fill="#374151"/>
+                  </svg>
+                  
+                  <!-- Interactive Overlay -->
+                  <div class="tw-absolute tw-inset-0 tw-cursor-pointer tw-rounded-full" 
+                       (mousedown)="startTimeDrag($event)"
+                       (mousemove)="onTimeDrag($event)"
+                       (mouseup)="endTimeDrag()"></div>
+                </div>
+              </div>
+
+              <!-- Manual Time Input -->
+              <div class="tw-bg-gray-50 tw-rounded-lg tw-p-3">
+                <!-- <div class="tw-text-xs tw-font-medium tw-text-gray-700 tw-mb-2">Manual Input</div> -->
+                <div class="tw-space-y-2">
+                  <div>
+                    <label class="tw-block tw-text-xs tw-text-gray-600 tw-mb-1">Hour</label>
+                    <input [(ngModel)]="selectedHour" 
+                           (ngModelChange)="onTimeInputChange()"
+                           type="number" 
+                           min="0" 
+                           max="23" 
+                           class="tw-w-full tw-px-2 tw-py-1 tw-border tw-border-gray-200 tw-rounded tw-text-center tw-text-sm tw-font-semibold tw-focus:ring-1 tw-focus:ring-blue-500 tw-bg-white">
+                  </div>
+                  <div>
+                    <label class="tw-block tw-text-xs tw-text-gray-600 tw-mb-1">Minute</label>
+                    <input [(ngModel)]="selectedMinute" 
+                           (ngModelChange)="onTimeInputChange()"
+                           type="number" 
+                           min="0" 
+                           max="59" 
+                           class="tw-w-full tw-px-2 tw-py-1 tw-border tw-border-gray-200 tw-rounded tw-text-center tw-text-sm tw-font-semibold tw-focus:ring-1 tw-focus:ring-blue-500 tw-bg-white">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Date Picker -->
+        <div>
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-3">Select Date</label>
+          
+          <!-- Calendar -->
+          <div class="tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-sm tw-overflow-hidden">
+            <!-- Calendar Header -->
+            <div class="tw-flex tw-items-center tw-justify-between tw-px-4 tw-py-3 tw-bg-gray-50 tw-border-b tw-border-gray-200">
+              <button (click)="previousMonth()" 
+                      class="tw-p-1 tw-rounded tw-hover:bg-white tw-hover:shadow-sm tw-transition-all tw-duration-200">
+                <svg class="tw-w-4 tw-h-4 tw-text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+              </button>
+              
+              <div class="tw-flex tw-items-center tw-gap-2">
+                <h3 class="tw-text-lg tw-font-bold tw-text-gray-800">
+                  {{currentMonth | date:'MMMM'}}
+                </h3>
+                <!-- Year Dropdown -->
+                <select [(ngModel)]="selectedYear" 
+                        (ngModelChange)="onYearChange()"
+                        class="tw-bg-white tw-border tw-border-gray-200 tw-rounded tw-px-2 tw-py-1 tw-text-sm tw-font-semibold tw-text-gray-800 tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500">
+                  <option *ngFor="let year of getYearOptions()" [value]="year">
+                    {{year}}
+                  </option>
+                </select>
+              </div>
+              
+              <button (click)="nextMonth()" 
+                      class="tw-p-1 tw-rounded tw-hover:bg-white tw-hover:shadow-sm tw-transition-all tw-duration-200">
+                <svg class="tw-w-4 tw-h-4 tw-text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </button>
+            </div>
+
+            <div class="tw-p-3">
+              <!-- Days of Week -->
+              <div class="tw-grid tw-grid-cols-7 tw-gap-1 tw-mb-2">
+                <div *ngFor="let day of ['S', 'M', 'T', 'W', 'T', 'F', 'S']" 
+                     class="tw-text-center tw-text-xs tw-font-semibold tw-text-gray-600 tw-py-2">
+                  {{day}}
+                </div>
+              </div>
+
+              <!-- Calendar Days -->
+              <div class="tw-grid tw-grid-cols-7 tw-gap-1">
+                <button *ngFor="let day of calendarDays" 
+                        (click)="selectDate(day.date)"
+                        [disabled]="!day.isCurrentMonth || day.isPast"
+                        class="tw-aspect-square tw-flex tw-items-center tw-justify-center tw-text-xs tw-font-medium tw-rounded tw-transition-all tw-duration-200"
+                        [class]="getDateClass(day)">
+                  {{day.day}}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="tw-flex tw-items-center tw-justify-end tw-gap-3 tw-px-4 tw-py-3 tw-border-t tw-border-gray-100 tw-bg-white tw-sticky tw-bottom-0">
+      <button (click)="closeModal()" 
+              class="tw-px-4 tw-py-2 tw-text-gray-600 tw-bg-gray-100 tw-rounded-lg tw-hover:bg-gray-200 tw-transition-colors tw-duration-200 tw-text-sm">
+        Cancel
+      </button>
+      <button (click)="addTask()" 
+              [disabled]="isSubmitting()"
+              class="tw-px-4 tw-py-2 tw-bg-blue-600 tw-text-white tw-rounded-lg tw-hover:bg-blue-700 tw-disabled:opacity-50 tw-disabled:cursor-not-allowed tw-transition-colors tw-duration-200 tw-text-sm">
+        <span *ngIf="!isSubmitting()">Add Task</span>
+        <span *ngIf="isSubmitting()" class="tw-flex tw-items-center tw-gap-2">
+          <svg class="tw-animate-spin tw-w-4 tw-h-4" fill="none" viewBox="0 0 24 24">
+            <circle class="tw-opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="tw-opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Adding...
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
