@@ -201,6 +201,14 @@ public AI_ASSISTANT: string = `${this.PATH}/task/ai/process-user-voice`;
 public ADD_COMMENT: string = `${this.PATH}/task/team/comment/add`;
 
 
+//  ! PERSONAL TASK ROUTES
+public ADD_PERSONAL_TASK: string = `${this.PATH}/task/personal/create`;
+public UPDATE_PERSONAL_TASK: string = `${this.PATH}/task/personal/update`;
+public DELETE_PERSONAL_TASK: string = `${this.PATH}/task/personal/delete`;
+public TOGGLE_PERSONAL_TASK_STATUS: string = `${this.PATH}/task/personal/staus/toggle`;
+public GET_PERSONAL_TASK_DETAILS: string = `${this.PATH}/task/personal/get-details`
+public GET_PERSONAL_TASK_STATS: string = `${this.PATH}/task/personal/stats`;
+public GET_PERSONAL_TASK_DETAILS_COUNT: string = `${this.PATH}/task/personal/taskconut`;
 
 }
 

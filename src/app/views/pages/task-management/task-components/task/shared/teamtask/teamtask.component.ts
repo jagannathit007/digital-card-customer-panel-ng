@@ -101,7 +101,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     private taskService: TaskService,
     private router: Router,
     private dragDropService: DragDropService
-  ) {}
+  ) { }
 
   async ngOnInit() {
     this.loadDummyData();
@@ -643,7 +643,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       position: position === 'left' ? `${refIndex}` : `${refIndex + 1}`,
     })
 
-    if(updateInDatabase) {
+    if (updateInDatabase) {
       console.log('Update in database:', updateInDatabase);
 
       console.log('Update in database:', updateInDatabase);
@@ -677,7 +677,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     // setTimeout(() => {
     //   this.startRenameColumn(newColumn._id);
     // }, 100);
-    
+
 
   }
 
@@ -693,14 +693,23 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.selectedTask.set(null);
   }
 
-  completeTask(task: Task) {
-    this.moveTaskToColumn(task, 'col4');
-    this.clearSelection();
+  async completeTask(task: Task) {
+    // getting the id of completed name column
+    const completedColumnId = this.boardColumns()
+      .find((col) => col.title.toLowerCase() === 'completed')?._id;
+    if (completedColumnId) {
+      this.moveTaskToColumn(task, completedColumnId);
+      this.clearSelection();
+    }
   }
-
   deleteTask(task: Task) {
-    this.moveTaskToColumn(task, 'col5');
-    this.clearSelection();
+    // getting the id of deleted name column
+    const deletedColumnId = this.boardColumns()
+      .find((col) => col.title.toLowerCase() === 'deleted')?._id;
+    if (deletedColumnId) {
+      this.moveTaskToColumn(task, deletedColumnId);
+      this.clearSelection();
+    }
   }
 
   openTask(task: Task) {
@@ -726,14 +735,27 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       task.column = targetColumnId;
       task.position = targetColumn.tasks.length;
       this.updateTaskStatus(task, targetColumn);
-      targetColumn.tasks.push(task);
-
+      targetColumn.tasks.unshift(task);
       this.boardColumns.set(columns);
 
-      console.log('Task moved to column:', {
+      const updateInDatabase = this.taskService.reorderBoardTasks({
+        toColumn: targetColumnId,
         taskId: task._id,
-        targetColumnId,
+        toPosition: 0,
       });
+      if (!updateInDatabase) {
+        // Fallback: undo the move of local
+        targetColumn.tasks.shift();
+        task.column = sourceColumn._id;
+        sourceColumn.tasks.push(task);
+        this.boardColumns.set(columns);
+        console.error('Failed to update task in database, reverted changes locally.');
+      } else {
+        console.log('Task moved to column:', {
+          taskId: task._id,
+          targetColumnId,
+        });
+      }
     }
   }
 

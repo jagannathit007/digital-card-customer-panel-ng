@@ -70,7 +70,6 @@ export class AdminHeaderComponent implements OnInit {
       .subscribe(boardId => {
         this.currentBoardId = boardId;
         this.cdr.detectChanges(); // Force change detection to update UI
-        console.log('Current board updated:', boardId);
       });
   
       this.sharedService.refreshHeader$.subscribe(() => {
@@ -106,7 +105,6 @@ export class AdminHeaderComponent implements OnInit {
                                 new URLSearchParams(url.split('?')[1]).has('boardId');
     
     this.shouldShowElements = isBoardsRoute || isTeamTaskWithBoardId;
-    console.log('Show elements:', this.shouldShowElements, 'for URL:', url);
   }
 
   ngOnDestroy() {
