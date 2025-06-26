@@ -10,6 +10,7 @@ import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
 import { WebsiteBuilderService } from 'src/app/services/website-builder.service';
 import { ModalService } from 'src/app/core/utilities/modal';
+import { ConfigService } from 'src/app/services/config.service';
 
 @Component({
   selector: 'app-home',
@@ -19,7 +20,7 @@ import { ModalService } from 'src/app/core/utilities/modal';
 export class HomeComponent implements OnInit, OnDestroy {
   @ViewChild('fileInput') fileInput!: ElementRef;
   private objectURLCache = new Map<File, string>();
-  baseURL = environment.baseURL;
+  baseURL = this.config.backendURL;
   isLoading: boolean = false;
 
   // Rich text editors
@@ -48,7 +49,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     private storage: AppStorage,
     public modal: ModalService,
     public authService: AuthService,
-    private websiteService: WebsiteBuilderService
+    private websiteService: WebsiteBuilderService,
+    private config:ConfigService
   ) {}
 
   businessCardId: any;
@@ -304,7 +306,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   copyToClipboard() {
-    const fullUrl = `${environment.baseURL}/website/${this.websiteName}`;
+    const fullUrl = `${this.config.backendURL}/website/${this.websiteName}`;
     navigator.clipboard
       .writeText(fullUrl)
       .then(() => {
@@ -317,7 +319,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   getWebsiteMessage() {
-    const websiteUrl = `${environment.baseURL}/website/${this.websiteName}`;
+    const websiteUrl = `${this.config.backendURL}/website/${this.websiteName}`;
     this.message = `Checkout my website: ${websiteUrl}`;
   }
 

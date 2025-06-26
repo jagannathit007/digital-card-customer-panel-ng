@@ -1,9 +1,19 @@
 import { environment } from '../../../env/env.local';
+import { AppStorage } from '../utilities/app-storage';
+import { common } from './common';
 
 class ApiEndpoints {
-  private PATH: string = `${environment.baseURL}/${environment.route}`;
   
-  public GET_RAW: string = `${this.PATH}/get-raw`;
+  
+  constructor(private storage: AppStorage) { }
+
+  private app = this.storage.get(common.APP)
+  // private PATH = this.app.domain?.backendLink+"/web"
+  // private PATH = this.app?.domain?.backendLink ? `${this.app.domain.backendLink}/web` : ""
+  private baseURL = `${this.app?.domain?.backendLink || ""}`
+  private PATH: string = `${this.baseURL}/${environment.route}`;  
+
+  public GET_RAW: string = `${environment.parentDomain}/web/get-raw`;
   public SIGN_IN: string = `${this.PATH}/sign-in`;
   public GET_PROFILE: string = `${this.PATH}/profile`;
   public UPDATE_PROFILE: string = `${this.PATH}/update-profile`;
@@ -20,7 +30,7 @@ class ApiEndpoints {
   public PERSONAL_DETAILS: string = `${this.PATH}/business-cards/personal/update`;
   public BUSINESS_DETAILS: string = `${this.PATH}/business-cards/business/update`;
   public BUSINESS_USERNAME: string = `${this.PATH}/business-cards/business-userName`;
-  
+
   public ADD_SOCIAL_MEDIA_LINK: string = `${this.PATH}/business-cards/addSocialLink`;
   public DOCUMENT_DETAILS: string = `${this.PATH}/business-cards/documents/update`;
   public GET_OTHER_DOCUMENTS: string = `${this.PATH}/business-cards/other-documents`;
@@ -138,7 +148,7 @@ class ApiEndpoints {
   //veryfy token
   public VERIFY_TOKEN: string = `${this.PATH}/verify-token`;
 
-  
+
   // Websites and Templates Themes
   public GETALL_WEBSITE_THEMES: string = `${this.PATH}/website/themes`;
   public WEBSITE_THEMES_UPDATE: string = `${this.PATH}/website/themes/update`;
@@ -148,4 +158,5 @@ class ApiEndpoints {
   public WEBSITE_NAME_SAVING: string = `${this.PATH}/website/uniqueName/update`;
 }
 
-export let apiEndpoints = new ApiEndpoints();
+const storage = new AppStorage();
+export let apiEndpoints = new ApiEndpoints(storage);

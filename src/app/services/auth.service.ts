@@ -106,6 +106,7 @@ export class AuthService {
   async getProfile(data: any) {
     try {
       this.getHeaders();
+
       let response = await this.apiManager.request(
         {
           url: apiEndpoints.GET_PROFILE,
@@ -114,6 +115,8 @@ export class AuthService {
         data,
         this.headers
       );
+
+
       if (response.status == 200 && response.data != null) {
         return response.data;
       } else {
@@ -599,7 +602,6 @@ export class AuthService {
         return response.data;
       } else {
         swalHelper.showToast(response.message || 'Failed to fetch review', 'warning');
-        console.log(response.message);
         return null;
       }
     } catch (err) {
@@ -623,7 +625,6 @@ export class AuthService {
         return response.data;
       } else {
         swalHelper.showToast(response.message || 'Failed to fetch Qr Code details!', 'warning');
-        console.log(response.message);
         return null;
       }
     } catch (err) {

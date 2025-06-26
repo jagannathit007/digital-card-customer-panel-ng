@@ -7,7 +7,7 @@ import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { AuthService } from 'src/app/services/auth.service';
 import { common } from 'src/app/core/constants/common';
-import * as featherIcons from 'feather-icons'; 
+import * as featherIcons from 'feather-icons';
 import { environment } from 'src/env/env.local';
 import { AppWorker } from 'src/app/core/workers/app.worker';
 
@@ -35,7 +35,7 @@ export class SideBarComponent implements OnInit, AfterViewInit {
   ) {
     this.currentBcardId = this.storage.get(common.BUSINESS_CARD);
     let result = this.storage.get("apps");
-    if(result!=null){
+    if (result != null) {
       this.whiteLabelName = result.name;
     }
   }
@@ -49,12 +49,12 @@ export class SideBarComponent implements OnInit, AfterViewInit {
       this.filteredMenuList = [{
         moduleName: 'Member',
         menus: [
-        {
-          title: 'Account Settings',
-          link: 'account-settings',
-          icon: 'settings',
-        },
-      ]
+          {
+            title: 'Account Settings',
+            link: 'account-settings',
+            icon: 'settings',
+          },
+        ]
       }];
     }
   }
@@ -77,14 +77,16 @@ export class SideBarComponent implements OnInit, AfterViewInit {
     //   this.storage.clearAll();
     //   window.location.href = '/';
     // }
-     if (confirm.isConfirmed) {
-    // Preserve app_update_acknowledged before clearing
-    const acknowledged = this.storage.get('app_update_acknowledged');
-    this.storage.clearAll();
-    if (acknowledged) {
-      this.storage.set('app_update_acknowledged', acknowledged);
+    if (confirm.isConfirmed) {
+      // Preserve app_update_acknowledged before clearing
+      const acknowledged = this.storage.get('app_update_acknowledged');
+      const apps = this.storage.get("apps");
+      this.storage.clearAll();
+      this.storage.set('apps', apps);
+      if (acknowledged) {
+        this.storage.set('app_update_acknowledged', acknowledged);
+      }
+      window.location.href = '/';
     }
-    window.location.href = '/';
-  }
   };
 }

@@ -8,6 +8,7 @@ import { ModalService } from 'src/app/core/utilities/modal';
 import { BusinessCardService } from 'src/app/services/business-card.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { SOCIAL_MEDIA_LINKS } from 'src/app/core/utilities/socialMedia';
+import { ConfigService } from 'src/app/services/config.service';
 
 @Component({
   selector: 'app-business-details',
@@ -16,7 +17,7 @@ import { SOCIAL_MEDIA_LINKS } from 'src/app/core/utilities/socialMedia';
 })
 export class BusinessDetailsComponent implements OnInit {
   baseURL = environment.imageURL;
-  homeURL = environment.baseURL;
+  homeURL = this.config.backendURL;
   newSocialMedia = { name: '', link: '', image: '' };
   socialMediaImage: File | undefined;
   socialMediaOptions = SOCIAL_MEDIA_LINKS;
@@ -36,7 +37,8 @@ export class BusinessDetailsComponent implements OnInit {
     public authService: AuthService,
     private modal: ModalService,
     private businessService: BusinessCardService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private config:ConfigService
   ) {
     this.getCards();
   }

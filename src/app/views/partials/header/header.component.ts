@@ -12,6 +12,7 @@ import { environment } from 'src/env/env.local';
 import { ModalService } from 'src/app/core/utilities/modal';
 import { SharedService } from 'src/app/services/shared.service';
 import { AvatarComponent } from '../avatar/avatar.component';
+import { ConfigService } from 'src/app/services/config.service';
 
 declare var bootstrap: any;
 
@@ -39,7 +40,8 @@ playStoreAppUrl: string = 'https://play.google.com/store/apps/details?id=com.itf
     public authService: AuthService,
     public modal: ModalService,
     private cdr: ChangeDetectorRef,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private config:ConfigService
   ) {}
 
   onBusinessChange() {
@@ -76,7 +78,7 @@ copyPlayStoreLink() {
 }
 
   copyToClipboard() {
-    const fullUrl = `${environment.baseURL}/${this.userName}`;
+    const fullUrl = `${this.config.backendURL}/${this.userName}`;
     navigator.clipboard
       .writeText(fullUrl)
       .then(() => {
@@ -274,7 +276,9 @@ copyPlayStoreLink() {
     if (confirm.isConfirmed) {
     // Preserve app_update_acknowledged before clearing
     const acknowledged = this.storage.get('app_update_acknowledged');
+    const apps = this.storage.get("apps");
     this.storage.clearAll();
+    this.storage.set('apps', apps);
     if (acknowledged) {
       this.storage.set('app_update_acknowledged', acknowledged);
     }

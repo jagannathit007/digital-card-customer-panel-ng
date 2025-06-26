@@ -35,6 +35,7 @@ export class SignInComponent implements OnInit {
 
   async ngOnInit(){
     let data = await this.authService.getRawInformation();
+    console.log(data)
     if(data!=null){
       this.storage.set("apps", data);
       this.whileLabelName = data.name;

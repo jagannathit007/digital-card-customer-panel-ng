@@ -13,6 +13,7 @@ import { DigitOnlyDirective } from 'src/app/core/directives/digit-only';
 import { COUNTRY_CODES } from 'src/app/core/utilities/countryCode';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DebounceDirective } from 'src/app/core/directives/debounce';
+import { ConfigService } from 'src/app/services/config.service';
 
 declare var $: any;
 
@@ -38,7 +39,8 @@ export class BusinessCardDetailComponent {
     private authService: AuthService,
     private storage: AppStorage,
     public modal: ModalService,
-    private customerService: CustomerService
+    private customerService: CustomerService,
+    private config:ConfigService
   ) { }
 
   businessCardId: any
@@ -97,7 +99,7 @@ export class BusinessCardDetailComponent {
   exportExcel = async () => {
     let userId = this.storage.get(common.USER_DATA)._id;
     let businessCardId = this.storage.get(common.BUSINESS_CARD);
-    let link = `${environment.baseURL}/${environment.route}/download-excel/scanned-cards?u=${userId}&b=${businessCardId}&k=${this.selectedKeyword}`;
+    let link = `${this.config.backendURL}/${environment.route}/download-excel/scanned-cards?u=${userId}&b=${businessCardId}&k=${this.selectedKeyword}`;
     window.open(encodeURI(link), "_blank");
   }
 

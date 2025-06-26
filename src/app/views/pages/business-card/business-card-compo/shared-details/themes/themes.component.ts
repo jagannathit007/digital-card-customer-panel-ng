@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { AuthService } from 'src/app/services/auth.service';
+import { ConfigService } from 'src/app/services/config.service';
 import { environment } from 'src/env/env.local';
 
 @Component({
@@ -12,7 +13,7 @@ export class ThemeComponent {
   themes: any[] = [];
   currentAppliedTheme: any[]= [];
   currentBcardId = this.getLocalStorageData("business_card");
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService,private config:ConfigService) { }
   
   async ngOnInit() {
 
@@ -47,7 +48,7 @@ export class ThemeComponent {
 
   previewTheme(themeCode: string): void {
     const business_card = this.getLocalStorageData('business_card');
-    const url = `${environment.baseURL}/${business_card}?theme=${themeCode}`;
+    const url = `${this.config.backendURL}/${business_card}?theme=${themeCode}`;
     window.open(url, '_blank');
   }
 
