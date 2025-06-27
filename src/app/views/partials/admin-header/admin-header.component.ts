@@ -98,7 +98,7 @@ export class AdminHeaderComponent implements OnInit {
 
   private checkShouldShowElements(url: string) {
     // Exact match for /task-management/boards
-    const isBoardsRoute = url === '/task-management/boards';
+    const isBoardsRoute = url === '/task-management/teamtask';
     
     // Check for /teamtask with boardId parameter
     const isTeamTaskWithBoardId = url.startsWith('/task-management/teamtask?') && 
