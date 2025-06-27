@@ -68,6 +68,7 @@
             class="tw-flex-shrink-0 tw-w-80 tw-transition-all tw-duration-300 tw-ease-in-out"
             cdkDrag
             [cdkDragData]="column"
+            [cdkDragDisabled]="!taskPermissionsService.isBoardLevelPermission()"
           >
             <!-- Column Container -->
             <div
@@ -75,7 +76,16 @@
             >
               <!-- Column Header -->
               <div class="tw-p-4 tw-border-b tw-border-gray-100">
-                <div class="tw-flex tw-items-center tw-justify-between">
+                <div
+                  class="tw-flex tw-items-center tw-justify-between tw-gap-2"
+                >
+                  <!-- Drag Handle Button -->
+                  <button
+                    cdkDragHandle
+                    class="tw-p-1 tw-text-gray-400 hover:tw-text-gray-600 hover:tw-bg-gray-100 tw-rounded hover:tw-cursor-move"
+                  >
+                    <i class="ri-draggable"></i>
+                  </button>
                   <!-- Column Title -->
                   <div class="tw-flex tw-items-center tw-flex-1">
                     <div
