@@ -1,9 +1,7 @@
-// Custom SCSS for mydaytask component
-// Most styling is handled by Tailwind classes, but these provide additional customization
-
+// ===== CUSTOM SCROLLBAR STYLING =====
 .mydaytask-container {
-  // Custom scrollbar styling for the tasks container
-  .tw-overflow-y-auto {
+  // Original simple scrollbar design
+  &.custom-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: #cbd5e1 #f1f5f9;
     
@@ -27,7 +25,7 @@
   }
 }
 
-// Smooth transitions for task cards
+// ===== TASK CARD ANIMATIONS (Original Colors) =====
 .task-card {
   transition: all 0.2s ease-in-out;
   
@@ -40,7 +38,7 @@
   }
 }
 
-// Animation for task completion
+// ===== TASK CHECKBOX ANIMATIONS =====
 .task-checkbox {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   
@@ -61,32 +59,26 @@
   }
 }
 
-// Fade in animation for new tasks
-.task-fade-in {
-  animation: fadeInUp 0.3s ease-out;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
+// ===== DROPDOWN MENU FIXES =====
+.dropdown-container {
+  position: relative;
+  
+  // Dropdown menu styling
+  .tw-absolute {
+    position: absolute !important;
+    z-index: 9999 !important;
+    right: 0;
+    top: 100%;
+    margin-top: 4px;
+    
+    // Simple fade in animation
+    animation: dropdownFadeIn 0.15s ease-out;
+    
+    // Ensure it's visible
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-// Textarea auto-resize
-textarea {
-  field-sizing: content;
-  min-height: 44px;
-  max-height: 120px;
-}
-
-// Dropdown animation
-.dropdown-menu {
-  animation: dropdownFadeIn 0.15s ease-out;
 }
 
 @keyframes dropdownFadeIn {
@@ -100,7 +92,45 @@ textarea {
   }
 }
 
-// Loading spinner customization
+// ===== TASK INPUT SECTION =====
+.form-input {
+  transition: all 0.2s ease-in-out;
+  
+  &:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+}
+
+// Auto-resize textarea
+textarea {
+  field-sizing: content;
+  min-height: 44px;
+  max-height: 120px;
+}
+
+// ===== SEND BUTTON =====
+.send-button {
+  transition: all 0.2s ease-in-out;
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+}
+
+// ===== TASK TITLE =====
+.task-title {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+// ===== LOADING SPINNER =====
 .loading-spinner {
   &::after {
     content: '';
@@ -128,46 +158,23 @@ textarea {
   }
 }
 
-// Button hover effects
-.send-button {
-  transition: all 0.2s ease-in-out;
-  
-  &:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+// ===== FADE IN ANIMATION FOR NEW TASKS =====
+.task-fade-in {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-  
-  &:active:not(:disabled) {
+  to {
+    opacity: 1;
     transform: translateY(0);
   }
 }
 
-// Task title text handling
-.task-title {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
-}
-
-// Smooth focus transitions
-.form-input {
-  transition: all 0.2s ease-in-out;
-  
-  &:focus {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-  }
-}
-
-// Header gradient effect
-.header-gradient {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-// Empty state illustration
+// ===== EMPTY STATE =====
 .empty-state {
   .illustration {
     filter: grayscale(20%);
@@ -181,7 +188,7 @@ textarea {
   }
 }
 
-// Responsive improvements
+// ===== RESPONSIVE IMPROVEMENTS =====
 @media (max-width: 640px) {
   .task-card {
     margin-bottom: 0.5rem;
@@ -194,8 +201,11 @@ textarea {
   }
 }
 
-// Dark mode support (if implemented later)
-@media (prefers-color-scheme: dark) {
-  // Dark mode styles can be added here
-  // Currently using light theme only
+// ===== ACCESSIBILITY =====
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
