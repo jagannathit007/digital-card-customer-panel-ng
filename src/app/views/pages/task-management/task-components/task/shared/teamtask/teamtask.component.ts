@@ -5,8 +5,10 @@ import {
   ChangeDetectorRef,
   signal,
   computed,
+  ViewChild,
 } from '@angular/core';
 import {
+  CdkDrag,
   CdkDragDrop,
   moveItemInArray,
   transferArrayItem,
@@ -106,6 +108,47 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   fixedColumns = computed(() =>
     this.boardColumns().filter((col) => !col.canEdit)
   );
+
+  // In your component class
+  @ViewChild(CdkDrag) drag!: CdkDrag;
+
+  ngAfterViewInit() {
+    if (this.drag) {
+      this.setupDragPreview();
+    }
+  }
+
+  private setupDragPreview() {
+    document.addEventListener('cdkDragStarted', (event: any) => {
+      if (event.detail.source._dragRef instanceof CdkDrag) {
+        setTimeout(() => {
+          const preview = document.querySelector(
+            '.cdk-drag-preview'
+          ) as HTMLElement;
+          if (preview) {
+            preview.style.width = '20rem';
+            preview.style.opacity = '0.9';
+            preview.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.2)';
+          }
+        });
+      }
+    });
+  }
+
+  private setupCustomPreview() {
+    // Delay slightly to ensure preview element exists
+    setTimeout(() => {
+      const preview = document.querySelector(
+        '.cdk-drag-preview'
+      ) as HTMLElement;
+      if (preview) {
+        // Make preview match column width
+        preview.style.width = '20rem'; // matches your tw-w-80 (80 * 0.25rem = 20rem)
+        preview.style.opacity = '0.9';
+        preview.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.2)';
+      }
+    });
+  }
 
   constructor(
     private storage: AppStorage,
@@ -409,8 +452,13 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   onDragStarted(task: Task) {
     this.isDragging.set(true);
     this.draggedTask.set(task);
-    this.clearSelection(); // Clear selection when dragging starts
-    this.dragDropService.startDrag(task, task.column);
+    this.clearSelection();
+    this.dragDropService.startDrag(task, task.column, 'task');
+  }
+
+  // For columns, you might need to add:
+  onColumnDragStarted(column: any) {
+    this.dragDropService.startDrag(column, column._id, 'column');
   }
 
   onDragEnded() {
@@ -604,40 +652,46 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       newPosition: event.currentIndex,
     });
 
-    const updateInDatabase = await this.taskService.reorderBoardTasks({
-      // boardId: this.boardId(),
-      // sourceColumnId,
-      toColumn: targetColumnId,
-      taskId: event.container.data[event.currentIndex]?._id,
-      toPosition: event.currentIndex,
-    });
+    if (
+      sourceColumnId !== targetColumnId ||
+      (sourceColumnId === targetColumnId &&
+        event.previousIndex !== event.currentIndex)
+    ) {
+      const updateInDatabase = await this.taskService.reorderBoardTasks({
+        // boardId: this.boardId(),
+        // sourceColumnId,
+        toColumn: targetColumnId,
+        taskId: event.container.data[event.currentIndex]?._id,
+        toPosition: event.currentIndex,
+      });
 
-    console.log('Update in database:', updateInDatabase);
+      console.log('Update in database:', updateInDatabase);
 
-    if (!updateInDatabase) {
-      // Fallback: undo the move of local
-      if (sourceColumnId === targetColumnId) {
-        console.log(
-          'Revert reordering within same column',
-          sourceColumnId,
-          targetColumnId
-        );
-        // Revert reordering within same column
-        moveItemInArray(
-          targetColumn.tasks,
-          event.currentIndex,
-          event.previousIndex
-        );
-      } else {
-        // Revert transfer between columns
-        const revertedTask = targetColumn.tasks.splice(
-          event.currentIndex,
-          1
-        )[0];
-        sourceColumn.tasks.splice(event.previousIndex, 0, revertedTask);
+      if (!updateInDatabase) {
+        // Fallback: undo the move of local
+        if (sourceColumnId === targetColumnId) {
+          console.log(
+            'Revert reordering within same column',
+            sourceColumnId,
+            targetColumnId
+          );
+          // Revert reordering within same column
+          moveItemInArray(
+            targetColumn.tasks,
+            event.currentIndex,
+            event.previousIndex
+          );
+        } else {
+          // Revert transfer between columns
+          const revertedTask = targetColumn.tasks.splice(
+            event.currentIndex,
+            1
+          )[0];
+          sourceColumn.tasks.splice(event.previousIndex, 0, revertedTask);
 
-        // undo status update to last when moving task between column
-        this.updateTaskStatus(revertedTask, sourceColumn);
+          // undo status update to last when moving task between column
+          this.updateTaskStatus(revertedTask, sourceColumn);
+        }
       }
     }
   }
