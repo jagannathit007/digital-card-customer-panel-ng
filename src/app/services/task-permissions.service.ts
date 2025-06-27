@@ -190,4 +190,31 @@ export class TaskPermissionsService {
       return 0;
     }
   }
+
+  isTeamTaskCardAccessible(taskDetails: any): boolean {
+    try {
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        return false;
+      }
+      const userRole = currentUser.role || '';
+      const userId = currentUser._id || '';
+      if (this.memberLevelRoles.includes(userRole)) {
+        const isPrivileged = this.taskLevelRoles.includes(userRole);
+        const isAssignedMember = taskDetails?.assignedTo?.includes(userId);
+        const isCreatorMember = taskDetails.createdBy.toString() === userId.toString();
+
+        return isPrivileged || isAssignedMember || isCreatorMember;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      console.log(err);
+      swalHelper.showToast(
+        'Something went wrong while checking permissions!',
+        'error'
+      );
+      return false;
+    }
+  }
 }

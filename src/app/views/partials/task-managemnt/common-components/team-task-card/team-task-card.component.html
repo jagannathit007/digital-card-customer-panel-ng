@@ -1,5 +1,9 @@
 <div
-  class="task-card tw-relative tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-p-4 tw-cursor-pointer tw-transition-all tw-duration-200 hover:tw-shadow-md hover:tw-border-gray-300 tw-group"
+  class="task-card tw-relative tw-border tw-border-gray-200 tw-rounded-lg tw-p-4 tw-cursor-pointer tw-transition-all tw-duration-200 hover:tw-shadow-md hover:tw-border-gray-300 tw-group tw-select-none"
+  [ngClass]="{
+    'tw-bg-[#f0f0f0]': !taskPermissionsService.isTeamTaskCardAccessible(task),
+    'tw-bg-[#f0f0f06c]': taskPermissionsService.isTeamTaskCardAccessible(task),
+  }"
   [class.tw-ring-2]="isSelected"
   [class.tw-ring-blue-500]="isSelected"
   [class.tw-border-blue-300]="isSelected"
@@ -233,15 +237,19 @@
   <!-- Inline Action Bar (appears on hover or selection) -->
   <div
     *ngIf="(showActions() || isSelected) && !isDragging"
-    class="task-actions tw-absolute tw-bottom-2 tw-left-2 tw-right-2 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-px-3 tw-py-2 tw-z-30 tw-opacity-0 tw-group-hover:tw-opacity-100 tw-transition-all tw-duration-200"
+    class="task-actions tw-absolute tw-bottom-2 tw-right-2 tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-px-3 tw-py-2 tw-z-30 tw-opacity-0 tw-group-hover:tw-opacity-100 tw-transition-all tw-duration-200"
     [class.tw-opacity-100]="isSelected"
+    [ngClass]="{
+    'tw-left-2 tw-bg-white': taskPermissionsService.isTeamTaskCardAccessible(task),
+      'tw-bg-gray-100': !taskPermissionsService.isTeamTaskCardAccessible(task)
+  }"
   >
     <div class="tw-flex tw-items-center tw-justify-between tw-gap-2">
       <!-- Action Buttons -->
       <div class="tw-flex tw-items-center tw-gap-1">
         <!-- Complete/Restore Button -->
         <button
-          *ngIf="canShowCompleteAction()"
+          *ngIf="canShowCompleteAction(task)"
           (click)="onCompleteClick($event)"
           class="tw-p-1.5 tw-bg-green-100 tw-text-green-700 tw-rounded-md tw-text-xs tw-font-medium hover:tw-bg-green-200 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-1"
           title="Mark as Complete"
@@ -263,7 +271,7 @@
         </button>
 
         <button
-          *ngIf="canShowRestoreAction()"
+          *ngIf="canShowRestoreAction(task)"
           (click)="onCompleteClick($event)"
           class="tw-p-1.5 tw-bg-blue-100 tw-text-blue-700 tw-rounded-md tw-text-xs tw-font-medium hover:tw-bg-blue-200 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-1"
           title="Restore Task"
@@ -286,7 +294,7 @@
 
         <!-- Delete Button -->
         <button
-          *ngIf="canShowDeleteAction()"
+          *ngIf="canShowDeleteAction(task)"
           (click)="onDeleteClick($event)"
           class="tw-p-1.5 tw-bg-red-100 tw-text-red-700 tw-rounded-md tw-text-xs tw-font-medium hover:tw-bg-red-200 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-1"
           title="Delete Task"

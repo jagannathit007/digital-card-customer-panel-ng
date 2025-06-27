@@ -50,6 +50,7 @@ export interface Task {
   dueDate?: Date;
   visibility: 'public' | 'private';
   column: string;
+  createdBy: string;
 }
 
 export interface BoardColumn {
@@ -125,7 +126,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         [Validators.required, this.uniqueColumnNameValidator.bind(this)],
       ],
     });
-    this.loadDummyData();
+    // this.loadDummyData();
     this.loadData();
     this.setupKeyboardListeners();
     this.setupDragDropSubscription();
@@ -186,180 +187,180 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     document.addEventListener('keydown', this.handleKeydown);
   }
 
-  private loadDummyData() {
-    // Dummy team members
-    const dummyMembers: TeamMember[] = [
-      {
-        _id: '1',
-        name: 'John Doe',
-        emailId: 'john@example.com',
-        role: 'Developer',
-        profileImage:
-          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face',
-      },
-      {
-        _id: '2',
-        name: 'Jane Smith',
-        emailId: 'jane@example.com',
-        role: 'Designer',
-        profileImage:
-          'https://images.unsplash.com/photo-1494790108755-2616b612b5bc?w=32&h=32&fit=crop&crop=face',
-      },
-      {
-        _id: '3',
-        name: 'Mike Johnson',
-        emailId: 'mike@example.com',
-        role: 'Manager',
-        profileImage:
-          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face',
-      },
-      {
-        _id: '4',
-        name: 'Sarah Wilson',
-        emailId: 'sarah@example.com',
-        role: 'QA',
-        profileImage:
-          'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face',
-      },
-    ];
+  // private loadDummyData() {
+  //   // Dummy team members
+  //   const dummyMembers: TeamMember[] = [
+  //     {
+  //       _id: '1',
+  //       name: 'John Doe',
+  //       emailId: 'john@example.com',
+  //       role: 'Developer',
+  //       profileImage:
+  //         'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face',
+  //     },
+  //     {
+  //       _id: '2',
+  //       name: 'Jane Smith',
+  //       emailId: 'jane@example.com',
+  //       role: 'Designer',
+  //       profileImage:
+  //         'https://images.unsplash.com/photo-1494790108755-2616b612b5bc?w=32&h=32&fit=crop&crop=face',
+  //     },
+  //     {
+  //       _id: '3',
+  //       name: 'Mike Johnson',
+  //       emailId: 'mike@example.com',
+  //       role: 'Manager',
+  //       profileImage:
+  //         'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face',
+  //     },
+  //     {
+  //       _id: '4',
+  //       name: 'Sarah Wilson',
+  //       emailId: 'sarah@example.com',
+  //       role: 'QA',
+  //       profileImage:
+  //         'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=32&h=32&fit=crop&crop=face',
+  //     },
+  //   ];
 
-    // Dummy categories
-    const dummyCategories: TaskCategory[] = [
-      { _id: '1', name: 'Frontend', color: 'tw-bg-blue-100 tw-text-blue-800' },
-      { _id: '2', name: 'Backend', color: 'tw-bg-green-100 tw-text-green-800' },
-      {
-        _id: '3',
-        name: 'Design',
-        color: 'tw-bg-purple-100 tw-text-purple-800',
-      },
-      { _id: '4', name: 'Bug', color: 'tw-bg-red-100 tw-text-red-800' },
-      {
-        _id: '5',
-        name: 'Feature',
-        color: 'tw-bg-yellow-100 tw-text-yellow-800',
-      },
-      {
-        _id: '6',
-        name: 'Testing',
-        color: 'tw-bg-indigo-100 tw-text-indigo-800',
-      },
-    ];
+  //   // Dummy categories
+  //   const dummyCategories: TaskCategory[] = [
+  //     { _id: '1', name: 'Frontend', color: 'tw-bg-blue-100 tw-text-blue-800' },
+  //     { _id: '2', name: 'Backend', color: 'tw-bg-green-100 tw-text-green-800' },
+  //     {
+  //       _id: '3',
+  //       name: 'Design',
+  //       color: 'tw-bg-purple-100 tw-text-purple-800',
+  //     },
+  //     { _id: '4', name: 'Bug', color: 'tw-bg-red-100 tw-text-red-800' },
+  //     {
+  //       _id: '5',
+  //       name: 'Feature',
+  //       color: 'tw-bg-yellow-100 tw-text-yellow-800',
+  //     },
+  //     {
+  //       _id: '6',
+  //       name: 'Testing',
+  //       color: 'tw-bg-indigo-100 tw-text-indigo-800',
+  //     },
+  //   ];
 
-    // Dummy tasks
-    const dummyTasks: Task[] = [
-      {
-        _id: '1',
-        title: 'Implement user authentication',
-        description: 'Set up JWT authentication with login/logout',
-        status: 'normal',
-        categories: [dummyCategories[1], dummyCategories[4]],
-        assignedTo: [dummyMembers[0], dummyMembers[2]],
-        comments: 3,
-        attachments: 1,
-        position: 0,
-        visibility: 'public',
-        column: 'col1',
-      },
-      {
-        _id: '2',
-        title: 'Design landing page',
-        description: 'Create wireframes and mockups for new landing page',
-        status: 'in progress',
-        categories: [dummyCategories[2], dummyCategories[4]],
-        assignedTo: [dummyMembers[1]],
-        comments: 5,
-        attachments: 3,
-        position: 0,
-        visibility: 'public',
-        column: 'col2',
-      },
-      {
-        _id: '3',
-        title: 'Fix navigation bug',
-        description: 'Mobile navigation not working properly',
-        status: 'normal',
-        categories: [dummyCategories[0], dummyCategories[3]],
-        assignedTo: [dummyMembers[0], dummyMembers[3]],
-        comments: 2,
-        attachments: 0,
-        position: 1,
-        visibility: 'public',
-        column: 'col1',
-      },
-      {
-        _id: '4',
-        title: 'Setup CI/CD pipeline',
-        description: 'Configure automated deployment',
-        status: 'completed',
-        categories: [dummyCategories[1]],
-        assignedTo: [dummyMembers[2], dummyMembers[0]],
-        comments: 8,
-        attachments: 2,
-        position: 0,
-        visibility: 'public',
-        column: 'col4',
-      },
-      {
-        _id: '5',
-        title: 'User testing session',
-        description: 'Conduct usability testing with 10 users',
-        status: 'doing',
-        categories: [dummyCategories[5], dummyCategories[2]],
-        assignedTo: [dummyMembers[1], dummyMembers[3]],
-        comments: 1,
-        attachments: 4,
-        position: 0,
-        visibility: 'public',
-        column: 'col3',
-      },
-    ];
+  //   // Dummy tasks
+  //   const dummyTasks: Task[] = [
+  //     {
+  //       _id: '1',
+  //       title: 'Implement user authentication',
+  //       description: 'Set up JWT authentication with login/logout',
+  //       status: 'normal',
+  //       categories: [dummyCategories[1], dummyCategories[4]],
+  //       assignedTo: [dummyMembers[0], dummyMembers[2]],
+  //       comments: 3,
+  //       attachments: 1,
+  //       position: 0,
+  //       visibility: 'public',
+  //       column: 'col1',
+  //     },
+  //     {
+  //       _id: '2',
+  //       title: 'Design landing page',
+  //       description: 'Create wireframes and mockups for new landing page',
+  //       status: 'in progress',
+  //       categories: [dummyCategories[2], dummyCategories[4]],
+  //       assignedTo: [dummyMembers[1]],
+  //       comments: 5,
+  //       attachments: 3,
+  //       position: 0,
+  //       visibility: 'public',
+  //       column: 'col2',
+  //     },
+  //     {
+  //       _id: '3',
+  //       title: 'Fix navigation bug',
+  //       description: 'Mobile navigation not working properly',
+  //       status: 'normal',
+  //       categories: [dummyCategories[0], dummyCategories[3]],
+  //       assignedTo: [dummyMembers[0], dummyMembers[3]],
+  //       comments: 2,
+  //       attachments: 0,
+  //       position: 1,
+  //       visibility: 'public',
+  //       column: 'col1',
+  //     },
+  //     {
+  //       _id: '4',
+  //       title: 'Setup CI/CD pipeline',
+  //       description: 'Configure automated deployment',
+  //       status: 'completed',
+  //       categories: [dummyCategories[1]],
+  //       assignedTo: [dummyMembers[2], dummyMembers[0]],
+  //       comments: 8,
+  //       attachments: 2,
+  //       position: 0,
+  //       visibility: 'public',
+  //       column: 'col4',
+  //     },
+  //     {
+  //       _id: '5',
+  //       title: 'User testing session',
+  //       description: 'Conduct usability testing with 10 users',
+  //       status: 'doing',
+  //       categories: [dummyCategories[5], dummyCategories[2]],
+  //       assignedTo: [dummyMembers[1], dummyMembers[3]],
+  //       comments: 1,
+  //       attachments: 4,
+  //       position: 0,
+  //       visibility: 'public',
+  //       column: 'col3',
+  //     },
+  //   ];
 
-    // Initialize columns with tasks
-    const columns: BoardColumn[] = [
-      {
-        _id: 'col1',
-        title: 'Things To Do',
-        position: 0,
-        tasks: dummyTasks.filter((t) => t.column === 'col1'),
-        canEdit: true,
-        canDelete: true,
-      },
-      {
-        _id: 'col2',
-        title: 'In Progress',
-        position: 1,
-        tasks: dummyTasks.filter((t) => t.column === 'col2'),
-        canEdit: true,
-        canDelete: true,
-      },
-      {
-        _id: 'col3',
-        title: 'Doing',
-        position: 2,
-        tasks: dummyTasks.filter((t) => t.column === 'col3'),
-        canEdit: true,
-        canDelete: true,
-      },
-      {
-        _id: 'col4',
-        title: 'Completed',
-        position: 3,
-        tasks: dummyTasks.filter((t) => t.column === 'col4'),
-        canEdit: false,
-        canDelete: false,
-      },
-      {
-        _id: 'col5',
-        title: 'Deleted',
-        position: 4,
-        tasks: [],
-        canEdit: false,
-        canDelete: false,
-      },
-    ];
+  //   // Initialize columns with tasks
+  //   const columns: BoardColumn[] = [
+  //     {
+  //       _id: 'col1',
+  //       title: 'Things To Do',
+  //       position: 0,
+  //       tasks: dummyTasks.filter((t) => t.column === 'col1'),
+  //       canEdit: true,
+  //       canDelete: true,
+  //     },
+  //     {
+  //       _id: 'col2',
+  //       title: 'In Progress',
+  //       position: 1,
+  //       tasks: dummyTasks.filter((t) => t.column === 'col2'),
+  //       canEdit: true,
+  //       canDelete: true,
+  //     },
+  //     {
+  //       _id: 'col3',
+  //       title: 'Doing',
+  //       position: 2,
+  //       tasks: dummyTasks.filter((t) => t.column === 'col3'),
+  //       canEdit: true,
+  //       canDelete: true,
+  //     },
+  //     {
+  //       _id: 'col4',
+  //       title: 'Completed',
+  //       position: 3,
+  //       tasks: dummyTasks.filter((t) => t.column === 'col4'),
+  //       canEdit: false,
+  //       canDelete: false,
+  //     },
+  //     {
+  //       _id: 'col5',
+  //       title: 'Deleted',
+  //       position: 4,
+  //       tasks: [],
+  //       canEdit: false,
+  //       canDelete: false,
+  //     },
+  //   ];
 
-    // this.boardColumns.set(columns);
-  }
+  //   // this.boardColumns.set(columns);
+  // }
 
   async loadData() {
     const boardDetails = await this.taskService.getBoardDetails({
@@ -1010,6 +1011,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
           position: response.position,
           visibility: response.visibility,
           column: columnId,
+          createdBy: response.createdBy,
         };
         column.tasks.push(newTask);
         this.boardColumns.update((cols) => [...cols]);

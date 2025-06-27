@@ -8,7 +8,7 @@
     transform: rotate(3deg);
     opacity: 0.9;
     transition: none !important;
-    z-index: 1000;
+    // z-index: 1000;
 
     .task-card {
       transform: none !important;
@@ -34,9 +34,9 @@
     transform-origin: top;
     margin: 12px 0;
 
-    &::after {
-      content: "Drop here";
-    }
+    // &::after {
+    //   content: "Drop here";
+    // }
 
     // IMPROVED: Smooth animation when placeholder appears
     &.cdk-drag-placeholder-preview {
@@ -51,9 +51,9 @@
     transform: scaleY(1.05);
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
 
-    &::after {
-      content: "Drop here";
-    }
+    // &::after {
+    //   content: "Drop here";
+    // }
   }
 
   // ENHANCED: Smooth task reordering animations
@@ -482,4 +482,30 @@
 
 .animate-scale-in {
   animation: scaleIn 0.2s ease-out forwards;
+}
+
+// Custom scrollbar
+
+.task-container-scroll {
+  // Hide scrollbar by default
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    background: transparent;
+  }
+  
+  // Show on hover
+  &:hover::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 116, 139, 0.3);
+    border-radius: 10px;
+    
+    &:hover {
+      background-color: rgba(100, 116, 139, 0.6);
+    }
+  }
 }

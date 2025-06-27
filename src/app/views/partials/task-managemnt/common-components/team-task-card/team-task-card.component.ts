@@ -7,6 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TaskPermissionsService } from 'src/app/services/task-permissions.service';
 
 export interface TeamMember {
   _id: string;
@@ -60,6 +61,8 @@ export class TeamTaskCardComponent {
 
   // Internal state
   showActions = signal<boolean>(false);
+
+  constructor(public taskPermissionsService: TaskPermissionsService) {}
 
   // Computed properties for displaying limited items
   displayCategories = computed(() => {
@@ -135,16 +138,17 @@ export class TeamTaskCardComponent {
   }
 
   // Check if actions should be shown based on column
-  canShowCompleteAction(): boolean {
-    return this.task.column !== this.completedColumnId; // Not in completed column
+  canShowCompleteAction(task: Task): boolean {
+
+    return this.taskPermissionsService.isTeamTaskCardAccessible(task) && this.task.column !== this.completedColumnId; // Not in completed column
   }
 
-  canShowDeleteAction(): boolean {
-    return this.task.column !== this.deleetdColumnId; // Not in deleted column
+  canShowDeleteAction(task: Task): boolean {
+    return this.taskPermissionsService.isTeamTaskCardAccessible(task) && this.task.column !== this.deleetdColumnId; // Not in deleted column
   }
 
-  canShowRestoreAction(): boolean {
-    return this.task.column === this.deleetdColumnId; // In deleted column
+  canShowRestoreAction(task: Task): boolean {
+    return this.taskPermissionsService.isTeamTaskCardAccessible(task) && this.task.column === this.deleetdColumnId; // In deleted column
   }
 
   // Event handlers

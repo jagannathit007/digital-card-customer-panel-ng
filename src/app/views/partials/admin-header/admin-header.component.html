@@ -1,5 +1,5 @@
 <!-- Header (fixed position with automatic content spacing) -->
-<div class="tw-sticky tw-top-0 tw-left-0 tw-right-0 ">
+<div class="tw-sticky tw-top-0 tw-left-0 tw-right-0 tw-z-30">
   <nav class="tw-bg-white tw-shadow-md tw-px-4 tw-py-3">
     <div class="tw-flex tw-items-center tw-justify-between">
       <!-- Left Side: Hamburger and Boards Dropdown -->
@@ -23,12 +23,12 @@
 
           <!-- Boards Dropdown Menu -->
           <div class="tw-absolute tw-left-0 tw-top-full tw-mt-2 tw-w-64 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-200 tw-py-2 tw-transform tw-transition-all tw-duration-200 tw-z-50"
-               [class.tw-opacity-0]="!isBoardsDropdownOpen"
-               [class.tw-opacity-100]="isBoardsDropdownOpen"
-               [class.tw-scale-95]="!isBoardsDropdownOpen"
-               [class.tw-scale-100]="isBoardsDropdownOpen"
-               [class.tw-pointer-events-none]="!isBoardsDropdownOpen"
-               *ngIf="isBoardsDropdownOpen">
+          [class.tw-opacity-0]="!isBoardsDropdownOpen"
+          [class.tw-opacity-100]="isBoardsDropdownOpen"
+          [class.tw-scale-95]="!isBoardsDropdownOpen"
+          [class.tw-scale-100]="!isBoardsDropdownOpen"
+          [class.tw-pointer-events-none]="!isBoardsDropdownOpen"
+          *ngIf="isBoardsDropdownOpen">
             
             <!-- Home Link -->
             <a class="tw-flex tw-items-center tw-px-4 tw-py-3 tw-text-gray-700 tw-hover:bg-blue-50 tw-hover:text-blue-600 tw-transition-colors tw-no-underline tw-block tw-border-b tw-border-gray-100" 

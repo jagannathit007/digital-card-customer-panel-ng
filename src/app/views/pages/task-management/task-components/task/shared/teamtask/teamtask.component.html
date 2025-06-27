@@ -37,7 +37,7 @@
 
       <!-- page Loader -->
       <div
-        class="tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-bottom-0 tw-flex tw-items-center tw-justify-center tw-bg-[#0000004d] tw-z-50"
+        class="tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-bottom-0 tw-flex tw-items-center tw-justify-center tw-bg-[#0000004d] tw-z-30"
         *ngIf="isLoading() && boardId()"
       >
         <div
@@ -241,7 +241,7 @@
 
               <!-- Tasks Container -->
               <div
-                class="tw-p-4 tw-space-y-3 tw-min-h-[calc(100vh-300px)] tw-max-h-[calc(100vh-300px)] tw-overflow-y-auto tw-transition-all tw-duration-200 tw-scrollbar-thin tw-scrollbar-track-transparent tw-scrollbar-thumb-gray-300 hover:tw-scrollbar-thumb-gray-400 tw-scroll-smooth tw-snap-x tw-snap-mandatory"
+                class="tw-p-4 tw-space-y-3 tw-min-h-[calc(100vh-300px)] tw-max-h-[calc(100vh-300px)] tw-overflow-y-auto task-container-scroll tw-transition-all tw-duration-200"
                 cdkDropList
                 [id]="column._id"
                 [cdkDropListData]="column.tasks"
@@ -265,6 +265,9 @@
                   class="tw-transition-all tw-duration-300 tw-ease-in-out"
                   cdkDrag
                   [cdkDragData]="task"
+                  [cdkDragDisabled]="
+                    !taskPermissionsService.isTeamTaskCardAccessible(task)
+                  "
                 >
                   <app-team-task-card
                     [task]="task"
@@ -383,8 +386,9 @@
               </div>
 
               <!-- Tasks Container -->
+              <!-- For fixed columns -->
               <div
-                class="tw-p-4 tw-space-y-3 tw-min-h-[calc(100vh-300px)] tw-max-h-[calc(100vh-240px)] tw-overflow-y-auto tw-transition-all tw-duration-200"
+                class="tw-p-4 tw-space-y-3 tw-min-h-[calc(100vh-300px)] tw-max-h-[calc(100vh-240px)] tw-overflow-y-auto task-container-scroll tw-transition-all tw-duration-200"
                 cdkDropList
                 [id]="column._id"
                 [cdkDropListData]="column.tasks"
@@ -408,6 +412,9 @@
                   class="tw-transition-all tw-duration-300 tw-ease-in-out"
                   cdkDrag
                   [cdkDragData]="task"
+                  [cdkDragDisabled]="
+                    !taskPermissionsService.isTeamTaskCardAccessible(task)
+                  "
                 >
                   <app-team-task-card
                     [task]="task"
