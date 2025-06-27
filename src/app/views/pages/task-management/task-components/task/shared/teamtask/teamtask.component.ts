@@ -448,6 +448,18 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.isLoading.set(false);
   }
 
+  private focusElement(selector: string, selectText = false) {
+    setTimeout(() => {
+      const element = document.querySelector(selector) as HTMLElement;
+      if (element) {
+        element.focus();
+        if (selectText && element instanceof HTMLInputElement) {
+          element.select();
+        }
+      }
+    });
+  }
+
   // Drag and drop event handlers
   onDragStarted(task: Task) {
     this.isDragging.set(true);
@@ -851,6 +863,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.columnForm.reset();
     this.showColumnNamePopup.set(true);
     this.positionForNewColumn = position;
+
+    this.focusElement('#columnNameInput');
   }
 
   // For renaming column
@@ -864,6 +878,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         columnName: column.title,
       });
       this.showColumnNamePopup.set(true);
+
+      this.focusElement('#columnNameInput', true);
     }
   }
 
@@ -1026,6 +1042,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     if (this.newTaskInputColumnId() !== columnId) {
       this.newTaskInputColumnId.set(columnId);
       // Focus will be handled in template with setTimeout
+
+      this.focusElement(`input[data-new-task-input="${columnId}"]`);
     } else {
       // If clicking again, just focus input
       this.newTaskInputColumnId.set(columnId);
