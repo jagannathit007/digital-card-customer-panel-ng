@@ -407,6 +407,11 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   // }
 
   async loadData() {
+    if (!this.boardId()) {
+      this.isLoading.set(false);
+      return;
+    }
+
     const boardDetails = await this.taskService.getBoardDetails({
       boardId: this.boardId(),
     });
@@ -958,7 +963,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   }
 
   openTask(task: Task) {
-        this.router.navigate(['detail', task._id], { relativeTo: this.route });
+    this.router.navigate(['detail', task._id], { relativeTo: this.route });
   }
 
   onTaskDoubleClick(task: Task) {

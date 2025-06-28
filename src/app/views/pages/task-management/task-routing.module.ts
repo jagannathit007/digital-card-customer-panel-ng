@@ -21,15 +21,15 @@ const routes: Routes = [
       { path: 'allmembers', component: AllmembersComponent },
       { path: 'boards', component: AllBoardsComponent },
       {
-    path: 'teamtask',
-    component: TeamtaskComponent,
-    children: [
-      {
-        path: 'detail/:taskId',
-        component: TeamTaskDetailPopupComponent
-      }
-    ]
-  },
+        path: 'teamtask',
+        component: TeamtaskComponent,
+        children: [
+          {
+            path: 'detail/:taskId',
+            component: TeamTaskDetailPopupComponent
+          }
+        ]
+      },
       { path: 'personal-task/my-day', component: MydaytaskComponent },
       { path: 'personal-task/next-seven-days', component: MyweektaskComponent },
       { path: 'personal-task/all', component: MyalltaskComponent },
