@@ -83,7 +83,17 @@ private initializeComponent(): void {
       ? new Date(this.currentDueDate) 
       : new Date(this.currentDueDate);
   } else {
-    dateToUse = new Date(); // Default to current time
+    const now = new Date();
+    const rounded = new Date(now);
+    rounded.setSeconds(0, 0);
+    let min = now.getMinutes();
+    min = Math.ceil((min + 5) / 5) * 5; // next 5 min slot
+    if (min >= 60) {
+      rounded.setHours(rounded.getHours() + 1);
+      min = 0;
+    }
+    rounded.setMinutes(min);
+    dateToUse = rounded;
   }
   
   // Set date values

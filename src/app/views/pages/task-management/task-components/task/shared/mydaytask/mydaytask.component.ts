@@ -24,6 +24,7 @@ import { FormsModule } from '@angular/forms';
 import { PersonalTaskService } from 'src/app/services/personal-task.service';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
+import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 
 interface PersonalTask {
   _id: string;
@@ -57,7 +58,7 @@ export class MydaytaskComponent implements OnInit {
   hasMoreData: boolean = true;
 
   // UI State Properties
-  userName: string = 'User';
+  userName: string = '';
   activeDropdownId: string | null = null;
   isSubmitting: boolean = false;
   showFullScreenLoader: boolean = false;
@@ -72,8 +73,9 @@ export class MydaytaskComponent implements OnInit {
     private storage: AppStorage
   ) { }
 
+
   async ngOnInit(): Promise<void> {
-    this.userName = 'User';
+    this.userName = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA)?.name || 'User';
     await this.fetchTasks(true);
     this.setupInfiniteScroll();
   }
