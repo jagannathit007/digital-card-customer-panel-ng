@@ -1089,9 +1089,9 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         this.boardColumns.update((cols) => [...cols]);
         this.newTaskInputColumnId.set(null);
         this.newTaskDraftTitle.set('');
-        // setTimeout(() => {
-        //   this.router.navigate(['/task', newTask._id]);
-        // }, 100);
+        
+        // Scroll to the newly added task
+      this.scrollToBottom(columnId);
       }
     }
   }
@@ -1139,4 +1139,16 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   trackByTaskId(index: number, task: Task): string {
     return task._id;
   }
+
+  private scrollToBottom(columnId: string) {
+  setTimeout(() => {
+    const container = document.querySelector(`[id="${columnId}"]`) as HTMLElement;
+    if (container) {
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  }, 100); // Small delay to ensure the task is rendered
+}
 }
