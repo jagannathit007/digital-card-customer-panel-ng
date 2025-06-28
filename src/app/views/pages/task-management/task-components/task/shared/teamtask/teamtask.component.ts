@@ -13,7 +13,7 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
@@ -157,6 +157,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     private taskService: TaskService,
     public taskPermissionsService: TaskPermissionsService,
     private router: Router,
+    private route: ActivatedRoute,
     private dragDropService: DragDropService,
     private fb: FormBuilder
   ) {}
@@ -957,11 +958,11 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   }
 
   openTask(task: Task) {
-    this.router.navigate(['/task', task._id]);
+        this.router.navigate(['detail', task._id], { relativeTo: this.route });
   }
 
   onTaskDoubleClick(task: Task) {
-    this.router.navigate(['/task', task._id]);
+    this.router.navigate(['detail', task._id], { relativeTo: this.route });
   }
 
   private moveTaskToColumn(task: Task, targetColumnId: string) {
@@ -1089,9 +1090,9 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         this.boardColumns.update((cols) => [...cols]);
         this.newTaskInputColumnId.set(null);
         this.newTaskDraftTitle.set('');
-        
+
         // Scroll to the newly added task
-      this.scrollToBottom(columnId);
+        this.scrollToBottom(columnId);
       }
     }
   }
@@ -1141,14 +1142,16 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   }
 
   private scrollToBottom(columnId: string) {
-  setTimeout(() => {
-    const container = document.querySelector(`[id="${columnId}"]`) as HTMLElement;
-    if (container) {
-      container.scrollTo({
-        top: container.scrollHeight,
-        behavior: 'smooth'
-      });
-    }
-  }, 100); // Small delay to ensure the task is rendered
-}
+    setTimeout(() => {
+      const container = document.querySelector(
+        `[id="${columnId}"]`
+      ) as HTMLElement;
+      if (container) {
+        container.scrollTo({
+          top: container.scrollHeight,
+          behavior: 'smooth',
+        });
+      }
+    }, 100); // Small delay to ensure the task is rendered
+  }
 }
