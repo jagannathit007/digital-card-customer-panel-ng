@@ -9,12 +9,39 @@
   </div>
 
   <div class="tw-container tw-mx-auto tw-px-4 tw-py-6 tw-max-w-xl tw-min-h-[calc(100vh-109px)] tw-max-h-[calc(100vh-109px)] tw-flex tw-flex-col">
-    <!-- Header Section (Compact) -->
-    <div class="tw-text-center tw-mb-6 tw-flex-shrink-0 header-section">
+    <!-- Header Section with Date and Next Task -->
+    <div class="tw-text-left tw-mb-6 tw-flex-shrink-0 header-section">
       <h1 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-mb-2">
         Good {{ getTimeOfDay() }}, {{ userName }}
       </h1>
-      <p class="tw-text-sm tw-text-gray-600">{{ getCurrentDate() }}</p>
+      
+      <!-- Date and Next Task Container -->
+      <div class="tw-mt-4 tw-flex tw-justify-between tw-rounded-lg tw-p-2 tw-items-center  tw-gap-4  tw-bg-white">
+        <!-- Date Section -->
+        <div class="tw-text-center">
+          <div class="tw-text-lg tw-font-semibold tw-text-gray-800">{{ getCurrentDayName() }}</div>
+          <div class="tw-text-3xl tw-font-bold tw-text-gray-900">{{ getCurrentDayNumber() }}</div>
+          <div class="tw-text-sm tw-text-gray-600">{{ getCurrentMonthName() }}</div>
+        </div>
+        
+        <!-- Next Task Section -->
+        <div *ngIf="getNextTask()" class="tw-bg-white tw-flex-1 tw-rounded-lg tw-shadow-sm tw-border tw-border-gray-200 tw-p-3 tw-min-w-[200px] tw-text-left">
+          <div class="tw-text-xs tw-text-gray-500 tw-mb-1">Next Task</div>
+          <div class="tw-text-sm tw-font-medium tw-text-gray-800 tw-mb-1 tw-truncate">{{ getNextTask()?.title }}</div>
+          <div class="tw-text-xs tw-text-blue-600 tw-flex tw-items-center tw-gap-1">
+            <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {{ formatTime(getNextTask()?.dueOn ?? null) }}
+          </div>
+        </div>
+        
+        <!-- No Tasks Message -->
+        <div *ngIf="!getNextTask() && !isLoading" class="tw-bg-white tw-flex-1 tw-rounded-lg tw-shadow-sm tw-border tw-border-gray-200 tw-p-3 tw-min-w-[200px] tw-text-center">
+          <div class="tw-text-sm tw-text-gray-500">You have no latest task</div>
+        </div>
+      </div>
+      
       <div class="tw-mt-3 tw-w-16 tw-h-0.5 tw-bg-blue-500 tw-mx-auto tw-rounded-full"></div>
     </div>
 
@@ -31,7 +58,7 @@
         class="tw-space-y-3 tw-h-full tw-overflow-y-auto mydaytask-container custom-scrollbar"
         (scroll)="onScroll($event)"
         #scrollContainer
-        style="max-height: calc(100vh - 280px); min-height: 300px;"
+        style="max-height: calc(100vh - 380px); min-height: 300px;"
       >
         <div
           *ngFor="let task of tasks; trackBy: trackByTaskId"
@@ -178,7 +205,7 @@
     </div>
 
     <!-- Task Input Section (Compact & Fixed) -->
-    <div class="tw-flex-shrink-0 tw-bg-white tw-rounded-lg tw-shadow-md tw-border tw-border-gray-200 tw-p-4">
+    <div class="tw-flex-shrink-0 tw-bg-white tw-rounded-lg tw-shadow-md tw-border tw-border-gray-200 tw-p-2">
       <div class="tw-flex tw-items-end tw-gap-3">
         <div class="tw-flex-1">
           <textarea
@@ -206,9 +233,7 @@
           [class.tw-text-gray-400]="!canSendTask()"
           [class.tw-cursor-not-allowed]="!canSendTask()"
         >
-          <svg *ngIf="!isSubmitting" class="tw-w-5 tw-h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 2zm0 0v-8"></path>
-          </svg>
+          <i *ngIf="!isSubmitting" class="fa-regular fa-paper-plane tw-text-[20px]"></i>
           <div *ngIf="isSubmitting" class="tw-animate-spin tw-rounded-full tw-h-5 tw-w-5 tw-border-b-2 tw-border-white"></div>
         </button>
       </div>
