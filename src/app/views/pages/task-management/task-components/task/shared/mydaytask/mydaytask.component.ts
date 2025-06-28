@@ -346,19 +346,15 @@ export class MydaytaskComponent implements OnInit {
   }
 
   toggleDropdown(taskId: string): void {
-    console.log('Toggling dropdown for task:', taskId);
-    console.log('Current activeDropdownId:', this.activeDropdownId);
     
     this.activeDropdownId = this.activeDropdownId === taskId ? null : taskId;
     
-    console.log('New activeDropdownId:', this.activeDropdownId);
   }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
     if (!target.closest('.dropdown-container')) {
-      console.log('Closing dropdown due to outside click');
       this.activeDropdownId = null;
     }
   }
@@ -377,7 +373,6 @@ export class MydaytaskComponent implements OnInit {
     const scrollPercentage = (scrollTop + clientHeight) / scrollHeight;
     
     if (scrollPercentage >= 0.8 && this.hasMoreData && !this.isLoadingMore && !this.isLoading) {
-      console.log('Loading more tasks...');
       this.fetchTasks(false);
     }
   }
@@ -404,7 +399,6 @@ isDueOverdue(dueOn: Date | string | null): boolean {
 }
 
   openDateTimePicker(taskId: string, currentDueDate: Date | null = null): void {
-    console.log('Opening date-time picker for task:', taskId);
     this.selectedTaskId = taskId;
     this.selectedTaskDueDate = currentDueDate;
     this.showDateTimePicker = true;
@@ -415,7 +409,6 @@ isDueOverdue(dueOn: Date | string | null): boolean {
 
   // 5. Update the closeDateTimePicker method
   closeDateTimePicker(): void {
-    console.log('Closing date-time picker');
     this.showDateTimePicker = false;
     this.selectedTaskId = '';
     this.selectedTaskDueDate = null;
@@ -432,9 +425,6 @@ isDueOverdue(dueOn: Date | string | null): boolean {
     
     // Close the date-time picker
     this.closeDateTimePicker();
-    
-    // Optional: Show success message
-    console.log('Reminder set successfully for task:', this.selectedTaskId);
   }
 
 }

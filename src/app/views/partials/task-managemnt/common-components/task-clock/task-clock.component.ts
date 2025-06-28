@@ -71,27 +71,42 @@ export class TaskClockComponent implements OnInit {
     this.generateCalendar();
   }
 
-  private initializeComponent(): void {
-    const now = this.currentDueDate || new Date();
-    
-    if (this.currentDueDate) {
-      this.selectedDate = new Date(now);
-      this.currentMonth = now.getMonth();
-      this.currentYear = now.getFullYear();
-      
-      let hours = now.getHours();
-      this.isAM = hours < 12;
-      this.selectedHour = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
-      this.selectedMinute = now.getMinutes();
-    } else {
-      // Default to current time if no due date
-      const currentTime = new Date();
-      let hours = currentTime.getHours();
-      this.isAM = hours < 12;
-      this.selectedHour = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
-      this.selectedMinute = Math.round(currentTime.getMinutes() / 5) * 5; // Round to nearest 5 minutes
-    }
+
+// Update your initializeComponent method:
+private initializeComponent(): void {
+  // Fix: Ensure we have a proper Date object
+  let dateToUse: Date;
+  
+  if (this.currentDueDate) {
+    // Convert to Date if it's a string
+    dateToUse = typeof this.currentDueDate === 'string' 
+      ? new Date(this.currentDueDate) 
+      : new Date(this.currentDueDate);
+  } else {
+    dateToUse = new Date(); // Default to current time
   }
+  
+  // Set date values
+  this.selectedDate = new Date(dateToUse);
+  this.currentMonth = dateToUse.getMonth();
+  this.currentYear = dateToUse.getFullYear();
+  
+  // Set time values
+  let hours = dateToUse.getHours();
+  this.isAM = hours < 12;
+  this.selectedHour = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+  this.selectedMinute = this.currentDueDate ? dateToUse.getMinutes() : Math.round(dateToUse.getMinutes() / 5) * 5;
+}
+
+// Update your ngOnChanges method:
+ngOnChanges(): void {
+  // Reset and populate whenever component opens or currentDueDate changes
+  if (this.isVisible) {
+    this.currentStep = PickerStep.DATE;
+    this.initializeComponent();
+    this.generateCalendar();
+  }
+}
 
   private generateAvailableYears(): void {
     const currentYear = new Date().getFullYear();
@@ -259,36 +274,36 @@ export class TaskClockComponent implements OnInit {
   }
 
   async saveDateTime(): Promise<void> {
-    if (!this.taskId || !this.selectedDate) return;
-    
-    this.isUpdating = true;
-    
-    try {
-      const date = new Date(this.selectedDate);
-      const hours = this.isAM ? 
-        (this.selectedHour === 12 ? 0 : this.selectedHour) : 
-        (this.selectedHour === 12 ? 12 : this.selectedHour + 12);
-      
-      date.setHours(hours, this.selectedMinute, 0, 0);
-      
-      // Convert to UTC
-      const utcDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-      
-      const response = await this.personalTaskService.UpdatePersonalTask({
-        taskId: this.taskId,
-        dueOn: utcDate.toISOString()
-      });
-      
-      if (response) {
-        this.onDateTimeUpdated.emit(date);
-        this.closeComponent();
-      }
-    } catch (error) {
-      console.error('Error updating task:', error);
-    } finally {
-      this.isUpdating = false;
+  if (!this.taskId || !this.selectedDate) return;
+
+  this.isUpdating = true;
+
+  try {
+    // Construct local date from selected input
+    const date = new Date(this.selectedDate);
+    const hours = this.isAM
+      ? (this.selectedHour === 12 ? 0 : this.selectedHour)
+      : (this.selectedHour === 12 ? 12 : this.selectedHour + 12);
+
+    date.setHours(hours, this.selectedMinute, 0, 0); // Set time in IST
+
+    // Just send .toISOString() - it will convert to UTC automatically
+    const response = await this.personalTaskService.UpdatePersonalTask({
+      taskId: this.taskId,
+      dueOn: date.toISOString(), // UTC output
+    });
+
+    if (response) {
+      this.onDateTimeUpdated.emit(date);
+      this.closeComponent();
     }
+  } catch (error) {
+    console.error('Error updating task:', error);
+  } finally {
+    this.isUpdating = false;
   }
+}
+
 
   closeComponent(): void {
     this.onClose.emit();

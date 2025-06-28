@@ -127,32 +127,31 @@
                     </button>
 
                     <!-- Dropdown Menu - Fixed positioning -->
-                    <div
-                      *ngIf="activeDropdownId === task._id"
-                      class="tw-absolute tw-right-0 tw-top-10 tw-w-40 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-100 tw-py-1 tw-z-50"
-                      style="position: absolute !important; z-index: 9999 !important;"
-                    >
-                      <button
-                        (click)="startEdit(task)"
-                        class="tw-w-full tw-text-left tw-px-3 tw-py-2 tw-text-xs tw-text-gray-700 hover:tw-bg-blue-50 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-2"
-                      >
-                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                        </svg>
-                        Edit Task
-                      </button>
-
-<button
-  (click)="openDateTimePicker(task._id, task.dueOn)"
-  class="tw-w-full tw-text-left tw-px-3 tw-py-2 tw-text-xs tw-text-gray-700 hover:tw-bg-blue-50 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-2"
+                <div
+  *ngIf="activeDropdownId === task._id"
+  class="tw-absolute tw-right-0 tw-top-10 tw-w-40 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-100 tw-py-1 tw-z-50"
+  style="position: absolute !important; z-index: 9999 !important;"
 >
-  <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-  </svg>
-  Set Reminder
-</button>
-
-                    </div>
+  <button
+    (click)="startEdit(task)"
+    class="tw-w-full tw-text-left tw-px-3 tw-py-2 tw-text-xs tw-text-gray-700 hover:tw-bg-blue-50 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-2"
+  >
+    <i class="fa-regular fa-pen-to-square tw-text-[15px]"></i>
+    <span class="tw-text-[13px]">Edit Task</span>
+  </button>
+  <button
+    (click)="openDateTimePicker(task._id, task.dueOn)"
+    class="tw-w-full tw-text-left tw-px-3 tw-py-2 tw-text-xs tw-text-gray-700 hover:tw-bg-blue-50 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-2"
+  >
+    <i 
+      [ngClass]="task.dueOn ? 'fa-regular fa-pen-to-square' : 'fa-regular fa-clock'"
+      class="tw-text-[15px]"
+    ></i>
+    <span class="tw-text-[13px]">
+      {{ task.dueOn ? 'Edit Reminder' : 'Set Reminder' }}
+    </span>
+  </button>
+</div>
                   </div>
                 </div>
               </div>
