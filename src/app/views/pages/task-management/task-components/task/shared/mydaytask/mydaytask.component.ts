@@ -62,6 +62,11 @@ export class MydaytaskComponent implements OnInit {
   isSubmitting: boolean = false;
   showFullScreenLoader: boolean = false;
 
+  // Replace the existing date-time picker properties with these:
+  showDateTimePicker: boolean = false;
+  selectedTaskId: string = '';
+  selectedTaskDueDate: Date | null = null;
+
   constructor(
     private personalTaskService: PersonalTaskService,
     private storage: AppStorage
@@ -397,5 +402,39 @@ isDueOverdue(dueOn: Date | string | null): boolean {
   if (!dueOn) return false;
   return new Date(dueOn).getTime() < Date.now();
 }
+
+  openDateTimePicker(taskId: string, currentDueDate: Date | null = null): void {
+    console.log('Opening date-time picker for task:', taskId);
+    this.selectedTaskId = taskId;
+    this.selectedTaskDueDate = currentDueDate;
+    this.showDateTimePicker = true;
+    
+    // Close the dropdown when opening date-time picker
+    this.activeDropdownId = null;
+  }
+
+  // 5. Update the closeDateTimePicker method
+  closeDateTimePicker(): void {
+    console.log('Closing date-time picker');
+    this.showDateTimePicker = false;
+    this.selectedTaskId = '';
+    this.selectedTaskDueDate = null;
+  }
+
+    // 6. Update the onTaskDateTimeUpdated method
+  onTaskDateTimeUpdated(newDateTime: Date): void {
+    
+    // Find the task in your tasks array and update its dueOn property
+    const taskIndex = this.tasks.findIndex(t => t._id === this.selectedTaskId);
+    if (taskIndex !== -1) {
+      this.tasks[taskIndex].dueOn = newDateTime;
+    }
+    
+    // Close the date-time picker
+    this.closeDateTimePicker();
+    
+    // Optional: Show success message
+    console.log('Reminder set successfully for task:', this.selectedTaskId);
+  }
 
 }

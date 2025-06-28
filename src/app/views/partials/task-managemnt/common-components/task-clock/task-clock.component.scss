@@ -1,0 +1,239 @@
+/* Enhanced Task Timer Component Styles */
+.task-clock-container {
+  // Smooth modal animations
+  .tw-fixed {
+    animation: fadeIn 0.2s ease-out;
+  }
+  
+  .tw-bg-white {
+    animation: slideUp 0.3s ease-out;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Enhanced input styling
+.datetime-input {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  font-weight: 500;
+  
+  &:focus {
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+}
+
+// Calendar day styling
+.calendar-day {
+  position: relative;
+  transition: all 0.2s ease;
+  
+  &:not([disabled]):hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:not([disabled]):active {
+    transform: scale(0.95);
+  }
+  
+  &.selected {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  }
+}
+
+// Clock container styling
+.clock-container {
+  position: relative;
+  user-select: none;
+  
+  &:hover {
+    .tw-bg-blue-500,
+    .tw-bg-green-500 {
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+    }
+  }
+  
+  // Clock number styling
+  > div > div {
+    &:hover {
+      transform: scale(1.1) !important;
+      z-index: 10;
+    }
+  }
+}
+
+// AM/PM toggle enhancement
+.ampm-toggle {
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  
+  button {
+    transition: all 0.2s ease;
+    
+    &.active {
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transform: scale(1.02);
+    }
+    
+    &:hover:not(.active) {
+      background-color: rgba(59, 130, 246, 0.1);
+    }
+  }
+}
+
+// Clock hand animations
+.tw-origin-bottom {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Enhanced button interactions
+button:not([disabled]) {
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Step indicator styling
+.tw-text-gray-500 {
+  font-style: italic;
+}
+
+// Responsive adjustments
+@media (max-width: 640px) {
+  .tw-max-w-md {
+    max-width: calc(100vw - 32px);
+    margin: 1rem;
+  }
+  
+  .tw-w-64 {
+    width: 12rem !important;
+    height: 12rem !important;
+  }
+  
+  .tw-h-20 {
+    height: 3rem !important;
+  }
+  
+  .tw-h-24 {
+    height: 3.5rem !important;
+  }
+  
+  // Adjust number positioning for smaller clocks
+  .clock-container > div > div {
+    transform: rotate(var(--rotation)) translateY(-80px) rotate(calc(-1 * var(--rotation))) !important;
+  }
+}
+
+// Accessibility improvements
+button:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+select:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+// Custom scrollbar for modal content
+.tw-overflow-y-auto {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+    
+    &:hover {
+      background: #94a3b8;
+    }
+  }
+}
+
+// Loading state enhancements
+.tw-animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Disabled state styling
+button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  
+  &:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+// Year selector styling
+select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+  
+  &:focus {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%233b82f6' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  }
+}
+
+// Header styling enhancements
+.tw-text-xl {
+  letter-spacing: -0.025em;
+}
+
+// Footer action spacing
+.tw-border-t {
+  background: linear-gradient(to right, transparent 0%, #e5e7eb 20%, #e5e7eb 80%, transparent 100%);
+  height: 1px;
+  border: none;
+}
+
+// Clock center dot glow effect
+.tw-bg-blue-500.tw-rounded-full,
+.tw-bg-green-500.tw-rounded-full {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8), 
+              0 0 8px rgba(59, 130, 246, 0.4);
+}

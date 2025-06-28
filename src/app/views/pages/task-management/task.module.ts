@@ -34,6 +34,7 @@ import { AddCommentsComponent } from '../../partials/task-managemnt/common-compo
 import { AiassistantComponent } from '../../partials/task-managemnt/common-components/aiassistant/aiassistant.component';
 import { TeamTaskCardComponent } from "../../partials/task-managemnt/common-components/team-task-card/team-task-card.component";
 import { PersonalTaskComponent } from '../../partials/task-managemnt/common-components/personal-task/personal-task.component';
+import { TaskClockComponent } from '../../partials/task-managemnt/common-components/task-clock/task-clock.component';
 
 @NgModule({
   declarations: [
@@ -66,7 +67,8 @@ import { PersonalTaskComponent } from '../../partials/task-managemnt/common-comp
     MemberDetailDropdownComponent,
     AddCommentsComponent,
     TeamTaskCardComponent,
-    PersonalTaskComponent
+    PersonalTaskComponent,
+    TaskClockComponent
 ]
 })
 export class TaskModule { }

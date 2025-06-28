@@ -141,15 +141,17 @@
                         </svg>
                         Edit Task
                       </button>
-                      <button
-                        disabled
-                        class="tw-w-full tw-text-left tw-px-3 tw-py-2 tw-text-xs tw-text-gray-400 tw-cursor-not-allowed tw-flex tw-items-center tw-gap-2"
-                      >
-                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        Set Reminder
-                      </button>
+
+<button
+  (click)="openDateTimePicker(task._id, task.dueOn)"
+  class="tw-w-full tw-text-left tw-px-3 tw-py-2 tw-text-xs tw-text-gray-700 hover:tw-bg-blue-50 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-2"
+>
+  <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+  </svg>
+  Set Reminder
+</button>
+
                     </div>
                   </div>
                 </div>
@@ -224,3 +226,13 @@
     </div>
   </div>
 </div>
+
+
+<!-- Replace the existing TaskClockComponent at the end of your template with this: -->
+<app-task-clock
+  [taskId]="selectedTaskId"
+  [currentDueDate]="selectedTaskDueDate"
+  [isVisible]="showDateTimePicker"
+  (onClose)="closeDateTimePicker()"
+  (onDateTimeUpdated)="onTaskDateTimeUpdated($event)"
+></app-task-clock>
