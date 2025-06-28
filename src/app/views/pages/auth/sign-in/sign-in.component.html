@@ -26,18 +26,17 @@
                     <form novalidate [formGroup]="loginForm" (ngSubmit)="onSubmit()">
                         <!-- Email Field -->
                         <div class="form-group">
-                            <label class="form-label">Email ID</label>
+                            <label class="form-label">Email ID/ Mobile Number</label>
                             <input 
-                                type="email" 
+                                type="text" 
                                 class="form-control" 
                                 formControlName="emailId"
-                                inputmode="email"
                                 autocomplete="off"
                                 required
-                                placeholder="Enter your email"
+                                placeholder="Enter your email / mobile number"
                             />
                             <div class="error-message" *ngIf="!loginForm.controls.emailId?.valid && (loginForm.controls.emailId?.dirty || loginForm.controls.emailId?.touched)">
-                                Email ID must be valid.
+                                Email ID or Mobile Number must be valid.
                             </div>
                         </div>
 

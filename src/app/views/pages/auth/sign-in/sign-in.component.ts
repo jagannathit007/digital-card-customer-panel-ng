@@ -50,8 +50,7 @@ export class SignInComponent implements OnInit {
   
   loginForm = new FormGroup({
     emailId: new FormControl('', [
-      Validators.required, 
-      Validators.email,
+      Validators.required,
     ]),
     password: new FormControl('', [
       Validators.required,
