@@ -1,150 +1,239 @@
 <!-- Desktop Modal -->
-<div class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4 md:tw-p-6" 
-     (click)="closePopup()">
-  
+<div
+  class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4 md:tw-p-6"
+  (click)="closePopup()"
+>
   <!-- Modal Container - Fixed size on desktop, full screen on mobile -->
-  <div class="tw-bg-white tw-rounded-none md:tw-rounded-2xl tw-shadow-2xl tw-w-full tw-h-full md:tw-w-[900px] md:tw-h-[700px] tw-flex tw-flex-col tw-overflow-hidden tw-animate-scale-in" 
-       (click)="$event.stopPropagation()">
-    
+  <div
+    class="tw-bg-white tw-rounded-none md:tw-rounded-2xl tw-shadow-2xl tw-w-full tw-h-full md:tw-w-[900px] md:tw-h-[700px] tw-flex tw-flex-col tw-overflow-hidden tw-animate-scale-in"
+    (click)="$event.stopPropagation()"
+  >
     <!-- Header -->
-    <div class="tw-flex tw-items-center tw-justify-between tw-p-4 md:tw-p-6 tw-border-b tw-border-gray-200 tw-bg-gray-50">
+    <div
+      class="tw-flex tw-items-center tw-justify-between tw-p-4 md:tw-p-6 tw-border-b tw-border-gray-200 tw-bg-gray-50"
+    >
       <div class="tw-flex tw-items-center tw-space-x-3">
-        <div class="tw-w-8 tw-h-8 tw-bg-blue-500 tw-rounded-lg tw-flex tw-items-center tw-justify-center">
+        <div
+          class="tw-w-8 tw-h-8 tw-bg-blue-500 tw-rounded-lg tw-flex tw-items-center tw-justify-center"
+        >
           <i class="fas fa-tasks tw-text-white tw-text-sm"></i>
         </div>
-        <span class="tw-text-lg tw-font-semibold tw-text-gray-900">Task Details</span>
+        <span class="tw-text-lg tw-font-semibold tw-text-gray-900"
+          >Task Details</span
+        >
       </div>
-      
-      <button type="button" 
-              class="tw-p-2 tw-text-gray-400 hover:tw-text-gray-600 hover:tw-bg-gray-200 tw-rounded-lg tw-transition-all tw-duration-200" 
-              (click)="closePopup()">
+
+      <button
+        type="button"
+        class="tw-p-2 tw-text-gray-400 hover:tw-text-gray-600 hover:tw-bg-gray-200 tw-rounded-lg tw-transition-all tw-duration-200"
+        (click)="closePopup()"
+      >
         <i class="fas fa-times tw-text-lg"></i>
       </button>
     </div>
 
     <!-- Content Area -->
     <div class="tw-flex-1 tw-flex tw-flex-col tw-overflow-hidden">
-      
       <!-- Task Title Section -->
       <div class="tw-p-4 md:tw-p-6 tw-border-b tw-border-gray-100">
-        
+        <div *ngIf="isLoading" class="tw-p-2">
+          <!-- shimmer effect -->
+          <div
+            class="tw-w-full tw-h-8 tw-bg-gradient-to-r tw-from-gray-200 tw-to-gray-300 tw-rounded-lg tw-animate-pulse tw-mb-2"
+          ></div>
+        </div>
         <!-- Editable Title -->
-        <div class="tw-mb-4">
-          <div *ngIf="!isEditingTitle" 
-               class="tw-group tw-cursor-pointer tw-p-2 tw--m-2 tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
-               (click)="startEditingTitle()">
+        <div class="tw-mb-2" *ngIf="!isLoading">
+          <div
+            *ngIf="!isEditingTitle"
+            class="tw-group tw-cursor-pointer tw-p-2 tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
+            (click)="startEditingTitle()"
+          >
             <div class="tw-flex tw-items-center tw-justify-between">
-              <h2 class="tw-text-xl md:tw-text-2xl tw-font-bold tw-text-gray-900 tw-flex-1 tw-pr-2">
-                {{ task.title || 'Untitled Task' }}
+              <h2
+                class="tw-text-xl md:tw-text-2xl tw-font-bold tw-text-gray-900 tw-flex-1 tw-pr-2"
+              >
+                {{ task.title || "Untitled Task" }}
               </h2>
-              <i class="fas fa-edit tw-text-gray-400 group-hover:tw-text-gray-600 tw-text-sm tw-opacity-0 group-hover:tw-opacity-100 tw-transition-all tw-duration-200"></i>
+              <i
+                class="fas fa-edit tw-text-gray-400 group-hover:tw-text-gray-600 tw-text-sm tw-opacity-0 group-hover:tw-opacity-100 tw-transition-all tw-duration-200"
+              ></i>
             </div>
           </div>
-          
+
           <!-- Title Edit Mode -->
           <div *ngIf="isEditingTitle" class="tw-space-y-3">
-            <input type="text" 
-                   [(ngModel)]="editTitle"
-                   (keydown)="onTitleKeydown($event)"
-                   class="tw-w-full tw-text-xl md:tw-text-2xl tw-font-bold tw-text-gray-900 tw-bg-white tw-border tw-border-gray-300 tw-rounded-lg tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500 tw-transition-all tw-duration-200"
-                   placeholder="Enter task title..."
-                   autofocus>
-            
+            <input
+              type="text"
+              [(ngModel)]="editTitle"
+              (keydown)="onTitleKeydown($event)"
+              class="tw-w-full tw-text-xl md:tw-text-2xl tw-font-bold tw-text-gray-900 tw-bg-white tw-border tw-border-gray-300 tw-rounded-lg tw-px-3 tw-py-2 focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500 tw-transition-all tw-duration-200"
+              placeholder="Enter task title..."
+              autofocus
+            />
+
             <div class="tw-flex tw-items-center tw-space-x-2">
-              <button type="button"
-                      (click)="saveTitle()"
-                      [disabled]="!editTitle.trim() || isSavingTitle"
-                      class="tw-px-4 tw-py-2 tw-bg-blue-600 tw-text-white tw-text-sm tw-font-medium tw-rounded-lg hover:tw-bg-blue-700 disabled:tw-bg-gray-300 disabled:tw-cursor-not-allowed tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-space-x-2">
+              <button
+                type="button"
+                (click)="saveTitle()"
+                [disabled]="!editTitle.trim() || isSavingTitle"
+                class="tw-px-4 tw-py-2 tw-bg-blue-600 tw-text-white tw-text-sm tw-font-medium tw-rounded-lg hover:tw-bg-blue-700 disabled:tw-bg-gray-300 disabled:tw-cursor-not-allowed tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-space-x-2"
+              >
                 <i *ngIf="isSavingTitle" class="fas fa-spinner fa-spin"></i>
-                <span>{{ isSavingTitle ? 'Saving...' : 'Save' }}</span>
+                <span>{{ isSavingTitle ? "Saving..." : "Save" }}</span>
               </button>
-              
-              <button type="button"
-                      (click)="cancelTitleEdit()"
-                      [disabled]="isSavingTitle"
-                      class="tw-px-4 tw-py-2 tw-bg-gray-100 tw-text-gray-700 tw-text-sm tw-font-medium tw-rounded-lg hover:tw-bg-gray-200 disabled:tw-opacity-50 tw-transition-colors tw-duration-200">
+
+              <button
+                type="button"
+                (click)="cancelTitleEdit()"
+                [disabled]="isSavingTitle"
+                class="tw-px-4 tw-py-2 tw-bg-gray-100 tw-text-gray-700 tw-text-sm tw-font-medium tw-rounded-lg hover:tw-bg-gray-200 disabled:tw-opacity-50 tw-transition-colors tw-duration-200"
+              >
                 Cancel
               </button>
-              
-              <span class="tw-text-xs tw-text-gray-500">Press Enter to save, Esc to cancel</span>
+
+              <span class="tw-text-xs tw-text-gray-500"
+                >Press Enter to save, Esc to cancel</span
+              >
             </div>
           </div>
         </div>
 
+        <!-- shimmer effect for this section -->
+        <div *ngIf="isLoading" class="tw-flex tw-justify-between">
+          <div class="tw-flex tw-gap-4">
+            <div
+              class="tw-w-full tw-h-[39px] tw-bg-gradient-to-r tw-from-gray-200 tw-to-gray-300 tw-rounded-lg tw-animate-pulse tw-w-[140px]"
+            ></div>
+            <div
+              class="tw-w-full tw-h-[39px] tw-bg-gradient-to-r tw-from-gray-200 tw-to-gray-300 tw-rounded-lg tw-animate-pulse tw-w-[130px]"
+            ></div>
+          </div>
+          <div
+            class="tw-w-full tw-h-[39px] tw-bg-gradient-to-r tw-from-gray-200 tw-to-gray-300 tw-rounded-lg tw-animate-pulse tw-w-[180px]"
+          ></div>
+        </div>
+
         <!-- Status, Due Date, and Assignment Row -->
-        <div class="tw-flex tw-flex-col md:tw-flex-row tw-items-start md:tw-items-center tw-justify-between tw-space-y-3 md:tw-space-y-0 md:tw-space-x-4">
-          
+        <div
+          *ngIf="!isLoading"
+          class="tw-flex tw-flex-col md:tw-flex-row tw-items-start md:tw-items-center tw-justify-between tw-space-y-3 md:tw-space-y-0 md:tw-space-x-4"
+        >
           <!-- Left Side: Status and Due Date -->
-          <div class="tw-flex tw-flex-col sm:tw-flex-row tw-items-start sm:tw-items-center tw-space-y-3 sm:tw-space-y-0 sm:tw-space-x-4">
-            
+          <div
+            class="tw-flex tw-flex-col sm:tw-flex-row tw-items-start sm:tw-items-center tw-space-y-3 sm:tw-space-y-0 sm:tw-space-x-4"
+          >
             <!-- Status Select -->
             <div class="tw-relative">
-              <select [(ngModel)]="task.status" 
-                      (change)="updateStatus(task.status)"
-                      class="tw-appearance-none tw-bg-white tw-border tw-border-gray-300 tw-rounded-lg tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-700 hover:tw-border-gray-400 focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500 tw-transition-all tw-duration-200 tw-pr-8">
-                <option *ngFor="let option of statusOptions" [value]="option.value">
+              <select
+                [(ngModel)]="task.status"
+                (change)="updateStatus(task.status)"
+                class="tw-appearance-none tw-bg-white tw-border tw-border-gray-300 tw-rounded-lg tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-700 hover:tw-border-gray-400 focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500 tw-transition-all tw-duration-200 tw-pr-8"
+              >
+                <option
+                  *ngFor="let option of statusOptions"
+                  [value]="option.value"
+                >
                   {{ option.label }}
                 </option>
               </select>
-              <i class="fas fa-chevron-down tw-absolute tw-right-2 tw-top-1/2 tw-transform tw--translate-y-1/2 tw-text-gray-400 tw-text-xs tw-pointer-events-none"></i>
+              <i
+                class="fas fa-chevron-down tw-absolute tw-right-2 tw-top-1/2 tw-transform tw--translate-y-1/2 tw-text-gray-400 tw-text-xs tw-pointer-events-none"
+              ></i>
             </div>
 
             <!-- Due Date -->
+            <!-- Updated HTML Template -->
             <div class="tw-relative">
               <ng-container *ngIf="task.dueDate; else noDueDateTemplate">
-                <div [ngClass]="getDueDateDisplay().color" 
-                     class="tw-px-3 tw-py-2 tw-rounded-lg tw-text-sm tw-font-medium tw-inline-flex tw-items-center tw-space-x-2 tw-cursor-pointer hover:tw-opacity-80 tw-transition-opacity tw-duration-200"
-                     (click)="dueDateInput.click()">
+                <div
+                  [ngClass]="getDueDateDisplay().color"
+                  class="tw-px-3 tw-py-2 tw-rounded-lg tw-text-sm tw-font-medium tw-inline-flex tw-items-center tw-space-x-2 tw-cursor-pointer tw-transition-colors tw-duration-200"
+                  (click)="openNativeDatePicker()"
+                >
                   <i class="fas fa-calendar-alt tw-text-xs"></i>
                   <span>{{ getDueDateDisplay().text }}</span>
                 </div>
               </ng-container>
-              
+
               <ng-template #noDueDateTemplate>
-                <div class="tw-bg-gray-100 tw-text-gray-600 tw-px-3 tw-py-2 tw-rounded-lg tw-text-sm tw-font-medium tw-inline-flex tw-items-center tw-space-x-2 tw-cursor-pointer hover:tw-bg-gray-200 tw-transition-colors tw-duration-200"
-                     (click)="dueDateInput.click()">
+                <div
+                  class="tw-bg-gray-50 tw-text-gray-700 tw-px-3 tw-py-2 tw-rounded-lg tw-text-sm tw-font-medium tw-inline-flex tw-items-center tw-space-x-2 tw-cursor-pointer tw-border tw-border-gray-200 hover:tw-bg-gray-100 tw-transition-colors tw-duration-200"
+                  (click)="openNativeDatePicker()"
+                >
                   <i class="fas fa-calendar-plus tw-text-xs"></i>
                   <span>Set due date</span>
                 </div>
               </ng-template>
-              
-              <input #dueDateInput
-                     type="date" 
-                     [value]="task.dueDate ? task.dueDate.split('T')[0] : ''"
-                     (change)="updateDueDate($event)"
-                     class="tw-absolute tw-inset-0 tw-opacity-0 tw-cursor-pointer">
+
+              <!-- Hidden native date input -->
+              <input
+                #dueDateInput
+                type="date"
+                [value]="task.dueDate ? task.dueDate.split('T')[0] : ''"
+                (change)="updateDueDate($event)"
+                class="tw-absolute tw-opacity-0 tw-pointer-events-none tw-w-0 tw-h-0"
+              />
             </div>
+
+            <!-- Simple "No Date" button overlay - shows when date picker is open -->
+            <!-- <div
+              *ngIf="showNoDateButton"
+              class="tw-fixed tw-inset-0 tw-z-50 tw-pointer-events-none"
+            >
+              <div
+                class="tw-absolute tw-bottom-4 tw-left-1/2 tw-transform tw--translate-x-1/2 tw-pointer-events-auto"
+              >
+                <button
+                  (click)="removeDueDate()"
+                  class="tw-bg-white tw-text-gray-700 tw-py-2 tw-px-4 tw-rounded-lg tw-font-medium tw-border tw-border-gray-300 tw-shadow-lg hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
+                >
+                  <i class="fas fa-times tw-mr-2"></i>
+                  No Date
+                </button>
+              </div>
+            </div> -->
           </div>
 
           <!-- Right Side: Assignment -->
           <div class="tw-flex tw-items-center tw-space-x-3">
-            <ng-container *ngIf="task.assignedTo.length === 0; else hasAssignedTemplate">
-              <button type="button" 
-                      class="tw-bg-blue-50 tw-text-blue-600 tw-px-4 tw-py-2 tw-rounded-lg tw-text-sm tw-font-medium hover:tw-bg-blue-100 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-space-x-2">
+            <ng-container
+              *ngIf="task.assignedTo.length === 0; else hasAssignedTemplate"
+            >
+              <button
+                type="button"
+                class="tw-bg-blue-50 tw-text-blue-600 tw-px-4 tw-py-2 tw-rounded-lg tw-text-sm tw-font-medium hover:tw-bg-blue-100 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-space-x-2"
+              >
                 <i class="fas fa-user-plus tw-text-xs"></i>
                 <span>ASSIGN THIS TASK</span>
               </button>
             </ng-container>
-            
+
             <ng-template #hasAssignedTemplate>
               <div class="tw-flex tw-items-center tw-space-x-2">
                 <!-- First two member avatars -->
                 <div class="tw-flex tw--space-x-2">
-                  <img *ngFor="let member of task.assignedTo.slice(0, 2)" 
-                       [src]="member.profileImage || '/assets/default-avatar.png'"
-                       [alt]="member.name"
-                       class="tw-w-8 tw-h-8 tw-rounded-full tw-border-2 tw-border-white tw-shadow-sm tw-object-cover">
+                  <img
+                    *ngFor="let member of task.assignedTo.slice(0, 2)"
+                    [src]="member.profileImage || '/assets/default-avatar.png'"
+                    [alt]="member.name"
+                    class="tw-w-8 tw-h-8 tw-rounded-full tw-border-2 tw-border-white tw-shadow-sm tw-object-cover"
+                  />
                 </div>
-                
+
                 <!-- Additional count if more than 2 -->
-                <span *ngIf="task.assignedTo.length > 2" 
-                      class="tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-font-medium tw-px-2 tw-py-1 tw-rounded-full">
+                <span
+                  *ngIf="task.assignedTo.length > 2"
+                  class="tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-font-medium tw-px-2 tw-py-1 tw-rounded-full"
+                >
                   +{{ task.assignedTo.length - 2 }}
                 </span>
-                
+
                 <!-- Edit button -->
-                <button type="button" 
-                        class="tw-p-1 tw-text-gray-400 hover:tw-text-gray-600 hover:tw-bg-gray-100 tw-rounded tw-transition-all tw-duration-200">
+                <button
+                  type="button"
+                  class="tw-p-1 tw-text-gray-400 hover:tw-text-gray-600 hover:tw-bg-gray-100 tw-rounded tw-transition-all tw-duration-200"
+                >
                   <i class="fas fa-edit tw-text-xs"></i>
                 </button>
               </div>
@@ -156,76 +245,121 @@
       <!-- Tabs -->
       <div class="tw-border-b tw-border-gray-200 tw-bg-white">
         <nav class="tw-flex tw-space-x-0">
-          <button *ngFor="let tab of ['description', 'comments', 'attachments']; let i = index"
-                  (click)="setTab(tab)"
-                  [class.tw-border-blue-500]="currentTab === tab"
-                  [class.tw-text-blue-600]="currentTab === tab"
-                  [class.tw-text-gray-500]="currentTab !== tab"
-                  class="tw-flex-1 tw-py-3 tw-px-4 tw-text-sm tw-font-medium tw-border-b-2 tw-border-transparent hover:tw-text-gray-700 hover:tw-border-gray-300 tw-transition-all tw-duration-200 tw-capitalize">
+          <button
+            *ngFor="
+              let tab of ['description', 'comments', 'attachments'];
+              let i = index
+            "
+            (click)="setTab(tab)"
+            [class.tw-border-blue-500]="currentTab === tab"
+            [class.tw-text-blue-600]="currentTab === tab"
+            [class.tw-text-gray-500]="currentTab !== tab"
+            class="tw-flex-1 tw-py-3 tw-px-4 tw-text-sm tw-font-medium tw-border-b-2 tw-border-transparent hover:tw-text-gray-700 hover:tw-border-gray-300 tw-transition-all tw-duration-200 tw-capitalize"
+          >
             {{ tab }}
-            <span *ngIf="tab === 'comments'" class="tw-ml-2 tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-px-2 tw-py-0.5 tw-rounded-full">
+            <span
+              *ngIf="tab === 'comments'"
+              class="tw-ml-2 tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-px-2 tw-py-0.5 tw-rounded-full"
+            >
               {{ getActiveCommentsCount() }}
             </span>
-            <span *ngIf="tab === 'attachments'" class="tw-ml-2 tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-px-2 tw-py-0.5 tw-rounded-full">
+            <span
+              *ngIf="tab === 'attachments'"
+              class="tw-ml-2 tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-px-2 tw-py-0.5 tw-rounded-full"
+            >
               {{ task.attachments.length }}
             </span>
           </button>
         </nav>
       </div>
 
+
+      <!-- loader for tabs content with full height and width and centered -->
+      <div
+        *ngIf="isLoading"
+        class="tw-flex tw-items-center tw-justify-center tw-h-full tw-w-full"
+      >
+        <div class="tw-w-8 tw-h-8 tw-border-4 tw-border-blue-500 tw-border-t-transparent tw-rounded-full tw-animate-spin"></div>
+      </div>
+
       <!-- Tab Content -->
-      <div class="tw-flex-1 tw-overflow-hidden">
-        
+      <div *ngIf="!isLoading" class="tw-flex-1 tw-overflow-hidden">
         <!-- Description Tab -->
-        <div *ngIf="currentTab === 'description'" class="tw-h-full tw-overflow-y-auto">
+        <div
+          *ngIf="currentTab === 'description'"
+          class="tw-h-full tw-overflow-y-auto"
+        >
           <div class="tw-p-4 md:tw-p-6">
-            
             <!-- Description View Mode -->
-            <div *ngIf="!isEditingDescription" 
-                 class="tw-group tw-cursor-pointer tw-p-4 tw--m-4 tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors tw-duration-200 tw-min-h-[200px]"
-                 (click)="startEditingDescription()">
-              
+            <div
+              *ngIf="!isEditingDescription"
+              class="tw-group tw-cursor-pointer tw-p-4 tw--m-4 tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors tw-duration-200 tw-min-h-[200px]"
+              (click)="startEditingDescription()"
+            >
               <div class="tw-flex tw-items-start tw-justify-between tw-mb-3">
-                <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900">Description</h3>
-                <i class="fas fa-edit tw-text-gray-400 group-hover:tw-text-gray-600 tw-text-sm tw-opacity-0 group-hover:tw-opacity-100 tw-transition-all tw-duration-200"></i>
+                <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900">
+                  Description
+                </h3>
+                <i
+                  class="fas fa-edit tw-text-gray-400 group-hover:tw-text-gray-600 tw-text-sm tw-opacity-0 group-hover:tw-opacity-100 tw-transition-all tw-duration-200"
+                ></i>
               </div>
-              
-              <div class="tw-text-gray-700 tw-leading-relaxed" 
-                   [innerHTML]="task.description || '<p class=&quot;tw-text-gray-500 tw-italic&quot;>Click to add a description...</p>'">
-              </div>
+
+              <div
+                class="tw-text-gray-700 tw-leading-relaxed"
+                [innerHTML]="
+                  task.description ||
+                  '<p class=&quot;tw-text-gray-500 tw-italic&quot;>Click to add a description...</p>'
+                "
+              ></div>
             </div>
 
             <!-- Description Edit Mode -->
             <div *ngIf="isEditingDescription" class="tw-space-y-4">
               <div class="tw-flex tw-items-center tw-justify-between">
-                <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900">Edit Description</h3>
+                <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900">
+                  Edit Description
+                </h3>
                 <div class="tw-flex tw-items-center tw-space-x-2">
-                  <button type="button"
-                          (click)="saveDescription()"
-                          [disabled]="isSavingDescription"
-                          class="tw-px-4 tw-py-2 tw-bg-blue-600 tw-text-white tw-text-sm tw-font-medium tw-rounded-lg hover:tw-bg-blue-700 disabled:tw-bg-gray-300 disabled:tw-cursor-not-allowed tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-space-x-2">
-                    <i *ngIf="isSavingDescription" class="fas fa-spinner fa-spin"></i>
-                    <span>{{ isSavingDescription ? 'Saving...' : 'Save' }}</span>
+                  <button
+                    type="button"
+                    (click)="saveDescription()"
+                    [disabled]="isSavingDescription"
+                    class="tw-px-4 tw-py-2 tw-bg-blue-600 tw-text-white tw-text-sm tw-font-medium tw-rounded-lg hover:tw-bg-blue-700 disabled:tw-bg-gray-300 disabled:tw-cursor-not-allowed tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-space-x-2"
+                  >
+                    <i
+                      *ngIf="isSavingDescription"
+                      class="fas fa-spinner fa-spin"
+                    ></i>
+                    <span>{{
+                      isSavingDescription ? "Saving..." : "Save"
+                    }}</span>
                   </button>
-                  
-                  <button type="button"
-                          (click)="cancelDescriptionEdit()"
-                          [disabled]="isSavingDescription"
-                          class="tw-px-4 tw-py-2 tw-bg-gray-100 tw-text-gray-700 tw-text-sm tw-font-medium tw-rounded-lg hover:tw-bg-gray-200 disabled:tw-opacity-50 tw-transition-colors tw-duration-200">
+
+                  <button
+                    type="button"
+                    (click)="cancelDescriptionEdit()"
+                    [disabled]="isSavingDescription"
+                    class="tw-px-4 tw-py-2 tw-bg-gray-100 tw-text-gray-700 tw-text-sm tw-font-medium tw-rounded-lg hover:tw-bg-gray-200 disabled:tw-opacity-50 tw-transition-colors tw-duration-200"
+                  >
                     Cancel
                   </button>
                 </div>
               </div>
-              
-              <div class="tw-border tw-border-gray-300 tw-rounded-lg tw-overflow-hidden">
+
+              <div
+                class="tw-border tw-border-gray-300 tw-rounded-lg tw-overflow-hidden"
+              >
                 <ngx-editor-menu
-                [editor]="editor!"
-                [toolbar]="toolbar"
-              ></ngx-editor-menu>
-                <ngx-editor [editor]="editor!" 
-                           [(ngModel)]="task.description"
-                           [placeholder]="'Add task description...'"
-                           class="tw-min-h-[300px]">
+                  [editor]="editor!"
+                  [toolbar]="toolbar"
+                ></ngx-editor-menu>
+                <ngx-editor
+                  [editor]="editor!"
+                  [(ngModel)]="task.description"
+                  [placeholder]="'Add task description...'"
+                  class="tw-min-h-[300px]"
+                >
                 </ngx-editor>
               </div>
             </div>
@@ -233,56 +367,83 @@
         </div>
 
         <!-- Comments Tab -->
-        <div *ngIf="currentTab === 'comments'" class="tw-h-full tw-flex tw-flex-col">
-          
+        <div
+          *ngIf="currentTab === 'comments'"
+          class="tw-h-full tw-flex tw-flex-col"
+        >
           <!-- Comments List -->
-          <div class="tw-flex-1 tw-overflow-y-auto tw-p-4 md:tw-p-6 tw-space-y-4">
-            
+          <div
+            class="tw-flex-1 tw-overflow-y-auto tw-p-4 md:tw-p-6 tw-space-y-4"
+          >
             <!-- No Comments State -->
-            <div *ngIf="getActiveCommentsCount() === 0" 
-                 class="tw-text-center tw-py-12">
-              <div class="tw-w-16 tw-h-16 tw-bg-gray-100 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-4">
+            <div
+              *ngIf="getActiveCommentsCount() === 0"
+              class="tw-text-center tw-py-12"
+            >
+              <div
+                class="tw-w-16 tw-h-16 tw-bg-gray-100 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-4"
+              >
                 <i class="fas fa-comments tw-text-gray-400 tw-text-xl"></i>
               </div>
-              <h3 class="tw-text-lg tw-font-medium tw-text-gray-900 tw-mb-2">No comments yet</h3>
-              <p class="tw-text-gray-500">Start the conversation by adding a comment below.</p>
+              <h3 class="tw-text-lg tw-font-medium tw-text-gray-900 tw-mb-2">
+                No comments yet
+              </h3>
+              <p class="tw-text-gray-500">
+                Start the conversation by adding a comment below.
+              </p>
             </div>
 
             <!-- Comments -->
-            <div *ngFor="let comment of task.comments; trackBy: trackByCommentId" 
-                 class="tw-group">
-              
-              <div *ngIf="!comment.isDeleted" 
-                   [ngClass]="{
-                     'tw-flex tw-justify-end': comment.createdBy._id === getCurrentUser()._id,
-                     'tw-flex tw-justify-start': comment.createdBy._id !== getCurrentUser()._id
-                   }">
-                
-                <div [ngClass]="{
-                       'tw-bg-blue-500 tw-text-white': comment.createdBy._id === getCurrentUser()._id,
-                       'tw-bg-gray-100 tw-text-gray-900': comment.createdBy._id !== getCurrentUser()._id
-                     }"
-                     class="tw-max-w-xs md:tw-max-w-md tw-px-4 tw-py-3 tw-rounded-2xl tw-relative tw-shadow-sm">
-                  
+            <div
+              *ngFor="let comment of task.comments; trackBy: trackByCommentId"
+              class="tw-group"
+            >
+              <div
+                *ngIf="!comment.isDeleted"
+                [ngClass]="{
+                  'tw-flex tw-justify-end':
+                    comment.createdBy._id === getCurrentUser()._id,
+                  'tw-flex tw-justify-start':
+                    comment.createdBy._id !== getCurrentUser()._id
+                }"
+              >
+                <div
+                  [ngClass]="{
+                    'tw-bg-blue-500 tw-text-white':
+                      comment.createdBy._id === getCurrentUser()._id,
+                    'tw-bg-gray-100 tw-text-gray-900':
+                      comment.createdBy._id !== getCurrentUser()._id
+                  }"
+                  class="tw-max-w-xs md:tw-max-w-md tw-px-4 tw-py-3 tw-rounded-2xl tw-relative tw-shadow-sm"
+                >
                   <!-- Comment content -->
-                  <div [innerHTML]="comment.text" class="tw-text-sm tw-leading-relaxed tw-break-words"></div>
-                  
+                  <div
+                    [innerHTML]="comment.text"
+                    class="tw-text-sm tw-leading-relaxed tw-break-words"
+                  ></div>
+
                   <!-- Comment footer -->
-                  <div class="tw-flex tw-items-center tw-justify-between tw-mt-2 tw-pt-2 tw-border-t tw-border-opacity-20"
-                       [ngClass]="{
-                         'tw-border-white': comment.createdBy._id === getCurrentUser()._id,
-                         'tw-border-gray-300': comment.createdBy._id !== getCurrentUser()._id
-                       }">
+                  <div
+                    class="tw-flex tw-items-center tw-justify-between tw-mt-2 tw-pt-2 tw-border-t tw-border-opacity-20"
+                    [ngClass]="{
+                      'tw-border-white':
+                        comment.createdBy._id === getCurrentUser()._id,
+                      'tw-border-gray-300':
+                        comment.createdBy._id !== getCurrentUser()._id
+                    }"
+                  >
                     <div class="tw-flex tw-items-center tw-space-x-2">
                       <span class="tw-text-xs tw-opacity-75">
                         {{ formatDate(comment.createdAt) }}
                       </span>
                     </div>
-                    
+
                     <!-- Delete button on hover -->
-                    <button *ngIf="comment.createdBy._id === getCurrentUser()._id"
-                            (click)="deleteComment(comment._id)"
-                            class="tw-opacity-0 group-hover:tw-opacity-100 tw-p-1 tw-rounded tw-transition-all tw-duration-200 hover:tw-bg-white hover:tw-bg-opacity-20">
+                    <button
+                      *ngIf="comment.createdBy._id === getCurrentUser()._id"
+                      (click)="deleteComment(comment._id)"
+                      class="tw-opacity-0 group-hover:tw-opacity-100 tw-p-1 tw-rounded tw-transition-all tw-duration-200 hover:tw-bg-white hover:tw-bg-opacity-20"
+                    >
                       <i class="fas fa-trash tw-text-xs"></i>
                     </button>
                   </div>
@@ -291,7 +452,9 @@
 
               <!-- Deleted message -->
               <div *ngIf="comment.isDeleted" class="tw-flex tw-justify-center">
-                <div class="tw-bg-gray-50 tw-text-gray-500 tw-px-4 tw-py-2 tw-rounded-lg tw-text-sm tw-italic">
+                <div
+                  class="tw-bg-gray-50 tw-text-gray-500 tw-px-4 tw-py-2 tw-rounded-lg tw-text-sm tw-italic"
+                >
                   <i class="fas fa-ban tw-mr-2"></i>
                   Deleted message
                 </div>
@@ -300,72 +463,110 @@
           </div>
 
           <!-- Add Comment Section -->
-          <div class="tw-border-t tw-border-gray-200 tw-p-4 md:tw-p-6 tw-bg-gray-50">
-            <app-add-comments 
+          <div
+            class="tw-border-t tw-border-gray-200 tw-p-4 tw-bg-gray-50"
+          >
+            <app-add-comments
               [boardId]="task.board"
               [taskId]="task._id"
               [type]="'task'"
-              (messageSent)="onCommentAdded($event)">
+              (messageSent)="onCommentAdded($event)"
+            >
             </app-add-comments>
           </div>
         </div>
 
         <!-- Attachments Tab -->
-        <div *ngIf="currentTab === 'attachments'" class="tw-h-full tw-overflow-y-auto">
+        <div
+          *ngIf="currentTab === 'attachments'"
+          class="tw-h-full tw-overflow-y-auto"
+        >
           <div class="tw-p-4 md:tw-p-6">
-            
             <!-- Attachments List -->
             <div class="tw-space-y-4 tw-mb-6">
-              
               <!-- No Attachments State -->
-              <div *ngIf="task.attachments.length === 0" 
-                   class="tw-text-center tw-py-12">
-                <div class="tw-w-16 tw-h-16 tw-bg-gray-100 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-4">
+              <div
+                *ngIf="task.attachments.length === 0"
+                class="tw-text-center tw-py-12"
+              >
+                <div
+                  class="tw-w-16 tw-h-16 tw-bg-gray-100 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-4"
+                >
                   <i class="fas fa-paperclip tw-text-gray-400 tw-text-xl"></i>
                 </div>
-                <h3 class="tw-text-lg tw-font-medium tw-text-gray-900 tw-mb-2">No attachments</h3>
-                <p class="tw-text-gray-500">Upload files or add links to get started.</p>
+                <h3 class="tw-text-lg tw-font-medium tw-text-gray-900 tw-mb-2">
+                  No attachments
+                </h3>
+                <p class="tw-text-gray-500">
+                  Upload files or add links to get started.
+                </p>
               </div>
 
               <!-- Attachment Items -->
-              <div *ngFor="let attachment of task.attachments; trackBy: trackByAttachmentId" 
-                   class="tw-group tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-p-4 hover:tw-shadow-md tw-transition-all tw-duration-200">
-                
+              <div
+                *ngFor="
+                  let attachment of task.attachments;
+                  trackBy: trackByAttachmentId
+                "
+                class="tw-group tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-p-4 hover:tw-shadow-md tw-transition-all tw-duration-200"
+              >
                 <div class="tw-flex tw-items-center tw-justify-between">
-                  <div class="tw-flex tw-items-center tw-space-x-3 tw-flex-1 tw-min-w-0">
-                    
+                  <div
+                    class="tw-flex tw-items-center tw-space-x-3 tw-flex-1 tw-min-w-0"
+                  >
                     <!-- File Icon -->
-                    <div class="tw-w-10 tw-h-10 tw-bg-blue-50 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-flex-shrink-0">
-                      <i [class]="'fas ' + getFileIcon(attachment.fileType) + ' tw-text-blue-600'"></i>
+                    <div
+                      class="tw-w-10 tw-h-10 tw-bg-blue-50 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-flex-shrink-0"
+                    >
+                      <i
+                        [class]="
+                          'fas ' +
+                          getFileIcon(attachment.fileType) +
+                          ' tw-text-blue-600'
+                        "
+                      ></i>
                     </div>
-                    
+
                     <!-- File Info -->
                     <div class="tw-flex-1 tw-min-w-0">
-                      <h4 class="tw-text-sm tw-font-medium tw-text-gray-900 tw-truncate">
+                      <h4
+                        class="tw-text-sm tw-font-medium tw-text-gray-900 tw-truncate"
+                      >
                         {{ attachment.fileName }}
                       </h4>
-                      <div class="tw-flex tw-items-center tw-space-x-2 tw-text-xs tw-text-gray-500 tw-mt-1">
+                      <div
+                        class="tw-flex tw-items-center tw-space-x-2 tw-text-xs tw-text-gray-500 tw-mt-1"
+                      >
                         <span>{{ attachment.uploadedBy.name }}</span>
                         <span>•</span>
                         <span>{{ formatDate(attachment.createdAt) }}</span>
-                        <span *ngIf="attachment.uploadedFrom === 'url'" class="tw-bg-green-100 tw-text-green-800 tw-px-2 tw-py-0.5 tw-rounded-full">
+                        <span
+                          *ngIf="attachment.uploadedFrom === 'url'"
+                          class="tw-bg-green-100 tw-text-green-800 tw-px-2 tw-py-0.5 tw-rounded-full"
+                        >
                           Link
                         </span>
                       </div>
                     </div>
                   </div>
-                  
+
                   <!-- Actions -->
-                  <div class="tw-flex tw-items-center tw-space-x-2 tw-opacity-0 group-hover:tw-opacity-100 tw-transition-opacity tw-duration-200">
-                    <a [href]="attachment.fileUrl" 
-                       target="_blank"
-                       class="tw-p-2 tw-text-gray-400 hover:tw-text-blue-600 hover:tw-bg-blue-50 tw-rounded-lg tw-transition-all tw-duration-200">
+                  <div
+                    class="tw-flex tw-items-center tw-space-x-2 tw-opacity-0 group-hover:tw-opacity-100 tw-transition-opacity tw-duration-200"
+                  >
+                    <a
+                      [href]="attachment.fileUrl"
+                      target="_blank"
+                      class="tw-p-2 tw-text-gray-400 hover:tw-text-blue-600 hover:tw-bg-blue-50 tw-rounded-lg tw-transition-all tw-duration-200"
+                    >
                       <i class="fas fa-external-link-alt tw-text-sm"></i>
                     </a>
-                    
-                    <button type="button"
-                            (click)="deleteAttachment(attachment._id)"
-                            class="tw-p-2 tw-text-gray-400 hover:tw-text-red-600 hover:tw-bg-red-50 tw-rounded-lg tw-transition-all tw-duration-200">
+
+                    <button
+                      type="button"
+                      (click)="deleteAttachment(attachment._id)"
+                      class="tw-p-2 tw-text-gray-400 hover:tw-text-red-600 hover:tw-bg-red-50 tw-rounded-lg tw-transition-all tw-duration-200"
+                    >
                       <i class="fas fa-trash tw-text-sm"></i>
                     </button>
                   </div>
@@ -375,34 +576,59 @@
 
             <!-- Upload Options -->
             <div class="tw-border-t tw-border-gray-200 tw-pt-6">
-              <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4">Add Attachment</h3>
-              
+              <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4">
+                Add Attachment
+              </h3>
+
               <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4">
-                
                 <!-- File Upload -->
                 <div class="tw-relative">
-                  <input type="file" 
-                         #fileInput
-                         (change)="onFileUpload($event)"
-                         multiple
-                         class="tw-absolute tw-inset-0 tw-w-full tw-h-full tw-opacity-0 tw-cursor-pointer">
-                  
-                  <div class="tw-border-2 tw-border-dashed tw-border-gray-300 tw-rounded-lg tw-p-6 tw-text-center hover:tw-border-blue-400 hover:tw-bg-blue-50 tw-transition-all tw-duration-200 tw-cursor-pointer">
-                    <div class="tw-w-12 tw-h-12 tw-bg-blue-100 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-3">
-                      <i class="fas fa-cloud-upload-alt tw-text-blue-600 tw-text-xl"></i>
+                  <input
+                    type="file"
+                    #fileInput
+                    (change)="onFileUpload($event)"
+                    multiple
+                    class="tw-absolute tw-inset-0 tw-w-full tw-h-full tw-opacity-0 tw-cursor-pointer"
+                  />
+
+                  <div
+                    class="tw-border-2 tw-border-dashed tw-border-gray-300 tw-rounded-lg tw-p-6 tw-text-center hover:tw-border-blue-400 hover:tw-bg-blue-50 tw-transition-all tw-duration-200 tw-cursor-pointer"
+                  >
+                    <div
+                      class="tw-w-12 tw-h-12 tw-bg-blue-100 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-3"
+                    >
+                      <i
+                        class="fas fa-cloud-upload-alt tw-text-blue-600 tw-text-xl"
+                      ></i>
                     </div>
-                    <h4 class="tw-text-sm tw-font-medium tw-text-gray-900 tw-mb-1">Upload Files</h4>
-                    <p class="tw-text-xs tw-text-gray-500">Click to browse or drag files here</p>
+                    <h4
+                      class="tw-text-sm tw-font-medium tw-text-gray-900 tw-mb-1"
+                    >
+                      Upload Files
+                    </h4>
+                    <p class="tw-text-xs tw-text-gray-500">
+                      Click to browse or drag files here
+                    </p>
                   </div>
                 </div>
 
                 <!-- Add Link -->
-                <div class="tw-border-2 tw-border-dashed tw-border-gray-300 tw-rounded-lg tw-p-6 tw-text-center hover:tw-border-green-400 hover:tw-bg-green-50 tw-transition-all tw-duration-200 tw-cursor-pointer">
-                  <div class="tw-w-12 tw-h-12 tw-bg-green-100 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-3">
+                <div
+                  class="tw-border-2 tw-border-dashed tw-border-gray-300 tw-rounded-lg tw-p-6 tw-text-center hover:tw-border-green-400 hover:tw-bg-green-50 tw-transition-all tw-duration-200 tw-cursor-pointer"
+                >
+                  <div
+                    class="tw-w-12 tw-h-12 tw-bg-green-100 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-3"
+                  >
                     <i class="fas fa-link tw-text-green-600 tw-text-xl"></i>
                   </div>
-                  <h4 class="tw-text-sm tw-font-medium tw-text-gray-900 tw-mb-1">Add Link</h4>
-                  <p class="tw-text-xs tw-text-gray-500">Attach external links or resources</p>
+                  <h4
+                    class="tw-text-sm tw-font-medium tw-text-gray-900 tw-mb-1"
+                  >
+                    Add Link
+                  </h4>
+                  <p class="tw-text-xs tw-text-gray-500">
+                    Attach external links or resources
+                  </p>
                 </div>
               </div>
             </div>
@@ -420,11 +646,11 @@
       animation: none;
     }
   }
-  
+
   .tw-animate-scale-in {
     animation: scaleIn 0.2s ease-out;
   }
-  
+
   @keyframes scaleIn {
     from {
       opacity: 0;
