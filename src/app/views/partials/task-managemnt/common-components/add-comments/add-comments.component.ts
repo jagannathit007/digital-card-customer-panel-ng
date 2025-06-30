@@ -54,7 +54,7 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   @Input() boardId: string = '';
   @Input() taskId: string = '';
   @Input() type: string = 'board';
-  @Input() placement: Partial<string> = 'bottom';
+  @Input() placement: Partial<string> = 'top'; // 'top' or 'bottom'
 
   // API data properties
   // boardId: string = '';
@@ -409,12 +409,14 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
       const spanRect = tempSpan.getBoundingClientRect();
       tempSpan.remove();
 
+      console.log(spanRect, spanRect.bottom - containerRect.top + 5, spanRect.left - containerRect.left)
       // Position dropdown relative to container
       this.dropdownPosition = {
         top: spanRect.bottom - containerRect.top + 5,
         left: spanRect.left - containerRect.left,
       };
     } else {
+      console.log(inputRect.height + 5)
       // Fallback positioning
       this.dropdownPosition = {
         top: inputRect.height + 5,
