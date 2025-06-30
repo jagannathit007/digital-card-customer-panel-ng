@@ -391,7 +391,6 @@
 //   }
 // }
 
-
 import { Component, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
@@ -441,7 +440,7 @@ export class MyweektaskComponent implements OnInit {
   
   // Auto scroll
   autoScrollInterval: any = null;
-  autoScrollSpeed: number = 15; // Increased scroll speed
+  autoScrollSpeed: number = 25; // Much faster scroll speed
 
   constructor(
     private personalTaskService: PersonalTaskService,
@@ -659,7 +658,6 @@ export class MyweektaskComponent implements OnInit {
   // Dropdown Management
   toggleDropdown(taskId: string): void {
     this.activeDropdownId = this.activeDropdownId === taskId ? null : taskId;
-    console.log('Dropdown toggled for task:', taskId);
   }
 
   @HostListener('document:click', ['$event'])
@@ -680,20 +678,32 @@ export class MyweektaskComponent implements OnInit {
     this.draggedTask = task;
     event.dataTransfer!.effectAllowed = 'move';
     
-    // Create a custom drag image with better styling
+    // Create a visible custom drag image
     const dragElement = event.target as HTMLElement;
     const clone = dragElement.cloneNode(true) as HTMLElement;
-    clone.style.transform = 'rotate(5deg)';
-    clone.style.opacity = '0.9';
+    
+    // Style the clone for better visibility
+    clone.style.position = 'absolute';
+    clone.style.top = '-1000px';
+    clone.style.left = '-1000px';
+    clone.style.width = dragElement.offsetWidth + 'px';
+    clone.style.transform = 'rotate(3deg)';
+    clone.style.opacity = '0.95';
     clone.style.backgroundColor = '#ffffff';
-    clone.style.boxShadow = '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)';
+    clone.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)';
+    clone.style.border = '2px solid #3b82f6';
+    clone.style.borderRadius = '8px';
+    clone.style.zIndex = '9999';
     
     document.body.appendChild(clone);
-    event.dataTransfer!.setDragImage(clone, 50, 25);
+    event.dataTransfer!.setDragImage(clone, dragElement.offsetWidth / 2, 25);
     
+    // Clean up the clone after a short delay
     setTimeout(() => {
-      document.body.removeChild(clone);
-    }, 0);
+      if (document.body.contains(clone)) {
+        document.body.removeChild(clone);
+      }
+    }, 1);
   }
 
   onDragOver(event: DragEvent, columnIndex: number): void {
@@ -743,22 +753,22 @@ export class MyweektaskComponent implements OnInit {
     
     const container = this.kanbanContainer.nativeElement;
     const rect = container.getBoundingClientRect();
-    const scrollThreshold = 100;
+    const scrollThreshold = 120; // Increased threshold for easier triggering
     
     const x = event.clientX - rect.left;
     
     this.clearAutoScroll();
     
     if (x < scrollThreshold) {
-      // Scroll left
+      // Scroll left - much faster
       this.autoScrollInterval = setInterval(() => {
         container.scrollLeft -= this.autoScrollSpeed;
-      }, 16);
+      }, 10); // Reduced interval for faster response
     } else if (x > rect.width - scrollThreshold) {
-      // Scroll right
+      // Scroll right - much faster
       this.autoScrollInterval = setInterval(() => {
         container.scrollLeft += this.autoScrollSpeed;
-      }, 16);
+      }, 10); // Reduced interval for faster response
     }
   }
 

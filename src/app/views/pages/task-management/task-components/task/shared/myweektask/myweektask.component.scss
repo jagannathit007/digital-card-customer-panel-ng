@@ -76,20 +76,29 @@
   border: 2px solid #3b82f6;
 }
 
-// Dropdown Menu Animation
+// Dropdown Menu Animation - Enhanced
 .dropdown-menu {
-  animation: dropdownSlideIn 0.15s ease-out;
+  animation: dropdownSlideIn 0.2s ease-out;
   transform-origin: top right;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 @keyframes dropdownSlideIn {
   from {
     opacity: 0;
-    transform: translateY(-4px) scale(0.95);
+    transform: translateY(-8px) scale(0.9);
   }
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+// Three-dot button hover effect
+.three-dot-btn {
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
   }
 }
 
@@ -217,17 +226,21 @@ kbd {
   .tw-bg-green-50 {
     transition: none;
   }
-  
+}
+
+/* Reduced motion keyframes override */
+@media (prefers-reduced-motion: reduce) {
+  /* Override dropdownSlideIn animation */
   @keyframes dropdownSlideIn {
     from, to {
       opacity: 1;
       transform: none;
     }
   }
+  /* Override pulseBlue animation */
   @keyframes pulseBlue {
     from, to {
-      opacity: 1;
-      transform: none;
+      box-shadow: none;
     }
   }
 }
