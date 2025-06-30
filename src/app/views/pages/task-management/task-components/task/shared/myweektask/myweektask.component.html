@@ -1,4 +1,4 @@
-<div class="tw-h-full tw-bg-white tw-p-4">
+<div class="tw-h-full tw-bg-white tw-p-4 tw-select-none">
   <!-- Kanban Board Container -->
   <div 
     #kanbanContainer
@@ -8,7 +8,7 @@
     <!-- Day Column -->
     <div 
       *ngFor="let column of dayColumns; trackBy: trackByColumnIndex"
-      class="tw-flex-shrink-0 tw-w-80 tw-bg-gray-50 tw-rounded-lg tw-shadow-sm tw-border tw-border-gray-200 tw-flex tw-flex-col tw-h-full"
+      class="tw-flex-shrink-0 tw-w-80 tw-bg-gray-50 tw-rounded-lg tw-shadow-sm tw-border tw-border-gray-200 tw-flex tw-flex-col tw-h-[80vh]"
       [class.tw-ring-2]="dragOverColumnIndex === column.index"
       [class.tw-ring-blue-300]="dragOverColumnIndex === column.index"
       [class.tw-bg-blue-50]="dragOverColumnIndex === column.index"
@@ -27,12 +27,17 @@
       <!-- Drop Indicator -->
       <div 
         *ngIf="dragOverColumnIndex === column.index && draggedTask"
-        class="tw-mx-4 tw-mt-2 tw-p-2 tw-border-2 tw-border-dashed tw-border-blue-400 tw-rounded-lg tw-bg-blue-50 tw-text-center tw-text-blue-600 tw-text-sm tw-font-medium">
-        Drop here
+        class="tw-absolute tw-inset-0 tw-m-2 tw-mt-16 tw-mb-20 tw-border-2 tw-border-dashed tw-border-blue-400 tw-rounded-lg tw-bg-blue-50 tw-bg-opacity-80 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-text-lg tw-font-medium tw-z-10">
+        <div class="tw-text-center">
+          <svg class="tw-w-12 tw-h-12 tw-mx-auto tw-mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+          </svg>
+          Drop here
+        </div>
       </div>
 
       <!-- Tasks Container -->
-      <div class="tw-flex-1 tw-overflow-y-auto tw-p-4 tw-space-y-3 tasks-container">
+      <div class="tw-flex-1 tw-overflow-y-auto tw-p-4 tw-space-y-3 tasks-container tw-relative">
         
         <!-- Task Card -->
         <div 
@@ -41,6 +46,9 @@
           [class.tw-opacity-60]="task.isCompleted"
           [class.tw-border-green-200]="task.isCompleted"
           [class.tw-bg-green-50]="task.isCompleted"
+          [class.tw-opacity-30]="shouldHideTask(task)"
+          [class.tw-pointer-events-none]="shouldHideTask(task)"
+          [style.visibility]="shouldHideTask(task) ? 'hidden' : 'visible'"
           draggable="true"
           (dragstart)="onDragStart($event, task)"
           (dragend)="onDragEnd()">
@@ -80,14 +88,27 @@
                 <!-- Dropdown Menu -->
                 <div 
                   *ngIf="activeDropdownId === task._id"
-                  class="tw-absolute tw-top-6 tw-right-0 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-200 tw-py-2 tw-z-10 tw-min-w-48 dropdown-menu">
+                  class="tw-absolute tw-top-6 tw-right-0 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-200 tw-py-2 tw-z-20 tw-min-w-48 dropdown-menu">
                   
                   <!-- Edit Task -->
-                  <button 
-                    (click)="startEditTask(task)"
-                    class="tw-w-full tw-px-4 tw-py-2 tw-text-left tw-text-sm tw-text-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-150">
-                    Edit Task
-                  </button>
+                  <div class="tw-px-4 tw-py-2">
+                    <input 
+                      *ngIf="editingTask && editingTask.taskId === task._id"
+                      type="text"
+                      [(ngModel)]="editingTask.title"
+                      (keydown.enter)="saveEditTask()"
+                      (keydown.escape)="cancelEditTask()"
+                      class="tw-w-full tw-px-2 tw-py-1 tw-border tw-border-gray-300 tw-rounded tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-select-text"
+                      placeholder="Edit task title..."
+                      #editInput>
+                    
+                    <button 
+                      *ngIf="!editingTask || editingTask.taskId !== task._id"
+                      (click)="startEditTask(task)"
+                      class="tw-w-full tw-px-2 tw-py-1 tw-text-left tw-text-sm tw-text-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-150 tw-rounded">
+                      Edit Task
+                    </button>
+                  </div>
                   
                   <!-- Divider -->
                   <hr class="tw-my-2 tw-border-gray-200">
@@ -103,9 +124,11 @@
                         class="tw-w-full tw-px-2 tw-py-1 tw-text-left tw-text-sm tw-rounded tw-transition-colors tw-duration-150"
                         [class.tw-text-gray-400]="targetColumn.index === task.dayIndex"
                         [class.tw-cursor-not-allowed]="targetColumn.index === task.dayIndex"
+                        [class.tw-bg-gray-100]="targetColumn.index === task.dayIndex"
                         [class.tw-text-gray-700]="targetColumn.index !== task.dayIndex"
                         [class.hover:tw-bg-gray-50]="targetColumn.index !== task.dayIndex">
                         {{ targetColumn.name }}
+                        <span *ngIf="targetColumn.index === task.dayIndex" class="tw-text-xs tw-text-gray-400">(current)</span>
                       </button>
                     </div>
                   </div>
@@ -116,27 +139,13 @@
           
           <!-- Task Content -->
           <div class="tw-flex-1">
-            <!-- Normal Task Title -->
+            <!-- Normal Task Title (not editing) -->
             <div 
               *ngIf="!editingTask || editingTask.taskId !== task._id"
-              class="tw-text-gray-800 tw-leading-relaxed"
+              class="tw-text-gray-800 tw-leading-relaxed tw-select-text"
               [class.tw-line-through]="task.isCompleted"
               [class.tw-text-gray-500]="task.isCompleted">
               {{ task.title }}
-            </div>
-            
-            <!-- Edit Task Input -->
-            <div 
-              *ngIf="editingTask && editingTask.taskId === task._id"
-              class="edit-task-container">
-              <input 
-                type="text"
-                [(ngModel)]="editingTask.title"
-                (keydown.enter)="saveEditTask()"
-                (keydown.escape)="cancelEditTask()"
-                class="tw-w-full tw-px-2 tw-py-1 tw-border tw-border-gray-300 tw-rounded tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent"
-                placeholder="Edit task title..."
-                #editInput>
             </div>
           </div>
           
@@ -160,10 +169,11 @@
           <textarea
             [(ngModel)]="column.newTaskTitle"
             [disabled]="column.isInputDisabled"
+            [attr.data-column]="column.index"
             (focus)="onInputFocus(column.index)"
             (blur)="onInputBlur(column.index)"
             (keydown)="onKeyDown($event, column.index)"
-            class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg tw-text-sm tw-resize-none focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-transition-all tw-duration-200"
+            class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg tw-text-sm tw-resize-none focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-transition-all tw-duration-200 tw-select-text"
             [class.tw-opacity-50]="column.isInputDisabled"
             [class.tw-cursor-not-allowed]="column.isInputDisabled"
             placeholder="Add a task..."

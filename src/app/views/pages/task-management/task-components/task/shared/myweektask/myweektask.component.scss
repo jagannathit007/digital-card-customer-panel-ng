@@ -52,11 +52,28 @@
     transform: translateY(-1px);
   }
   
-  // Drag state
+  // Improved drag state
   &.tw-cursor-move:active {
     transform: rotate(2deg);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   }
+  
+  // Better drag preview
+  &[draggable="true"] {
+    &:focus {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+  }
+}
+
+// Drag ghost image styling
+.drag-ghost {
+  transform: rotate(5deg);
+  opacity: 0.9;
+  background-color: #ffffff;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 2px solid #3b82f6;
 }
 
 // Dropdown Menu Animation
@@ -85,9 +102,10 @@ textarea {
   }
 }
 
-// Column Drag Over State
+// Column Drag Over State - Enhanced
 .tw-ring-2.tw-ring-blue-300 {
   animation: pulseBlue 1s infinite;
+  position: relative;
 }
 
 @keyframes pulseBlue {
@@ -97,6 +115,12 @@ textarea {
   50% {
     box-shadow: 0 0 0 4px rgba(147, 197, 253, 0.6);
   }
+}
+
+// Full-height drop indicator
+.tw-absolute.tw-inset-0 {
+  backdrop-filter: blur(1px);
+  z-index: 10;
 }
 
 // Completed Task Animation
@@ -193,19 +217,18 @@ kbd {
   .tw-bg-green-50 {
     transition: none;
   }
-}
-
-/* Reduced motion keyframes override */
-@keyframes dropdownSlideIn {
-  from, to {
-    opacity: 1;
-    transform: none;
+  
+  @keyframes dropdownSlideIn {
+    from, to {
+      opacity: 1;
+      transform: none;
+    }
   }
-}
-@keyframes pulseBlue {
-  from, to {
-    opacity: 1;
-    transform: none;
+  @keyframes pulseBlue {
+    from, to {
+      opacity: 1;
+      transform: none;
+    }
   }
 }
 
