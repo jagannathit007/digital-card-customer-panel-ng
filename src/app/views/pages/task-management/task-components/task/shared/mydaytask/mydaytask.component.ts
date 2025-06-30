@@ -1,3 +1,23 @@
+// import { Component, OnInit, ViewChild } from '@angular/core';
+// import { PersonalTaskService } from 'src/app/services/personal-task.service';
+// import { AppStorage } from 'src/app/core/utilities/app-storage';
+// import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
+// import { swalHelper } from 'src/app/core/constants/swal-helper';
+// @Component({
+//   selector: 'app-mydaytask',
+//   templateUrl: './mydaytask.component.html',
+//   styleUrl: './mydaytask.component.scss'
+// })
+// export class MydaytaskComponent implements OnInit {
+//    constructor(
+//     private personalTaskService: PersonalTaskService,
+//     private storage: AppStorage
+//   ) {}
+
+// async ngOnInit(): Promise<void> {
+// }
+// // }
+
 // import { Component, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
 // import { CommonModule } from '@angular/common';
 // import { FormsModule } from '@angular/forms';
@@ -43,7 +63,7 @@
 //   isSubmitting: boolean = false;
 //   showFullScreenLoader: boolean = false;
 
-//   // Date-time picker properties
+//   // Replace the existing date-time picker properties with these:
 //   showDateTimePicker: boolean = false;
 //   selectedTaskId: string = '';
 //   selectedTaskDueDate: Date | null = null;
@@ -52,6 +72,7 @@
 //     private personalTaskService: PersonalTaskService,
 //     private storage: AppStorage
 //   ) { }
+
 
 //   async ngOnInit(): Promise<void> {
 //     this.userName = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA)?.name || 'User';
@@ -69,68 +90,11 @@
 //     return today.toLocaleDateString('en-US', options);
 //   }
 
-//   // New methods for date display
-//   getCurrentDayName(): string {
-//     const today = new Date();
-//     return today.toLocaleDateString('en-US', { weekday: 'long' });
-//   }
-
-//   getCurrentDayNumber(): string {
-//     const today = new Date();
-//     return today.getDate().toString();
-//   }
-
-//   getCurrentMonthName(): string {
-//     const today = new Date();
-//     return today.toLocaleDateString('en-US', { month: 'long' });
-//   }
-
 //   getTimeOfDay(): string {
 //     const hour = new Date().getHours();
 //     if (hour < 12) return 'Morning';
 //     if (hour < 17) return 'Afternoon';
 //     return 'Evening';
-//   }
-
-//   // Method to get the next task (closest to current time on the same day)
-//   getNextTask(): PersonalTask | null {
-//     const now = new Date();
-//     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-//     const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000);
-    
-//     // Filter tasks that have due date on today and are not completed
-//     const todayTasks = this.tasks.filter(task => {
-//       if (!task.dueOn || task.isCompleted) return false;
-//       const taskDate = new Date(task.dueOn);
-//       return taskDate >= today && taskDate < tomorrow;
-//     });
-
-//     if (todayTasks.length === 0) return null;
-
-//     // Find the task closest to current time
-//     let closestTask = todayTasks[0];
-//     let smallestDiff = Math.abs(new Date(closestTask.dueOn!).getTime() - now.getTime());
-
-//     for (const task of todayTasks) {
-//       const diff = Math.abs(new Date(task.dueOn!).getTime() - now.getTime());
-//       if (diff < smallestDiff) {
-//         smallestDiff = diff;
-//         closestTask = task;
-//       }
-//     }
-
-//     return closestTask;
-//   }
-
-//   // Method to format time for next task display
-//   formatTime(date: Date | string | null): string {
-//     if (!date) return '';
-//     const d = new Date(date);
-//     return d.toLocaleTimeString('en-US', {
-//       hour: '2-digit',
-//       minute: '2-digit',
-//       hour12: true
-//     });
 //   }
 
 //   onKeyDown(event: KeyboardEvent): void {
@@ -384,7 +348,9 @@
 //   }
 
 //   toggleDropdown(taskId: string): void {
+    
 //     this.activeDropdownId = this.activeDropdownId === taskId ? null : taskId;
+    
 //   }
 
 //   @HostListener('document:click', ['$event'])
@@ -429,10 +395,10 @@
 //   }
 
 //   // This function checks if the due date has passed
-//   isDueOverdue(dueOn: Date | string | null): boolean {
-//     if (!dueOn) return false;
-//     return new Date(dueOn).getTime() < Date.now();
-//   }
+// isDueOverdue(dueOn: Date | string | null): boolean {
+//   if (!dueOn) return false;
+//   return new Date(dueOn).getTime() < Date.now();
+// }
 
 //   openDateTimePicker(taskId: string, currentDueDate: Date | null = null): void {
 //     this.selectedTaskId = taskId;
@@ -443,13 +409,16 @@
 //     this.activeDropdownId = null;
 //   }
 
+//   // 5. Update the closeDateTimePicker method
 //   closeDateTimePicker(): void {
 //     this.showDateTimePicker = false;
 //     this.selectedTaskId = '';
 //     this.selectedTaskDueDate = null;
 //   }
 
+//     // 6. Update the onTaskDateTimeUpdated method
 //   onTaskDateTimeUpdated(newDateTime: Date): void {
+    
 //     // Find the task in your tasks array and update its dueOn property
 //     const taskIndex = this.tasks.findIndex(t => t._id === this.selectedTaskId);
 //     if (taskIndex !== -1) {
@@ -459,6 +428,7 @@
 //     // Close the date-time picker
 //     this.closeDateTimePicker();
 //   }
+
 // }
 
 
@@ -477,13 +447,6 @@ interface PersonalTask {
   isCompleted: boolean;
   completedOn: Date | null;
   createdAt: Date;
-}
-
-interface Theme {
-  value: string;
-  name: string;
-  description: string;
-  imagePath: string;
 }
 
 @Component({
@@ -519,32 +482,6 @@ export class MydaytaskComponent implements OnInit {
   selectedTaskId: string = '';
   selectedTaskDueDate: Date | null = null;
 
-  // Theme properties
-  showThemeDropdown: boolean = false;
-  selectedTheme: string = 'theme1';
-
-  // Available themes with image paths
-  themes: Theme[] = [
-    {
-      value: 'theme1',
-      name: 'Theme 1',
-      description: 'Default theme',
-      imagePath: '../../../../../../../../assets/images/theme/theme1.jpg'
-    },
-    {
-      value: 'theme2',
-      name: 'Theme 2',
-      description: 'Pink theme',
-      imagePath: '../../../../../../../../assets/images/theme/theme2.jpg'
-    },
-    {
-      value: 'theme5',
-      name: 'Theme 5',
-      description: 'Blue theme',
-      imagePath: '../../../../../../../../assets/images/theme/theme5.jpg'
-    }
-  ];
-
   constructor(
     private personalTaskService: PersonalTaskService,
     private storage: AppStorage
@@ -552,49 +489,10 @@ export class MydaytaskComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.userName = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA)?.name || 'User';
-    
-    // Load saved theme from localStorage
-    this.loadTheme();
-    
     await this.fetchTasks(true);
     this.setupInfiniteScroll();
   }
 
-  // ===== THEME METHODS =====
-  loadTheme(): void {
-    const savedTheme = this.storage.get(teamMemberCommon.THEME);
-    if (savedTheme && this.themes.find(t => t.value === savedTheme)) {
-      this.selectedTheme = savedTheme;
-    } else {
-      this.selectedTheme = 'theme1'; // Default theme
-      this.storage.set(teamMemberCommon.THEME, this.selectedTheme);
-    }
-  }
-
-  selectTheme(themeValue: string): void {
-    this.selectedTheme = themeValue;
-    this.storage.set(teamMemberCommon.THEME, themeValue);
-    this.showThemeDropdown = false;
-  }
-
-  toggleThemeDropdown(): void {
-    this.showThemeDropdown = !this.showThemeDropdown;
-  }
-
-  getThemeBackgroundStyle(): any {
-    const theme = this.themes.find(t => t.value === this.selectedTheme);
-    const imagePath = theme ? theme.imagePath : this.themes[0].imagePath;
-    
-    return {
-      'background-image': `url(${imagePath})`,
-      'background-size': 'cover',
-      'background-position': 'center',
-      'background-repeat': 'no-repeat',
-      'background-attachment': 'fixed'
-    };
-  }
-
-  // ===== YOUR EXISTING METHODS (ALL PRESERVED) =====
   getCurrentDate(): string {
     const today = new Date();
     const options: Intl.DateTimeFormatOptions = {
@@ -928,11 +826,6 @@ export class MydaytaskComponent implements OnInit {
     const target = event.target as HTMLElement;
     if (!target.closest('.dropdown-container')) {
       this.activeDropdownId = null;
-    }
-    
-    // Close theme dropdown if clicked outside
-    if (!target.closest('.tw-relative')) {
-      this.showThemeDropdown = false;
     }
   }
 

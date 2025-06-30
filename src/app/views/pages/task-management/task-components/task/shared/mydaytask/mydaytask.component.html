@@ -1,5 +1,5 @@
-<!-- Enhanced MyDayTask Component Template with Theme Selector -->
-<div class="tw-min-h-[calc(100vh-109px)] tw-max-h-[calc(100vh-109px)]" [ngStyle]="getThemeBackgroundStyle()">
+<!-- Enhanced MyDayTask Component Template (CSS moved to separate SCSS file) -->
+<div class="tw-min-h-[calc(100vh-109px)] tw-max-h-[calc(100vh-109px)] tw-bg-gray-50">
   <!-- Full Screen Loader -->
   <div *ngIf="showFullScreenLoader" class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-z-50 tw-flex tw-items-center tw-justify-center">
     <div class="tw-bg-white tw-rounded-lg tw-p-6 tw-flex tw-flex-col tw-items-center tw-shadow-xl">
@@ -11,58 +11,12 @@
   <div class="tw-container tw-mx-auto tw-px-4 tw-py-6 tw-max-w-xl tw-min-h-[calc(100vh-109px)] tw-max-h-[calc(100vh-109px)] tw-flex tw-flex-col">
     <!-- Header Section with Date and Next Task -->
     <div class="tw-text-left tw-mb-6 tw-flex-shrink-0 header-section">
-      <!-- Greeting with Settings Icon -->
-      <div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
-        <h1 class="tw-text-2xl tw-font-bold tw-text-white tw-flex-1 tw-drop-shadow-md">
-          Good {{ getTimeOfDay() }}, {{ userName }}
-        </h1>
-        
-        <!-- Settings Dropdown -->
-        <div class="tw-relative tw-ml-4">
-          <button
-            (click)="toggleThemeDropdown()"
-            class="tw-p-2 tw-text-white hover:tw-text-gray-200 tw-transition-colors tw-duration-200 tw-bg-white tw-bg-opacity-20 tw-rounded-full hover:tw-bg-opacity-30 tw-backdrop-blur-sm"
-            title="Theme Settings"
-          >
-            <i class="fa-solid fa-cog tw-text-lg"></i>
-          </button>
-
-          <!-- Theme Dropdown -->
-          <div
-            *ngIf="showThemeDropdown"
-            class="tw-absolute tw-right-0 tw-top-12 tw-w-48 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-100 tw-py-2 tw-z-50"
-            style="position: absolute !important; z-index: 9999 !important;"
-          >
-            <div class="tw-px-3 tw-py-2 tw-text-xs tw-text-gray-500 tw-font-medium tw-border-b tw-border-gray-100">
-              Choose Theme
-            </div>
-            
-            <!-- Theme Options with Image Preview -->
-            <button
-              *ngFor="let theme of themes"
-              (click)="selectTheme(theme.value)"
-              class="tw-w-full tw-text-left tw-px-3 tw-py-3 tw-flex tw-items-center tw-gap-3 hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
-              [class.tw-bg-blue-50]="selectedTheme === theme.value"
-            >
-              <div 
-                class="tw-w-8 tw-h-8 tw-rounded-md tw-border-2 tw-border-white tw-shadow-sm tw-bg-cover tw-bg-center"
-                [ngStyle]="{'background-image': 'url(' + theme.imagePath + ')'}"
-              ></div>
-              <div class="tw-flex-1">
-                <div class="tw-text-sm tw-font-medium tw-text-gray-700">{{ theme.name }}</div>
-                <div class="tw-text-xs tw-text-gray-500">{{ theme.description }}</div>
-              </div>
-              <i 
-                *ngIf="selectedTheme === theme.value"
-                class="fa-solid fa-check tw-text-blue-500 tw-text-sm"
-              ></i>
-            </button>
-          </div>
-        </div>
-      </div>
+      <h1 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-mb-2">
+        Good {{ getTimeOfDay() }}, {{ userName }}
+      </h1>
       
       <!-- Date and Next Task Container -->
-      <div class="tw-mt-4 tw-flex tw-justify-between tw-rounded-lg tw-p-2 tw-items-center tw-gap-4 tw-bg-white tw-bg-opacity-90 tw-backdrop-blur-sm">
+      <div class="tw-mt-4 tw-flex tw-justify-between tw-rounded-lg tw-p-2 tw-items-center  tw-gap-4  tw-bg-white">
         <!-- Date Section -->
         <div class="tw-text-center">
           <div class="tw-text-lg tw-font-semibold tw-text-gray-800">{{ getCurrentDayName() }}</div>
@@ -88,14 +42,14 @@
         </div>
       </div>
       
-      <div class="tw-mt-3 tw-w-16 tw-h-0.5 tw-bg-white tw-bg-opacity-60 tw-mx-auto tw-rounded-full"></div>
+      <div class="tw-mt-3 tw-w-16 tw-h-0.5 tw-bg-blue-500 tw-mx-auto tw-rounded-full"></div>
     </div>
 
     <!-- Tasks Section (Fixed height with proper scrolling) -->
     <div class="tw-flex-1 tw-mb-4 tw-overflow-hidden tw-h-full">
       <!-- Initial Loading -->
       <div *ngIf="isLoading" class="tw-flex tw-justify-center tw-py-8">
-        <div class="tw-animate-spin tw-rounded-full tw-h-6 tw-w-6 tw-border-b-2 tw-border-white"></div>
+        <div class="tw-animate-spin tw-rounded-full tw-h-6 tw-w-6 tw-border-b-2 tw-border-blue-500"></div>
       </div>
 
       <!-- Tasks List with Custom Scrollbar and Fixed Height -->
@@ -108,7 +62,7 @@
       >
         <div
           *ngFor="let task of tasks; trackBy: trackByTaskId"
-          class="task-card tw-bg-white tw-bg-opacity-95 tw-backdrop-blur-sm tw-rounded-lg tw-shadow-sm tw-border tw-border-gray-200 tw-p-3 tw-transition-all tw-duration-300 tw-group hover:tw-shadow-md hover:tw-border-blue-200 task-fade-in"
+          class="task-card tw-bg-white tw-rounded-lg tw-shadow-sm tw-border tw-border-gray-200 tw-p-3 tw-transition-all tw-duration-300 tw-group hover:tw-shadow-md hover:tw-border-blue-200 task-fade-in"
           [class.tw-opacity-70]="task.isCompleted"
           [class.tw-bg-green-50]="task.isCompleted"
           [class.tw-border-green-200]="task.isCompleted"
@@ -153,17 +107,17 @@
                   </p>
                   
                   <!-- Due date - Always visible when exists -->
-                  <div *ngIf="task.dueOn" class="tw-mt-1">
-                    <span 
-                      class="tw-text-xs tw-flex tw-items-center tw-gap-1 tw-bg-blue-50 tw-px-2 tw-py-1 tw-rounded-full tw-w-fit"
-                      [ngClass]="{'tw-text-red-600': isDueOverdue(task.dueOn), 'tw-text-blue-600': !isDueOverdue(task.dueOn)}"
-                    >
-                      <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {{ formatDate(task.dueOn) }}
-                    </span>
-                  </div>
+<div *ngIf="task.dueOn" class="tw-mt-1">
+<span 
+  class="tw-text-xs tw-flex tw-items-center tw-gap-1 tw-bg-blue-50 tw-px-2 tw-py-1 tw-rounded-full tw-w-fit"
+  [ngClass]="{'tw-text-red-600': isDueOverdue(task.dueOn), 'tw-text-blue-600': !isDueOverdue(task.dueOn)}"
+>
+    <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+    {{ formatDate(task.dueOn) }}
+  </span>
+</div>
                   
                   <!-- Completed status -->
                   <span *ngIf="task.isCompleted" class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-text-green-600 tw-font-medium tw-mt-1">
@@ -200,31 +154,31 @@
                     </button>
 
                     <!-- Dropdown Menu - Fixed positioning -->
-                    <div
-                      *ngIf="activeDropdownId === task._id"
-                      class="tw-absolute tw-right-0 tw-top-10 tw-w-40 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-100 tw-py-1 tw-z-50"
-                      style="position: absolute !important; z-index: 9999 !important;"
-                    >
-                      <button
-                        (click)="startEdit(task)"
-                        class="tw-w-full tw-text-left tw-px-3 tw-py-2 tw-text-xs tw-text-gray-700 hover:tw-bg-blue-50 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-2"
-                      >
-                        <i class="fa-regular fa-pen-to-square tw-text-[15px]"></i>
-                        <span class="tw-text-[13px]">Edit Task</span>
-                      </button>
-                      <button
-                        (click)="openDateTimePicker(task._id, task.dueOn)"
-                        class="tw-w-full tw-text-left tw-px-3 tw-py-2 tw-text-xs tw-text-gray-700 hover:tw-bg-blue-50 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-2"
-                      >
-                        <i 
-                          [ngClass]="task.dueOn ? 'fa-regular fa-pen-to-square' : 'fa-regular fa-clock'"
-                          class="tw-text-[15px]"
-                        ></i>
-                        <span class="tw-text-[13px]">
-                          {{ task.dueOn ? 'Edit Reminder' : 'Set Reminder' }}
-                        </span>
-                      </button>
-                    </div>
+                <div
+  *ngIf="activeDropdownId === task._id"
+  class="tw-absolute tw-right-0 tw-top-10 tw-w-40 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-100 tw-py-1 tw-z-50"
+  style="position: absolute !important; z-index: 9999 !important;"
+>
+  <button
+    (click)="startEdit(task)"
+    class="tw-w-full tw-text-left tw-px-3 tw-py-2 tw-text-xs tw-text-gray-700 hover:tw-bg-blue-50 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-2"
+  >
+    <i class="fa-regular fa-pen-to-square tw-text-[15px]"></i>
+    <span class="tw-text-[13px]">Edit Task</span>
+  </button>
+  <button
+    (click)="openDateTimePicker(task._id, task.dueOn)"
+    class="tw-w-full tw-text-left tw-px-3 tw-py-2 tw-text-xs tw-text-gray-700 hover:tw-bg-blue-50 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-2"
+  >
+    <i 
+      [ngClass]="task.dueOn ? 'fa-regular fa-pen-to-square' : 'fa-regular fa-clock'"
+      class="tw-text-[15px]"
+    ></i>
+    <span class="tw-text-[13px]">
+      {{ task.dueOn ? 'Edit Reminder' : 'Set Reminder' }}
+    </span>
+  </button>
+</div>
                   </div>
                 </div>
               </div>
@@ -234,24 +188,24 @@
 
         <!-- Load More Indicator -->
         <div *ngIf="isLoadingMore" class="tw-flex tw-justify-center tw-py-6">
-          <div class="tw-animate-spin tw-rounded-full tw-h-6 tw-w-6 tw-border-b-2 tw-border-white"></div>
+          <div class="tw-animate-spin tw-rounded-full tw-h-6 tw-w-6 tw-border-b-2 tw-border-blue-500"></div>
         </div>
 
         <!-- Empty State -->
         <div *ngIf="tasks.length === 0 && !isLoading" class="tw-text-center tw-py-16 empty-state">
           <div class="tw-mb-4 illustration">
-            <svg class="tw-w-16 tw-h-16 tw-mx-auto tw-text-white tw-text-opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="tw-w-16 tw-h-16 tw-mx-auto tw-text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
             </svg>
           </div>
-          <h3 class="tw-text-lg tw-font-semibold tw-text-white tw-mb-2 tw-drop-shadow-md">No tasks yet</h3>
-          <p class="tw-text-sm tw-text-white tw-text-opacity-80 tw-drop-shadow-md">Add your first task below to get started!</p>
+          <h3 class="tw-text-lg tw-font-semibold tw-text-gray-700 tw-mb-2">No tasks yet</h3>
+          <p class="tw-text-sm tw-text-gray-500">Add your first task below to get started!</p>
         </div>
       </div>
     </div>
 
     <!-- Task Input Section (Compact & Fixed) -->
-    <div class="tw-flex-shrink-0 tw-bg-white tw-bg-opacity-95 tw-backdrop-blur-sm tw-rounded-lg tw-shadow-md tw-border tw-border-gray-200 tw-p-2">
+    <div class="tw-flex-shrink-0 tw-bg-white tw-rounded-lg tw-shadow-md tw-border tw-border-gray-200 tw-p-2">
       <div class="tw-flex tw-items-end tw-gap-3">
         <div class="tw-flex-1">
           <textarea
@@ -296,6 +250,7 @@
     </div>
   </div>
 </div>
+
 
 <!-- Replace the existing TaskClockComponent at the end of your template with this: -->
 <app-task-clock
