@@ -10,28 +10,37 @@ import { MyweektaskComponent } from './task-components/task/shared/myweektask/my
 import { MydaytaskComponent } from './task-components/task/shared/mydaytask/mydaytask.component';
 import { MemberprofileComponent } from './task-components/task/shared/memberprofile/memberprofile.component';
 import { AllBoardsComponent } from './task-components/task/shared/allBoards/allBoards.component';
-
+import { TeamTaskDetailPopupComponent } from './task-components/task/shared/team-task-detail-popup/team-task-detail-popup.component';
 
 const routes: Routes = [
   {
-      path: '',
-      component: TaskComponent,
-      children: [
+    path: '',
+    component: TaskComponent,
+    children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'allmembers', component: AllmembersComponent },
       { path: 'boards', component: AllBoardsComponent },
-      { path: 'teamtask', component: TeamtaskComponent },
+      {
+        path: 'teamtask',
+        component: TeamtaskComponent,
+        children: [
+          {
+            path: 'detail/:taskId',
+            component: TeamTaskDetailPopupComponent
+          }
+        ]
+      },
       { path: 'personal-task/my-day', component: MydaytaskComponent },
       { path: 'personal-task/next-seven-days', component: MyweektaskComponent },
       { path: 'personal-task/all', component: MyalltaskComponent },
       { path: 'profile', component: MemberprofileComponent },
       { path: '', redirectTo: 'allmembers', pathMatch: 'full' },
     ],
-    },
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class TaskRoutingModule { }
+export class TaskRoutingModule {}

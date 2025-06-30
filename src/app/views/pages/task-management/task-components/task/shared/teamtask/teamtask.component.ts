@@ -13,7 +13,7 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
@@ -157,6 +157,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     private taskService: TaskService,
     public taskPermissionsService: TaskPermissionsService,
     private router: Router,
+    private route: ActivatedRoute,
     private dragDropService: DragDropService,
     private fb: FormBuilder
   ) {}
@@ -406,6 +407,11 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   // }
 
   async loadData() {
+    if (!this.boardId()) {
+      this.isLoading.set(false);
+      return;
+    }
+
     const boardDetails = await this.taskService.getBoardDetails({
       boardId: this.boardId(),
     });
@@ -446,6 +452,18 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       this.boardColumns.set(columns);
     }
     this.isLoading.set(false);
+  }
+
+  private focusElement(selector: string, selectText = false) {
+    setTimeout(() => {
+      const element = document.querySelector(selector) as HTMLElement;
+      if (element) {
+        element.focus();
+        if (selectText && element instanceof HTMLInputElement) {
+          element.select();
+        }
+      }
+    });
   }
 
   // Drag and drop event handlers
@@ -851,6 +869,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.columnForm.reset();
     this.showColumnNamePopup.set(true);
     this.positionForNewColumn = position;
+
+    this.focusElement('#columnNameInput');
   }
 
   // For renaming column
@@ -864,6 +884,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         columnName: column.title,
       });
       this.showColumnNamePopup.set(true);
+
+      this.focusElement('#columnNameInput', true);
     }
   }
 
@@ -941,11 +963,11 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   }
 
   openTask(task: Task) {
-    this.router.navigate(['/task', task._id]);
+    this.router.navigate(['detail', task._id], { relativeTo: this.route });
   }
 
   onTaskDoubleClick(task: Task) {
-    this.router.navigate(['/task', task._id]);
+    this.router.navigate(['detail', task._id], { relativeTo: this.route });
   }
 
   private moveTaskToColumn(task: Task, targetColumnId: string) {
@@ -1026,6 +1048,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     if (this.newTaskInputColumnId() !== columnId) {
       this.newTaskInputColumnId.set(columnId);
       // Focus will be handled in template with setTimeout
+
+      this.focusElement(`input[data-new-task-input="${columnId}"]`);
     } else {
       // If clicking again, just focus input
       this.newTaskInputColumnId.set(columnId);
@@ -1071,9 +1095,9 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         this.boardColumns.update((cols) => [...cols]);
         this.newTaskInputColumnId.set(null);
         this.newTaskDraftTitle.set('');
-        // setTimeout(() => {
-        //   this.router.navigate(['/task', newTask._id]);
-        // }, 100);
+
+        // Scroll to the newly added task
+        this.scrollToBottom(columnId);
       }
     }
   }
@@ -1120,5 +1144,19 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
 
   trackByTaskId(index: number, task: Task): string {
     return task._id;
+  }
+
+  private scrollToBottom(columnId: string) {
+    setTimeout(() => {
+      const container = document.querySelector(
+        `[id="${columnId}"]`
+      ) as HTMLElement;
+      if (container) {
+        container.scrollTo({
+          top: container.scrollHeight,
+          behavior: 'smooth',
+        });
+      }
+    }, 100); // Small delay to ensure the task is rendered
   }
 }
