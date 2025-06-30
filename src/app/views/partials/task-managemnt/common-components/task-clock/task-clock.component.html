@@ -1,1 +1,284 @@
-<p>task-clock works!</p>
+<!-- Replace the modal container div with this -->
+<div *ngIf="isVisible" class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-z-50 tw-flex tw-items-center tw-justify-center tw-p-4 task-clock-container">
+  <div class="tw-bg-white tw-rounded-2xl tw-shadow-2xl tw-max-w-md tw-w-full tw-max-h-[85vh] tw-overflow-auto tw-flex tw-flex-col">
+    
+    <!-- Header - Fixed -->
+    <div class="tw-flex tw-items-center tw-justify-between tw-p-4 tw-border-b tw-border-gray-100 tw-flex-shrink-0">
+      <h3 class="tw-text-lg tw-font-semibold tw-text-gray-800">
+        Set Reminder
+        <span class="tw-text-xs tw-font-normal tw-text-gray-500 tw-ml-2">
+          ({{ currentStep === PickerStep.DATE ? 'Select Date' : currentStep === PickerStep.HOUR ? 'Select Hour' : 'Select Minutes' }})
+        </span>
+      </h3>
+      <button (click)="closeComponent()" class="tw-p-2 tw-text-gray-400 hover:tw-text-gray-600 tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors">
+        <svg class="tw-w-5 tw-h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Content - Scrollable -->
+    <div class="tw-flex-1 tw-overflow-auto tw-p-4">
+      
+      <!-- Display Selected DateTime -->
+      <div class="tw-mb-4">
+        <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">Selected Date & Time</label>
+        <input
+          type="text"
+          [value]="getFormattedDateTime()"
+          readonly
+          disabled
+          class="datetime-input tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg tw-text-sm tw-bg-gray-50 tw-text-gray-700 tw-cursor-not-allowed"
+          placeholder="Please select date and time below"
+        />
+      </div>
+
+      <!-- Date Picker Step -->
+      <div *ngIf="currentStep === PickerStep.DATE" class="tw-space-y-4">
+        
+        <!-- Year Selection and Month Navigation -->
+        <div class="tw-flex tw-items-center tw-justify-between tw-mb-3">
+          <button 
+            (click)="changeMonth(-1)" 
+            class="tw-p-2 tw-text-gray-500 hover:tw-text-gray-700 tw-rounded-lg hover:tw-bg-gray-100 tw-transition-colors"
+          >
+            <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          
+          <div class="tw-flex tw-items-center tw-gap-2">
+            <h4 class="tw-text-base tw-font-semibold tw-text-gray-800">{{ getMonthName() }}</h4>
+            <select 
+              [value]="currentYear" 
+              (change)="onYearChange(+$any($event.target).value)"
+              class="tw-text-base tw-font-semibold tw-text-gray-800 tw-bg-transparent tw-border-none tw-outline-none tw-cursor-pointer"
+            >
+              <option *ngFor="let year of availableYears" [value]="year">{{ year }}</option>
+            </select>
+          </div>
+          
+          <button 
+            (click)="changeMonth(1)" 
+            class="tw-p-2 tw-text-gray-500 hover:tw-text-gray-700 tw-rounded-lg hover:tw-bg-gray-100 tw-transition-colors"
+          >
+            <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Calendar Grid -->
+        <div class="tw-bg-gray-50 tw-rounded-xl tw-p-3">
+          <div class="tw-grid tw-grid-cols-7 tw-gap-1 tw-text-center tw-text-sm">
+            <!-- Day Headers -->
+            <div class="tw-p-2 tw-text-gray-500 tw-font-semibold tw-text-xs">Sun</div>
+            <div class="tw-p-2 tw-text-gray-500 tw-font-semibold tw-text-xs">Mon</div>
+            <div class="tw-p-2 tw-text-gray-500 tw-font-semibold tw-text-xs">Tue</div>
+            <div class="tw-p-2 tw-text-gray-500 tw-font-semibold tw-text-xs">Wed</div>
+            <div class="tw-p-2 tw-text-gray-500 tw-font-semibold tw-text-xs">Thu</div>
+            <div class="tw-p-2 tw-text-gray-500 tw-font-semibold tw-text-xs">Fri</div>
+            <div class="tw-p-2 tw-text-gray-500 tw-font-semibold tw-text-xs">Sat</div>
+
+            <!-- Calendar Days -->
+            <ng-container *ngFor="let week of calendarDays">
+              <button
+                *ngFor="let day of week"
+                (click)="selectDate(day)"
+                [disabled]="!day || isPastDate(day)"
+                class="calendar-day tw-p-2 tw-rounded-lg tw-transition-all tw-duration-200 tw-font-medium tw-text-xs"
+                [class.tw-bg-blue-500]="isSelectedDate(day)"
+                [class.tw-text-white]="isSelectedDate(day)"
+                [class.tw-text-gray-700]="day && !isPastDate(day) && !isSelectedDate(day)"
+                [class.tw-text-gray-300]="day && isPastDate(day)"
+                [class.tw-cursor-not-allowed]="day && isPastDate(day)"
+                [class.hover:tw-bg-blue-100]="day && !isPastDate(day) && !isSelectedDate(day)"
+                [class.tw-text-transparent]="!day"
+                [class.tw-pointer-events-none]="!day"
+              >
+                {{ day || '' }}
+              </button>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hour Selection Step -->
+      <div *ngIf="currentStep === PickerStep.HOUR" class="tw-space-y-4">
+        
+        <!-- Hour Clock -->
+        <div class="tw-text-center">
+          <h5 class="tw-text-base tw-font-semibold tw-text-gray-700 tw-mb-3">Select Hour</h5>
+          <div class="tw-relative tw-w-52 tw-h-52 tw-mx-auto tw-bg-white tw-rounded-full tw-border-4 tw-border-gray-200 tw-shadow-inner clock-container">
+            
+            <!-- Hour numbers -->
+            <div class="tw-absolute tw-inset-0">
+              <div *ngFor="let hour of getHourNumbers(); let i = index" 
+                   class="tw-absolute tw-w-7 tw-h-7 tw-flex tw-items-center tw-justify-center tw-text-sm tw-font-bold tw-text-gray-700 tw-cursor-pointer tw-rounded-full tw-transition-all tw-duration-200 hover:tw-bg-blue-100"
+                   [class.tw-bg-blue-500]="hour === selectedHour"
+                   [class.tw-text-white]="hour === selectedHour"
+                   [style.transform]="'rotate(' + getHourAngle(hour) + 'deg) translateY(-90px) rotate(' + (-getHourAngle(hour)) + 'deg)'"
+                   [style.top]="'50%'"
+                   [style.left]="'50%'"
+                   [style.margin-left]="'-14px'"
+                   [style.margin-top]="'-14px'"
+                   (click)="selectHour(hour)">
+                {{ hour }}
+              </div>
+            </div>
+            
+            <!-- Hour hand -->
+            <div 
+              class="tw-absolute tw-top-1/2 tw-left-1/2 tw-w-1 tw-h-16 tw-bg-blue-500 tw-rounded-full tw-origin-bottom tw-transition-transform tw-duration-300"
+              [style.transform]="'translate(-50%, -100%) rotate(' + getSelectedHourAngle() + 'deg)'"
+            ></div>
+            
+            <!-- Center dot -->
+            <div class="tw-absolute tw-top-1/2 tw-left-1/2 tw-w-3 tw-h-3 tw-bg-blue-500 tw-rounded-full tw-transform -tw-translate-x-1/2 -tw-translate-y-1/2"></div>
+          </div>
+          
+          <!-- Selected Hour Display -->
+          <div class="tw-mt-3 tw-text-2xl tw-font-bold tw-text-gray-800">{{ selectedHour }}</div>
+        </div>
+
+        <!-- AM/PM Toggle -->
+        <div class="tw-flex tw-justify-center">
+          <div class="ampm-toggle tw-bg-gray-100 tw-rounded-lg tw-p-1 tw-flex">
+            <button 
+              (click)="isAM = true"
+              class="tw-px-4 tw-py-2 tw-rounded-md tw-text-sm tw-font-semibold tw-transition-all tw-duration-200"
+              [class.tw-bg-white]="isAM"
+              [class.tw-text-blue-600]="isAM"
+              [class.tw-shadow-sm]="isAM"
+              [class.tw-text-gray-600]="!isAM"
+              [class.active]="isAM"
+            >
+              AM
+            </button>
+            <button 
+              (click)="isAM = false"
+              class="tw-px-4 tw-py-2 tw-rounded-md tw-text-sm tw-font-semibold tw-transition-all tw-duration-200"
+              [class.tw-bg-white]="!isAM"
+              [class.tw-text-blue-600]="!isAM"
+              [class.tw-shadow-sm]="!isAM"
+              [class.tw-text-gray-600]="isAM"
+              [class.active]="!isAM"
+            >
+              PM
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Minute Selection Step -->
+      <div *ngIf="currentStep === PickerStep.MINUTE" class="tw-space-y-4">
+        
+        <!-- Minute Clock -->
+        <div class="tw-text-center">
+          <h5 class="tw-text-base tw-font-semibold tw-text-gray-700 tw-mb-3">Select Minutes</h5>
+          <div class="tw-relative tw-w-52 tw-h-52 tw-mx-auto tw-bg-white tw-rounded-full tw-border-4 tw-border-gray-200 tw-shadow-inner clock-container">
+            
+            <!-- Minute numbers -->
+            <div class="tw-absolute tw-inset-0">
+              <div *ngFor="let minute of getMinuteNumbers(); let i = index" 
+                   class="tw-absolute tw-w-7 tw-h-7 tw-flex tw-items-center tw-justify-center tw-text-xs tw-font-bold tw-text-gray-700 tw-cursor-pointer tw-rounded-full tw-transition-all tw-duration-200 hover:tw-bg-green-100"
+                   [class.tw-bg-green-500]="minute === selectedMinute"
+                   [class.tw-text-white]="minute === selectedMinute"
+                   [style.transform]="'rotate(' + getMinuteAngle(minute) + 'deg) translateY(-90px) rotate(' + (-getMinuteAngle(minute)) + 'deg)'"
+                   [style.top]="'50%'"
+                   [style.left]="'50%'"
+                   [style.margin-left]="'-14px'"
+                   [style.margin-top]="'-14px'"
+                   (click)="selectMinute(minute)">
+                {{ minute.toString().padStart(2, '0') }}
+              </div>
+            </div>
+            
+            <!-- Minute hand -->
+         <!-- Replace the minute hand div with this: -->
+<div 
+  class="tw-absolute tw-top-1/2 tw-left-1/2 tw-w-1 tw-bg-green-500 tw-rounded-full tw-origin-bottom tw-transition-transform tw-duration-300"
+  style="height: 72px;"
+  [style.transform]="'translate(-50%, -100%) rotate(' + getSelectedMinuteAngle() + 'deg)'"
+></div>
+            
+            <!-- Center dot -->
+            <div class="tw-absolute tw-top-1/2 tw-left-1/2 tw-w-3 tw-h-3 tw-bg-green-500 tw-rounded-full tw-transform -tw-translate-x-1/2 -tw-translate-y-1/2"></div>
+          </div>
+          
+          <!-- Selected Minute Display -->
+          <div class="tw-mt-3 tw-text-2xl tw-font-bold tw-text-gray-800">{{ selectedMinute.toString().padStart(2, '0') }}</div>
+        </div>
+
+        <!-- AM/PM Toggle -->
+        <div class="tw-flex tw-justify-center">
+          <div class="ampm-toggle tw-bg-gray-100 tw-rounded-lg tw-p-1 tw-flex">
+            <button 
+              (click)="isAM = true"
+              class="tw-px-4 tw-py-2 tw-rounded-md tw-text-sm tw-font-semibold tw-transition-all tw-duration-200"
+              [class.tw-bg-white]="isAM"
+              [class.tw-text-blue-600]="isAM"
+              [class.tw-shadow-sm]="isAM"
+              [class.tw-text-gray-600]="!isAM"
+              [class.active]="isAM"
+            >
+              AM
+            </button>
+            <button 
+              (click)="isAM = false"
+              class="tw-px-4 tw-py-2 tw-rounded-md tw-text-sm tw-font-semibold tw-transition-all tw-duration-200"
+              [class.tw-bg-white]="!isAM"
+              [class.tw-text-blue-600]="!isAM"
+              [class.tw-shadow-sm]="!isAM"
+              [class.tw-text-gray-600]="isAM"
+              [class.active]="!isAM"
+            >
+              PM
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Actions - Fixed -->
+    <div class="tw-flex tw-items-center tw-justify-between tw-gap-3 tw-p-4 tw-border-t tw-border-gray-100 tw-flex-shrink-0">
+      
+      <!-- Back Button -->
+      <button 
+        *ngIf="currentStep !== PickerStep.DATE"
+        (click)="currentStep === PickerStep.HOUR ? goToDatePicker() : goToHourPicker()"
+        class="tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-600 hover:tw-text-gray-800 tw-bg-gray-100 hover:tw-bg-gray-200 tw-rounded-lg tw-transition-colors tw-flex tw-items-center tw-gap-2"
+      >
+        <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Back
+      </button>
+      <div *ngIf="currentStep === PickerStep.DATE"></div>
+
+      <!-- Cancel and Save Buttons -->
+      <div class="tw-flex tw-items-center tw-gap-2">
+        <button 
+          (click)="clearInputBox()"
+          class="tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-600 hover:tw-text-gray-800 tw-bg-gray-100 hover:tw-bg-gray-200 tw-rounded-lg tw-transition-colors"
+        >
+          Clear
+        </button>
+        <button 
+          (click)="closeComponent()"
+          class="tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-600 hover:tw-text-gray-800 tw-bg-gray-100 hover:tw-bg-gray-200 tw-rounded-lg tw-transition-colors"
+        >
+          Cancel
+        </button>
+        <button 
+          (click)="saveDateTime()"
+          [disabled]="!canSave()"
+          class="tw-px-4 tw-py-2 tw-text-sm tw-font-medium tw-text-white tw-bg-blue-500 hover:tw-bg-blue-600 tw-rounded-lg tw-transition-colors tw-flex tw-items-center tw-gap-2 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
+        >
+          <div *ngIf="isUpdating" class="tw-animate-spin tw-rounded-full tw-h-4 tw-w-4 tw-border-b-2 tw-border-white"></div>
+          {{ isUpdating ? 'Saving...' : 'Set Reminder' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
