@@ -1,8 +1,206 @@
-<p>myweektask works!</p>
-<p>teamtask works!</p>
- <app-add-comments
-  [boardId]="myBoardId"
-  [taskId]="myTaskId"
-  [type]="'board'"
-  (messageSent)="onCommentAdded($event)"
-></app-add-comments>
+<div class="tw-h-full tw-bg-white tw-p-4 tw-select-none">
+  <!-- Kanban Board Container -->
+  <div 
+    #kanbanContainer
+    class="tw-flex tw-gap-4 tw-h-full tw-overflow-x-auto tw-overflow-y-hidden tw-pb-4 kanban-container"
+    style="scrollbar-width: thin;">
+    
+    <!-- Day Column -->
+    <div 
+      *ngFor="let column of dayColumns; trackBy: trackByColumnIndex"
+      class="tw-flex-shrink-0 tw-w-80 tw-bg-gray-50 tw-rounded-lg tw-shadow-sm tw-border tw-border-gray-200 tw-flex tw-flex-col tw-h-[80vh]"
+      [class.tw-ring-2]="dragOverColumnIndex === column.index"
+      [class.tw-ring-blue-300]="dragOverColumnIndex === column.index"
+      [class.tw-bg-blue-50]="dragOverColumnIndex === column.index"
+      (dragover)="onDragOver($event, column.index)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event, column.index)">
+      
+      <!-- Column Header -->
+      <div class="tw-p-4 tw-border-b tw-border-gray-200 tw-flex-shrink-0">
+        <h3 class="tw-font-semibold tw-text-gray-800 tw-text-lg">{{ column.name }}</h3>
+        <p class="tw-text-sm tw-text-gray-500 tw-mt-1">
+          {{ column.date | date:'EEE, MMM d' }}
+        </p>
+      </div>
+
+      <!-- Drop Indicator -->
+      <div 
+        *ngIf="dragOverColumnIndex === column.index && draggedTask"
+        class="tw-absolute tw-inset-0 tw-m-2 tw-mt-16 tw-mb-20 tw-border-2 tw-border-dashed tw-border-blue-400 tw-rounded-lg tw-bg-blue-50 tw-bg-opacity-80 tw-flex tw-items-center tw-justify-center tw-text-blue-600 tw-text-lg tw-font-medium tw-z-10">
+        <div class="tw-text-center">
+          <svg class="tw-w-12 tw-h-12 tw-mx-auto tw-mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+          </svg>
+          Drop here
+        </div>
+      </div>
+
+      <!-- Tasks Container -->
+      <div class="tw-flex-1 tw-overflow-y-auto tw-p-4 tw-space-y-3 tasks-container tw-relative">
+        
+        <!-- Task Card -->
+        <div 
+          *ngFor="let task of column.tasks; trackBy: trackByTaskId"
+          class="tw-bg-white tw-rounded-lg tw-shadow-sm tw-border tw-border-gray-200 tw-p-3 tw-cursor-move tw-transition-all tw-duration-200 hover:tw-shadow-md task-card"
+          [class.tw-opacity-60]="task.isCompleted"
+          [class.tw-border-green-200]="task.isCompleted"
+          [class.tw-bg-green-50]="task.isCompleted"
+          [class.tw-opacity-30]="shouldHideTask(task)"
+          [class.tw-pointer-events-none]="shouldHideTask(task)"
+          [style.visibility]="shouldHideTask(task) ? 'hidden' : 'visible'"
+          draggable="true"
+          (dragstart)="onDragStart($event, task)"
+          (dragend)="onDragEnd()">
+          
+          <!-- Task Header -->
+          <div class="tw-flex tw-items-start tw-justify-between tw-mb-2">
+            <!-- Radio Button -->
+            <div class="tw-flex tw-items-center tw-flex-shrink-0 tw-mr-3" (click)="$event.stopPropagation()">
+              <input 
+                type="radio"
+                [checked]="task.isCompleted"
+                (change)="toggleTaskStatus(task)"
+                (click)="$event.stopPropagation()"
+                class="tw-w-4 tw-h-4 tw-text-green-600 tw-border-gray-300 focus:tw-ring-green-500 tw-cursor-pointer">
+            </div>
+            
+            <!-- Task Options -->
+            <div class="tw-flex tw-items-center tw-space-x-1 tw-flex-shrink-0 task-options" (click)="$event.stopPropagation()">
+              <!-- Delete Button -->
+              <button 
+                (click)="deleteTask(task); $event.stopPropagation()"
+                class="tw-p-1 tw-text-gray-400 hover:tw-text-red-500 tw-transition-colors tw-duration-150">
+                <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+              
+              <!-- Three Dot Menu -->
+              <div class="tw-relative dropdown-container">
+                <button 
+                  (click)="toggleDropdown(task._id); $event.stopPropagation()"
+                  class="tw-p-1 tw-text-gray-400 hover:tw-text-gray-600 tw-transition-colors tw-duration-150 three-dot-btn">
+                  <svg class="tw-w-4 tw-h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                  </svg>
+                </button>
+                
+                <!-- Dropdown Menu -->
+                <div 
+                  *ngIf="activeDropdownId === task._id"
+                  class="tw-absolute tw-top-6 tw-right-0 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-200 tw-py-2 tw-z-40 tw-min-w-48"
+                  (click)="$event.stopPropagation()">
+                  
+                  <!-- Edit Task -->
+                  <div class="tw-px-4 tw-py-2">
+                    <input 
+                      *ngIf="editingTask && editingTask.taskId === task._id"
+                      type="text"
+                      [(ngModel)]="editingTask.title"
+                      (keydown.enter)="saveEditTask(); $event.stopPropagation()"
+                      (keydown.escape)="cancelEditTask(); $event.stopPropagation()"
+                      (click)="$event.stopPropagation()"
+                      class="tw-w-full tw-px-2 tw-py-1 tw-border tw-border-gray-300 tw-rounded tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-select-text"
+                      placeholder="Edit task title..."
+                      #editInput>
+                    
+                    <button 
+                      *ngIf="!editingTask || editingTask.taskId !== task._id"
+                      (click)="startEditTask(task); $event.stopPropagation()"
+                      class="tw-w-full tw-px-2 tw-py-1 tw-text-left tw-text-sm tw-text-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-150 tw-rounded">
+                      Edit Task
+                    </button>
+                  </div>
+                  
+                  <!-- Divider -->
+                  <hr class="tw-my-2 tw-border-gray-200">
+                  
+                  <!-- Move to Days -->
+                  <div class="tw-px-4 tw-py-2">
+                    <p class="tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wide tw-mb-2">Move to</p>
+                    <div class="tw-space-y-1">
+                      <button 
+                        *ngFor="let targetColumn of dayColumns; trackBy: trackByColumnIndex"
+                        (click)="moveTaskToDay(task, targetColumn.index); $event.stopPropagation()"
+                        [disabled]="targetColumn.index === task.dayIndex"
+                        class="tw-w-full tw-px-2 tw-py-1 tw-text-left tw-text-sm tw-rounded tw-transition-colors tw-duration-150"
+                        [class.tw-text-gray-400]="targetColumn.index === task.dayIndex"
+                        [class.tw-cursor-not-allowed]="targetColumn.index === task.dayIndex"
+                        [class.tw-bg-gray-100]="targetColumn.index === task.dayIndex"
+                        [class.tw-text-gray-700]="targetColumn.index !== task.dayIndex"
+                        [class.hover:tw-bg-gray-50]="targetColumn.index !== task.dayIndex">
+                        {{ targetColumn.name }}
+                        <span *ngIf="targetColumn.index === task.dayIndex" class="tw-text-xs tw-text-gray-400">(current)</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Task Content -->
+          <div class="tw-flex-1">
+            <!-- Normal Task Title (not editing) -->
+            <div 
+              *ngIf="!editingTask || editingTask.taskId !== task._id"
+              class="tw-text-gray-800 tw-leading-relaxed tw-select-text"
+              [class.tw-line-through]="task.isCompleted"
+              [class.tw-text-gray-500]="task.isCompleted">
+              {{ task.title }}
+            </div>
+          </div>
+          
+          <!-- Task Footer -->
+          <div class="tw-flex tw-items-center tw-justify-between tw-mt-3 tw-pt-2 tw-border-t tw-border-gray-100">
+            <span class="tw-text-xs tw-text-gray-400">
+              {{ task.createdAt | date:'MMM d, h:mm a' }}
+            </span>
+            <span 
+              *ngIf="task.isCompleted && task.completedOn"
+              class="tw-text-xs tw-text-green-600 tw-font-medium">
+              ✓ Completed
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column Footer Input -->
+      <div class="tw-p-4 tw-border-t tw-border-gray-200 tw-flex-shrink-0">
+        <div class="tw-relative">
+          <textarea
+            [(ngModel)]="column.newTaskTitle"
+            [disabled]="column.isInputDisabled"
+            [attr.data-column]="column.index"
+            (focus)="onInputFocus(column.index)"
+            (blur)="onInputBlur(column.index)"
+            (keydown)="onKeyDown($event, column.index)"
+            class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg tw-text-sm tw-resize-none focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-transition-all tw-duration-200 tw-select-text"
+            [class.tw-opacity-50]="column.isInputDisabled"
+            [class.tw-cursor-not-allowed]="column.isInputDisabled"
+            placeholder="Add a task..."
+            rows="2"
+            maxlength="200"></textarea>
+          
+          <!-- Send Button -->
+          <button 
+            *ngIf="column.newTaskTitle.trim() && column.isInputFocused && !column.isInputDisabled"
+            (click)="addTask(column.index)"
+            class="tw-absolute tw-bottom-2 tw-right-2 tw-p-1 tw-text-blue-600 hover:tw-text-blue-700 tw-transition-colors tw-duration-150">
+            <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+            </svg>
+          </button>
+        </div>
+        
+        <!-- Ctrl+Enter Hint -->
+        <p 
+          *ngIf="column.isInputFocused && !column.isInputDisabled"
+          class="tw-text-xs tw-text-gray-500 tw-mt-2">
+          Press <kbd class="tw-px-1 tw-py-0.5 tw-bg-gray-200 tw-rounded tw-text-xs">Ctrl+Enter</kbd> to add task
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
