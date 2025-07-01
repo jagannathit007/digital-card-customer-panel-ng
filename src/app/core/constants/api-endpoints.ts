@@ -188,6 +188,13 @@ public REORDER_BOARD_TASKS: string = `${this.PATH}/task/team/reorder`;
 public GET_TASK_DETAILS: string = `${this.PATH}/task/team/get-details`;
 public ADD_NEW_TEAM_TASK: string = `${this.PATH}/task/team/add`;
 
+// update team task details routes
+public UPDATE_TEAM_TASK_Title: string = `${this.PATH}/task/team/update/title`;
+public UPDATE_TEAM_TASK_STATUS: string = `${this.PATH}/task/team/update/status`;
+public UPDATE_TEAM_TASK_DUE_DATE: string = `${this.PATH}/task/team/update/due-date`;
+public UPDATE_TEAM_TASK_CATEGORY: string = `${this.PATH}/task/team/update/category`;
+public UPDATE_TEAM_TASK_DESCRIPTION: string = `${this.PATH}/task/team/update/description`;
+
 // board column routes
 public RENAME_COLUMN: string = `${this.PATH}/task/board/column/name/update`;
 public ADD_NEW_COLUMN: string = `${this.PATH}/task/board/column/create`;

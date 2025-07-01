@@ -63,14 +63,15 @@
   <!-- Mention Dropdown - More Compact -->
   <div
     *ngIf="showDropdown"
-    class="mention-dropdown tw-absolute tw-z-50 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-xl tw-max-h-52 tw-overflow-hidden tw-w-80"
-    [ngStyle]="
+    class="mention-dropdown tw-absolute tw-bottom-[95px] tw-z-50 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-xl tw-max-h-52 tw-overflow-hidden tw-w-80"
+    >
+    <!-- [ngStyle]="
       placement === 'top'
         ? { bottom: '0px', marginBottom: dropdownPosition.top + 'px' }
         : { top: dropdownPosition.top + 'px', marginTop: '0.5rem' }
     "
-    [style.left.px]="dropdownPosition.left"
-  >
+    [style.left.px]="dropdownPosition.left" -->
+
     <!-- Dropdown Header - More Compact -->
     <div class="tw-px-3 tw-py-2 tw-border-b tw-border-gray-100 tw-bg-gray-50">
       <div class="tw-flex tw-items-center tw-justify-between">

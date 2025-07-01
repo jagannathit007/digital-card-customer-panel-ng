@@ -82,6 +82,8 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   private routeSubscription?: Subscription;
   private querySubscription?: Subscription;
 
+  private dateActuallySelected = false;
+
   // Task data
   task: TeamTask = {
     _id: '',
@@ -242,6 +244,11 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       label: 'Completed',
       color: 'tw-bg-green-100 tw-text-green-800',
     },
+    {
+      value: 'deleted',
+      label: 'Deleted',
+      color: 'tw-bg-red-100 tw-text-red-800',
+    },
   ];
 
   // Backup for undo functionality
@@ -376,25 +383,25 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     this.createBackup('title');
   }
 
-  saveTitle(): void {
+  async saveTitle(): Promise<void> {
     if (!this.editTitle.trim()) return;
 
     this.isSavingTitle = true;
 
-    // Simulate API call
-    setTimeout(() => {
-      try {
-        this.task.title = this.editTitle.trim();
-        this.isEditingTitle = false;
-        this.emitTaskUpdate('title', this.task.title);
-        // Success handling
-      } catch (error) {
-        this.undoChanges('title');
-        // Error handling
-      } finally {
-        this.isSavingTitle = false;
-      }
-    }, 500);
+    const response = await this.taskService.updateTeamTaskTitle({
+      taskId: this.taskId,
+      title: this.editTitle.trim(),
+    });
+
+    if (response) {
+      this.task.title = this.editTitle.trim();
+      this.isEditingTitle = false;
+      this.isSavingTitle = false;
+      this.emitTaskUpdate('title', this.task.title);
+    } else {
+      this.undoChanges('title');
+      this.isSavingTitle = false;
+    }
   }
 
   cancelTitleEdit(): void {
@@ -412,18 +419,20 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   }
 
   // Status methods
-  updateStatus(status: string): void {
+  async updateStatus(status: string): Promise<void> {
     this.createBackup('status');
 
-    // Simulate API call
-    setTimeout(() => {
-      try {
-        this.task.status = status;
-        this.emitTaskUpdate('status', status);
-      } catch (error) {
-        this.undoChanges('status');
-      }
-    }, 300);
+    const response = await this.taskService.updateTeamTaskStatus({
+      taskId: this.taskId,
+      status: status,
+    });
+
+    if (response) {
+      this.task.status = status;
+      this.emitTaskUpdate('status', status);
+    } else {
+      this.undoChanges('status');
+    }
   }
 
   getStatusOption(status: string) {

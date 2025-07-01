@@ -660,4 +660,124 @@ export class TaskService {
       return false;
     }
   }
+
+  async updateTeamTaskTitle(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.UPDATE_TEAM_TASK_Title,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data) {
+        swalHelper.showToast(response.message, 'success');
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
+  async updateTeamTaskStatus(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.UPDATE_TEAM_TASK_STATUS,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data) {
+        swalHelper.showToast(response.message, 'success');
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
+  async updateTeamTaskDueDate(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.UPDATE_TEAM_TASK_DUE_DATE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data) {
+        swalHelper.showToast(response.message, 'success');
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
+  async updateTeamTaskCategory(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.UPDATE_TEAM_TASK_CATEGORY,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data) {
+        swalHelper.showToast(response.message, 'success');
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
+  async updateTeamTaskDescription(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.UPDATE_TEAM_TASK_DESCRIPTION,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data) {
+        swalHelper.showToast(response.message, 'success');
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
 }
