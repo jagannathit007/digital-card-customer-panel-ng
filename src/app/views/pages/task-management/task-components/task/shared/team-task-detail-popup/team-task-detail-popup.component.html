@@ -165,6 +165,13 @@
                 </div>
               </ng-template>
 
+              <!-- Custom Date Picker Toggle overlay -->
+              <div
+                *ngIf="showCustomDatePicker"
+                class="tw-fixed tw-inset-0 tw-z-40"
+                (click)="toggleCustomDatePicker()"
+              ></div>
+
               <!-- Custom Date Picker Popup -->
               <div
                 *ngIf="showCustomDatePicker"

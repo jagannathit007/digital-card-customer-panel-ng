@@ -447,9 +447,9 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     if (!day.isCurrentMonth) {
       classes += 'tw-text-gray-300 tw-cursor-not-allowed';
     } else if (day.isSelected) {
-      classes += 'tw-bg-red-500 tw-text-white tw-font-semibold';
-    } else if (day.isToday) {
       classes += 'tw-bg-blue-500 tw-text-white tw-font-semibold';
+    } else if (day.isToday) {
+      classes += 'tw-border tw-border-blue-500 tw-text-blue-500 tw-font-semibold';
     } else {
       classes += 'tw-text-gray-700 hover:tw-bg-gray-100';
     }
