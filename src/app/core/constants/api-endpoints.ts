@@ -136,6 +136,10 @@ class ApiEndpoints {
   public WEBSITE_CERTIFICATES_UPDATE: string = `${this.PATH}/website/certification/update`;
   public WEBSITE_CERTIFICATES_DELETE: string = `${this.PATH}/website/certification/delete`;
 
+    // our Trust Badges
+  public WEBSITE_TRUST_ADD: string = `${this.PATH}/website/ourTrust/add`;
+  public WEBSITE_TRUST_UPDATE: string = `${this.PATH}/website/ourTrust/update`;
+  public WEBSITE_TRUST_DELETE: string = `${this.PATH}/website/ourTrust/delete`;
 
   // our Faq
   public WEBSITE_FAQ_ADD: string = `${this.PATH}/website/faq/update`;

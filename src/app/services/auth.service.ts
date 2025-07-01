@@ -1029,6 +1029,85 @@ export class AuthService {
     }
   }
 
+  // our Trust Badges ADD/UPDATE/DELETE
+    async addTrust(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data);
+
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_TRUST_ADD,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async updateTrust(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data);
+
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_TRUST_UPDATE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async deleteTrust(data: any) {
+    try {
+      this.getHeaders();
+      data = this.addBusinessCardId(data);
+
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.WEBSITE_TRUST_DELETE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
   // our-clients ADD/UPDATE/DELETE
   async addClients(data: any) {
     try {

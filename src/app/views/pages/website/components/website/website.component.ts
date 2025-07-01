@@ -98,6 +98,11 @@ export class WebsiteComponent{
         icon:'ri-gallery-fill'
       },
       {
+        title: "Our Trust",
+        href: "our-trustcomponent",
+        icon:'ri-award-line'
+      },
+      {
         title: "Our Faq",
         href: "our-faq",
         icon:'ri-question-answer-line'
