@@ -400,10 +400,11 @@ import { swalHelper } from 'src/app/core/constants/swal-helper';
 interface WeekTask {
   _id: string;
   title: string;
+  dueOn: Date | null;
   isCompleted: boolean;
   completedOn: Date | null;
   createdAt: Date;
-  dayIndex: number; // 0 = Today, 1 = Tomorrow, 2-6 = Next 5 days
+  dayIndex: number;
 }
 
 interface DayColumn {
@@ -426,6 +427,7 @@ export class MyweektaskComponent implements OnInit {
 
   // Day columns data
   dayColumns: DayColumn[] = [];
+  isLoading: boolean = false;
   
   // Task management
   editingTask: { taskId: string; title: string; dayIndex: number } | null = null;
@@ -440,16 +442,16 @@ export class MyweektaskComponent implements OnInit {
   
   // Auto scroll
   autoScrollInterval: any = null;
-  autoScrollSpeed: number = 15; // Much faster scroll speed
+  autoScrollSpeed: number = 15;
 
   constructor(
     private personalTaskService: PersonalTaskService,
     private storage: AppStorage
   ) { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.initializeDayColumns();
-    this.loadSampleTasks(); // For demo purposes - replace with actual data loading
+    await this.fetchWeekTasks();
   }
 
   private initializeDayColumns(): void {
@@ -483,24 +485,76 @@ export class MyweektaskComponent implements OnInit {
     }
   }
 
-  private loadSampleTasks(): void {
-    // Sample tasks for demonstration
-    const sampleTasks: WeekTask[] = [
-      { _id: '1', title: 'Complete project proposal', isCompleted: false, completedOn: null, createdAt: new Date(), dayIndex: 0 },
-      { _id: '2', title: 'Review code changes', isCompleted: true, completedOn: new Date(), createdAt: new Date(), dayIndex: 0 },
-      { _id: '3', title: 'Team meeting', isCompleted: false, completedOn: null, createdAt: new Date(), dayIndex: 1 },
-      { _id: '4', title: 'Client presentation', isCompleted: false, completedOn: null, createdAt: new Date(), dayIndex: 2 }
-    ];
+  // Main API Call Implementation
+  async fetchWeekTasks(): Promise<void> {
+    if (this.isLoading) return;
 
-    // Assign tasks to their respective columns
-    sampleTasks.forEach(task => {
-      this.dayColumns[task.dayIndex].tasks.push(task);
-    });
+    this.isLoading = true;
+    try {
+      const response = await this.personalTaskService.getPersonalWeekTaskDetails();
 
-    // Sort tasks in each column
-    this.dayColumns.forEach(column => {
-      this.sortTasksInColumn(column);
+      if (response) {
+        this.mapApiDataToColumns(response);
+      }
+    } catch (error) {
+      console.error('Error fetching week tasks:', error);
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  private mapApiDataToColumns(data: any): void {
+    // Clear existing tasks
+    this.dayColumns.forEach(column => column.tasks = []);
+
+    // Map API day keys to column indices
+    const dayKeyToIndex: { [key: string]: number } = {
+      'today': 0,
+      'tomorrow': 1,
+      'Monday': this.getDayIndex('Monday'),
+      'Tuesday': this.getDayIndex('Tuesday'),
+      'Wednesday': this.getDayIndex('Wednesday'),
+      'Thursday': this.getDayIndex('Thursday'),
+      'Friday': this.getDayIndex('Friday'),
+      'Saturday': this.getDayIndex('Saturday'),
+      'Sunday': this.getDayIndex('Sunday')
+    };
+
+    // Process each day from API response
+    Object.keys(data).forEach(dayKey => {
+      const tasks = data[dayKey] || [];
+      const columnIndex = dayKeyToIndex[dayKey];
+
+      if (columnIndex !== undefined && columnIndex < this.dayColumns.length) {
+        const mappedTasks = tasks.map((task: any) => ({
+          _id: task._id,
+          title: task.title,
+          dueOn: task.dueOn,
+          isCompleted: task.isCompleted,
+          completedOn: task.completedOn,
+          createdAt: task.createdAt,
+          dayIndex: columnIndex
+        }));
+
+        this.dayColumns[columnIndex].tasks = mappedTasks;
+        this.sortTasksInColumn(this.dayColumns[columnIndex]);
+      }
     });
+  }
+
+  private getDayIndex(dayName: string): number {
+    const today = new Date();
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const targetDayIndex = dayNames.indexOf(dayName);
+    
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      if (date.getDay() === targetDayIndex) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   private sortTasksInColumn(column: DayColumn): void {
@@ -527,15 +581,15 @@ export class MyweektaskComponent implements OnInit {
     });
   }
 
-onInputBlur(columnIndex: number): void {
-  setTimeout(() => {
-    this.dayColumns[columnIndex].isInputFocused = false;
-    this.dayColumns.forEach(column => {
-      column.isInputDisabled = false;
-    });
-    this.activeFocusedInput = null;
-  }, 100); // Reduced from 150ms
-}
+  onInputBlur(columnIndex: number): void {
+    setTimeout(() => {
+      this.dayColumns[columnIndex].isInputFocused = false;
+      this.dayColumns.forEach(column => {
+        column.isInputDisabled = false;
+      });
+      this.activeFocusedInput = null;
+    }, 100);
+  }
 
   onKeyDown(event: KeyboardEvent, columnIndex: number): void {
     if (event.ctrlKey && event.key === 'Enter') {
@@ -544,39 +598,40 @@ onInputBlur(columnIndex: number): void {
     }
   }
 
-addTask(columnIndex: number): void {
-  const column = this.dayColumns[columnIndex];
-  const taskTitle = column.newTaskTitle.trim();
-  
-  if (!taskTitle) return;
+  addTask(columnIndex: number): void {
+    const column = this.dayColumns[columnIndex];
+    const taskTitle = column.newTaskTitle.trim();
+    
+    if (!taskTitle) return;
 
-  const newTask: WeekTask = {
-    _id: `temp-${Date.now()}`,
-    title: taskTitle,
-    isCompleted: false,
-    completedOn: null,
-    createdAt: new Date(),
-    dayIndex: columnIndex
-  };
+    const newTask: WeekTask = {
+      _id: `temp-${Date.now()}`,
+      title: taskTitle,
+      dueOn: null,
+      isCompleted: false,
+      completedOn: null,
+      createdAt: new Date(),
+      dayIndex: columnIndex
+    };
 
-  // Add to top of column
-  column.tasks.unshift(newTask);
-  column.newTaskTitle = '';
-  
-  // Explicitly set input focus state
-  column.isInputFocused = true; // Add this line
+    // Add to top of column
+    column.tasks.unshift(newTask);
+    column.newTaskTitle = '';
+    
+    // Explicitly set input focus state
+    column.isInputFocused = true;
 
-  // Sort column to maintain order
-  this.sortTasksInColumn(column);
-  
-  // Keep input focused after adding task
-  setTimeout(() => {
-    const inputElement = document.querySelector(`textarea[data-column="${columnIndex}"]`) as HTMLTextAreaElement;
-    if (inputElement) {
-      inputElement.focus();
-    }
-  }, 50);
-}
+    // Sort column to maintain order
+    this.sortTasksInColumn(column);
+    
+    // Keep input focused after adding task
+    setTimeout(() => {
+      const inputElement = document.querySelector(`textarea[data-column="${columnIndex}"]`) as HTMLTextAreaElement;
+      if (inputElement) {
+        inputElement.focus();
+      }
+    }, 50);
+  }
 
   toggleTaskStatus(task: WeekTask): void {
     task.isCompleted = !task.isCompleted;
@@ -644,7 +699,7 @@ addTask(columnIndex: number): void {
     // Add to target column
     task.dayIndex = targetDayIndex;
     const targetColumn = this.dayColumns[targetDayIndex];
-    targetColumn.tasks.unshift(task); // Add to top
+    targetColumn.tasks.unshift(task);
     
     // Sort both columns
     this.sortTasksInColumn(currentColumn);
@@ -676,11 +731,10 @@ addTask(columnIndex: number): void {
     this.draggedTask = task;
     event.dataTransfer!.effectAllowed = 'move';
     this.kanbanContainer.nativeElement.classList.add('dragging');
-    // Create a visible custom drag image
+    
     const dragElement = event.target as HTMLElement;
     const clone = dragElement.cloneNode(true) as HTMLElement;
     
-    // Style the clone for better visibility
     clone.style.position = 'absolute';
     clone.style.top = '-1000px';
     clone.style.left = '-1000px';
@@ -696,7 +750,6 @@ addTask(columnIndex: number): void {
     document.body.appendChild(clone);
     event.dataTransfer!.setDragImage(clone, dragElement.offsetWidth / 2, 25);
     
-    // Clean up the clone after a short delay
     setTimeout(() => {
       if (document.body.contains(clone)) {
         document.body.removeChild(clone);
@@ -708,13 +761,10 @@ addTask(columnIndex: number): void {
     event.preventDefault();
     event.dataTransfer!.dropEffect = 'move';
     this.dragOverColumnIndex = columnIndex;
-    
-    // Auto-scroll logic
     this.handleAutoScroll(event);
   }
 
   onDragLeave(event: DragEvent): void {
-    // Only clear if we're truly leaving the column
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
     const x = event.clientX;
     const y = event.clientY;
@@ -747,68 +797,40 @@ addTask(columnIndex: number): void {
     this.clearAutoScroll();
   }
 
-  // private handleAutoScroll(event: DragEvent): void {
-  //   if (!this.kanbanContainer) return;
-    
-  //   const container = this.kanbanContainer.nativeElement;
-  //   const rect = container.getBoundingClientRect();
-  //   const scrollThreshold = 120; // Increased threshold for easier triggering
-    
-  //   const x = event.clientX - rect.left;
-    
-  //   this.clearAutoScroll();
-    
-  //   if (x < scrollThreshold) {
-  //     // Scroll left - much faster
-  //     this.autoScrollInterval = setInterval(() => {
-  //       container.scrollLeft -= this.autoScrollSpeed;
-  //     }, 10); // Reduced interval for faster response
-  //   } else if (x > rect.width - scrollThreshold) {
-  //     // Scroll right - much faster
-  //     this.autoScrollInterval = setInterval(() => {
-  //       container.scrollLeft += this.autoScrollSpeed;
-  //     }, 10); // Reduced interval for faster response
-  //   }
-  // }
+  private handleAutoScroll(event: DragEvent): void {
+    if (!this.kanbanContainer) return;
 
-  // Super fast scroll speed
+    const container = this.kanbanContainer.nativeElement;
+    const rect = container.getBoundingClientRect();
+    const scrollThreshold = 250;
 
-private handleAutoScroll(event: DragEvent): void {
-  if (!this.kanbanContainer) return;
+    const x = event.clientX - rect.left;
 
-  const container = this.kanbanContainer.nativeElement;
-  const rect = container.getBoundingClientRect();
-  const scrollThreshold = 250; // Increased to 250 for earlier trigger
+    this.clearAutoScroll();
 
-  const x = event.clientX - rect.left;
-
-  this.clearAutoScroll();
-
-  const scrollStep = () => {
-    if (x < scrollThreshold) {
-      // Scroll left
-      container.scrollLeft -= this.autoScrollSpeed;
-      if (container.scrollLeft > 0) {
-        this.autoScrollInterval = requestAnimationFrame(scrollStep);
+    const scrollStep = () => {
+      if (x < scrollThreshold) {
+        container.scrollLeft -= this.autoScrollSpeed;
+        if (container.scrollLeft > 0) {
+          this.autoScrollInterval = requestAnimationFrame(scrollStep);
+        }
+      } else if (x > rect.width - scrollThreshold) {
+        container.scrollLeft += this.autoScrollSpeed;
+        if (container.scrollLeft < container.scrollWidth - container.clientWidth) {
+          this.autoScrollInterval = requestAnimationFrame(scrollStep);
+        }
       }
-    } else if (x > rect.width - scrollThreshold) {
-      // Scroll right
-      container.scrollLeft += this.autoScrollSpeed;
-      if (container.scrollLeft < container.scrollWidth - container.clientWidth) {
-        this.autoScrollInterval = requestAnimationFrame(scrollStep);
-      }
-    }
-  };
+    };
 
-  this.autoScrollInterval = requestAnimationFrame(scrollStep);
-}
-
-private clearAutoScroll(): void {
-  if (this.autoScrollInterval) {
-    cancelAnimationFrame(this.autoScrollInterval);
-    this.autoScrollInterval = null;
+    this.autoScrollInterval = requestAnimationFrame(scrollStep);
   }
-}
+
+  private clearAutoScroll(): void {
+    if (this.autoScrollInterval) {
+      cancelAnimationFrame(this.autoScrollInterval);
+      this.autoScrollInterval = null;
+    }
+  }
 
   // Utility methods
   trackByTaskId(index: number, task: WeekTask): string {
@@ -823,12 +845,10 @@ private clearAutoScroll(): void {
     return this.dayColumns[columnIndex]?.tasks || [];
   }
 
-  // Check if task is currently being dragged
   isTaskBeingDragged(task: WeekTask): boolean {
     return this.draggedTask?._id === task._id;
   }
 
-  // Check if task should be hidden during drag
   shouldHideTask(task: WeekTask): boolean {
     return this.isTaskBeingDragged(task);
   }
