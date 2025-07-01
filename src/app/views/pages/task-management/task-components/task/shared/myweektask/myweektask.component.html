@@ -77,7 +77,7 @@
               </button>
               
               <!-- Three Dot Menu -->
-              <div class="tw-relative dropdown-container">
+              <div *ngIf="!task.isCompleted" class="tw-relative dropdown-container">
                 <button 
                   (click)="toggleDropdown(task._id); $event.stopPropagation()"
                   class="tw-p-1 tw-text-gray-400 hover:tw-text-gray-600 tw-transition-colors tw-duration-150 three-dot-btn">
@@ -155,7 +155,7 @@
           <!-- Task Footer -->
           <div class="tw-flex tw-items-center tw-justify-between tw-mt-3 tw-pt-2 tw-border-t tw-border-gray-100">
             <span class="tw-text-xs tw-text-gray-400">
-              {{ task.createdAt | date:'MMM d, h:mm a' }}
+              {{ task.dueOn | date:'MMM d, h:mm a' }}
             </span>
             <span 
               *ngIf="task.isCompleted && task.completedOn"
@@ -184,18 +184,16 @@
             maxlength="200"></textarea>
           
           <!-- Send Button -->
-       <!-- Modify the send button part in your template -->
-<button 
-  *ngIf="column.newTaskTitle.trim() && !column.isInputDisabled"
-  (click)="addTask(column.index); $event.stopPropagation()"
-  (mousedown)="$event.preventDefault()"
-  class="tw-absolute tw-bottom-2 tw-right-2 tw-p-1 tw-text-blue-600 hover:tw-text-blue-700 tw-transition-colors tw-duration-150">
-  <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-  </svg>
-</button>
+          <button 
+            *ngIf="column.newTaskTitle.trim() && !column.isInputDisabled"
+            (click)="addTask(column.index); $event.stopPropagation()"
+            (mousedown)="$event.preventDefault()"
+            class="tw-absolute tw-bottom-2 tw-right-2 tw-p-1 tw-text-blue-600 hover:tw-text-blue-700 tw-transition-colors tw-duration-150">
+            <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+            </svg>
+          </button>
         </div>
-        
       </div>
     </div>
   </div>
