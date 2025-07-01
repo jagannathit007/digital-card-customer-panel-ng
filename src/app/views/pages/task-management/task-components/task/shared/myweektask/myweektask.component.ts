@@ -440,7 +440,7 @@ export class MyweektaskComponent implements OnInit {
   
   // Auto scroll
   autoScrollInterval: any = null;
-  autoScrollSpeed: number = 25; // Much faster scroll speed
+  autoScrollSpeed: number = 15; // Much faster scroll speed
 
   constructor(
     private personalTaskService: PersonalTaskService,
@@ -527,19 +527,15 @@ export class MyweektaskComponent implements OnInit {
     });
   }
 
-  onInputBlur(columnIndex: number): void {
-    // Small delay to allow send button click to register
-    setTimeout(() => {
-      this.dayColumns[columnIndex].isInputFocused = false;
-      
-      // Enable all inputs
-      this.dayColumns.forEach(column => {
-        column.isInputDisabled = false;
-      });
-      
-      this.activeFocusedInput = null;
-    }, 150);
-  }
+onInputBlur(columnIndex: number): void {
+  setTimeout(() => {
+    this.dayColumns[columnIndex].isInputFocused = false;
+    this.dayColumns.forEach(column => {
+      column.isInputDisabled = false;
+    });
+    this.activeFocusedInput = null;
+  }, 100); // Reduced from 150ms
+}
 
   onKeyDown(event: KeyboardEvent, columnIndex: number): void {
     if (event.ctrlKey && event.key === 'Enter') {
@@ -548,37 +544,39 @@ export class MyweektaskComponent implements OnInit {
     }
   }
 
-  // Task Management
-  addTask(columnIndex: number): void {
-    const column = this.dayColumns[columnIndex];
-    const taskTitle = column.newTaskTitle.trim();
-    
-    if (!taskTitle) return;
+addTask(columnIndex: number): void {
+  const column = this.dayColumns[columnIndex];
+  const taskTitle = column.newTaskTitle.trim();
+  
+  if (!taskTitle) return;
 
-    const newTask: WeekTask = {
-      _id: `temp-${Date.now()}`,
-      title: taskTitle,
-      isCompleted: false,
-      completedOn: null,
-      createdAt: new Date(),
-      dayIndex: columnIndex
-    };
+  const newTask: WeekTask = {
+    _id: `temp-${Date.now()}`,
+    title: taskTitle,
+    isCompleted: false,
+    completedOn: null,
+    createdAt: new Date(),
+    dayIndex: columnIndex
+  };
 
-    // Add to top of column
-    column.tasks.unshift(newTask);
-    column.newTaskTitle = '';
-    
-    // Sort column to maintain order
-    this.sortTasksInColumn(column);
-    
-    // Keep input focused after adding task
-    setTimeout(() => {
-      const inputElement = document.querySelector(`textarea[data-column="${columnIndex}"]`) as HTMLTextAreaElement;
-      if (inputElement) {
-        inputElement.focus();
-      }
-    }, 50);
-  }
+  // Add to top of column
+  column.tasks.unshift(newTask);
+  column.newTaskTitle = '';
+  
+  // Explicitly set input focus state
+  column.isInputFocused = true; // Add this line
+
+  // Sort column to maintain order
+  this.sortTasksInColumn(column);
+  
+  // Keep input focused after adding task
+  setTimeout(() => {
+    const inputElement = document.querySelector(`textarea[data-column="${columnIndex}"]`) as HTMLTextAreaElement;
+    if (inputElement) {
+      inputElement.focus();
+    }
+  }, 50);
+}
 
   toggleTaskStatus(task: WeekTask): void {
     task.isCompleted = !task.isCompleted;
@@ -677,7 +675,7 @@ export class MyweektaskComponent implements OnInit {
   onDragStart(event: DragEvent, task: WeekTask): void {
     this.draggedTask = task;
     event.dataTransfer!.effectAllowed = 'move';
-    
+    this.kanbanContainer.nativeElement.classList.add('dragging');
     // Create a visible custom drag image
     const dragElement = event.target as HTMLElement;
     const clone = dragElement.cloneNode(true) as HTMLElement;
@@ -740,6 +738,7 @@ export class MyweektaskComponent implements OnInit {
 
   onDragEnd(): void {
     this.resetDragState();
+    this.kanbanContainer.nativeElement.classList.remove('dragging');
   }
 
   private resetDragState(): void {
@@ -748,36 +747,68 @@ export class MyweektaskComponent implements OnInit {
     this.clearAutoScroll();
   }
 
-  private handleAutoScroll(event: DragEvent): void {
-    if (!this.kanbanContainer) return;
+  // private handleAutoScroll(event: DragEvent): void {
+  //   if (!this.kanbanContainer) return;
     
-    const container = this.kanbanContainer.nativeElement;
-    const rect = container.getBoundingClientRect();
-    const scrollThreshold = 120; // Increased threshold for easier triggering
+  //   const container = this.kanbanContainer.nativeElement;
+  //   const rect = container.getBoundingClientRect();
+  //   const scrollThreshold = 120; // Increased threshold for easier triggering
     
-    const x = event.clientX - rect.left;
+  //   const x = event.clientX - rect.left;
     
-    this.clearAutoScroll();
+  //   this.clearAutoScroll();
     
-    if (x < scrollThreshold) {
-      // Scroll left - much faster
-      this.autoScrollInterval = setInterval(() => {
-        container.scrollLeft -= this.autoScrollSpeed;
-      }, 10); // Reduced interval for faster response
-    } else if (x > rect.width - scrollThreshold) {
-      // Scroll right - much faster
-      this.autoScrollInterval = setInterval(() => {
-        container.scrollLeft += this.autoScrollSpeed;
-      }, 10); // Reduced interval for faster response
-    }
-  }
+  //   if (x < scrollThreshold) {
+  //     // Scroll left - much faster
+  //     this.autoScrollInterval = setInterval(() => {
+  //       container.scrollLeft -= this.autoScrollSpeed;
+  //     }, 10); // Reduced interval for faster response
+  //   } else if (x > rect.width - scrollThreshold) {
+  //     // Scroll right - much faster
+  //     this.autoScrollInterval = setInterval(() => {
+  //       container.scrollLeft += this.autoScrollSpeed;
+  //     }, 10); // Reduced interval for faster response
+  //   }
+  // }
 
-  private clearAutoScroll(): void {
-    if (this.autoScrollInterval) {
-      clearInterval(this.autoScrollInterval);
-      this.autoScrollInterval = null;
+  // Super fast scroll speed
+
+private handleAutoScroll(event: DragEvent): void {
+  if (!this.kanbanContainer) return;
+
+  const container = this.kanbanContainer.nativeElement;
+  const rect = container.getBoundingClientRect();
+  const scrollThreshold = 250; // Increased to 250 for earlier trigger
+
+  const x = event.clientX - rect.left;
+
+  this.clearAutoScroll();
+
+  const scrollStep = () => {
+    if (x < scrollThreshold) {
+      // Scroll left
+      container.scrollLeft -= this.autoScrollSpeed;
+      if (container.scrollLeft > 0) {
+        this.autoScrollInterval = requestAnimationFrame(scrollStep);
+      }
+    } else if (x > rect.width - scrollThreshold) {
+      // Scroll right
+      container.scrollLeft += this.autoScrollSpeed;
+      if (container.scrollLeft < container.scrollWidth - container.clientWidth) {
+        this.autoScrollInterval = requestAnimationFrame(scrollStep);
+      }
     }
+  };
+
+  this.autoScrollInterval = requestAnimationFrame(scrollStep);
+}
+
+private clearAutoScroll(): void {
+  if (this.autoScrollInterval) {
+    cancelAnimationFrame(this.autoScrollInterval);
+    this.autoScrollInterval = null;
   }
+}
 
   // Utility methods
   trackByTaskId(index: number, task: WeekTask): string {

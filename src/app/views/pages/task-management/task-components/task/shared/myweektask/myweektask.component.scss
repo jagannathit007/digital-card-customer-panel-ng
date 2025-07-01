@@ -258,3 +258,14 @@ input:focus-visible {
 ::selection {
   background-color: rgba(59, 130, 246, 0.2);
 }
+
+
+.kanban-container.dragging {
+  scroll-behavior: auto; // Disable smooth scrolling during drag
+  .task-card {
+    box-shadow: none; // Remove shadows to reduce rendering load
+  }
+  .tw-absolute.tw-inset-0 {
+    backdrop-filter: none; // Disable blur to improve performance
+  }
+}

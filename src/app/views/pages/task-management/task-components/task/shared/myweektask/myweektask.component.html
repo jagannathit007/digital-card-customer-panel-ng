@@ -184,22 +184,18 @@
             maxlength="200"></textarea>
           
           <!-- Send Button -->
-          <button 
-            *ngIf="column.newTaskTitle.trim() && column.isInputFocused && !column.isInputDisabled"
-            (click)="addTask(column.index)"
-            class="tw-absolute tw-bottom-2 tw-right-2 tw-p-1 tw-text-blue-600 hover:tw-text-blue-700 tw-transition-colors tw-duration-150">
-            <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-            </svg>
-          </button>
+       <!-- Modify the send button part in your template -->
+<button 
+  *ngIf="column.newTaskTitle.trim() && !column.isInputDisabled"
+  (click)="addTask(column.index); $event.stopPropagation()"
+  (mousedown)="$event.preventDefault()"
+  class="tw-absolute tw-bottom-2 tw-right-2 tw-p-1 tw-text-blue-600 hover:tw-text-blue-700 tw-transition-colors tw-duration-150">
+  <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+  </svg>
+</button>
         </div>
         
-        <!-- Ctrl+Enter Hint -->
-        <p 
-          *ngIf="column.isInputFocused && !column.isInputDisabled"
-          class="tw-text-xs tw-text-gray-500 tw-mt-2">
-          Press <kbd class="tw-px-1 tw-py-0.5 tw-bg-gray-200 tw-rounded tw-text-xs">Ctrl+Enter</kbd> to add task
-        </p>
       </div>
     </div>
   </div>
