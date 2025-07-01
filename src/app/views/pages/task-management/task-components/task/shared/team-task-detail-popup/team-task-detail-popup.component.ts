@@ -82,7 +82,10 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   private routeSubscription?: Subscription;
   private querySubscription?: Subscription;
 
-  private dateActuallySelected = false;
+  showCustomDatePicker = false;
+  currentCalendarDate = new Date();
+  dayHeaders = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+  calendarDays: any[] = [];
 
   // Task data
   task: TeamTask = {
@@ -119,57 +122,6 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
 
   showNoDateButton: boolean = false;
   @ViewChild('dueDateInput') dueDateInput!: ElementRef<HTMLInputElement>;
-
-  openNativeDatePicker(): void {
-    this.showNoDateButton = true;
-
-    setTimeout(() => {
-      try {
-        this.dueDateInput.nativeElement.focus();
-
-        // Check if showPicker is supported (newer browsers)
-        if (this.dueDateInput.nativeElement.showPicker) {
-          this.dueDateInput.nativeElement.showPicker();
-        } else {
-          // Fallback for older browsers - just click the input
-          this.dueDateInput.nativeElement.click();
-        }
-
-        // Hide the button after a delay
-        setTimeout(() => {
-          this.showNoDateButton = false;
-        }, 100);
-      } catch (error) {
-        console.warn('Date picker not supported:', error);
-        // Fallback - just focus the input
-        this.dueDateInput.nativeElement.focus();
-      }
-    }, 0);
-
-    this.addOutsideClickListener();
-  }
-
-  // Add click listener to hide button when clicking outside
-  private addOutsideClickListener(): void {
-    const handleOutsideClick = (event: Event) => {
-      const target = event.target as HTMLElement;
-
-      // Check if click is outside date picker and no date button
-      if (
-        !target.closest('.tw-fixed') &&
-        !target.closest('input[type="date"]') &&
-        !target.closest('[data-date-picker]')
-      ) {
-        this.showNoDateButton = false;
-        document.removeEventListener('click', handleOutsideClick);
-      }
-    };
-
-    // Add listener with delay to avoid immediate closing
-    setTimeout(() => {
-      document.addEventListener('click', handleOutsideClick);
-    }, 100);
-  }
 
   removeDueDate(): void {
     this.task.dueDate = null;
@@ -286,6 +238,9 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     this.initializeEditor();
     this.setupRouteSubscriptions();
     this.loadTaskData();
+    this.currentCalendarDate = this.task.dueDate
+      ? new Date(this.task.dueDate)
+      : new Date();
   }
 
   ngOnDestroy(): void {
@@ -442,21 +397,116 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     );
   }
 
-  // Due date methods
-  updateDueDate(event: any): void {
-    this.showNoDateButton = false;
-    const newDate = event.target.value;
-    this.createBackup('dueDate');
+  toggleCustomDatePicker(): void {
+    this.showCustomDatePicker = !this.showCustomDatePicker;
+    if (this.showCustomDatePicker) {
+      this.generateCalendarDays();
+      this.addDatePickerClickListener();
+    }
+  }
 
+  generateCalendarDays(): void {
+    const year = this.currentCalendarDate.getFullYear();
+    const month = this.currentCalendarDate.getMonth();
+
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startDate = new Date(firstDay);
+    startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+    this.calendarDays = [];
+
+    for (let i = 0; i < 42; i++) {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + i);
+
+      this.calendarDays.push({
+        date: date.getDate(),
+        fullDate: new Date(date),
+        isCurrentMonth: date.getMonth() === month,
+        isSelected: this.isDateSelected(date),
+        isToday: this.isToday(date),
+      });
+    }
+  }
+
+  isDateSelected(date: Date): boolean {
+    if (!this.task.dueDate) return false;
+    const taskDate = new Date(this.task.dueDate);
+    return date.toDateString() === taskDate.toDateString();
+  }
+
+  isToday(date: Date): boolean {
+    const today = new Date();
+    return date.toDateString() === today.toDateString();
+  }
+
+  getDateButtonClass(day: any): string {
+    let classes = '';
+
+    if (!day.isCurrentMonth) {
+      classes += 'tw-text-gray-300 tw-cursor-not-allowed';
+    } else if (day.isSelected) {
+      classes += 'tw-bg-red-500 tw-text-white tw-font-semibold';
+    } else if (day.isToday) {
+      classes += 'tw-bg-blue-500 tw-text-white tw-font-semibold';
+    } else {
+      classes += 'tw-text-gray-700 hover:tw-bg-gray-100';
+    }
+
+    return classes;
+  }
+
+  selectDate(day: any): void {
+    if (!day.isCurrentMonth) return;
+
+    this.task.dueDate = day.fullDate.toISOString();
+    this.emitTaskUpdate('dueDate', this.task.dueDate);
+    this.showCustomDatePicker = false;
+  }
+
+  previousMonth(): void {
+    this.currentCalendarDate = new Date(
+      this.currentCalendarDate.getFullYear(),
+      this.currentCalendarDate.getMonth() - 1,
+      1
+    );
+    this.generateCalendarDays();
+  }
+
+  nextMonth(): void {
+    this.currentCalendarDate = new Date(
+      this.currentCalendarDate.getFullYear(),
+      this.currentCalendarDate.getMonth() + 1,
+      1
+    );
+    this.generateCalendarDays();
+  }
+
+  clearDate(): void {
+    this.task.dueDate = null;
+    this.emitTaskUpdate('dueDate', null);
+    this.showCustomDatePicker = false;
+  }
+
+  setToday(): void {
+    const today = new Date();
+    this.task.dueDate = today.toISOString();
+    this.emitTaskUpdate('dueDate', this.task.dueDate);
+    this.showCustomDatePicker = false;
+  }
+
+  private addDatePickerClickListener(): void {
     setTimeout(() => {
-      try {
-        this.task.dueDate = newDate ? new Date(newDate).toISOString() : null;
-        this.emitTaskUpdate('dueDate', this.task.dueDate);
-      } catch (error) {
-        this.undoChanges('dueDate');
-        console.error('Error updating due date:', error);
-      }
-    }, 300);
+      const handleClick = (event: Event) => {
+        const target = event.target as HTMLElement;
+        if (!target.closest('.tw-absolute')) {
+          this.showCustomDatePicker = false;
+          document.removeEventListener('click', handleClick);
+        }
+      };
+      document.addEventListener('click', handleClick);
+    }, 0);
   }
 
   getDueDateDisplay(): { text: string; color: string } {

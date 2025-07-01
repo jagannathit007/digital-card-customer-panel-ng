@@ -143,13 +143,12 @@
             </div>
 
             <!-- Due Date -->
-            <!-- Updated HTML Template -->
             <div class="tw-relative">
               <ng-container *ngIf="task.dueDate; else noDueDateTemplate">
                 <div
                   [ngClass]="getDueDateDisplay().color"
                   class="tw-px-3 tw-py-2 tw-rounded-lg tw-text-sm tw-font-medium tw-inline-flex tw-items-center tw-space-x-2 tw-cursor-pointer tw-transition-colors tw-duration-200"
-                  (click)="openNativeDatePicker()"
+                  (click)="toggleCustomDatePicker()"
                 >
                   <i class="fas fa-calendar-alt tw-text-xs"></i>
                   <span>{{ getDueDateDisplay().text }}</span>
@@ -159,21 +158,86 @@
               <ng-template #noDueDateTemplate>
                 <div
                   class="tw-bg-gray-50 tw-text-gray-700 tw-px-3 tw-py-2 tw-rounded-lg tw-text-sm tw-font-medium tw-inline-flex tw-items-center tw-space-x-2 tw-cursor-pointer tw-border tw-border-gray-200 hover:tw-bg-gray-100 tw-transition-colors tw-duration-200"
-                  (click)="openNativeDatePicker()"
+                  (click)="toggleCustomDatePicker()"
                 >
                   <i class="fas fa-calendar-plus tw-text-xs"></i>
                   <span>Set due date</span>
                 </div>
               </ng-template>
 
-              <!-- Hidden native date input -->
-              <input
-                #dueDateInput
-                type="date"
-                [value]="task.dueDate ? task.dueDate.split('T')[0] : ''"
-                (change)="updateDueDate($event)"
-                class="tw-absolute tw-opacity-0 tw-pointer-events-none tw-w-0 tw-h-0"
-              />
+              <!-- Custom Date Picker Popup -->
+              <div
+                *ngIf="showCustomDatePicker"
+                class="tw-absolute tw-top-full tw-left-0 tw-mt-2 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-p-4 tw-w-80 tw-z-50"
+                (click)="$event.stopPropagation()"
+              >
+                <!-- Calendar Header -->
+                <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+                  <button
+                    type="button"
+                    (click)="previousMonth()"
+                    class="tw-p-1 tw-text-gray-600 hover:tw-text-gray-800 tw-rounded"
+                  >
+                    <i class="fas fa-chevron-left tw-text-sm"></i>
+                  </button>
+
+                  <h3 class="tw-text-sm tw-font-semibold tw-text-gray-900">
+                    {{ currentCalendarDate | date : "MMMM yyyy" }}
+                  </h3>
+
+                  <button
+                    type="button"
+                    (click)="nextMonth()"
+                    class="tw-p-1 tw-text-gray-600 hover:tw-text-gray-800 tw-rounded"
+                  >
+                    <i class="fas fa-chevron-right tw-text-sm"></i>
+                  </button>
+                </div>
+
+                <!-- Calendar Grid -->
+                <div class="tw-grid tw-grid-cols-7 tw-gap-1 tw-mb-3">
+                  <!-- Day Headers -->
+                  <div
+                    *ngFor="let day of dayHeaders"
+                    class="tw-text-center tw-text-xs tw-font-medium tw-text-gray-500 tw-py-1"
+                  >
+                    {{ day }}
+                  </div>
+
+                  <!-- Calendar Days -->
+                  <button
+                    *ngFor="let day of calendarDays"
+                    type="button"
+                    (click)="selectDate(day)"
+                    [disabled]="!day.isCurrentMonth"
+                    [class]="getDateButtonClass(day)"
+                    class="tw-w-8 tw-h-8 tw-text-sm tw-rounded tw-flex tw-items-center tw-justify-center tw-transition-colors tw-duration-150"
+                  >
+                    {{ day.date }}
+                  </button>
+                </div>
+
+                <!-- Actions -->
+                <div
+                  class="tw-flex tw-items-center tw-justify-between tw-pt-3 tw-border-t tw-border-gray-200"
+                >
+                  <button
+                    type="button"
+                    (click)="clearDate()"
+                    class="tw-text-xs tw-text-red-600 hover:tw-text-red-800 tw-px-2 tw-py-1 tw-rounded hover:tw-bg-red-50 tw-transition-colors tw-duration-150"
+                  >
+                    NO DATE
+                  </button>
+
+                  <button
+                    type="button"
+                    (click)="setToday()"
+                    class="tw-text-xs tw-text-blue-600 hover:tw-text-blue-800 tw-px-2 tw-py-1 tw-rounded hover:tw-bg-blue-50 tw-transition-colors tw-duration-150"
+                  >
+                    TODAY
+                  </button>
+                </div>
+              </div>
             </div>
 
             <!-- Simple "No Date" button overlay - shows when date picker is open -->
@@ -273,13 +337,14 @@
         </nav>
       </div>
 
-
       <!-- loader for tabs content with full height and width and centered -->
       <div
         *ngIf="isLoading"
         class="tw-flex tw-items-center tw-justify-center tw-h-full tw-w-full"
       >
-        <div class="tw-w-8 tw-h-8 tw-border-4 tw-border-blue-500 tw-border-t-transparent tw-rounded-full tw-animate-spin"></div>
+        <div
+          class="tw-w-8 tw-h-8 tw-border-4 tw-border-blue-500 tw-border-t-transparent tw-rounded-full tw-animate-spin"
+        ></div>
       </div>
 
       <!-- Tab Content -->
@@ -463,9 +528,7 @@
           </div>
 
           <!-- Add Comment Section -->
-          <div
-            class="tw-border-t tw-border-gray-200 tw-p-4 tw-bg-gray-50"
-          >
+          <div class="tw-border-t tw-border-gray-200 tw-p-4 tw-bg-gray-50">
             <app-add-comments
               [boardId]="task.board"
               [taskId]="task._id"
