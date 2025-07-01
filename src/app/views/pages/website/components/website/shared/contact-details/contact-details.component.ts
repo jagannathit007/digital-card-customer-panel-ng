@@ -48,6 +48,7 @@ export class ContactDetailsComponent implements OnInit {
       phone: '',
       address: ''
     };
+    this.selectedContactId = ""; // Reset selected contact ID
     this.fetchContacts()
   }
 
@@ -137,11 +138,6 @@ export class ContactDetailsComponent implements OnInit {
         return;
     }
 
-    if (!phone || !RegularRegex.phoneNo.test(phone)) {
-        swalHelper.showToast("Please enter a valid 10-digit phone number!", "warning");
-        return;
-    }
-
     if (!address || address.length < 5) {
         swalHelper.showToast("Address must be at least 5 characters long!", "warning");
         return;
@@ -168,6 +164,16 @@ export class ContactDetailsComponent implements OnInit {
 
   async editContact(contact: any) {
     this.selectedContactId = contact._id;
+    
+    // Populate the form with contact data
+    this.newContact = {
+      email: contact.email,
+      phone: contact.phone,
+      address: contact.address
+    };
+    
+    // Open the modal
+    this.modal.open('AddContactModal');
   }
 
   async updateContact() { 
@@ -188,6 +194,16 @@ export class ContactDetailsComponent implements OnInit {
       phone: (document.getElementById('contactPhone') as HTMLInputElement).value.trim(),
       address: (document.getElementById('contactAddress') as HTMLTextAreaElement).value.trim()
     };
+
+    if (!updatedContact.email || !RegularRegex.email.test(updatedContact.email)) {
+      swalHelper.showToast("Please enter a valid email address!", "warning");
+      return;
+    }
+
+    if (!updatedContact.address || updatedContact.address.length < 5) {
+      swalHelper.showToast("Address must be at least 5 characters long!", "warning");
+      return;
+    }
 
     try {
       let response = await this.authService.updateContactData(businessCardId, this.selectedContactId, updatedContact);
@@ -266,7 +282,11 @@ export class ContactDetailsComponent implements OnInit {
   }
 
   onCloseModal(modal:string){
-    this.modal.close(modal)
+    this.modal.close(modal);
+    // Reset form when modal is closed
+    if (modal === 'AddContactModal') {
+      this.reset();
+    }
   }
 
   contactVisible:boolean=false

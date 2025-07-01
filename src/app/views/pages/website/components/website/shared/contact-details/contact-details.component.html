@@ -106,9 +106,9 @@
                     <td>{{ contact.phone }}</td>
                     <td>{{ contact.address }}</td>
                     <td class="text-center">
-                        <!-- <button class="btn btn-sm btn-info me-1" data-bs-toggle="modal" data-bs-target="#EditContactModal" (click)="editContact(contact)">
+                        <button class="btn btn-sm btn-info me-1" (click)="editContact(contact)">
                           <i class="ri-edit-box-line"></i>
-                        </button> -->
+                        </button>
                         <button class="btn btn-sm btn-danger" (click)="setSelectedContact(contact)">
                             <i class="ri-delete-bin-line"></i>
                           </button>
@@ -130,7 +130,7 @@
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="AddContactModalLabel">Add Contact</h5>
+                <h5 class="modal-title" id="AddContactModalLabel">{{ selectedContactId ? 'Edit Contact' : 'Add Contact' }}</h5>
                 <button type="button" class="btn-close" (click)="onCloseModal('AddContactModal')"></button>
             </div>
             <div class="modal-body">
@@ -162,10 +162,10 @@
                             [(ngModel)]="newContact.phone" 
                             #phone="ngModel" 
                             required 
-                            [pattern]="RegularRegex.phoneNo">
-                        <div *ngIf="phone.invalid && phone.touched" class="text-danger">
+                            >
+                        <!-- <div *ngIf="phone.invalid && phone.touched" class="text-danger">
                             Please enter a valid 10-digit phone number.
-                        </div>
+                        </div> -->
                     </div>
                     <div class="mb-3">
                         <label for="contactAddress" class="form-label">Address</label>
