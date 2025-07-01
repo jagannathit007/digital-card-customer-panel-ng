@@ -238,9 +238,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     this.initializeEditor();
     this.setupRouteSubscriptions();
     this.loadTaskData();
-    this.currentCalendarDate = this.task.dueDate
-      ? new Date(this.task.dueDate)
-      : new Date();
+
   }
 
   ngOnDestroy(): void {
@@ -400,6 +398,10 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   toggleCustomDatePicker(): void {
     this.showCustomDatePicker = !this.showCustomDatePicker;
     if (this.showCustomDatePicker) {
+      // Set currentCalendarDate to the due date's month if it exists, otherwise use current month
+      this.currentCalendarDate = this.task.dueDate
+        ? new Date(this.task.dueDate)
+        : new Date();
       this.generateCalendarDays();
       this.addDatePickerClickListener();
     }
@@ -411,19 +413,17 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
 
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
-    const startDate = new Date(firstDay);
-    startDate.setDate(startDate.getDate() - firstDay.getDay());
 
     this.calendarDays = [];
 
-    for (let i = 0; i < 42; i++) {
-      const date = new Date(startDate);
-      date.setDate(startDate.getDate() + i);
+    // Only add days of the current month
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+      const date = new Date(year, month, day);
 
       this.calendarDays.push({
-        date: date.getDate(),
-        fullDate: new Date(date),
-        isCurrentMonth: date.getMonth() === month,
+        date: day,
+        fullDate: date,
+        isCurrentMonth: true, // Always true since we're only showing current month
         isSelected: this.isDateSelected(date),
         isToday: this.isToday(date),
       });
@@ -443,13 +443,19 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
 
   getDateButtonClass(day: any): string {
     let classes = '';
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to compare dates only
+    const isPastDate = day.fullDate < today;
 
     if (!day.isCurrentMonth) {
       classes += 'tw-text-gray-300 tw-cursor-not-allowed';
+    } else if (isPastDate) {
+      classes += 'tw-text-gray-400 tw-cursor-not-allowed';
     } else if (day.isSelected) {
       classes += 'tw-bg-blue-500 tw-text-white tw-font-semibold';
     } else if (day.isToday) {
-      classes += 'tw-border tw-border-blue-500 tw-text-blue-500 tw-font-semibold';
+      classes +=
+        'tw-border tw-border-blue-500 tw-text-blue-500 tw-font-semibold';
     } else {
       classes += 'tw-text-gray-700 hover:tw-bg-gray-100';
     }
@@ -457,12 +463,27 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     return classes;
   }
 
-  selectDate(day: any): void {
+  async selectDate(day: any): Promise<void> {
     if (!day.isCurrentMonth) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to compare dates only
+
+    // Check if the selected date is in the past
+    if (day.fullDate < today) {
+      return; // Don't allow selecting past dates
+    }
 
     this.task.dueDate = day.fullDate.toISOString();
     this.emitTaskUpdate('dueDate', this.task.dueDate);
     this.showCustomDatePicker = false;
+    // Update currentCalendarDate to the selected date
+    this.currentCalendarDate = new Date(day.fullDate);
+
+    const response = await this.taskService.updateTeamTaskDueDate({
+      taskId: this.taskId,
+      dueDate: this.task.dueDate,
+    });
   }
 
   previousMonth(): void {
@@ -603,20 +624,22 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     this.createBackup('description');
   }
 
-  saveDescription(): void {
+  async saveDescription(): Promise<void> {
     this.isSavingDescription = true;
 
-    // Simulate API call
-    setTimeout(() => {
-      try {
-        this.isEditingDescription = false;
-        this.emitTaskUpdate('description', this.task.description);
-      } catch (error) {
-        this.undoChanges('description');
-      } finally {
-        this.isSavingDescription = false;
-      }
-    }, 500);
+    const response = await this.taskService.updateTeamTaskDescription({
+      taskId: this.taskId,
+      description: this.task.description,
+    });
+
+    if (response) {
+      this.isEditingDescription = false;
+      this.emitTaskUpdate('description', this.task.description);
+      this.isSavingDescription = false;
+    } else {
+      this.undoChanges('description');
+      this.isSavingDescription = false;
+    }
   }
 
   cancelDescriptionEdit(): void {

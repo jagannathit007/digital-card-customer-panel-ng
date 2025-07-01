@@ -132,23 +132,43 @@ export class TeamTaskCardComponent {
         color: 'tw-text-yellow-600',
         text: `${diffDays}d left`,
       };
-    }
+    } else {
+      // Format the date as "21 AUG" or "21 AUG 2024"
+      const day = dueDate.getDate();
+      const month = dueDate
+        .toLocaleString('default', { month: 'short' })
+        .toUpperCase();
+      const year = dueDate.getFullYear();
+      const yearDisplay = year !== today.getFullYear() ? ` ${year}` : '';
 
-    return { show: false, color: '', text: '' };
+      return {
+        show: true,
+        color: 'tw-text-green-600',
+        text: `${day} ${month}${yearDisplay}`,
+      };
+    }
   }
 
   // Check if actions should be shown based on column
   canShowCompleteAction(task: Task): boolean {
-
-    return this.taskPermissionsService.isTeamTaskCardAccessible(task) && this.task.column !== this.completedColumnId; // Not in completed column
+    return (
+      this.taskPermissionsService.isTeamTaskCardAccessible(task) &&
+      this.task.column !== this.completedColumnId
+    ); // Not in completed column
   }
 
   canShowDeleteAction(task: Task): boolean {
-    return this.taskPermissionsService.isTeamTaskCardAccessible(task) && this.task.column !== this.deleetdColumnId; // Not in deleted column
+    return (
+      this.taskPermissionsService.isTeamTaskCardAccessible(task) &&
+      this.task.column !== this.deleetdColumnId
+    ); // Not in deleted column
   }
 
   canShowRestoreAction(task: Task): boolean {
-    return this.taskPermissionsService.isTeamTaskCardAccessible(task) && this.task.column === this.deleetdColumnId; // In deleted column
+    return (
+      this.taskPermissionsService.isTeamTaskCardAccessible(task) &&
+      this.task.column === this.deleetdColumnId
+    ); // In deleted column
   }
 
   // Event handlers
