@@ -1,6 +1,62 @@
 @import "@ng-select/ng-select/themes/default.theme.css";
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 @tailwind base;
+
+/* Reset ul, ol, li to browser defaults */
+ul {
+  list-style: disc;
+  margin: 1em 0;
+  padding-left: 40px;
+}
+
+ol {
+  list-style: decimal;
+  margin: 1em 0;
+  padding-left: 40px;
+}
+
+li {
+  display: list-item;
+  margin: 0;
+  padding: 0;
+}
+
+ h1 {
+  font-size: 2.25rem;      /* 36px */
+  // line-height: 2.5rem;     /* 40px */
+  font-weight: 800;
+}
+
+ h2 {
+  font-size: 1.875rem;     /* 30px */
+  // line-height: 2.25rem;    /* 36px */
+  font-weight: 700;
+}
+
+h3 {
+  font-size: 1.5rem;       /* 24px */
+  // line-height: 2rem;       /* 32px */
+  font-weight: 600;
+}
+
+h4 {
+  font-size: 1.25rem;      /* 20px */
+  // line-height: 1.75rem;    /* 28px */
+  font-weight: 600;
+}
+
+h5 {
+  font-size: 1.125rem;     /* 18px */
+  // line-height: 1.75rem;
+  font-weight: 600;
+}
+
+h6 {
+  font-size: 1rem;         /* 16px */
+  // line-height: 1.5rem;
+  font-weight: 600;
+}
+
 @tailwind components;
 @tailwind utilities;
 $primary: #153b54;
@@ -9,6 +65,24 @@ $primary: #153b54;
 // $card-border-color: rgba(0, 0, 0, 0);
 
 // @import "bootstrap";
+
+ul, ol {
+    margin: 1rem 0; /* Top and bottom margin */
+    padding-left: 2rem; /* Indentation for list items */
+}
+
+ul {
+    list-style-type: disc; /* Default bullet style for unordered lists */
+}
+
+ol {
+    list-style-type: decimal; /* Default numbering style for ordered lists */
+}
+
+li {
+    margin-bottom: 0.5rem; /* Space between list items */
+}
+
 
 body{
     font-size: 14px;
