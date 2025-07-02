@@ -760,7 +760,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
 
       return `
       <span 
-        style="background-color:#0d6efd33; padding: 2px 6px; border-radius: 10px; position: relative; cursor: pointer;"
+        style="background-color:${tooltipPlacement === 'left' ? '#d3d3d38a' : '#0d6efd33'}; padding: 2px 6px; border-radius: 10px; position: relative; cursor: pointer;"
         onmouseover="this.querySelector('.tooltip').style.visibility='visible'; this.querySelector('.tooltip').style.opacity='1';"
         onmouseout="this.querySelector('.tooltip').style.visibility='hidden'; this.querySelector('.tooltip').style.opacity='0';"
         class="mention"
