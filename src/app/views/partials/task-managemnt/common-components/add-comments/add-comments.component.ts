@@ -109,7 +109,8 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
         limit: this.usersPerPage,
         search: search.trim(),
         boardId: this.boardId,
-        type: this.boardId ? 'board_update' : 'board_create',
+        taskId: this.taskId,
+        type: 'task_add',
       });
 
       // Handle different possible response structures
@@ -408,15 +409,14 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
 
       const spanRect = tempSpan.getBoundingClientRect();
       tempSpan.remove();
-
-      console.log(spanRect, spanRect.bottom - containerRect.top + 5, spanRect.left - containerRect.left)
+      
       // Position dropdown relative to container
       this.dropdownPosition = {
         top: spanRect.bottom - containerRect.top + 5,
         left: spanRect.left - containerRect.left,
       };
     } else {
-      console.log(inputRect.height + 5)
+      console.log(inputRect.height + 5);
       // Fallback positioning
       this.dropdownPosition = {
         top: inputRect.height + 5,
@@ -483,9 +483,9 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
       const newText = beforeMention + mentionText + ' ' + afterMention;
 
       // Create unique mention tag with timestamp for uniqueness
-      const uniqueId = `${user.id}_${Date.now()}_${Math.random()}`;
+      const uniqueId = `${user._id}_${Date.now()}_${Math.random()}`;
       const newTag: MentionTag = {
-        id: user.id,
+        id: user._id,
         name: user.name,
         startPos: mentionMatch.startPos,
         endPos: mentionMatch.startPos + mentionText.length,
@@ -496,8 +496,8 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
       this.mentionTags.push(newTag);
 
       // Add to mentioned members if not already present
-      if (!this.mentionedMembers.includes(user.id)) {
-        this.mentionedMembers.push(user.id);
+      if (!this.mentionedMembers.includes(user._id)) {
+        this.mentionedMembers.push(user._id);
         this.selectedUsers.push(user);
       }
 
@@ -539,7 +539,7 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
         (id) => id !== tag.id
       );
       this.selectedUsers = this.selectedUsers.filter(
-        (user) => user.id !== tag.id
+        (user) => user._id !== tag.id
       );
     }
 
@@ -707,9 +707,11 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     };
 
     try {
-      await this.taskService.AddComment(chatData);
-      swalHelper.showToast('Message sent successfully!', 'success');
-      this.messageSent.emit(chatData);
+      const response = await this.taskService.AddComment(chatData);
+      if (response) {
+        console.log('Comment sent successfully:', response);
+        this.messageSent.emit(response);
+      }
     } catch (error) {
       swalHelper.showToast('Failed to send comment:', 'error');
     } finally {
@@ -753,6 +755,6 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   }
 
   trackByUserId(index: number, user: User): string {
-    return user.id;
+    return user._id;
   }
 }
