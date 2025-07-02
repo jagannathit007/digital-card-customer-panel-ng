@@ -92,24 +92,15 @@
                   class="tw-absolute tw-top-6 tw-right-0 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-200 tw-py-2 tw-z-40 tw-min-w-48"
                   (click)="$event.stopPropagation()">
                   
-                  <!-- Edit Task -->
+                
+
+                  <!-- NEW: Edit with Date/Time Option -->
                   <div class="tw-px-4 tw-py-2">
-                    <input 
-                      *ngIf="editingTask && editingTask.taskId === task._id"
-                      type="text"
-                      [(ngModel)]="editingTask.title"
-                      (keydown.enter)="saveEditTask(); $event.stopPropagation()"
-                      (keydown.escape)="cancelEditTask(); $event.stopPropagation()"
-                      (click)="$event.stopPropagation()"
-                      class="tw-w-full tw-px-2 tw-py-1 tw-border tw-border-gray-300 tw-rounded tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-select-text"
-                      placeholder="Edit task title..."
-                      #editInput>
-                    
                     <button 
-                      *ngIf="!editingTask || editingTask.taskId !== task._id"
-                      (click)="startEditTask(task); $event.stopPropagation()"
-                      class="tw-w-full tw-px-2 tw-py-1 tw-text-left tw-text-sm tw-text-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-150 tw-rounded">
-                      Edit Task
+                      (click)="openEditTaskModal(task); $event.stopPropagation()"
+                      class="tw-w-full tw-px-2 tw-py-1 tw-text-left tw-text-sm tw-text-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-150 tw-rounded tw-flex tw-items-center tw-gap-2">
+                        <i class="fa-regular fa-pen-to-square tw-text-[15px]"></i>
+                     Edit Task
                     </button>
                   </div>
                   
@@ -197,4 +188,25 @@
       </div>
     </div>
   </div>
+
+  <!-- NEW: Add Task Button (Floating) -->
+  <button 
+    (click)="openAddTaskModal()"
+    class="tw-fixed tw-bottom-6 tw-right-6 tw-bg-blue-500 hover:tw-bg-blue-600 tw-text-white tw-rounded-full tw-p-4 tw-shadow-lg hover:tw-shadow-xl tw-transition-all tw-duration-200 tw-z-30">
+    <svg class="tw-w-6 tw-h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+    </svg>
+  </button>
+
+  <!-- NEW: Task Clock Modal -->
+  <app-task-timer
+    [isVisible]="isTaskClockVisible"
+    [mode]="taskClockMode"
+    [taskId]="selectedTaskForEdit?._id || ''"
+    [currentDueDate]="selectedTaskForEdit?.dueOn ?? null"
+    [currentTaskTitle]="selectedTaskForEdit?.title || ''"
+    (onClose)="closeTaskClockModal()"
+    (onDateTimeUpdated)="onTaskUpdated($event)"
+    (onTaskAdded)="onTaskAdded()">
+  </app-task-timer>
 </div>

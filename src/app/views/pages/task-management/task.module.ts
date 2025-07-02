@@ -34,6 +34,7 @@ import { TeamTaskCardComponent } from '../../partials/task-managemnt/common-comp
 import { PersonalTaskComponent } from '../../partials/task-managemnt/common-components/personal-task/personal-task.component';
 import { TaskClockComponent } from '../../partials/task-managemnt/common-components/task-clock/task-clock.component';
 import { TeamTaskDetailPopupComponent } from './task-components/task/shared/team-task-detail-popup/team-task-detail-popup.component';
+import { TaskTimerComponent } from "../../partials/task-managemnt/common-components/task-timer/task-timer.component";
 
 @NgModule({
   declarations: [
@@ -68,7 +69,8 @@ import { TeamTaskDetailPopupComponent } from './task-components/task/shared/team
     TeamTaskCardComponent,
     PersonalTaskComponent,
     TaskClockComponent,
-    TeamTaskDetailPopupComponent
+    TeamTaskDetailPopupComponent,
+    TaskTimerComponent
 ]
 })
 export class TaskModule {}
