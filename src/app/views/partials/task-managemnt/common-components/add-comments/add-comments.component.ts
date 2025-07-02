@@ -741,7 +741,7 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
 
   getProfileImageUrl(imagePath: string): string {
     if (!imagePath) {
-      return `${environment.imageURL}/uploads/task_management/profiles/default-profile-image.png`;
+      return `${environment.imageURL}/task_management/profiles/default-profile-image.png`;
     }
 
     if (imagePath.startsWith('http')) {

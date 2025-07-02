@@ -756,11 +756,11 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       const email = member?.emailId || 'Not available';
       const image =
         member?.profileImage ||
-        'Uploads/task_management/profiles/default-profile-image.png';
+        '/task_management/profiles/default-profile-image.png';
 
       return `
       <span 
-        style="background-color:rgb(199, 199, 199); padding: 2px 6px; border-radius: 10px; position: relative; cursor: pointer;"
+        style="background-color:#0d6efd33; padding: 2px 6px; border-radius: 10px; position: relative; cursor: pointer;"
         onmouseover="this.querySelector('.tooltip').style.visibility='visible'; this.querySelector('.tooltip').style.opacity='1';"
         onmouseout="this.querySelector('.tooltip').style.visibility='hidden'; this.querySelector('.tooltip').style.opacity='0';"
         class="mention"

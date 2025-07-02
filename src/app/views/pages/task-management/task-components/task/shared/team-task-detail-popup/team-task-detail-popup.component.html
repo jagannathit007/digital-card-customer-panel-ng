@@ -483,7 +483,7 @@
               >
                 <div
                   [ngClass]="{
-                    'tw-bg-blue-500 tw-text-white':
+                    'tw-bg-blue-100 tw-text-black':
                       comment.createdBy._id === taskPermissionsService.getCurrentUser()?._id,
                     'tw-bg-gray-100 tw-text-gray-900':
                       comment.createdBy._id !== taskPermissionsService.getCurrentUser()?._id
@@ -516,7 +516,8 @@
                     <button
                       *ngIf="comment.createdBy._id === taskPermissionsService.getCurrentUser()?._id"
                       (click)="deleteComment(comment._id)"
-                      class="tw-opacity-0 group-hover:tw-opacity-100 tw-p-1 tw-rounded tw-transition-all tw-duration-200 hover:tw-bg-white hover:tw-bg-opacity-20"
+                      title="Delete Comment"
+                      class="tw-opacity-0 group-hover:tw-opacity-100 tw-p-1 tw-rounded tw-transition-all tw-duration-200 hover:tw-bg-white hover:tw-bg-opacity-20 tw-text-gray-500 hover:tw-text-red-600"
                     >
                       <i class="fas fa-trash tw-text-xs"></i>
                     </button>

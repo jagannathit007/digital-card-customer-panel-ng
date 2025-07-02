@@ -205,7 +205,7 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
 
   getProfileImageUrl(profileImage?: string): string {
     if (!profileImage) {
-      return `${environment.imageURL}/uploads/task_management/profiles/default-profile-image.png`;
+      return `${environment.imageURL}/task_management/profiles/default-profile-image.png`;
     }
 
     if (profileImage.startsWith('http')) {
