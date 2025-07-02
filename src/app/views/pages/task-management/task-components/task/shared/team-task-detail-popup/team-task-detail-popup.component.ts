@@ -773,7 +773,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
             position: absolute;
             z-index: 1;
             bottom: 125%;
-            left: 75%;
+            ${tooltipPlacement}: 0%;
             // transform: translateX(-50%);
             font-size: 13px;
             opacity: 0;
