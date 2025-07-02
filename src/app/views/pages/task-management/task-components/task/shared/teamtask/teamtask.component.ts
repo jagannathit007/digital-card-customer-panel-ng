@@ -92,6 +92,9 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   positionForNewColumn: 'left' | 'right' = 'right';
   currentColumnId = signal<string | null>(null);
 
+  // available user for selected board
+  availableUsersForSelectedBoard = signal<TeamMember[]>([]);
+
   columnForm!: FormGroup;
 
   // Loading state
@@ -431,9 +434,25 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         )?._id
       );
 
-      this.loadTasks();
+      const availableUsers = await this.loadAvailableUsers();
+
+      if (availableUsers) {
+        this.loadTasks();
+      }
     } else {
       this.isLoading.set(false);
+    }
+  }
+
+  async loadAvailableUsers(): Promise<boolean> {
+    const users = await this.taskService.GetAllAvailableMembersForBoard({
+      boardId: this.boardId(),
+    });
+    if (users) {
+      this.availableUsersForSelectedBoard.set(users);
+      return true;
+    } else {
+      return false;
     }
   }
 

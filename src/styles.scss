@@ -66,23 +66,6 @@ $primary: #153b54;
 
 // @import "bootstrap";
 
-ul, ol {
-    margin: 1rem 0; /* Top and bottom margin */
-    padding-left: 2rem; /* Indentation for list items */
-}
-
-ul {
-    list-style-type: disc; /* Default bullet style for unordered lists */
-}
-
-ol {
-    list-style-type: decimal; /* Default numbering style for ordered lists */
-}
-
-li {
-    margin-bottom: 0.5rem; /* Space between list items */
-}
-
 
 body{
     font-size: 14px;

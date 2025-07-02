@@ -181,6 +181,7 @@ public GET_BOARD_DETAILS: string = `${this.PATH}/task/board/get-details`;
 public GET_BOARDS_NAMES: string = `${this.PATH}/task/board/allNames`;
 public GET_JOINED_BOARDS: string = `${this.PATH}/task/board/joined`;
 public GET_ALL_AVAILABLE_MEMBERS: string = `${this.PATH}/task/board/members/available`;
+public GET_ALL_AVAILABLE_MEMBERS_FOR_BOARD: string = `${this.PATH}/task/board/members/available/for-board`;
 
 // team task board routes
 public GET_BOARD_TASKS: string = `${this.PATH}/task/team/get-all`;
@@ -206,6 +207,7 @@ public AI_ASSISTANT: string = `${this.PATH}/task/ai/process-user-voice`;
 
 //  ! Task Module Comment Mention api
 public ADD_COMMENT: string = `${this.PATH}/task/team/comment/add`;
+public DELETE_COMMENT: string = `${this.PATH}/task/team/comment/delete`;
 
 
 //  ! PERSONAL TASK ROUTES

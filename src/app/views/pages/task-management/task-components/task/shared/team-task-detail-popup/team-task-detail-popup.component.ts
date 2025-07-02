@@ -7,6 +7,7 @@ import {
   ViewChild,
   ElementRef,
   signal,
+  Input,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -15,10 +16,15 @@ import { Subscription } from 'rxjs';
 import { NgxEditorModule, Editor, Toolbar } from 'ngx-editor';
 import { AddCommentsComponent } from 'src/app/views/partials/task-managemnt/common-components/add-comments/add-comments.component';
 import { TaskService } from 'src/app/services/task.service';
+import { TaskPermissionsService } from 'src/app/services/task-permissions.service';
+import { swalHelper } from 'src/app/core/constants/swal-helper';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { environment } from 'src/env/env.local';
 
 interface TaskMember {
   _id: string;
   name: string;
+  emailId: string;
   profileImage: string;
   role: string;
 }
@@ -104,6 +110,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     createdBy: {
       _id: '',
       name: '',
+      emailId: '',
       profileImage: '',
       role: '',
     },
@@ -119,6 +126,9 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   isSavingTitle = false;
   isSavingDescription = false;
   isLoading = true;
+
+  BoardMembers: any = [];
+  imageBaseUrl = '';
 
   showNoDateButton: boolean = false;
   @ViewChild('dueDateInput') dueDateInput!: ElementRef<HTMLInputElement>;
@@ -148,11 +158,11 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   toolbar: Toolbar = [
     ['bold', 'italic'],
     ['underline', 'strike'],
-    ['code', 'blockquote'],
+    ['code'],
     ['ordered_list', 'bullet_list'],
-    [{ heading: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }],
+    // [{ heading: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] }],
     ['link'],
-    ['text_color', 'background_color'],
+    // ['text_color', 'background_color'],
   ];
   // Status options
   statusOptions = [
@@ -211,18 +221,21 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     {
       _id: '1',
       name: 'John Doe',
+      emailId: '9Fb3I@example.com',
       profileImage: '/assets/avatars/john.jpg',
       role: 'Developer',
     },
     {
       _id: '2',
       name: 'Jane Smith',
+      emailId: 'I5x4y@example.com',
       profileImage: '/assets/avatars/jane.jpg',
       role: 'Designer',
     },
     {
       _id: '3',
       name: 'Mike Johnson',
+      emailId: 'k5FgM@example.com',
       profileImage: '/assets/avatars/mike.jpg',
       role: 'Manager',
     },
@@ -231,14 +244,16 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private taskService: TaskService
+    private taskService: TaskService,
+    public taskPermissionsService: TaskPermissionsService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
+    this.imageBaseUrl = environment.imageURL;
     this.initializeEditor();
     this.setupRouteSubscriptions();
     this.loadTaskData();
-
   }
 
   ngOnDestroy(): void {
@@ -266,6 +281,15 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     });
   }
 
+  isTAskCreator(userId: any): boolean {
+    console.log(
+      'Checking if user is task creator:',
+      userId,
+      this.task.createdBy._id
+    );
+    return this.task.createdBy._id === userId;
+  }
+
   private async loadTaskData() {
     // Simulate API call with dummy data
     const response = await this.taskService.getTeamTaskDetailsById({
@@ -275,10 +299,15 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     console.log('Task details response:', response);
 
     if (response) {
-      setTimeout(() => {
-        this.task = response;
+      const users = await this.loadAvailableUsers(response.board);
+      if (users) {
+        setTimeout(() => {
+          this.task = response;
+          this.isLoading = false;
+        }, 1000);
+      } else {
         this.isLoading = false;
-      }, 1000);
+      }
     }
     // this.task = {
     //   _id: this.taskId,
@@ -327,6 +356,19 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     // };
 
     this.createBackup();
+  }
+
+  async loadAvailableUsers(boardId: string): Promise<boolean> {
+    const users = await this.taskService.GetAllAvailableMembersForBoard({
+      boardId: boardId,
+    });
+    if (users) {
+      this.BoardMembers = users;
+      console.log('Available users loaded:', users);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   // Title editing methods
@@ -677,12 +719,13 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
 
   // Comment methods
   onCommentAdded(comment: any): void {
+    console.log('Comment added in chat component:', comment);
     const newComment: TaskComment = {
-      _id: Date.now().toString(),
+      _id: comment._id,
       text: comment.text,
       mentionedMembers: comment.mentionedMembers,
-      createdBy: this.dummyMembers[0], // Current user
-      createdAt: new Date().toISOString(),
+      createdBy: comment.createdBy,
+      createdAt: comment.createdAt,
       isDeleted: false,
     };
 
@@ -690,20 +733,108 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     this.emitTaskUpdate('comments', this.task.comments);
   }
 
+  formatComment(text: string, mentionedMembers: string[], createdBy: string): SafeHtml {
+
+  console.log('Formatting comment:', text, mentionedMembers, createdBy);
+
+  let tooltipPlacement = 'left';
+
+  if (createdBy === this.taskPermissionsService.getCurrentUser()._id) {
+    tooltipPlacement = 'right';
+  }
+    
+  let mentionIndex = 0;
+
+  const formatted = text.replace(/\*(.*?)\*/g, (match, p1) => {
+    const userId = mentionedMembers[mentionIndex++] || 'Unknown';
+    const member = this.BoardMembers.find((m: any) => m._id === userId);
+
+    const name = member?.name || 'Unknown';
+    const email = member?.emailId || 'Not available';
+    const image = member?.profileImage || 'Uploads/task_management/profiles/default-profile-image.png';
+
+    return `
+      <span 
+        style="background-color:rgb(199, 199, 199); padding: 2px 6px; border-radius: 10px; position: relative; cursor: pointer;"
+        onmouseover="this.querySelector('.tooltip').style.visibility='visible'; this.querySelector('.tooltip').style.opacity='1';"
+        onmouseout="this.querySelector('.tooltip').style.visibility='hidden'; this.querySelector('.tooltip').style.opacity='0';"
+        class="mention"
+        data-user-id="${userId}"
+      >
+        ${p1}
+        <span 
+          style="
+            visibility: hidden;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 5px 8px;
+            border-radius: 6px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 75%;
+            // transform: translateX(-50%);
+            font-size: 13px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            max-width: 300px; /* Optional: prevents overly wide tooltips */
+            width: max-content; /* Allows dynamic width based on content */
+          "
+          class="tooltip"
+        >
+          <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+            <img 
+              src="${this.imageBaseUrl + image}" 
+              alt="${name}" 
+              style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;"
+            />
+            <div style="text-align: start; overflow-wrap: break-word;">
+              <div style="font-weight: bold;">${name}</div>
+              <div style="font-size: 12px; color: #dfdfdf;">${email}</div>
+            </div>
+          </div>
+        </span>
+      </span> 
+    `;
+  });
+
+  return this.sanitizer.bypassSecurityTrustHtml(formatted);
+}
+
+
   deleteComment(commentId: string): void {
     const comment = this.task.comments.find((c) => c._id === commentId);
     if (comment) {
       this.createBackup('comments');
 
-      // Simulate API call
-      setTimeout(() => {
-        try {
-          comment.isDeleted = true;
-          this.emitTaskUpdate('comments', this.task.comments);
-        } catch (error) {
+      swalHelper
+        .delete()
+        .then(async (result) => {
+          if (result.isConfirmed) {
+            const response = await this.taskService.deleteComment({
+              taskId: this.taskId,
+              commentId: comment._id,
+              type: 'task',
+            });
+            comment.isDeleted = true;
+            this.emitTaskUpdate('comments', this.task.comments);
+          }
+        })
+        .catch((error) => {
           this.undoChanges('comments');
-        }
-      }, 300);
+        });
+
+      // Simulate API call
+      // setTimeout(() => {
+      //   try {
+      //     comment.isDeleted = true;
+      //     this.emitTaskUpdate('comments', this.task.comments);
+      //   } catch (error) {
+      //     this.undoChanges('comments');
+      //   }
+      // }, 300);
     }
   }
 
