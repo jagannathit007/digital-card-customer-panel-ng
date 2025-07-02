@@ -567,8 +567,8 @@ export class MydaytaskComponent implements OnInit {
     });
   }
 
-  onKeyDown(event: KeyboardEvent): void {
-    if (event.ctrlKey && event.key === 'Enter') {
+  onInputKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
       event.preventDefault();
       if (this.editingTaskId) {
         this.updateTask();

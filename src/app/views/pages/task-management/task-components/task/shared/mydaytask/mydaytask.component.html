@@ -205,49 +205,49 @@
     </div>
 
     <!-- Task Input Section (Compact & Fixed) -->
-    <div class="tw-flex-shrink-0 tw-bg-white tw-rounded-lg tw-shadow-md tw-border tw-border-gray-200 tw-p-2">
-      <div class="tw-flex tw-items-end tw-gap-3">
-        <div class="tw-flex-1">
-          <textarea
-            #taskInput
-            [(ngModel)]="newTaskTitle"
-            (keydown)="onKeyDown($event)"
-            (input)="autoResize($event)"
-            [placeholder]="editingTaskId ? 'Update task... (Ctrl+Enter to save)' : 'What needs to be done? (Ctrl+Enter to save)'"
-            class="form-input tw-w-full tw-px-4 tw-py-3 tw-border tw-border-gray-300 tw-rounded-lg tw-resize-none focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500 tw-transition-all tw-duration-200 tw-text-sm tw-placeholder-gray-400"
-            rows="1"
-            style="height: auto; min-height: 48px;"
-          ></textarea>
-        </div>
-        
-        <!-- Send Button -->
-        <button
-          (click)="editingTaskId ? updateTask() : addTask()"
-          [disabled]="!canSendTask()"
-          class="send-button tw-p-3 tw-rounded-lg tw-transition-all tw-duration-200 tw-flex tw-items-center tw-justify-center tw-min-w-[48px] tw-h-12"
-          [class.tw-bg-blue-500]="canSendTask()"
-          [class.tw-text-white]="canSendTask()"
-          [class.hover:tw-bg-blue-600]="canSendTask()"
-          [class.tw-shadow-md]="canSendTask()"
-          [class.tw-bg-gray-200]="!canSendTask()"
-          [class.tw-text-gray-400]="!canSendTask()"
-          [class.tw-cursor-not-allowed]="!canSendTask()"
-        >
-          <i *ngIf="!isSubmitting" class="fa-regular fa-paper-plane tw-text-[20px]"></i>
-          <div *ngIf="isSubmitting" class="tw-animate-spin tw-rounded-full tw-h-5 tw-w-5 tw-border-b-2 tw-border-white"></div>
-        </button>
-      </div>
-      
-      <!-- Cancel Edit Button -->
-      <div *ngIf="editingTaskId" class="tw-mt-3 tw-flex tw-justify-end">
-        <button
-          (click)="cancelEdit()"
-          class="tw-px-4 tw-py-2 tw-text-sm tw-text-gray-600 hover:tw-text-gray-800 tw-bg-gray-100 hover:tw-bg-gray-200 tw-rounded-md tw-transition-all tw-duration-200"
-        >
-          Cancel Edit
-        </button>
-      </div>
+  <div class="tw-flex-shrink-0 tw-bg-white tw-rounded-lg tw-shadow-md tw-border tw-border-gray-200 tw-p-2">
+  <div class="tw-flex tw-items-end tw-gap-3">
+    <div class="tw-flex-1">
+      <input
+        #taskInput
+        [(ngModel)]="newTaskTitle"
+        (keydown)="onInputKeyDown($event)"
+        [placeholder]="editingTaskId ? 'Update task... (Enter to save)' : 'What needs to be done? (Enter to save)'"
+        class="form-input tw-w-full tw-px-4 tw-py-3 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500 tw-transition-all tw-duration-200 tw-text-sm tw-placeholder-gray-400"
+        style="overflow-x:auto; white-space:nowrap;"
+        type="text"
+        autocomplete="off"
+      />
     </div>
+    
+    <!-- Send Button -->
+    <button
+      (click)="editingTaskId ? updateTask() : addTask()"
+      [disabled]="!canSendTask()"
+      class="send-button tw-p-3 tw-rounded-lg tw-transition-all tw-duration-200 tw-flex tw-items-center tw-justify-center tw-min-w-[48px] tw-h-12"
+      [class.tw-bg-blue-500]="canSendTask()"
+      [class.tw-text-white]="canSendTask()"
+      [class.hover:tw-bg-blue-600]="canSendTask()"
+      [class.tw-shadow-md]="canSendTask()"
+      [class.tw-bg-gray-200]="!canSendTask()"
+      [class.tw-text-gray-400]="!canSendTask()"
+      [class.tw-cursor-not-allowed]="!canSendTask()"
+    >
+      <i *ngIf="!isSubmitting" class="fa-regular fa-paper-plane tw-text-[20px]"></i>
+      <div *ngIf="isSubmitting" class="tw-animate-spin tw-rounded-full tw-h-5 tw-w-5 tw-border-b-2 tw-border-white"></div>
+    </button>
+  </div>
+  
+  <!-- Cancel Edit Button -->
+  <div *ngIf="editingTaskId" class="tw-mt-3 tw-flex tw-justify-end">
+    <button
+      (click)="cancelEdit()"
+      class="tw-px-4 tw-py-2 tw-text-sm tw-text-gray-600 hover:tw-text-gray-800 tw-bg-gray-100 hover:tw-bg-gray-200 tw-rounded-md tw-transition-all tw-duration-200"
+    >
+      Cancel Edit
+    </button>
+  </div>
+</div>
   </div>
 </div>
 
