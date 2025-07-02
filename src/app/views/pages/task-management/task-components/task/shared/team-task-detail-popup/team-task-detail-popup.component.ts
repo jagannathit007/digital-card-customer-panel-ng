@@ -719,6 +719,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
 
   // Comment methods
   onCommentAdded(comment: any): void {
+    this.scrollToBottom();
     console.log('Comment added in chat component:', comment);
     const newComment: TaskComment = {
       _id: comment._id,
@@ -728,32 +729,36 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       createdAt: comment.createdAt,
       isDeleted: false,
     };
-
     this.task.comments.push(newComment);
     this.emitTaskUpdate('comments', this.task.comments);
   }
 
-  formatComment(text: string, mentionedMembers: string[], createdBy: string): SafeHtml {
+  formatComment(
+    text: string,
+    mentionedMembers: string[],
+    createdBy: string
+  ): SafeHtml {
+    console.log('Formatting comment:', text, mentionedMembers, createdBy);
 
-  console.log('Formatting comment:', text, mentionedMembers, createdBy);
+    let tooltipPlacement = 'left';
 
-  let tooltipPlacement = 'left';
+    if (createdBy === this.taskPermissionsService.getCurrentUser()._id) {
+      tooltipPlacement = 'right';
+    }
 
-  if (createdBy === this.taskPermissionsService.getCurrentUser()._id) {
-    tooltipPlacement = 'right';
-  }
-    
-  let mentionIndex = 0;
+    let mentionIndex = 0;
 
-  const formatted = text.replace(/\*(.*?)\*/g, (match, p1) => {
-    const userId = mentionedMembers[mentionIndex++] || 'Unknown';
-    const member = this.BoardMembers.find((m: any) => m._id === userId);
+    const formatted = text.replace(/\*(.*?)\*/g, (match, p1) => {
+      const userId = mentionedMembers[mentionIndex++] || 'Unknown';
+      const member = this.BoardMembers.find((m: any) => m._id === userId);
 
-    const name = member?.name || 'Unknown';
-    const email = member?.emailId || 'Not available';
-    const image = member?.profileImage || 'Uploads/task_management/profiles/default-profile-image.png';
+      const name = member?.name || 'Unknown';
+      const email = member?.emailId || 'Not available';
+      const image =
+        member?.profileImage ||
+        'Uploads/task_management/profiles/default-profile-image.png';
 
-    return `
+      return `
       <span 
         style="background-color:rgb(199, 199, 199); padding: 2px 6px; border-radius: 10px; position: relative; cursor: pointer;"
         onmouseover="this.querySelector('.tooltip').style.visibility='visible'; this.querySelector('.tooltip').style.opacity='1';"
@@ -798,11 +803,10 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
         </span>
       </span> 
     `;
-  });
+    });
 
-  return this.sanitizer.bypassSecurityTrustHtml(formatted);
-}
-
+    return this.sanitizer.bypassSecurityTrustHtml(formatted);
+  }
 
   deleteComment(commentId: string): void {
     const comment = this.task.comments.find((c) => c._id === commentId);
@@ -926,5 +930,17 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     if (fileType.includes('excel') || fileType.includes('spreadsheet'))
       return 'fa-file-excel';
     return 'fa-file';
+  }
+
+  private scrollToBottom() {
+    setTimeout(() => {
+      const container = document.getElementById(`commentsList`) as HTMLElement;
+      if (container) {
+        container.scrollTo({
+          top: container.scrollHeight,
+          behavior: 'smooth',
+        });
+      }
+    }, 10);
   }
 }
