@@ -684,6 +684,11 @@ export class MyweektaskComponent implements OnInit {
 
       const column = this.dayColumns[task.dayIndex];
       column.tasks = column.tasks.filter(t => t._id !== task._id);
+
+     await this.personalTaskService.DeletePersonalTask({ taskId: task._id });
+
+
+
     } catch (error) {
       console.error('Error deleting task:', error);
     }

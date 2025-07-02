@@ -455,7 +455,7 @@ interface PersonalTask {
   styleUrl: './mydaytask.component.scss'
 })
 export class MydaytaskComponent implements OnInit {
-  @ViewChild('taskInput') taskInput!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('editTaskInput') editTaskInput!: ElementRef<HTMLTextAreaElement>;
   @ViewChild('scrollContainer') scrollContainer!: ElementRef<HTMLDivElement>;
 
   // Task Management Properties
@@ -567,8 +567,8 @@ export class MydaytaskComponent implements OnInit {
     });
   }
 
-  onKeyDown(event: KeyboardEvent): void {
-    if (event.ctrlKey && event.key === 'Enter') {
+  onInputKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
       event.preventDefault();
       if (this.editingTaskId) {
         this.updateTask();
@@ -577,6 +577,15 @@ export class MydaytaskComponent implements OnInit {
       }
     }
   }
+
+  // ...existing code...
+onEditModalKeyDown(event: KeyboardEvent): void {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    this.updateTask();
+  }
+}
+// ...existing code...
 
   autoResize(event: Event): void {
     const textarea = event.target as HTMLTextAreaElement;
@@ -683,16 +692,16 @@ export class MydaytaskComponent implements OnInit {
     }
   }
 
-  startEdit(task: PersonalTask): void {
+   startEdit(task: PersonalTask): void {
     this.editingTaskId = task._id;
     this.editingTaskTitle = task.title;
     this.newTaskTitle = task.title;
     this.activeDropdownId = null;
 
     setTimeout(() => {
-      if (this.taskInput) {
-        this.taskInput.nativeElement.focus();
-        this.taskInput.nativeElement.select();
+      if (this.editTaskInput) {
+        this.editTaskInput.nativeElement.focus();
+        this.editTaskInput.nativeElement.select();
       }
     }, 100);
   }
