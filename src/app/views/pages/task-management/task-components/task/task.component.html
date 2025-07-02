@@ -19,6 +19,18 @@
     (closeModalEvent)="onAddTeamMemberModalClose()"
     (memberAdded)="onTeamMemberAdded($event)">
   </app-add-team-member>
+
+  <!--  ! Personal task Creation modal -->
+  <app-task-timer
+    *ngIf="isTaskClockModalOpen"
+    [isVisible]="isTaskClockModalOpen"
+    [mode]="'add'"
+    [taskId]="''"
+    [currentDueDate]="taskClockModalData?.dueOn"
+    [currentTaskTitle]="taskClockModalData?.task_title || taskClockModalData?.title || ''"
+    (onClose)="onTaskClockModalClose()"
+    (onTaskAdded)="onTaskAdded()">
+  </app-task-timer>
   
   <!-- chandan - Placeholder for other modals when they are created -->
   <!-- 

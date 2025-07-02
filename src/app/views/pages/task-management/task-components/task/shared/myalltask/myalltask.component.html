@@ -8,6 +8,11 @@
   #addTaskModal
   (taskAdded)="onTaskAdded()">
 </app-personal-task> -->
-
+<!-- <app-task-timer></app-task-timer> -->
+<app-task-timer
+  [isVisible]="isTaskClockVisible"
+  [mode]="taskClockMode"
+  >
+</app-task-timer>
 
 <app-task-clock></app-task-clock>

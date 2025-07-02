@@ -50,6 +50,10 @@ export class TaskComponent implements OnInit, OnDestroy {
   isReportGenerationModalOpen = false;
   isTeamTaskCreationModalOpen = false;
   isPersonalTaskCreationModalOpen = false;
+
+  // ! This Properites for Personal task Creation modal
+  isTaskClockModalOpen = false;
+  taskClockModalData: any = {};
   
   currentModalData: any = {};
   
@@ -73,7 +77,6 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   // chandan - Handle modal opening based on action type
   private handleModalTrigger(data: any): void {
-    console.log('chandan - Received modal trigger:', data);
     
     // chandan - Close all modals first
     this.closeAllModals();
@@ -93,7 +96,7 @@ export class TaskComponent implements OnInit, OnDestroy {
         this.isTeamTaskCreationModalOpen = true;
         break;
       case 'personal_task_creation':
-        this.isPersonalTaskCreationModalOpen = true;
+        this.openTaskClockModal(data.keywords || {});
         break;
       default:
     }
@@ -105,6 +108,9 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.isReportGenerationModalOpen = false;
     this.isTeamTaskCreationModalOpen = false;
     this.isPersonalTaskCreationModalOpen = false;
+
+    this.isTaskClockModalOpen = false; // NEW: Close TaskClock modal
+
   }
 
   // chandan - Modal close handlers
@@ -133,4 +139,24 @@ export class TaskComponent implements OnInit, OnDestroy {
     console.log('chandan - Team member added successfully:', memberData);
     this.onAddTeamMemberModalClose();
   }
+
+
+ private openTaskClockModal(aiData: any): void {
+    this.taskClockModalData = aiData;
+    this.isTaskClockModalOpen = true;
+    console.log('chandan - Opening TaskClock modal with data:', aiData);
+  }
+
+
+onTaskClockModalClose(): void {
+    this.isTaskClockModalOpen = false;
+    this.taskClockModalData = {};
+    console.log('chandan - TaskClock modal closed');
+  }
+
+  onTaskAdded(): void {
+    console.log('chandan - Personal task added successfully via AI');
+    this.onTaskClockModalClose();
+  }
+
 }

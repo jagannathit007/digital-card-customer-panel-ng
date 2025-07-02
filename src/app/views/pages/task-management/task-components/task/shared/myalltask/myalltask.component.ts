@@ -27,6 +27,9 @@ export class MyalltaskComponent implements OnInit {
 
    @ViewChild('addTaskModal') addTaskModal!: PersonalTaskComponent;
 
+   isTaskClockVisible: boolean = false;
+   taskClockMode: 'add' | 'edit' = 'add';
+
    constructor(
     private personalTaskService: PersonalTaskService,
     private storage: AppStorage
@@ -35,13 +38,13 @@ export class MyalltaskComponent implements OnInit {
 async ngOnInit(): Promise<void> {
 
 }
-  openAddTaskModal() {
-    this.addTaskModal.openModal();
-  }
 
-  onTaskAdded() {
-    // Refresh your task list or show success message
-    console.log('Task added successfully!');
-  }
+openAddTaskModal(): void {
+  this.taskClockMode = 'add';
+  this.isTaskClockVisible = true;
+}
+
+
+
 
 }
