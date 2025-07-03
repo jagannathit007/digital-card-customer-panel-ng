@@ -73,6 +73,10 @@ export class OurTrustComponent implements OnInit {
   ourlinksVisible: boolean = true;
   businessCardId: any;
 
+  sectionTitles: any = {
+    ourlinks: 'ourlinks'
+  };
+
   constructor(
     private storage: AppStorage,
     public authService: AuthService,
@@ -80,7 +84,7 @@ export class OurTrustComponent implements OnInit {
     public modal: ModalService,
     private websiteService: WebsiteBuilderService,
     private sanitizer: DomSanitizer,
-  ) {}
+  ) { }
 
   async ngOnInit() {
     this.businessCardId = this.storage.get(common.BUSINESS_CARD);
@@ -96,6 +100,11 @@ export class OurTrustComponent implements OnInit {
         this.filteredTrustLinks = [...this.trustLinks];
         this.totalItems = this.trustLinks.length;
         this.ourlinksVisible = results.ourlinksVisible;
+
+        if (results.sectionTitles) {
+          this.sectionTitles = results.sectionTitles;
+        }
+
         this.cdr.markForCheck();
       } else {
         swalHelper.showToast('Failed to fetch trust links!', 'warning');
@@ -262,4 +271,40 @@ export class OurTrustComponent implements OnInit {
       businessCardId: this.businessCardId
     });
   }
+
+   // Add this method to handle title edit
+  editSectionTitle() {
+    this.modal.open('EditTitleModal');
+  }
+
+  // Add this method to update section title
+  async updateSectionTitle() {
+    if (!this.sectionTitles.ourlinks.trim()) {
+      swalHelper.showToast('Section title is required!', 'warning');
+      return;
+    }
+
+    this.isLoading = true;
+    try {
+      let businessCardId = this.storage.get(common.BUSINESS_CARD);
+      const data = {
+        businessCardId: businessCardId,
+        sectionTitles: {
+          ourlinks: this.sectionTitles.ourlinks
+        }
+      };
+
+      const result = await this.websiteService.updateSectionsTitles(data);
+      if (result) {
+        this.modal.close('EditTitleModal');
+        swalHelper.showToast('Section title updated successfully!', 'success');
+      }
+    } catch (error) {
+      console.error('Error updating section title: ', error);
+      swalHelper.showToast('Error updating section title!', 'error');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
 }

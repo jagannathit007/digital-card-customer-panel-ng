@@ -39,6 +39,11 @@ export class FaqComponent implements OnInit, OnDestroy {
     ['align_left', 'align_center', 'align_right', 'align_justify'],
   ];
 
+  sectionTitles: any = {
+    faq: 'Our Faq'
+  };
+
+
   constructor(
     private storage: AppStorage,
     public authService: AuthService,
@@ -46,7 +51,7 @@ export class FaqComponent implements OnInit, OnDestroy {
     public modal: ModalService,
     private cdr: ChangeDetectorRef,
     private sanitizer: DomSanitizer
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.businessCardId = this.storage.get(common.BUSINESS_CARD);
@@ -72,6 +77,11 @@ export class FaqComponent implements OnInit, OnDestroy {
         this.faqList = results.faqs;
         this.filteredFaqList = [...this.faqList];
         this.faqVisible = results.faqVisible;
+
+        if (results.sectionTitles) {
+          this.sectionTitles = results.sectionTitles;
+        }
+
       } else {
         this.faqList = [];
         this.filteredFaqList = [];
@@ -222,4 +232,40 @@ export class FaqComponent implements OnInit, OnDestroy {
     tmp.innerHTML = html;
     return tmp.textContent || tmp.innerText || '';
   }
+
+  // Add this method to handle title edit
+  editSectionTitle() {
+    this.modal.open('EditTitleModal');
+  }
+
+  // Add this method to update section title
+  async updateSectionTitle() {
+    if (!this.sectionTitles.faq.trim()) {
+      swalHelper.showToast('Section title is required!', 'warning');
+      return;
+    }
+
+    this.isLoading = true;
+    try {
+      let businessCardId = this.storage.get(common.BUSINESS_CARD);
+      const data = {
+        businessCardId: businessCardId,
+        sectionTitles: {
+          faq: this.sectionTitles.faq
+        }
+      };
+
+      const result = await this.websiteService.updateSectionsTitles(data);
+      if (result) {
+        this.modal.close('EditTitleModal');
+        swalHelper.showToast('Section title updated successfully!', 'success');
+      }
+    } catch (error) {
+      console.error('Error updating section title: ', error);
+      swalHelper.showToast('Error updating section title!', 'error');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
 }

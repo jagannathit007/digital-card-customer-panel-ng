@@ -71,6 +71,7 @@ class ApiEndpoints {
   public WEBSITE_OUR_PRODUCTS_UPDATE: string = `${this.PATH}/website/product/update`;
   public WEBSITE_OUR_PRODUCTS_DELETE: string = `${this.PATH}/website/product/delete`;
   public UPDATE_VISIBILITY: string = `${this.PATH}/website/update-visibility`;
+  public UPDATE_SECTIONS_TITLES: string = `${this.PATH}/website/update-section-titles`;
   // Catogrey wise products CRUD
   public ADD_OR_UPDATE_CATEGORY: string = `${this.PATH}/website/category/addOrUpdateCategory`;
   public ADD_OR_UPDATE_PRODUCT_INCATEGORY: string = `${this.PATH}/website/product/addOrUpdateProductInCategory`;

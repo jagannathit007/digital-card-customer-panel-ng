@@ -31,7 +31,7 @@ export class BlogsComponent implements OnInit, OnDestroy, AfterViewInit {
     private websiteService: WebsiteBuilderService,
     private cdr: ChangeDetectorRef,
     private sanitizer: DomSanitizer
-  ) {}
+  ) { }
 
   businessCardId: any;
   blogVisible: boolean = false;
@@ -70,6 +70,10 @@ export class BlogsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   imageForCarousel: any[] = [];
 
+  sectionTitles: any = {
+    blog: 'Our Blogs'
+  };
+
   ngOnInit() {
     this.businessCardId = this.storage.get(common.BUSINESS_CARD);
     if (!this.businessCardId) {
@@ -99,6 +103,11 @@ export class BlogsComponent implements OnInit, OnDestroy, AfterViewInit {
         this.filteredBlogs = [...this.blogs];
         this.totalItems = this.blogs.length;
         this.blogVisible = results.blogVisible || false;
+
+        if (results.sectionTitles) {
+          this.sectionTitles = results.sectionTitles;
+        }
+
         this.cdr.markForCheck();
       } else {
         swalHelper.showToast('Failed to fetch blogs!', 'warning');
@@ -353,4 +362,41 @@ export class BlogsComponent implements OnInit, OnDestroy, AfterViewInit {
     tmp.innerHTML = html;
     return tmp.textContent || tmp.innerText || '';
   }
+
+  // Add this method to handle title edit
+  editSectionTitle() {
+    this.modal.open('EditTitleModal');
+  }
+
+  // Add this method to update section title
+  async updateSectionTitle() {
+    if (!this.sectionTitles.blog.trim()) {
+      swalHelper.showToast('Section title is required!', 'warning');
+      return;
+    }
+
+    this.isLoading = true;
+    try {
+      let businessCardId = this.storage.get(common.BUSINESS_CARD);
+      const data = {
+        businessCardId: businessCardId,
+        sectionTitles: {
+          blog: this.sectionTitles.blog
+        }
+      };
+
+      const result = await this.websiteService.updateSectionsTitles(data);
+      if (result) {
+        this.modal.close('EditTitleModal');
+        swalHelper.showToast('Section title updated successfully!', 'success');
+      }
+    } catch (error) {
+      console.error('Error updating section title: ', error);
+      swalHelper.showToast('Error updating section title!', 'error');
+    } finally {
+      this.isLoading = false;
+      this.cdr.markForCheck();
+    }
+  }
+
 }

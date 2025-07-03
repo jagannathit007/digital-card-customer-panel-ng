@@ -63,6 +63,10 @@ export class OurCertificatesComponent implements OnInit, OnDestroy {
   certificationVisible: boolean = true;
   businessCardId: any;
 
+  sectionTitles: any = {
+    certification: 'certification'
+  };
+
   constructor(
     private storage: AppStorage,
     public authService: AuthService,
@@ -70,7 +74,7 @@ export class OurCertificatesComponent implements OnInit, OnDestroy {
     public modal: ModalService,
     private websiteService: WebsiteBuilderService,
     private sanitizer: DomSanitizer,
-  ) {}
+  ) { }
 
   async ngOnInit() {
     this.addEditor = new Editor();
@@ -98,6 +102,9 @@ export class OurCertificatesComponent implements OnInit, OnDestroy {
         this.filteredCertificates = [...this.certificates];
         this.totalItems = this.certificates.length;
         this.certificationVisible = results.certificationVisible;
+        if (results.sectionTitles) {
+          this.sectionTitles = results.sectionTitles;
+        }
         this.cdr.markForCheck();
       } else {
         swalHelper.showToast('Failed to fetch certificates!', 'warning');
@@ -273,4 +280,40 @@ export class OurCertificatesComponent implements OnInit, OnDestroy {
     if (!content) return '';
     return content.replace(/<[^>]*>/g, '');
   }
+
+  // Add this method to handle title edit
+  editSectionTitle() {
+    this.modal.open('EditTitleModal');
+  }
+
+  // Add this method to update section title
+  async updateSectionTitle() {
+    if (!this.sectionTitles.certification.trim()) {
+      swalHelper.showToast('Section title is required!', 'warning');
+      return;
+    }
+
+    this.isLoading = true;
+    try {
+      let businessCardId = this.storage.get(common.BUSINESS_CARD);
+      const data = {
+        businessCardId: businessCardId,
+        sectionTitles: {
+          certification: this.sectionTitles.certification
+        }
+      };
+
+      const result = await this.websiteService.updateSectionsTitles(data);
+      if (result) {
+        this.modal.close('EditTitleModal');
+        swalHelper.showToast('Section title updated successfully!', 'success');
+      }
+    } catch (error) {
+      console.error('Error updating section title: ', error);
+      swalHelper.showToast('Error updating section title!', 'error');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
 }

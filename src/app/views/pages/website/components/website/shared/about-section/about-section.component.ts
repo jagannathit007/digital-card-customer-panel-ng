@@ -39,6 +39,10 @@ export class AboutSectionComponent implements OnInit, OnDestroy {
     ['align_left', 'align_center', 'align_right', 'align_justify'],
   ];
 
+  sectionTitles: any = {
+    aboutCompany: 'About Us'
+  };
+
   constructor(
     private storage: AppStorage,
     public authService: AuthService,
@@ -46,7 +50,7 @@ export class AboutSectionComponent implements OnInit, OnDestroy {
     public modal: ModalService,
     private cdr: ChangeDetectorRef,
     private sanitizer: DomSanitizer
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.businessCardId = this.storage.get(common.BUSINESS_CARD);
@@ -72,6 +76,10 @@ export class AboutSectionComponent implements OnInit, OnDestroy {
         this.aboutCompanyList = results.aboutCompany;
         this.filteredAboutCompanyList = [...this.aboutCompanyList];
         this.aboutCompanyVisible = results.aboutCompanyVisible;
+
+        if (results.sectionTitles) {
+          this.sectionTitles = results.sectionTitles;
+        }
       } else {
         this.aboutCompanyList = [];
         this.filteredAboutCompanyList = [];
@@ -212,7 +220,7 @@ export class AboutSectionComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
- sanitizeHtml(content: any): any {
+  sanitizeHtml(content: any): any {
     if (!content) return '';
     return content.replace(/<[^>]*>/g, '');
   }
@@ -223,4 +231,40 @@ export class AboutSectionComponent implements OnInit, OnDestroy {
     tmp.innerHTML = html;
     return tmp.textContent || tmp.innerText || '';
   }
+
+      // Add this method to handle title edit
+  editSectionTitle() {
+    this.modal.open('EditTitleModal');
+  }
+
+  // Add this method to update section title
+  async updateSectionTitle() {
+    if (!this.sectionTitles.aboutCompany.trim()) {
+      swalHelper.showToast('Section title is required!', 'warning');
+      return;
+    }
+
+    this.isLoading = true;
+    try {
+      let businessCardId = this.storage.get(common.BUSINESS_CARD);
+      const data = {
+        businessCardId: businessCardId,
+        sectionTitles: {
+          aboutCompany: this.sectionTitles.aboutCompany
+        }
+      };
+
+      const result = await this.websiteService.updateSectionsTitles(data);
+      if (result) {
+        this.modal.close('EditTitleModal');
+        swalHelper.showToast('Section title updated successfully!', 'success');
+      }
+    } catch (error) {
+      console.error('Error updating section title: ', error);
+      swalHelper.showToast('Error updating section title!', 'error');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
 }

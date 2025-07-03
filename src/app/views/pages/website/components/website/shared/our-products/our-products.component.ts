@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component,AfterViewInit, ElementRef, NgZone, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, AfterViewInit, ElementRef, NgZone, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ModalService } from 'src/app/core/utilities/modal';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
@@ -23,14 +23,14 @@ export class OurProductsComponent implements OnInit, OnDestroy, AfterViewInit {
   private objectURLCache = new Map<File, string>();
 
   constructor(
-    private modal: ModalService,
+    public modal: ModalService,
     private zone: NgZone,
     private storage: AppStorage,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
     private websiteService: WebsiteBuilderService,
     private sanitizer: DomSanitizer
-  ) {}
+  ) { }
 
   businessCardId: any;
   productVisible: boolean = false;
@@ -45,7 +45,7 @@ export class OurProductsComponent implements OnInit, OnDestroy, AfterViewInit {
   activeTab: string = 'products';
 
   // Catogrey manage Properties
-  
+
   productcategoryVisible: boolean = true;
   categories: any[] = [];
   filteredCategories: any[] = [];
@@ -84,7 +84,7 @@ export class OurProductsComponent implements OnInit, OnDestroy, AfterViewInit {
   imageForCarousel: any[] = [];
 
   // Category management properties
-    selectedCategory: any = {
+  selectedCategory: any = {
     _id: null,
     categoryName: '',
     description: '',
@@ -104,6 +104,11 @@ export class OurProductsComponent implements OnInit, OnDestroy, AfterViewInit {
   };
 
   selectedCategoryProductId: string | null = null;
+
+  sectionTitles: any = {
+    products: 'Our Products'
+  };
+
 
   ngOnInit() {
     this.businessCardId = this.storage.get(common.BUSINESS_CARD);
@@ -140,6 +145,9 @@ export class OurProductsComponent implements OnInit, OnDestroy, AfterViewInit {
         this.filteredProducts = [...this.products];
         this.totalItems = this.products.length;
         this.productVisible = results.productVisible;
+        if (results.sectionTitles) {
+          this.sectionTitles = results.sectionTitles;
+        }
         this.cdr.markForCheck();
       } else {
         swalHelper.showToast('Failed to fetch products!', 'warning');
@@ -193,18 +201,18 @@ export class OurProductsComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   onOpenUpdateModal(item: any) {
-  this.selectedProducts = {
-    ...item,
-    images: item.images ? [...item.images] : [],
-    existingImages: item.images ? [...item.images] : [],
-    name: item.name || '',
-    price: item.price || '',
-    description: item.description || '',
-    visible: item.visible !== undefined ? item.visible : true
-  };
-  this.modal.open('create-products');
-  this.cdr.markForCheck();
-}
+    this.selectedProducts = {
+      ...item,
+      images: item.images ? [...item.images] : [],
+      existingImages: item.images ? [...item.images] : [],
+      name: item.name || '',
+      price: item.price || '',
+      description: item.description || '',
+      visible: item.visible !== undefined ? item.visible : true
+    };
+    this.modal.open('create-products');
+    this.cdr.markForCheck();
+  }
 
   onCloseModal(modal: string) {
     this._reset();
@@ -277,38 +285,38 @@ export class OurProductsComponent implements OnInit, OnDestroy, AfterViewInit {
   //   }
   // }
 
-onUploadImage(event: any) {
-  const files: FileList = event.target.files;
-  const newFiles: File[] = Array.from(files);
+  onUploadImage(event: any) {
+    const files: FileList = event.target.files;
+    const newFiles: File[] = Array.from(files);
 
-  if (!this.selectedProducts.images) {
-    this.selectedProducts.images = [];
+    if (!this.selectedProducts.images) {
+      this.selectedProducts.images = [];
+    }
+
+    const totalImages = this.selectedProducts.images.length + newFiles.length;
+    if (totalImages > 5) {
+      swalHelper.warning('You can upload a maximum of 5 images.');
+      this.selectedProducts.images = [];
+      this.fileInputRef.nativeElement.value = '';
+      return;
+    }
+
+    let validImages: File[] = [];
+    let processed = 0;
+
+    for (let file of newFiles) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        validImages.push(file);
+        processed++;
+        if (processed === newFiles.length) {
+          this.selectedProducts.images.push(...validImages);
+          this.cdr.markForCheck();
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   }
-
-  const totalImages = this.selectedProducts.images.length + newFiles.length;
-  if (totalImages > 5) {
-    swalHelper.warning('You can upload a maximum of 5 images.');
-    this.selectedProducts.images = [];
-    this.fileInputRef.nativeElement.value = '';
-    return;
-  }
-
-  let validImages: File[] = [];
-  let processed = 0;
-
-  for (let file of newFiles) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      validImages.push(file); 
-      processed++;
-      if (processed === newFiles.length) {
-        this.selectedProducts.images.push(...validImages);
-        this.cdr.markForCheck();
-      }
-    };
-    reader.readAsDataURL(file);
-  }
-}
 
   getImagePreview(img: any): string {
     if (img instanceof File) {
@@ -323,77 +331,77 @@ onUploadImage(event: any) {
 
 
   removeImage(index: number) {
-  const removedImage = this.selectedProducts.images[index];
-  this.selectedProducts.images.splice(index, 1);
-  
-  // Remove the image from existingImages if it exists
-  if (removedImage && this.selectedProducts.existingImages) {
-    const existingIndex = this.selectedProducts.existingImages.indexOf(removedImage);
-    if (existingIndex !== -1) {
-      this.selectedProducts.existingImages.splice(existingIndex, 1);
+    const removedImage = this.selectedProducts.images[index];
+    this.selectedProducts.images.splice(index, 1);
+
+    // Remove the image from existingImages if it exists
+    if (removedImage && this.selectedProducts.existingImages) {
+      const existingIndex = this.selectedProducts.existingImages.indexOf(removedImage);
+      if (existingIndex !== -1) {
+        this.selectedProducts.existingImages.splice(existingIndex, 1);
+      }
     }
-  }
 
-  if (this.selectedProducts.images.length === 0) {
-    this.selectedProducts.images = [];
-    this.fileInputRef.nativeElement.value = '';
-  }
-  this.cdr.markForCheck();
-}
-
-  async onCreateProducts() {
-  if (this.selectedProducts.price && isNaN(Number(this.selectedProducts.price))) {
-    swalHelper.showToast('Please enter a valid price!', 'warning');
-    return;
-  }
-
-  // Validate name field (strip HTML to ensure it's not empty)
-  const strippedName = this.stripHtml(this.selectedProducts.name).trim();
-  if (!strippedName) {
-    swalHelper.showToast('Product name is required!', 'warning');
-    return;
-  }
-
-  const formdata = new FormData();
-  formdata.append('name', this.selectedProducts.name);
-  formdata.append('description', this.selectedProducts.description);
-  formdata.append('businessCardId', this.businessCardId);
-  formdata.append('visible', String(this.selectedProducts.visible));
-  if (this.selectedProducts.price) {
-    formdata.append('price', this.selectedProducts.price);
-  }
-  if (this.selectedProducts._id) {
-    formdata.append('id', this.selectedProducts._id);
-  }
-
-  // Append only new images (File instances)
-  this.selectedProducts.images.forEach((file: any, index: number) => {
-    if (file instanceof File) {
-      formdata.append('images', file);
+    if (this.selectedProducts.images.length === 0) {
+      this.selectedProducts.images = [];
+      this.fileInputRef.nativeElement.value = '';
     }
-  });
-
-  // Append existingImages only if there are any left
-  if (this.selectedProducts.existingImages && this.selectedProducts.existingImages.length > 0) {
-    formdata.append('existingImages', JSON.stringify(this.selectedProducts.existingImages));
-    console.log('Existing images:', this.selectedProducts.existingImages);
-  }
-
-  this.isLoading = true;
-  try {
-    await this.websiteService.createProducts(formdata);
-    await this._getProducts();
-    this.modal.close('create-products');
-    this._reset();
-    swalHelper.showToast('Product saved successfully!', 'success');
-  } catch (error) {
-    console.error('Error saving product: ', error);
-    swalHelper.showToast('Error saving product!', 'error');
-  } finally {
-    this.isLoading = false;
     this.cdr.markForCheck();
   }
-}
+
+  async onCreateProducts() {
+    if (this.selectedProducts.price && isNaN(Number(this.selectedProducts.price))) {
+      swalHelper.showToast('Please enter a valid price!', 'warning');
+      return;
+    }
+
+    // Validate name field (strip HTML to ensure it's not empty)
+    const strippedName = this.stripHtml(this.selectedProducts.name).trim();
+    if (!strippedName) {
+      swalHelper.showToast('Product name is required!', 'warning');
+      return;
+    }
+
+    const formdata = new FormData();
+    formdata.append('name', this.selectedProducts.name);
+    formdata.append('description', this.selectedProducts.description);
+    formdata.append('businessCardId', this.businessCardId);
+    formdata.append('visible', String(this.selectedProducts.visible));
+    if (this.selectedProducts.price) {
+      formdata.append('price', this.selectedProducts.price);
+    }
+    if (this.selectedProducts._id) {
+      formdata.append('id', this.selectedProducts._id);
+    }
+
+    // Append only new images (File instances)
+    this.selectedProducts.images.forEach((file: any, index: number) => {
+      if (file instanceof File) {
+        formdata.append('images', file);
+      }
+    });
+
+    // Append existingImages only if there are any left
+    if (this.selectedProducts.existingImages && this.selectedProducts.existingImages.length > 0) {
+      formdata.append('existingImages', JSON.stringify(this.selectedProducts.existingImages));
+      console.log('Existing images:', this.selectedProducts.existingImages);
+    }
+
+    this.isLoading = true;
+    try {
+      await this.websiteService.createProducts(formdata);
+      await this._getProducts();
+      this.modal.close('create-products');
+      this._reset();
+      swalHelper.showToast('Product saved successfully!', 'success');
+    } catch (error) {
+      console.error('Error saving product: ', error);
+      swalHelper.showToast('Error saving product!', 'error');
+    } finally {
+      this.isLoading = false;
+      this.cdr.markForCheck();
+    }
+  }
 
   async _deleteProducts(id: string) {
     try {
@@ -451,7 +459,7 @@ onUploadImage(event: any) {
   // Sanitize HTML content to prevent XSS
   sanitizeHtml(content: any): any {
     if (!content) return '';
-  return content.replace(/<[^>]*>/g, '');
+    return content.replace(/<[^>]*>/g, '');
   }
 
   // Helper method to strip HTML tags for search and validation
@@ -463,7 +471,7 @@ onUploadImage(event: any) {
 
 
   // Category management methods
-  
+
   async _getCategories() {
     this.isCategoryLoading = true;
     try {
@@ -578,16 +586,16 @@ onUploadImage(event: any) {
   // }
 
   onUploadCategoryImage(event: any) {
-  const file: File = event.target.files[0];
-  if (!file) return;
+    const file: File = event.target.files[0];
+    if (!file) return;
 
-  const reader = new FileReader();
-  reader.onload = () => {
-    this.selectedCategory.categoryImage = file;
-    this.cdr.markForCheck();
-  };
-  reader.readAsDataURL(file);
-}
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.selectedCategory.categoryImage = file;
+      this.cdr.markForCheck();
+    };
+    reader.readAsDataURL(file);
+  }
 
   getCategoryImagePreview(img: any): string {
     if (img instanceof File) {
@@ -756,10 +764,10 @@ onUploadImage(event: any) {
   //     return;
   //   }
 
-    // const allowedDimensions = [
-    //   { width: 1250, height: 720 },
-    //   { width: 1600, height: 900 }
-    // ];
+  // const allowedDimensions = [
+  //   { width: 1250, height: 720 },
+  //   { width: 1600, height: 900 }
+  // ];
 
   //   let validImages: File[] = [];
   //   let processed = 0;
@@ -792,37 +800,37 @@ onUploadImage(event: any) {
   // }
 
   onUploadCategoryProductImage(event: any) {
-  const files: FileList = event.target.files;
-  const newFiles: File[] = Array.from(files);
+    const files: FileList = event.target.files;
+    const newFiles: File[] = Array.from(files);
 
-  if (!this.selectedCategoryProduct.images) {
-    this.selectedCategoryProduct.images = [];
+    if (!this.selectedCategoryProduct.images) {
+      this.selectedCategoryProduct.images = [];
+    }
+
+    const totalImages = this.selectedCategoryProduct.images.length + newFiles.length;
+    if (totalImages > 5) {
+      swalHelper.warning('You can upload a maximum of 5 images.');
+      this.selectedCategoryProduct.images = [];
+      this.categoryProductFileInput.nativeElement.value = '';
+      return;
+    }
+
+    let validImages: File[] = [];
+    let processed = 0;
+
+    for (let file of newFiles) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        validImages.push(file);
+        processed++;
+        if (processed === newFiles.length) {
+          this.selectedCategoryProduct.images.push(...validImages);
+          this.cdr.markForCheck();
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   }
-
-  const totalImages = this.selectedCategoryProduct.images.length + newFiles.length;
-  if (totalImages > 5) {
-    swalHelper.warning('You can upload a maximum of 5 images.');
-    this.selectedCategoryProduct.images = [];
-    this.categoryProductFileInput.nativeElement.value = '';
-    return;
-  }
-
-  let validImages: File[] = [];
-  let processed = 0;
-
-  for (let file of newFiles) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      validImages.push(file);
-      processed++;
-      if (processed === newFiles.length) {
-        this.selectedCategoryProduct.images.push(...validImages);
-        this.cdr.markForCheck();
-      }
-    };
-    reader.readAsDataURL(file);
-  }
-}
 
   getCategoryProductImagePreview(img: any): string {
     if (img instanceof File) {
@@ -905,61 +913,61 @@ onUploadImage(event: any) {
   // }
 
   async onCreateCategoryProduct() {
-  if (this.selectedCategoryProduct.price && isNaN(Number(this.selectedCategoryProduct.price))) {
-    swalHelper.showToast('Please enter a valid price!', 'warning');
-    return;
-  }
-
-  const strippedName = this.stripHtml(this.selectedCategoryProduct.name).trim();
-  if (!strippedName) {
-    swalHelper.showToast('Product name is required!', 'warning');
-    return;
-  }
-
-  const formdata = new FormData();
-  formdata.append('name', this.selectedCategoryProduct.name);
-  formdata.append('description', this.selectedCategoryProduct.description);
-  formdata.append('businessCardId', this.businessCardId);
-  formdata.append('categoryId', this.selectedCategory._id);
-  formdata.append('visible', String(this.selectedCategoryProduct.visible));
-  if (this.selectedCategoryProduct.price) {
-    formdata.append('price', this.selectedCategoryProduct.price);
-  }
-  if (this.selectedCategoryProduct._id) {
-    formdata.append('productId', this.selectedCategoryProduct._id);
-  }
-
-  this.selectedCategoryProduct.images.forEach((file: any, index: number) => {
-    if (file instanceof File) {
-      formdata.append('images', file);
+    if (this.selectedCategoryProduct.price && isNaN(Number(this.selectedCategoryProduct.price))) {
+      swalHelper.showToast('Please enter a valid price!', 'warning');
+      return;
     }
-  });
 
-  if (this.selectedCategoryProduct.existingImages && this.selectedCategoryProduct.existingImages.length > 0) {
-    formdata.append('existingImages', JSON.stringify(this.selectedCategoryProduct.existingImages));
-  }
-
-  this.isCategoryLoading = true;
-  try {
-    await this.websiteService.addOrUpdateProductInCategory(formdata);
-    // Refresh categories and update selectedCategory
-    await this._getCategories();
-    // Find the updated category and sync selectedCategory
-    const updatedCategory = this.categories.find(cat => cat._id === this.selectedCategory._id);
-    if (updatedCategory) {
-      this.selectedCategory = { ...updatedCategory, products: updatedCategory.products ? [...updatedCategory.products] : [] };
+    const strippedName = this.stripHtml(this.selectedCategoryProduct.name).trim();
+    if (!strippedName) {
+      swalHelper.showToast('Product name is required!', 'warning');
+      return;
     }
-    this.modal.close('create-category-product');
-    this._resetCategoryProduct();
-    swalHelper.showToast('Product saved successfully!', 'success');
-  } catch (error) {
-    console.error('Error saving product: ', error);
-    swalHelper.showToast('Error saving product!', 'error');
-  } finally {
-    this.isCategoryLoading = false;
-    this.cdr.markForCheck();
+
+    const formdata = new FormData();
+    formdata.append('name', this.selectedCategoryProduct.name);
+    formdata.append('description', this.selectedCategoryProduct.description);
+    formdata.append('businessCardId', this.businessCardId);
+    formdata.append('categoryId', this.selectedCategory._id);
+    formdata.append('visible', String(this.selectedCategoryProduct.visible));
+    if (this.selectedCategoryProduct.price) {
+      formdata.append('price', this.selectedCategoryProduct.price);
+    }
+    if (this.selectedCategoryProduct._id) {
+      formdata.append('productId', this.selectedCategoryProduct._id);
+    }
+
+    this.selectedCategoryProduct.images.forEach((file: any, index: number) => {
+      if (file instanceof File) {
+        formdata.append('images', file);
+      }
+    });
+
+    if (this.selectedCategoryProduct.existingImages && this.selectedCategoryProduct.existingImages.length > 0) {
+      formdata.append('existingImages', JSON.stringify(this.selectedCategoryProduct.existingImages));
+    }
+
+    this.isCategoryLoading = true;
+    try {
+      await this.websiteService.addOrUpdateProductInCategory(formdata);
+      // Refresh categories and update selectedCategory
+      await this._getCategories();
+      // Find the updated category and sync selectedCategory
+      const updatedCategory = this.categories.find(cat => cat._id === this.selectedCategory._id);
+      if (updatedCategory) {
+        this.selectedCategory = { ...updatedCategory, products: updatedCategory.products ? [...updatedCategory.products] : [] };
+      }
+      this.modal.close('create-category-product');
+      this._resetCategoryProduct();
+      swalHelper.showToast('Product saved successfully!', 'success');
+    } catch (error) {
+      console.error('Error saving product: ', error);
+      swalHelper.showToast('Error saving product!', 'error');
+    } finally {
+      this.isCategoryLoading = false;
+      this.cdr.markForCheck();
+    }
   }
-}
 
   // async deleteCategoryProduct(productId: string) {
   //   try {
@@ -981,29 +989,29 @@ onUploadImage(event: any) {
   // }
 
   async deleteCategoryProduct(productId: string) {
-  try {
-    const confirm = await swalHelper.delete();
-    if (confirm.isConfirmed) {
-      await this.websiteService.deleteProductInCategory({
-        productId,
-        categoryId: this.selectedCategory._id,
-        businessCardId: this.businessCardId
-      });
-      // Refresh categories and update selectedCategory
-      await this._getCategories();
-      // Find the updated category and sync selectedCategory
-      const updatedCategory = this.categories.find(cat => cat._id === this.selectedCategory._id);
-      if (updatedCategory) {
-        this.selectedCategory = { ...updatedCategory, products: updatedCategory.products ? [...updatedCategory.products] : [] };
+    try {
+      const confirm = await swalHelper.delete();
+      if (confirm.isConfirmed) {
+        await this.websiteService.deleteProductInCategory({
+          productId,
+          categoryId: this.selectedCategory._id,
+          businessCardId: this.businessCardId
+        });
+        // Refresh categories and update selectedCategory
+        await this._getCategories();
+        // Find the updated category and sync selectedCategory
+        const updatedCategory = this.categories.find(cat => cat._id === this.selectedCategory._id);
+        if (updatedCategory) {
+          this.selectedCategory = { ...updatedCategory, products: updatedCategory.products ? [...updatedCategory.products] : [] };
+        }
+        this._resetCategoryProduct();
+        swalHelper.showToast('Product deleted successfully!', 'success');
       }
-      this._resetCategoryProduct();
-      swalHelper.showToast('Product deleted successfully!', 'success');
+    } catch (error) {
+      console.error('Error deleting product: ', error);
+      swalHelper.showToast('Error deleting product!', 'error');
     }
-  } catch (error) {
-    console.error('Error deleting product: ', error);
-    swalHelper.showToast('Error deleting product!', 'error');
   }
-}
 
   onOpenCategoryImageModal(image: string) {
     this.imageForCarousel = [image];
@@ -1027,6 +1035,39 @@ onUploadImage(event: any) {
     this.cdr.markForCheck();
   }
 
+  // Add this method to handle title edit
+  editSectionTitle() {
+    this.modal.open('EditTitleModal');
+  }
 
+  // Add this method to update section title
+  async updateSectionTitle() {
+    if (!this.sectionTitles.products.trim()) {
+      swalHelper.showToast('Section title is required!', 'warning');
+      return;
+    }
+
+    this.isLoading = true;
+    try {
+      let businessCardId = this.storage.get(common.BUSINESS_CARD);
+      const data = {
+        businessCardId: businessCardId,
+        sectionTitles: {
+          products: this.sectionTitles.products
+        }
+      };
+
+      const result = await this.websiteService.updateSectionsTitles(data);
+      if (result) {
+        this.modal.close('EditTitleModal');
+        swalHelper.showToast('Section title updated successfully!', 'success');
+      }
+    } catch (error) {
+      console.error('Error updating section title: ', error);
+      swalHelper.showToast('Error updating section title!', 'error');
+    } finally {
+      this.isLoading = false;
+    }
+  }
 
 }

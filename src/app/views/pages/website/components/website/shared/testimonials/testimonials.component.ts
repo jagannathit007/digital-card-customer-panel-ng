@@ -24,7 +24,7 @@ export class TestimonialsComponent implements OnInit {
   p: number = 1;
   isLoading: boolean = false;
 
-  
+
   testimonialList: any[] = [];
   filteredTestimonialList: any[] = [];
   testimonialID: string = '';
@@ -35,8 +35,8 @@ export class TestimonialsComponent implements OnInit {
     clientName: '',
     rating: null,
     feedback: '',
-    image: null as File | null ,
-    visible:true
+    image: null as File | null,
+    visible: true
   };
 
   editingTestimonial = {
@@ -46,15 +46,19 @@ export class TestimonialsComponent implements OnInit {
     feedback: '',
     image: null as File | null,
     currentImage: [] as string[],
-    visible:true
+    visible: true
   };
 
-  
-  constructor(private storage: AppStorage, public authService: AuthService,public modal:ModalService,private websiteService:WebsiteBuilderService) {}
-  
-  businessCardId:any
+  sectionTitles: any = {
+    testimonials: 'testimonials'
+  };
+
+
+  constructor(private storage: AppStorage, public authService: AuthService, public modal: ModalService, private websiteService: WebsiteBuilderService) { }
+
+  businessCardId: any
   async ngOnInit() {
-    this.businessCardId=this.storage.get(common.BUSINESS_CARD)
+    this.businessCardId = this.storage.get(common.BUSINESS_CARD)
     await this.fetchWebsiteDetails();
   }
 
@@ -63,12 +67,17 @@ export class TestimonialsComponent implements OnInit {
     try {
       let businessCardId = this.storage.get(common.BUSINESS_CARD);
       let results = await this.authService.getWebsiteDetails(businessCardId);
-      
+
       if (results) {
         this.testimonialList = results.testimonials ? [...results.testimonials] : [];
         this.filteredTestimonialList = [...this.testimonialList];
         this.totalItems = this.testimonialList.length;
-        this.testimonialsVisible=results.testimonialsVisible
+        this.testimonialsVisible = results.testimonialsVisible
+        
+        if (results.sectionTitles) {
+        this.sectionTitles = results.sectionTitles;
+       }
+
       } else {
         swalHelper.showToast('Failed to fetch testimonials!', 'warning');
       }
@@ -88,7 +97,7 @@ export class TestimonialsComponent implements OnInit {
     this.isLoading = true;
     try {
       let businessCardId = this.storage.get(common.BUSINESS_CARD);
-      
+
       const formData = new FormData();
       formData.append('businessCardId', businessCardId);
       formData.append('clientName', this.newTestimonial.clientName);
@@ -98,14 +107,14 @@ export class TestimonialsComponent implements OnInit {
       if (this.newTestimonial.image) {
         formData.append('file', this.newTestimonial.image);
       }
-  
+
       const result = await this.authService.addTestimonials(formData);
-      
+
       if (result) {
         this.testimonialList = [result, ...this.testimonialList];
         this.filteredTestimonialList = [...this.testimonialList];
         this.totalItems = this.testimonialList.length;
-        
+
         await this.fetchWebsiteDetails();
         this.resetForm();
         this.modal.close('AddTestimonialModal');
@@ -120,7 +129,7 @@ export class TestimonialsComponent implements OnInit {
   }
 
 
-  
+
   onFileChange(event: any) {
     if (event.target.files && event.target.files.length > 0) {
       this.newTestimonial.image = event.target.files[0];
@@ -132,14 +141,14 @@ export class TestimonialsComponent implements OnInit {
       this.editingTestimonial.image = event.target.files[0];
     }
   }
-  
+
   resetForm() {
     this.newTestimonial = {
       clientName: '',
       rating: null,
       feedback: '',
       image: null,
-      visible:true
+      visible: true
     };
   }
 
@@ -151,7 +160,7 @@ export class TestimonialsComponent implements OnInit {
       feedback: testimonial.feedback,
       image: null,
       currentImage: testimonial.image || [],
-      visible:testimonial.visible
+      visible: testimonial.visible
     };
     this.modal.open('EditTestimonialsModal');
   }
@@ -164,7 +173,7 @@ export class TestimonialsComponent implements OnInit {
     this.isLoading = true;
     try {
       let businessCardId = this.storage.get(common.BUSINESS_CARD);
-      
+
       // Create FormData
       const formData = new FormData();
       formData.append('businessCardId', businessCardId);
@@ -176,10 +185,10 @@ export class TestimonialsComponent implements OnInit {
       if (this.editingTestimonial.image) {
         formData.append('file', this.editingTestimonial.image);
       }
-  
+
       // Call the service method
       const result = await this.authService.updateTestimonials(formData);
-      
+
       if (result) {
         // Update the testimonial in the list
         const index = this.testimonialList.findIndex(t => t._id === this.editingTestimonial._id);
@@ -205,20 +214,20 @@ export class TestimonialsComponent implements OnInit {
     this.isLoading = true;
     try {
       let businessCardId = this.storage.get(common.BUSINESS_CARD);
-      
+
       const data = {
         businessCardId: businessCardId,
         testimonialId: this.testimonialID
       };
-  
+
       const result = await this.authService.deleteTestimonials(data);
-      
+
       if (result) {
         // Remove the testimonial from the list
         this.testimonialList = this.testimonialList.filter(t => t._id !== this.testimonialID);
         this.filteredTestimonialList = [...this.testimonialList];
         this.totalItems = this.testimonialList.length;
-        
+
         await this.fetchWebsiteDetails();
         this.resetForm();
         swalHelper.success('Testimonial deleted successfully!');
@@ -232,12 +241,12 @@ export class TestimonialsComponent implements OnInit {
   }
 
   // Store testimonial ID for deletion
-  deleteTestimonials=async(testimonialID: string)=>{
+  deleteTestimonials = async (testimonialID: string) => {
     this.testimonialID = testimonialID;
-    const confirm=await swalHelper.delete();
-      if(confirm.isConfirmed){
-        this.confirmDeleteTestimonial();
-      }
+    const confirm = await swalHelper.delete();
+    if (confirm.isConfirmed) {
+      this.confirmDeleteTestimonial();
+    }
   }
 
   // Validate testimonial data
@@ -246,17 +255,17 @@ export class TestimonialsComponent implements OnInit {
       swalHelper.showToast('Client name is required!', 'warning');
       return false;
     }
-    
+
     if (!testimonial.rating || testimonial.rating < 1 || testimonial.rating > 5) {
       swalHelper.showToast('Rating must be between 1 and 5!', 'warning');
       return false;
     }
-    
+
     if (!testimonial.feedback.trim()) {
       swalHelper.showToast('Feedback is required!', 'warning');
       return false;
     }
-    
+
     return true;
   }
 
@@ -280,12 +289,48 @@ export class TestimonialsComponent implements OnInit {
     this.p = event;
   }
 
-  onCloseModal(modal:string){
+  onCloseModal(modal: string) {
     this.modal.close(modal)
   }
 
-  testimonialsVisible:boolean=false
-  _updateVisibility=async()=>{
-    await this.websiteService.updateVisibility({testimonialsVisible:this.testimonialsVisible,businessCardId:this.businessCardId})
+  testimonialsVisible: boolean = false
+  _updateVisibility = async () => {
+    await this.websiteService.updateVisibility({ testimonialsVisible: this.testimonialsVisible, businessCardId: this.businessCardId })
   }
+
+    // Add this method to handle title edit
+  editSectionTitle() {
+    this.modal.open('EditTitleModal');
+  }
+
+  // Add this method to update section title
+  async updateSectionTitle() {
+    if (!this.sectionTitles.testimonials.trim()) {
+      swalHelper.showToast('Section title is required!', 'warning');
+      return;
+    }
+
+    this.isLoading = true;
+    try {
+      let businessCardId = this.storage.get(common.BUSINESS_CARD);
+      const data = {
+        businessCardId: businessCardId,
+        sectionTitles: {
+          testimonials: this.sectionTitles.testimonials
+        }
+      };
+
+      const result = await this.websiteService.updateSectionsTitles(data);
+      if (result) {
+        this.modal.close('EditTitleModal');
+        swalHelper.showToast('Section title updated successfully!', 'success');
+      }
+    } catch (error) {
+      console.error('Error updating section title: ', error);
+      swalHelper.showToast('Error updating section title!', 'error');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
 }

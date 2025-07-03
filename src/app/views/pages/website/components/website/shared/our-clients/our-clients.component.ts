@@ -63,6 +63,10 @@ export class OurClientsComponent implements OnInit, OnDestroy {
     visible: true,
   };
 
+  sectionTitles: any = {
+  clients: 'Clients'
+};
+
   constructor(
     private storage: AppStorage,
     public authService: AuthService,
@@ -98,6 +102,11 @@ export class OurClientsComponent implements OnInit, OnDestroy {
         this.filteredClients = [...this.clientsList];
         this.totalItems = this.clientsList.length;
         this.clientVisible = results.clientVisible;
+
+        if (results.sectionTitles) {
+        this.sectionTitles = results.sectionTitles;
+       }
+
         this.cdr.markForCheck();
       } else {
         swalHelper.showToast('Failed to fetch clients!', 'warning');
@@ -308,4 +317,41 @@ sanitizeHtml(content: any): any {
     tmp.innerHTML = html;
     return tmp.textContent || tmp.innerText || '';
   }
+
+   // Add this method to handle title edit
+editSectionTitle() {
+  this.modal.open('EditTitleModal');
+}
+
+  // Add this method to update section title
+async updateSectionTitle() {
+  if (!this.sectionTitles.clients.trim()) {
+    swalHelper.showToast('Section title is required!', 'warning');
+    return;
+  }
+
+  this.isLoading = true;
+  try {
+    let businessCardId = this.storage.get(common.BUSINESS_CARD);
+    const data = {
+      businessCardId: businessCardId,
+      sectionTitles: {
+        clients: this.sectionTitles.clients
+      }
+    };
+
+    const result = await this.websiteService.updateSectionsTitles(data);
+    if (result) {
+      this.modal.close('EditTitleModal');
+      swalHelper.showToast('Section title updated successfully!', 'success');
+    }
+  } catch (error) {
+    console.error('Error updating section title: ', error);
+    swalHelper.showToast('Error updating section title!', 'error');
+  } finally {
+    this.isLoading = false;
+    this.cdr.markForCheck();
+  }
+}
+
 }

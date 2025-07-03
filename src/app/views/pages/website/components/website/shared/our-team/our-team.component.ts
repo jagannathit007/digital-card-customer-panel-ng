@@ -65,6 +65,10 @@ export class OurTeamComponent implements OnInit, OnDestroy {
     visible: true,
   };
 
+  sectionTitles: any = {
+    team: 'Our Team'
+  };
+
   constructor(
     private storage: AppStorage,
     public authService: AuthService,
@@ -72,7 +76,7 @@ export class OurTeamComponent implements OnInit, OnDestroy {
     public modal: ModalService,
     private websiteService: WebsiteBuilderService,
     private sanitizer: DomSanitizer
-  ) {}
+  ) { }
 
   businessCardId: any;
 
@@ -104,6 +108,11 @@ export class OurTeamComponent implements OnInit, OnDestroy {
         this.filteredMembers = [...this.members];
         this.totalItems = this.members.length;
         this.teamVisible = results.teamVisible;
+
+        if (results.sectionTitles) {
+          this.sectionTitles = results.sectionTitles;
+        }
+
         this.cdr.markForCheck();
       } else {
         swalHelper.showToast('Failed to fetch team members!', 'warning');
@@ -316,4 +325,43 @@ export class OurTeamComponent implements OnInit, OnDestroy {
     tmp.innerHTML = html;
     return tmp.textContent || tmp.innerText || '';
   }
+
+
+  // Add this method to handle title edit
+  editSectionTitle() {
+    this.modal.open('EditTitleModal');
+  }
+
+  // Add this method to update section title
+  async updateSectionTitle() {
+    if (!this.sectionTitles.team.trim()) {
+      swalHelper.showToast('Section title is required!', 'warning');
+      return;
+    }
+
+    this.isLoading = true;
+    try {
+      let businessCardId = this.storage.get(common.BUSINESS_CARD);
+      const data = {
+        businessCardId: businessCardId,
+        sectionTitles: {
+          team: this.sectionTitles.team
+        }
+      };
+
+      const result = await this.websiteService.updateSectionsTitles(data);
+      if (result) {
+        this.modal.close('EditTitleModal');
+        swalHelper.showToast('Section title updated successfully!', 'success');
+      }
+    } catch (error) {
+      console.error('Error updating section title: ', error);
+      swalHelper.showToast('Error updating section title!', 'error');
+    } finally {
+      this.isLoading = false;
+      this.cdr.markForCheck();
+    }
+  }
+
+
 }

@@ -1,8 +1,11 @@
 <div>
     <div class="row">
         <div class="col-md">
-            <div class="d-flex">
-                <label class="fw-bold text-uppercase fs-3">Certificate List</label>
+            <div class="d-flex align-items-center">
+            <label class="fw-bold text-uppercase fs-3 me-2">{{ sectionTitles.certification || 'certification List' }}</label>
+            <button class="btn btn-sm text-white bg-primary me-2" (click)="editSectionTitle()" title="Edit Section Title">
+                <i class="ri-edit-line"></i>
+            </button>  
                 <app-toggle [isActive]="certificationVisible" [onText]="'Visible'" [offText]="'Hidden'" class="ms-2 mt-2"
                     (changed)="this.certificationVisible=!this.certificationVisible;_updateVisibility()">
                 </app-toggle>
@@ -279,6 +282,34 @@
             </div>
             <div class="modal-body text-center">
                 <img [src]="selectedImage" class="img-fluid rounded" style="max-width: 100%; max-height: 80vh;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Section Title Modal -->
+<div class="modal fade" id="EditTitleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="EditTitleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fw-medium" id="EditTitleModalLabel">Edit Section Title</h4>
+                <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('EditTitleModal')"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="sectionTitle" class="form-label">Section Title</label>
+                        <input type="text" class="form-control" id="sectionTitle" 
+                               placeholder="Enter section title" 
+                               [(ngModel)]="sectionTitles.certification" 
+                               name="sectionTitle" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" (click)="updateSectionTitle()" [disabled]="isLoading">
+                    <i class="ri-save-line"></i> {{ isLoading ? 'Saving...' : 'Save' }}
+                </button>
             </div>
         </div>
     </div>

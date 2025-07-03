@@ -65,6 +65,10 @@ export class OurServicesComponent implements OnInit, OnDestroy {
     visible: true
   };
 
+sectionTitles: any = {
+  services: 'Service List'
+};
+
   constructor(
     private storage: AppStorage,
     public authService: AuthService,
@@ -111,6 +115,9 @@ export class OurServicesComponent implements OnInit, OnDestroy {
         this.filteredServices = [...this.services];
         this.totalItems = this.services.length;
         this.serviceVisible = results.serviceVisible;
+        if (results.sectionTitles) {
+        this.sectionTitles = results.sectionTitles;
+      }
         this.cdr.markForCheck();
       } else {
         swalHelper.showToast('Failed to fetch services!', 'warning');
@@ -327,4 +334,42 @@ export class OurServicesComponent implements OnInit, OnDestroy {
     if (!content) return '';
     return content.replace(/<[^>]*>/g, '');
   }
+
+  // Add this method to handle title edit
+editSectionTitle() {
+  this.modal.open('EditTitleModal');
+}
+
+  // Add this method to update section title
+async updateSectionTitle() {
+  if (!this.sectionTitles.services.trim()) {
+    swalHelper.showToast('Section title is required!', 'warning');
+    return;
+  }
+
+  this.isLoading = true;
+  try {
+    let businessCardId = this.storage.get(common.BUSINESS_CARD);
+    const data = {
+      businessCardId: businessCardId,
+      sectionTitles: {
+        services: this.sectionTitles.services
+      }
+    };
+
+    const result = await this.websiteService.updateSectionsTitles(data);
+    if (result) {
+      this.modal.close('EditTitleModal');
+      swalHelper.showToast('Section title updated successfully!', 'success');
+    }
+  } catch (error) {
+    console.error('Error updating section title: ', error);
+    swalHelper.showToast('Error updating section title!', 'error');
+  } finally {
+    this.isLoading = false;
+    this.cdr.markForCheck();
+  }
+}
+
+
 }
