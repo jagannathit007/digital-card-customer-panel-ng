@@ -270,14 +270,31 @@ private sortTasksInColumn(column: DayColumn): void {
     }, 50);
   }
 
-  toggleTaskStatus(task: WeekTask): void {
-    task.isCompleted = !task.isCompleted;
-    task.completedOn = task.isCompleted ? new Date() : null;
+async toggleTaskStatus(task: WeekTask): Promise<void> {
+  const previousStatus = task.isCompleted;
+  const previousCompletedOn = task.completedOn;
+  
+  // Update UI immediately
+  task.isCompleted = !task.isCompleted;
+  task.completedOn = task.isCompleted ? new Date() : null;
+  
+  // Sort the column after status change
+  const column = this.dayColumns[task.dayIndex];
+  this.sortTasksInColumn(column);
+  
+  try {
+    await this.personalTaskService.TogglePersonalTaskStatus({
+      taskId: task._id,
+    });
+  } catch (error) {
+    console.error('Error updating task status:', error);
     
-    // Sort the column after status change
-    const column = this.dayColumns[task.dayIndex];
+    // Revert on error
+    task.isCompleted = previousStatus;
+    task.completedOn = previousCompletedOn;
     this.sortTasksInColumn(column);
   }
+}
 
   startEditTask(task: WeekTask): void {
     this.editingTask = {

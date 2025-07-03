@@ -76,10 +76,12 @@
               <input 
                 type="radio"
                 [checked]="task.isCompleted"
-                (change)="toggleTaskStatus(task)"
-                (click)="$event.stopPropagation()"
+                (click)="$event.stopPropagation(); toggleTaskStatus(task)"
+                [disabled]="false" 
                 class="tw-w-4 tw-h-4 tw-text-green-600 tw-border-gray-300 focus:tw-ring-green-500 tw-cursor-pointer">
             </div>
+            <!-- (change)="toggleTaskStatus(task); $event.stopPropagation();" -->
+
             
             <!-- Task Options -->
             <div class="tw-flex tw-items-center tw-space-x-1 tw-flex-shrink-0 task-options" (click)="$event.stopPropagation()">
