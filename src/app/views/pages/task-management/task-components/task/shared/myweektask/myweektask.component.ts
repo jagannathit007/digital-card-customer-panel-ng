@@ -169,16 +169,30 @@ export class MyweektaskComponent implements OnInit {
     return -1;
   }
 
-  private sortTasksInColumn(column: DayColumn): void {
-    column.tasks.sort((a, b) => {
-      // Incomplete tasks first, completed tasks at bottom
-      if (a.isCompleted && !b.isCompleted) return 1;
-      if (!a.isCompleted && b.isCompleted) return -1;
-      
-      // Within same status, maintain creation order (newest first)
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    });
-  }
+private sortTasksInColumn(column: DayColumn): void {
+  const currentTime = new Date();
+  
+  column.tasks.sort((a, b) => {
+    // Incomplete tasks first
+    if (a.isCompleted !== b.isCompleted) {
+      return Number(a.isCompleted) - Number(b.isCompleted);
+    }
+    
+    // Sort by time, not createdAt
+    const timeA = new Date(a.dueOn || a.createdAt);
+    const timeB = new Date(b.dueOn || b.createdAt);
+    
+    // For today, sort by proximity to current time
+    if (column.index === 0) {
+      const diffA = Math.abs(timeA.getTime() - currentTime.getTime());
+      const diffB = Math.abs(timeB.getTime() - currentTime.getTime());
+      return diffA - diffB;
+    }
+    
+    // For other days, earliest time first
+    return timeA.getTime() - timeB.getTime();
+  });
+}
 
   // Input Management
   onInputFocus(columnIndex: number): void {
@@ -218,16 +232,24 @@ export class MyweektaskComponent implements OnInit {
     const dueDate = new Date(column.date);
     dueDate.setMinutes(dueDate.getMinutes() + 5);
 
-    const newTask: WeekTask = {
-      _id: `temp-${Date.now()}`,
+    
+
+
+    const response = await this.personalTaskService.AddPersonalTask({
+        title: taskTitle,
+        dueOn: dueDate
+      });
+
+      if(response){
+        const newTask: WeekTask = {
+      _id: response._id,
       title: taskTitle,
       dueOn: dueDate,
       isCompleted: false,
       completedOn: null,
-      createdAt: new Date(),
+      createdAt: response.createdAt,
       dayIndex: columnIndex
     };
-
     // Add to top of column
     column.tasks.unshift(newTask);
     column.newTaskTitle = '';
@@ -237,11 +259,7 @@ export class MyweektaskComponent implements OnInit {
 
     // Sort column to maintain order
     this.sortTasksInColumn(column);
-
-    const response = await this.personalTaskService.AddPersonalTask({
-        title: newTask.title,
-        dueOn: dueDate
-      });
+      }
     
     // Keep input focused after adding task
     setTimeout(() => {
