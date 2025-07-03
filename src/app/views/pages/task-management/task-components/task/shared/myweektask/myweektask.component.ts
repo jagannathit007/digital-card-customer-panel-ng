@@ -170,27 +170,17 @@ export class MyweektaskComponent implements OnInit {
   }
 
 private sortTasksInColumn(column: DayColumn): void {
-  const currentTime = new Date();
-  
   column.tasks.sort((a, b) => {
-    // Incomplete tasks first
+    // First priority: Incomplete tasks come first
     if (a.isCompleted !== b.isCompleted) {
       return Number(a.isCompleted) - Number(b.isCompleted);
     }
     
-    // Sort by time, not createdAt
-    const timeA = new Date(a.dueOn || a.createdAt);
-    const timeB = new Date(b.dueOn || b.createdAt);
+    // Second priority: Sort by due time (earliest first)
+    const timeA = new Date(a.dueOn || a.createdAt).getTime();
+    const timeB = new Date(b.dueOn || b.createdAt).getTime();
     
-    // For today, sort by proximity to current time
-    if (column.index === 0) {
-      const diffA = Math.abs(timeA.getTime() - currentTime.getTime());
-      const diffB = Math.abs(timeB.getTime() - currentTime.getTime());
-      return diffA - diffB;
-    }
-    
-    // For other days, earliest time first
-    return timeA.getTime() - timeB.getTime();
+    return timeA - timeB;
   });
 }
 
@@ -225,23 +215,21 @@ private sortTasksInColumn(column: DayColumn): void {
   }
 
  async addTask(columnIndex: number): Promise<void> {
-    const column = this.dayColumns[columnIndex];
-    const taskTitle = column.newTaskTitle.trim();
-    
-    if (!taskTitle) return;
-    const dueDate = new Date(column.date);
-    dueDate.setMinutes(dueDate.getMinutes() + 5);
+  const column = this.dayColumns[columnIndex];
+  const taskTitle = column.newTaskTitle.trim();
+  
+  if (!taskTitle) return;
+  
+  const dueDate = new Date(column.date);
+  dueDate.setMinutes(dueDate.getMinutes() + 5);
 
-    
+  const response = await this.personalTaskService.AddPersonalTask({
+    title: taskTitle,
+    dueOn: dueDate
+  });
 
-
-    const response = await this.personalTaskService.AddPersonalTask({
-        title: taskTitle,
-        dueOn: dueDate
-      });
-
-      if(response){
-        const newTask: WeekTask = {
+  if(response){
+    const newTask: WeekTask = {
       _id: response._id,
       title: taskTitle,
       dueOn: dueDate,
@@ -250,26 +238,23 @@ private sortTasksInColumn(column: DayColumn): void {
       createdAt: response.createdAt,
       dayIndex: columnIndex
     };
-    // Add to top of column
-    column.tasks.unshift(newTask);
+    
+    // Change: Use push instead of unshift
+    column.tasks.push(newTask);
     column.newTaskTitle = '';
     
-    // Explicitly set input focus state
-    column.isInputFocused = true;
-
-    // Sort column to maintain order
+    // Sort column to maintain proper order
     this.sortTasksInColumn(column);
-      }
-    
-    // Keep input focused after adding task
-    setTimeout(() => {
-      const inputElement = document.querySelector(`textarea[data-column="${columnIndex}"]`) as HTMLTextAreaElement;
-      if (inputElement) {
-        inputElement.focus();
-      }
-    }, 50);
   }
-
+  
+  // Keep input focused
+  setTimeout(() => {
+    const inputElement = document.querySelector(`textarea[data-column="${columnIndex}"]`) as HTMLTextAreaElement;
+    if (inputElement) {
+      inputElement.focus();
+    }
+  }, 50);
+}
 async toggleTaskStatus(task: WeekTask): Promise<void> {
   const previousStatus = task.isCompleted;
   const previousCompletedOn = task.completedOn;
