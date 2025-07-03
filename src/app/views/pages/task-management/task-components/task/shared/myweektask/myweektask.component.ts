@@ -218,7 +218,7 @@ private sortTasksInColumn(column: DayColumn): void {
   }
 
   onKeyDown(event: KeyboardEvent, columnIndex: number): void {
-    if (event.ctrlKey && event.key === 'Enter') {
+    if (event.key === 'Enter') {
       event.preventDefault();
       this.addTask(columnIndex);
     }
@@ -331,6 +331,9 @@ private sortTasksInColumn(column: DayColumn): void {
 
   async moveTaskToDay(task: WeekTask, targetDayIndex: number): Promise<void> {
   if (task.dayIndex === targetDayIndex) return;
+
+  // Close dropdown immediately
+  this.activeDropdownId = null;
   
   // Remove from current column
   const currentColumn = this.dayColumns[task.dayIndex];
