@@ -1,4 +1,20 @@
-<div class="tw-h-full tw-bg-white tw-p-4 tw-select-none">
+   <!-- page Loader -->
+      <div
+        class="tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-bottom-0 tw-flex tw-items-center tw-justify-center tw-bg-[#0000004d] tw-z-30"
+        *ngIf="isLoading"
+      >
+        <div
+          class="tw-flex tw-items-center tw-gap-5 tw-bg-white tw-px-8 tw-py-5 tw-rounded"
+        >
+          <span
+            class="tw-animate-spin tw-rounded-full tw-h-5 tw-w-5 tw-border-b-2 tw-border-blue-600"
+          ></span
+          >Loading...
+        </div>
+      </div>
+
+
+<div *ngIf="!isLoading" class="tw-h-full tw-bg-white tw-p-4 tw-select-none">
   <!-- Kanban Board Container -->
   <div 
     #kanbanContainer
@@ -60,10 +76,12 @@
               <input 
                 type="radio"
                 [checked]="task.isCompleted"
-                (change)="toggleTaskStatus(task)"
-                (click)="$event.stopPropagation()"
+                (click)="$event.stopPropagation(); toggleTaskStatus(task)"
+                [disabled]="false" 
                 class="tw-w-4 tw-h-4 tw-text-green-600 tw-border-gray-300 focus:tw-ring-green-500 tw-cursor-pointer">
             </div>
+            <!-- (change)="toggleTaskStatus(task); $event.stopPropagation();" -->
+
             
             <!-- Task Options -->
             <div class="tw-flex tw-items-center tw-space-x-1 tw-flex-shrink-0 task-options" (click)="$event.stopPropagation()">
