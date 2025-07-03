@@ -20,6 +20,7 @@ import { TaskPermissionsService } from 'src/app/services/task-permissions.servic
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { environment } from 'src/env/env.local';
+import { MemberDetailDropdownComponent } from "../../../../../../partials/task-managemnt/common-components/add-members-dropdown/add-members-dropdown.component";
 
 interface TaskMember {
   _id: string;
@@ -75,11 +76,13 @@ interface TaskUpdate {
 @Component({
   selector: 'app-team-task-detail-popup',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgxEditorModule, AddCommentsComponent],
+  imports: [CommonModule, FormsModule, NgxEditorModule, AddCommentsComponent, MemberDetailDropdownComponent],
   templateUrl: './team-task-detail-popup.component.html',
   styleUrl: './team-task-detail-popup.component.scss',
 })
 export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
+  @ViewChild('addMembersDropdown') addMembersDropdown!: MemberDetailDropdownComponent;
+
   @Output() taskUpdated = new EventEmitter<TaskUpdate>();
   @Output() taskDeleted = new EventEmitter<string>();
 
@@ -129,6 +132,9 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
 
   BoardMembers: any = [];
   imageBaseUrl = '';
+
+  // Task permissions
+  taskPermissions = false;
 
   showNoDateButton: boolean = false;
   @ViewChild('dueDateInput') dueDateInput!: ElementRef<HTMLInputElement>;
@@ -250,7 +256,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.imageBaseUrl = environment.imageURL;
+    this.imageBaseUrl = environment.imageURL;    
     this.initializeEditor();
     this.setupRouteSubscriptions();
     this.loadTaskData();
@@ -301,8 +307,11 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     if (response) {
       const users = await this.loadAvailableUsers(response.board);
       if (users) {
-        setTimeout(() => {
+        setTimeout(async () => {
           this.task = response;
+
+          this.taskPermissions = await this.taskPermissionsService.isTeamTaskCardAccessible(response);
+
           this.isLoading = false;
         }, 1000);
       } else {
@@ -371,8 +380,30 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     }
   }
 
+  toggleDropdown(): void {
+  this.addMembersDropdown.toggleDropdown();
+}
+
+
+  async onMembersUpdated(selectedMembers: any): Promise<void> {
+    console.log('Selected members updated:', selectedMembers);
+    this.task.assignedTo = selectedMembers;
+
+    const response = await this.taskService.updateTeamTaskAssignedTo({
+      taskId: this.taskId,
+      assignedTo: selectedMembers.map((member:TaskMember) => member._id),
+    });
+
+    if (!response) {
+      // failed to update assigned members
+
+    }
+    this.emitTaskUpdate('assignedTo', this.task.assignedTo);
+  }
+
   // Title editing methods
   startEditingTitle(): void {
+    if (!this.taskPermissions) return;
     this.isEditingTitle = true;
     this.editTitle = this.task.title;
     this.createBackup('title');
@@ -438,6 +469,8 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   }
 
   toggleCustomDatePicker(): void {
+    if (!this.taskPermissions) return;
+
     this.showCustomDatePicker = !this.showCustomDatePicker;
     if (this.showCustomDatePicker) {
       // Set currentCalendarDate to the due date's month if it exists, otherwise use current month
@@ -738,7 +771,6 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     mentionedMembers: string[],
     createdBy: string
   ): SafeHtml {
-    console.log('Formatting comment:', text, mentionedMembers, createdBy);
 
     let tooltipPlacement = 'left';
 

@@ -9,7 +9,7 @@
     (click)="$event.stopPropagation()"
   >
     <!-- Header -->
-    <!-- <div
+    <div
       class="tw-flex tw-items-center tw-justify-between tw-p-4 md:tw-p-6 tw-border-b tw-border-gray-200 tw-bg-gray-50"
     >
       <div class="tw-flex tw-items-center tw-space-x-3">
@@ -30,12 +30,14 @@
       >
         <i class="fas fa-times tw-text-lg"></i>
       </button>
-    </div> -->
+    </div>
 
     <!-- Content Area -->
     <div class="tw-flex-1 tw-flex tw-flex-col tw-overflow-hidden">
       <!-- Task Title Section -->
-      <div class="tw-px-4 tw-py-2 md:tw-p-6 md:tw-py-4 tw-border-b tw-border-gray-100">
+      <div
+        class="tw-px-4 tw-py-2 md:tw-p-6 md:tw-py-4 tw-border-b tw-border-gray-100"
+      >
         <div *ngIf="isLoading" class="tw-p-2">
           <!-- shimmer effect -->
           <div
@@ -56,7 +58,11 @@
                 {{ task.title || "Untitled Task" }}
               </h2>
               <i
-                class="fas fa-edit tw-text-gray-400 group-hover:tw-text-gray-600 tw-text-sm tw-opacity-0 group-hover:tw-opacity-100 tw-transition-all tw-duration-200"
+                class="fas fa-edit tw-text-gray-400 group-hover:tw-text-gray-600 tw-text-sm tw-opacity-0 tw-transition-all tw-duration-200"
+                [ngClass]="{
+                  'tw-pointer-events-none': !taskPermissions,
+                  'tw-pointer-events-auto group-hover:tw-opacity-100': taskPermissions
+                }"
               ></i>
             </div>
           </div>
@@ -126,6 +132,7 @@
             <!-- Status Select -->
             <div class="tw-relative">
               <select
+                [disabled]="!taskPermissions"
                 [(ngModel)]="task.status"
                 (change)="updateStatus(task.status)"
                 class="tw-appearance-none tw-bg-white tw-border tw-border-gray-300 tw-rounded-lg tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-700 hover:tw-border-gray-400 focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500 tw-transition-all tw-duration-200 tw-pr-8"
@@ -268,11 +275,12 @@
 
           <!-- Right Side: Assignment -->
           <div class="tw-flex tw-items-center tw-space-x-3">
-            <ng-container
+            <!-- <ng-container
               *ngIf="task.assignedTo.length === 0; else hasAssignedTemplate"
             >
               <button
                 type="button"
+                (click)="toggleDropdown()"
                 class="tw-bg-blue-50 tw-text-blue-600 tw-px-4 tw-py-2 tw-rounded-lg tw-text-sm tw-font-medium hover:tw-bg-blue-100 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-space-x-2"
               >
                 <i class="fas fa-user-plus tw-text-xs"></i>
@@ -282,7 +290,6 @@
 
             <ng-template #hasAssignedTemplate>
               <div class="tw-flex tw-items-center tw-space-x-2">
-                <!-- First two member avatars -->
                 <div class="tw-flex tw--space-x-2">
                   <img
                     *ngFor="let member of task.assignedTo.slice(0, 2)"
@@ -292,7 +299,6 @@
                   />
                 </div>
 
-                <!-- Additional count if more than 2 -->
                 <span
                   *ngIf="task.assignedTo.length > 2"
                   class="tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-font-medium tw-px-2 tw-py-1 tw-rounded-full"
@@ -300,15 +306,24 @@
                   +{{ task.assignedTo.length - 2 }}
                 </span>
 
-                <!-- Edit button -->
                 <button
                   type="button"
+                  (click)="toggleDropdown()"
                   class="tw-p-1 tw-text-gray-400 hover:tw-text-gray-600 hover:tw-bg-gray-100 tw-rounded tw-transition-all tw-duration-200"
                 >
                   <i class="fas fa-edit tw-text-xs"></i>
                 </button>
               </div>
-            </ng-template>
+            </ng-template> -->
+
+            <add-members-dropdown
+              #addMembersDropdown
+              [boardId]="task.board"
+              [taskId]="task._id"
+              [allignment]="'right'"
+              [isModernMemberSelect]="true"
+              (onMemberAdded)="onMembersUpdated($event)"
+            ></add-members-dropdown>
           </div>
         </div>
       </div>
@@ -473,27 +488,37 @@
             >
               <div
                 *ngIf="!comment.isDeleted"
-                style="display: flex;"
+                style="display: flex"
                 [ngClass]="{
                   'tw-justify-end':
-                    comment.createdBy._id === taskPermissionsService.getCurrentUser()?._id,
+                    comment.createdBy._id ===
+                    taskPermissionsService.getCurrentUser()?._id,
                   'tw-justify-start':
-                    comment.createdBy._id !== taskPermissionsService.getCurrentUser()?._id
+                    comment.createdBy._id !==
+                    taskPermissionsService.getCurrentUser()?._id
                 }"
               >
                 <div
                   [ngClass]="{
                     'tw-bg-blue-100 tw-text-black':
-                      comment.createdBy._id === taskPermissionsService.getCurrentUser()?._id,
+                      comment.createdBy._id ===
+                      taskPermissionsService.getCurrentUser()?._id,
                     'tw-bg-gray-100 tw-text-gray-900':
-                      comment.createdBy._id !== taskPermissionsService.getCurrentUser()?._id
+                      comment.createdBy._id !==
+                      taskPermissionsService.getCurrentUser()?._id
                   }"
                   class="tw-max-w-xs md:tw-max-w-md tw-px-4 tw-py-3 tw-rounded-2xl tw-relative tw-shadow-sm"
                 >
                   <!-- Comment content -->
                   <div
                     class="tw-text-sm tw-leading-relaxed tw-break-words"
-                    [innerHTML]="formatComment(comment.text, comment.mentionedMembers, comment.createdBy._id)"
+                    [innerHTML]="
+                      formatComment(
+                        comment.text,
+                        comment.mentionedMembers,
+                        comment.createdBy._id
+                      )
+                    "
                   ></div>
 
                   <!-- Comment footer -->
@@ -501,9 +526,11 @@
                     class="tw-flex tw-items-center tw-justify-between tw-mt-2 tw-pt-2 tw-border-t tw-border-opacity-20"
                     [ngClass]="{
                       'tw-border-white':
-                        comment.createdBy._id === taskPermissionsService.getCurrentUser()?._id,
+                        comment.createdBy._id ===
+                        taskPermissionsService.getCurrentUser()?._id,
                       'tw-border-gray-300':
-                        comment.createdBy._id !== taskPermissionsService.getCurrentUser()?._id
+                        comment.createdBy._id !==
+                        taskPermissionsService.getCurrentUser()?._id
                     }"
                   >
                     <div class="tw-flex tw-items-center tw-space-x-2">
@@ -514,7 +541,10 @@
 
                     <!-- Delete button on hover -->
                     <button
-                      *ngIf="comment.createdBy._id === taskPermissionsService.getCurrentUser()?._id"
+                      *ngIf="
+                        comment.createdBy._id ===
+                        taskPermissionsService.getCurrentUser()?._id
+                      "
                       (click)="deleteComment(comment._id)"
                       title="Delete Comment"
                       class="tw-opacity-0 group-hover:tw-opacity-100 tw-p-1 tw-rounded tw-transition-all tw-duration-200 hover:tw-bg-white hover:tw-bg-opacity-20 tw-text-gray-500 hover:tw-text-red-600"

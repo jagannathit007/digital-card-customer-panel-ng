@@ -35,12 +35,16 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
   @Output() onMemberAdded = new EventEmitter<TeamMember[]>();
 
   @Input() placement: Partial<string> = 'bottom';
+  @Input() allignment: Partial<string> = 'left';
   @Input() size: Partial<string> = 'medium';
   @Input() type: Partial<string> = 'task_update';
   @Input() boardId: string | null = null;
+  @Input() taskId: string | null = null;
+  @Input() isModernMemberSelect: boolean = false;
 
   teamMembers: TeamMember[] = [];
   selectedMembers: TeamMember[] = [];
+  addedMembers: TeamMember[] = [];
   isDropdownOpen = false;
   isLoading = signal(false);
   currentPage = 1;
@@ -56,6 +60,11 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Component initialization
+
+    if (this.isModernMemberSelect) {
+      console.log('Modern member select enabled');
+      this.loadTeamMembers(1, true, true);
+    }
   }
 
   toggleDropdown(): void {
@@ -80,11 +89,22 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
       limit: 10,
       search: this.searchQuery.trim(),
       boardId: this.boardId,
+      taskId: this.taskId,
       type: this.type,
     });
 
+    if (!response) {
+      this.isLoading.set(false);
+      // swalHelper.showToast('Failed to load team members', 'error');
+      return;
+    }
+
+    console.log('Loaded team members:', response);
+
     if (firstTime && response.assignedMembers.length > 0) {
       this.selectedMembers = response.assignedMembers;
+      this.addedMembers = [...this.selectedMembers];
+      this.selectedMembersChange.emit([...this.selectedMembers]);
     }
 
     if (response?.users && Array.isArray(response.users)) {
@@ -197,6 +217,9 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
 
     // Emit the selected members
     // this.selectedMembersChange.emit([...this.selectedMembers]);
+
+    // Emit the added members
+    this.addedMembers = [...this.selectedMembers];
     this.onMemberAdded.emit([...this.selectedMembers]);
 
     // Optional: Clear selection after adding
@@ -242,6 +265,11 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
     this.isDropdownOpen = false;
   }
 
+  clearSelectionAndClose(): void {
+    this.isDropdownOpen = false;
+    this.selectedMembers = [...this.addedMembers];
+  }
+
   clearSelection(): void {
     this.selectedMembers = [];
     this.searchQuery = ''; // Reset search query
@@ -260,7 +288,11 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
   }
 
   clearAllAndClose(): void {
+    // emimit onMemberAdded with empty array
+    this.onMemberAdded.emit([]);
+
     this.selectedMembers = [];
+    this.addedMembers = [];
     this.searchQuery = ''; // Reset search query
     this.selectedMembersChange.emit([]);
 
@@ -273,6 +305,8 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
 
     // Don't close dropdown - just reload members
+    this.closeDropdown();
+
     this.loadTeamMembers(1, true);
   }
 

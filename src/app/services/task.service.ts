@@ -492,7 +492,6 @@ export class TaskService {
       return false;
     }
   }
-  
 
   async getBoardDetails(data: any) {
     try {
@@ -685,7 +684,6 @@ export class TaskService {
     }
   }
 
-
   // task service
   async getTeamTaskDetailsById(data: any) {
     try {
@@ -821,6 +819,32 @@ export class TaskService {
         swalHelper.showToast(response.message, 'success');
         return response.data;
       } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
+
+  async updateTeamTaskAssignedTo(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.UPDATE_TEAM_TASK_ASSIGNED_TO,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data) {
+        swalHelper.showToast(response.message, 'success');
+        return response.data;
+      }
+      else {
         swalHelper.showToast(response.message, 'warning');
         return false;
       }

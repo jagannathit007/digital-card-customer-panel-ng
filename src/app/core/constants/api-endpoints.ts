@@ -195,6 +195,7 @@ public UPDATE_TEAM_TASK_STATUS: string = `${this.PATH}/task/team/update/status`;
 public UPDATE_TEAM_TASK_DUE_DATE: string = `${this.PATH}/task/team/update/due-date`;
 public UPDATE_TEAM_TASK_CATEGORY: string = `${this.PATH}/task/team/update/category`;
 public UPDATE_TEAM_TASK_DESCRIPTION: string = `${this.PATH}/task/team/update/description`;
+public UPDATE_TEAM_TASK_ASSIGNED_TO: string = `${this.PATH}/task/team/update/assignment`;
 
 // board column routes
 public RENAME_COLUMN: string = `${this.PATH}/task/board/column/name/update`;
