@@ -1,4 +1,20 @@
-<div class="tw-h-full tw-bg-white tw-p-4 tw-select-none">
+   <!-- page Loader -->
+      <div
+        class="tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-bottom-0 tw-flex tw-items-center tw-justify-center tw-bg-[#0000004d] tw-z-30"
+        *ngIf="isLoading"
+      >
+        <div
+          class="tw-flex tw-items-center tw-gap-5 tw-bg-white tw-px-8 tw-py-5 tw-rounded"
+        >
+          <span
+            class="tw-animate-spin tw-rounded-full tw-h-5 tw-w-5 tw-border-b-2 tw-border-blue-600"
+          ></span
+          >Loading...
+        </div>
+      </div>
+
+
+<div *ngIf="!isLoading" class="tw-h-full tw-bg-white tw-p-4 tw-select-none">
   <!-- Kanban Board Container -->
   <div 
     #kanbanContainer

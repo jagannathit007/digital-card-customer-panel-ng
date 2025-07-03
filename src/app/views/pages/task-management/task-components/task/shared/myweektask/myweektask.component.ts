@@ -329,6 +329,7 @@ private sortTasksInColumn(column: DayColumn): void {
     }
   }
 
+
   async moveTaskToDay(task: WeekTask, targetDayIndex: number): Promise<void> {
   if (task.dayIndex === targetDayIndex) return;
 
