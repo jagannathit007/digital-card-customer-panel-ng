@@ -41,6 +41,7 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
   @Input() boardId: string | null = null;
   @Input() taskId: string | null = null;
   @Input() isModernMemberSelect: boolean = false;
+  @Input() taskPermissions: boolean = true;
 
   teamMembers: TeamMember[] = [];
   selectedMembers: TeamMember[] = [];
@@ -68,6 +69,8 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
   }
 
   toggleDropdown(): void {
+    if (!this.taskPermissions) return;
+    
     this.isDropdownOpen = !this.isDropdownOpen;
 
     if (this.isDropdownOpen && this.teamMembers.length === 0) {
@@ -95,7 +98,6 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
 
     if (!response) {
       this.isLoading.set(false);
-      // swalHelper.showToast('Failed to load team members', 'error');
       return;
     }
 
@@ -129,7 +131,7 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
         this.hasMoreData = newMembers.length >= 10;
       }
 
-      this.isLoading.set(false);
+        this.isLoading.set(false);
     } else {
       if (reset) {
         this.teamMembers = [];

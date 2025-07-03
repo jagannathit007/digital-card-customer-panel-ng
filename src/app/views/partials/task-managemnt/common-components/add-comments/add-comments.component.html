@@ -18,14 +18,20 @@
     <!-- Content Editable Input -->
     <div
       #chatInput
-      contenteditable="true"
+      [attr.contenteditable]="taskPermissions ? 'true' : 'false'"
       (input)="onInputChange($event)"
       (keydown)="onKeyDown($event)"
       class="tw-w-full tw-min-h-[80px] tw-max-h-[200px] tw-p-3 tw-text-sm tw-text-gray-700 tw-bg-transparent tw-outline-none tw-overflow-y-auto tw-resize-none tw-leading-relaxed"
+      [ngClass]="{
+        'tw-cursor-text': taskPermissions,
+        'tw-cursor-not-allowed': !taskPermissions
+      }"
       placeholder="Type @ to mention someone..."
       [attr.data-placeholder]="
         inputText.length === 0
-          ? 'Type @ to mention someone... (Ctrl+Enter to send)'
+          ? !taskPermissions
+            ? 'You do not have permission to comment'
+            : 'Type @ to mention someone... (Ctrl+Enter to send)'
           : null
       "
     ></div>
@@ -48,10 +54,16 @@
       <button
         (click)="sendMessage()"
         [disabled]="!inputText.trim() || isSending"
-        class="tw-bg-blue-500 hover:tw-bg-blue-600 disabled:tw-bg-gray-300 disabled:tw-cursor-not-allowed tw-text-white tw-p-2 tw-rounded-lg tw-transition-colors tw-duration-200 tw-shadow-sm"
+        class="tw-bg-blue-500 hover:tw-bg-blue-600 disabled:tw-bg-gray-300 disabled:tw-cursor-not-allowed tw-text-white tw-p-2 tw-rounded-lg tw-transition-colors tw-duration-200 tw-shadow-sm tw-h-8 tw-w-8 tw-flex tw-items-center tw-justify-center"
         title="Send message (Ctrl+Enter)"
       >
-        <svg class="tw-w-4 tw-h-4" fill="currentColor" viewBox="0 0 20 20">
+        <i *ngIf="isSending" class="fas fa-spinner fa-spin"></i>
+        <svg
+          *ngIf="!isSending"
+          class="tw-w-4 tw-h-4"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
           <path
             d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"
           ></path>
@@ -64,7 +76,7 @@
   <div
     *ngIf="showDropdown"
     class="mention-dropdown tw-absolute tw-bottom-[95px] tw-z-50 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-xl tw-max-h-52 tw-overflow-hidden tw-w-80"
-    >
+  >
     <!-- [ngStyle]="
       placement === 'top'
         ? { bottom: '0px', marginBottom: dropdownPosition.top + 'px' }

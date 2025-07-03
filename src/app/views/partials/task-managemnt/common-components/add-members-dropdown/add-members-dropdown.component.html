@@ -56,15 +56,26 @@
     </div>
   </button>
 
+  <div
+    *ngIf="isModernMemberSelect && isLoading()"
+    class="tw-w-full tw-h-[39px] tw-bg-gradient-to-r tw-from-gray-200 tw-to-gray-300 tw-rounded-lg tw-animate-pulse tw-min-w-[180px] tw-max-w-[180px]"
+  ></div>
+
   <!-- Dropdown Trigger for tasks -->
-  <div class="tw-flex tw-items-center tw-space-x-3" *ngIf="isModernMemberSelect">
-    <ng-container
-      *ngIf="addedMembers.length === 0; else hasAssignedTemplate"
-    >
+  <div
+    class="tw-flex tw-items-center tw-space-x-3"
+    *ngIf="isModernMemberSelect && !isLoading()"
+  >
+    <ng-container *ngIf="addedMembers.length === 0; else hasAssignedTemplate">
       <button
+        [disabled]="!taskPermissions"
         type="button"
         (click)="toggleDropdown()"
-        class="tw-bg-blue-50 tw-text-blue-600 tw-px-4 tw-py-2 tw-rounded-lg tw-text-sm tw-font-medium hover:tw-bg-blue-100 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-space-x-2"
+        class=" tw-px-4 tw-py-2 tw-rounded-lg tw-text-sm tw-font-medium  tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-space-x-2"
+        [ngClass]="{
+          'tw-bg-blue-50 tw-text-blue-600 hover:tw-bg-blue-100 tw-cursor-pointer': taskPermissions,
+          'tw-bg-gray-200 tw-text-gray-500 tw-cursor-not-allowed': !taskPermissions
+        }"
       >
         <i class="fas fa-user-plus tw-text-xs"></i>
         <span>ASSIGN THIS TASK</span>
@@ -90,6 +101,7 @@
         </span>
 
         <button
+        *ngIf="taskPermissions"
           type="button"
           (click)="toggleDropdown()"
           class="tw-p-1 tw-text-gray-400 hover:tw-text-gray-600 hover:tw-bg-gray-100 tw-rounded tw-transition-all tw-duration-200"
