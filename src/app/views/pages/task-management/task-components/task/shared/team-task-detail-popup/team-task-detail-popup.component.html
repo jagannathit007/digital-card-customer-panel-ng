@@ -693,6 +693,7 @@
                       </a>
 
                       <button
+                      *ngIf="taskPermissions"
                         type="button"
                         (click)="deleteAttachment(file._id, attachment._id)"
                         class="tw-p-2 tw-text-gray-400 hover:tw-text-red-600 hover:tw-bg-red-50 tw-rounded-lg tw-transition-all tw-duration-200"

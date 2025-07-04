@@ -285,6 +285,7 @@
                     [isDragging]="
                       isDragging() && draggedTask()?._id === task._id
                     "
+                    [boardId]="boardId()"
                     [completedColumnId]="completedColumnId()"
                     [deleetdColumnId]="deletedColumnId()"
                     (taskClick)="selectTask(task, $event)"
@@ -432,6 +433,7 @@
                     [isDragging]="
                       isDragging() && draggedTask()?._id === task._id
                     "
+                    [boardId]="boardId()"
                     [completedColumnId]="completedColumnId()"
                     [deleetdColumnId]="deletedColumnId()"
                     (taskClick)="selectTask(task, $event)"

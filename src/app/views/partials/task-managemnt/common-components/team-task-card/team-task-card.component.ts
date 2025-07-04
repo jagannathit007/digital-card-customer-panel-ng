@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TaskPermissionsService } from 'src/app/services/task-permissions.service';
+import { MemberDetailDropdownComponent } from '../add-members-dropdown/add-members-dropdown.component';
 
 export interface TeamMember {
   _id: string;
@@ -40,7 +41,7 @@ export interface Task {
 @Component({
   selector: 'app-team-task-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MemberDetailDropdownComponent],
   templateUrl: './team-task-card.component.html',
   styleUrl: './team-task-card.component.scss',
 })
@@ -61,6 +62,8 @@ export class TeamTaskCardComponent {
 
   // Internal state
   showActions = signal<boolean>(false);
+
+  @Input() boardId: string = '';
 
   constructor(public taskPermissionsService: TaskPermissionsService) {}
 
