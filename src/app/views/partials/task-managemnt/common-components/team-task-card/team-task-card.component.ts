@@ -5,9 +5,13 @@ import {
   EventEmitter,
   computed,
   signal,
+  SimpleChanges,
+  OnChanges,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TaskPermissionsService } from 'src/app/services/task-permissions.service';
+import { environment } from 'src/env/env.local';
 
 export interface TeamMember {
   _id: string;
@@ -42,14 +46,14 @@ export interface Task {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './team-task-card.component.html',
-  styleUrl: './team-task-card.component.scss',
+  styleUrls: ['./team-task-card.component.scss'],
 })
-export class TeamTaskCardComponent {
+export class TeamTaskCardComponent implements OnChanges {
   @Input() task!: Task;
   @Input() isSelected = false;
   @Input() isDragging = false;
   @Input() completedColumnId: string = '';
-  @Input() deleetdColumnId: string = '';
+  @Input() deletedColumnId: string = '';
 
   @Output() taskClick = new EventEmitter<Event>();
   @Output() taskDoubleClick = new EventEmitter<void>();
@@ -61,8 +65,14 @@ export class TeamTaskCardComponent {
 
   // Internal state
   showActions = signal<boolean>(false);
+  showTooltipForMember = signal<string | null>(null);
+  imageBaseUrl = environment.imageURL;
+  boardId = signal<string>('');
 
-  constructor(public taskPermissionsService: TaskPermissionsService) {}
+  constructor(
+    public taskPermissionsService: TaskPermissionsService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   // Computed properties for displaying limited items
   displayCategories = computed(() => {
@@ -84,6 +94,23 @@ export class TeamTaskCardComponent {
     const members = this.task?.assignedTo || [];
     return Math.max(0, members.length - 2);
   });
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['task']) {
+      // Force re-evaluation of computed properties when task changes
+      this.displayMembers();
+      this.additionalMembersCount();
+      this.cdr.detectChanges();
+    }
+  }
+
+  onMouseEnterMember(memberId: string) {
+    this.showTooltipForMember.set(memberId);
+  }
+
+  onMouseLeaveMember() {
+    this.showTooltipForMember.set(null);
+  }
 
   // Status color mapping
   getStatusColor(status: string): string {

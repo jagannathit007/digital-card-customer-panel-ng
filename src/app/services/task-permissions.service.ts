@@ -201,9 +201,11 @@ export class TaskPermissionsService {
       const userId = currentUser._id || '';
       if (this.memberLevelRoles.includes(userRole)) {
         const isPrivileged = this.taskLevelRoles.includes(userRole);
-        const isAssignedMember = taskDetails?.assignedTo?.includes(userId);
+        const isAssignedMember = taskDetails?.assignedTo?.some(
+          (member: any) => member._id.toString() === userId.toString()
+        );
         const isCreatorMember = taskDetails.createdBy.toString() === userId.toString();
-
+        
         return isPrivileged || isAssignedMember || isCreatorMember;
       } else {
         return false;

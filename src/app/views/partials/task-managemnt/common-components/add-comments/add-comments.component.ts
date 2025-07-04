@@ -55,6 +55,7 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   @Input() taskId: string = '';
   @Input() type: string = 'board';
   @Input() placement: Partial<string> = 'top'; // 'top' or 'bottom'
+  @Input() taskPermissions: boolean = true;
 
   // API data properties
   // boardId: string = '';
@@ -172,6 +173,8 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   }
 
   onInputChange(event: any): void {
+    if (!this.taskPermissions) return;
+     
     const input = event.target;
 
     // Preserve mention tags during input changes
@@ -212,6 +215,8 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
   }
 
   onKeyDown(event: KeyboardEvent): void {
+    if (!this.taskPermissions) return;
+    
     const input = event.target as HTMLElement;
 
     // Handle Ctrl+Enter for message submission
@@ -682,6 +687,8 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
 
   async sendMessage(): Promise<void> {
     if (!this.inputText.trim()) return;
+
+    this.isSending = true;
 
     // Convert @mentions to *mentions* format
     let processedText = this.inputText;

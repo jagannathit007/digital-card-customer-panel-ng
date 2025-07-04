@@ -14,11 +14,19 @@ import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { TaskService } from 'src/app/services/task.service';
 import { environment } from 'src/env/env.local';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
+import { 
+  trigger, 
+  state, 
+  style, 
+  transition, 
+  animate 
+} from '@angular/animations';
 
 interface TeamMember {
   _id: string;
   name: string;
   profileImage?: string;
+  emailId: string;
   role: string;
   id?: string;
 }
@@ -29,6 +37,26 @@ interface TeamMember {
   imports: [CommonModule, FormsModule],
   templateUrl: './add-members-dropdown.component.html',
   styleUrl: './add-members-dropdown.component.scss',
+   animations: [
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ 
+          opacity: 0, 
+          transform: 'translateY(-10px) scale(0.95)' 
+        }),
+        animate('300ms ease-out', style({ 
+          opacity: 1, 
+          transform: 'translateY(0) scale(1)' 
+        }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ 
+          opacity: 0, 
+          transform: 'translateY(-10px) scale(0.95)' 
+        }))
+      ])
+    ])
+  ]
 })
 export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
   @Output() selectedMembersChange = new EventEmitter<TeamMember[]>();
@@ -41,6 +69,7 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
   @Input() boardId: string | null = null;
   @Input() taskId: string | null = null;
   @Input() isModernMemberSelect: boolean = false;
+  @Input() taskPermissions: boolean = true;
 
   teamMembers: TeamMember[] = [];
   selectedMembers: TeamMember[] = [];
@@ -51,6 +80,14 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
   hasMoreData = true;
   searchQuery = '';
   private searchTimeout: any;
+
+showTooltip = false;
+showProfileTooltip = false;
+hoveredMember: TeamMember | null = null;
+tooltipPosition = { top: 0, left: 0 };
+profileTooltipPosition = { top: 0, left: 0 }; // Add this new property
+private tooltipTimeout: any;
+
 
   constructor(
     private TaskService: TaskService,
@@ -68,6 +105,8 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
   }
 
   toggleDropdown(): void {
+    if (!this.taskPermissions) return;
+    
     this.isDropdownOpen = !this.isDropdownOpen;
 
     if (this.isDropdownOpen && this.teamMembers.length === 0) {
@@ -95,11 +134,8 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
 
     if (!response) {
       this.isLoading.set(false);
-      // swalHelper.showToast('Failed to load team members', 'error');
       return;
     }
-
-    console.log('Loaded team members:', response);
 
     if (firstTime && response.assignedMembers.length > 0) {
       this.selectedMembers = response.assignedMembers;
@@ -129,7 +165,7 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
         this.hasMoreData = newMembers.length >= 10;
       }
 
-      this.isLoading.set(false);
+        this.isLoading.set(false);
     } else {
       if (reset) {
         this.teamMembers = [];
@@ -167,6 +203,60 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
       await this.loadTeamMembers(1, true);
     }, 300);
   }
+
+  showMembersTooltip(event: MouseEvent): void {
+  // Clear any existing timeout
+  if (this.tooltipTimeout) {
+    clearTimeout(this.tooltipTimeout);
+  }
+  
+  this.setMembersTooltipPosition(event);
+  this.showTooltip = true;
+}
+
+hideMembersTooltip(): void {
+  console.log('Hiding members tooltip');
+  // Set a 100 miliseconds delay before hiding
+  this.tooltipTimeout = setTimeout(() => {
+    this.showTooltip = false;
+  }, 100);
+}
+
+keepMembersTooltipOpen(): void {
+  // Clear the timeout when mouse enters the tooltip
+  if (this.tooltipTimeout) {
+    clearTimeout(this.tooltipTimeout);
+  }
+}
+
+showIndividualProfileTooltip(event: MouseEvent, member: TeamMember): void {
+  this.setProfileTooltipPosition(event);
+  this.showProfileTooltip = true;
+  this.hoveredMember = member;
+}
+
+hideIndividualProfileTooltip(): void {
+  this.showProfileTooltip = false;
+  this.hoveredMember = null;
+}
+
+
+
+setMembersTooltipPosition(event: MouseEvent): void {
+  const rect = (event.target as HTMLElement).getBoundingClientRect();
+  this.tooltipPosition = {
+    top: rect.top - 110, // Position tooltip above element (reduced height for icon grid)
+    left: rect.right - 200 // Align tooltip's right corner to element's right side
+  };
+}
+
+setProfileTooltipPosition(event: MouseEvent): void {
+  const rect = (event.target as HTMLElement).getBoundingClientRect();
+  this.profileTooltipPosition = {
+    top: rect.top - 65, // Position tooltip above profile
+    left: rect.right - 200 // Align tooltip's right corner to profile's right side
+  };
+}
 
   toggleMember(member: TeamMember): void {
     const index = this.selectedMembers.findIndex((m) => m._id === member._id);
@@ -324,5 +414,8 @@ export class MemberDetailDropdownComponent implements OnInit, OnDestroy {
     if (this.searchTimeout) {
       clearTimeout(this.searchTimeout);
     }
+    if (this.tooltipTimeout) {
+    clearTimeout(this.tooltipTimeout);
+  }
   }
 }

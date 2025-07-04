@@ -20,7 +20,8 @@ import { TaskPermissionsService } from 'src/app/services/task-permissions.servic
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { environment } from 'src/env/env.local';
-import { MemberDetailDropdownComponent } from "../../../../../../partials/task-managemnt/common-components/add-members-dropdown/add-members-dropdown.component";
+import { MemberDetailDropdownComponent } from '../../../../../../partials/task-managemnt/common-components/add-members-dropdown/add-members-dropdown.component';
+import { TeamTaskEventService } from 'src/app/services/teamTaskEvent.service';
 
 interface TaskMember {
   _id: string;
@@ -41,12 +42,19 @@ interface TaskComment {
 
 interface TaskAttachment {
   _id: string;
-  fileName: string;
-  fileUrl: string;
-  fileType: string;
-  uploadedFrom: 'storage' | 'url';
+  files: Array<{
+    fileName: string;
+    fileUrl: string;
+    fileType: string;
+    uploadedFrom: 'storage' | 'url';
+    _id: string;
+  }>;
   uploadedBy: TaskMember;
+  type: 'task' | 'board';
+  taskId: string;
+  boardId: string | null;
   createdAt: string;
+  updatedAt: string;
 }
 
 interface TeamTask {
@@ -76,12 +84,19 @@ interface TaskUpdate {
 @Component({
   selector: 'app-team-task-detail-popup',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgxEditorModule, AddCommentsComponent, MemberDetailDropdownComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    NgxEditorModule,
+    AddCommentsComponent,
+    MemberDetailDropdownComponent,
+  ],
   templateUrl: './team-task-detail-popup.component.html',
   styleUrl: './team-task-detail-popup.component.scss',
 })
 export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
-  @ViewChild('addMembersDropdown') addMembersDropdown!: MemberDetailDropdownComponent;
+  @ViewChild('addMembersDropdown')
+  addMembersDropdown!: MemberDetailDropdownComponent;
 
   @Output() taskUpdated = new EventEmitter<TaskUpdate>();
   @Output() taskDeleted = new EventEmitter<string>();
@@ -252,11 +267,12 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private taskService: TaskService,
     public taskPermissionsService: TaskPermissionsService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private teamTaskEventService: TeamTaskEventService
   ) {}
 
   ngOnInit(): void {
-    this.imageBaseUrl = environment.imageURL;    
+    this.imageBaseUrl = environment.imageURL;
     this.initializeEditor();
     this.setupRouteSubscriptions();
     this.loadTaskData();
@@ -310,7 +326,10 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
         setTimeout(async () => {
           this.task = response;
 
-          this.taskPermissions = await this.taskPermissionsService.isTeamTaskCardAccessible(response);
+          this.taskPermissions =
+            await this.taskPermissionsService.isTeamTaskCardAccessible(
+              response
+            );
 
           this.isLoading = false;
         }, 1000);
@@ -381,9 +400,8 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   }
 
   toggleDropdown(): void {
-  this.addMembersDropdown.toggleDropdown();
-}
-
+    this.addMembersDropdown.toggleDropdown();
+  }
 
   async onMembersUpdated(selectedMembers: any): Promise<void> {
     console.log('Selected members updated:', selectedMembers);
@@ -391,12 +409,13 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
 
     const response = await this.taskService.updateTeamTaskAssignedTo({
       taskId: this.taskId,
-      assignedTo: selectedMembers.map((member:TaskMember) => member._id),
+      assignedTo: selectedMembers.map((member: TaskMember) => member._id),
     });
+
+    console.log('Assigned members updated:', response);
 
     if (!response) {
       // failed to update assigned members
-
     }
     this.emitTaskUpdate('assignedTo', this.task.assignedTo);
   }
@@ -404,6 +423,17 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   // Title editing methods
   startEditingTitle(): void {
     if (!this.taskPermissions) return;
+
+    setTimeout(() => {
+      const titleInput = document.getElementById(
+        'editTitleInput'
+      ) as HTMLInputElement;
+      if (titleInput) {
+        console.log('Focusing on title input');
+        titleInput.focus();
+        // titleInput.select();
+      }
+    }, 10);
     this.isEditingTitle = true;
     this.editTitle = this.task.title;
     this.createBackup('title');
@@ -539,6 +569,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   }
 
   async selectDate(day: any): Promise<void> {
+    console.log('Selected day:', day);
     if (!day.isCurrentMonth) return;
 
     const today = new Date();
@@ -583,6 +614,12 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     this.task.dueDate = null;
     this.emitTaskUpdate('dueDate', null);
     this.showCustomDatePicker = false;
+
+    // api call
+    const response = this.taskService.updateTeamTaskDueDate({
+      taskId: this.taskId,
+      dueDate: this.task.dueDate,
+    });
   }
 
   setToday(): void {
@@ -590,6 +627,12 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     this.task.dueDate = today.toISOString();
     this.emitTaskUpdate('dueDate', this.task.dueDate);
     this.showCustomDatePicker = false;
+
+    // api call
+    const response = this.taskService.updateTeamTaskDueDate({
+      taskId: this.taskId,
+      dueDate: this.task.dueDate,
+    });
   }
 
   private addDatePickerClickListener(): void {
@@ -695,6 +738,8 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
 
   // Description methods
   startEditingDescription(): void {
+    if (!this.taskPermissions) return;
+
     this.isEditingDescription = true;
     this.createBackup('description');
   }
@@ -763,15 +808,17 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       isDeleted: false,
     };
     this.task.comments.push(newComment);
-    this.emitTaskUpdate('comments', this.task.comments);
+    this.emitTaskUpdate('comments', this.task.comments.filter((c) => !c.isDeleted).length);
   }
 
   formatComment(
+    commentId: string,
     text: string,
     mentionedMembers: string[],
     createdBy: string
   ): SafeHtml {
-
+    const isFirstComment =
+      this.task.comments.findIndex((c) => c._id === commentId) === 0;
     let tooltipPlacement = 'left';
 
     if (createdBy === this.taskPermissionsService.getCurrentUser()._id) {
@@ -792,7 +839,9 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
 
       return `
       <span 
-        style="background-color:${tooltipPlacement === 'left' ? '#d3d3d38a' : '#0d6efd33'}; padding: 2px 6px; border-radius: 10px; position: relative; cursor: pointer;"
+        style="background-color:${
+          tooltipPlacement === 'left' ? '#d3d3d38a' : '#0d6efd33'
+        }; padding: 2px 6px; border-radius: 10px; position: relative; cursor: pointer;"
         onmouseover="this.querySelector('.tooltip').style.visibility='visible'; this.querySelector('.tooltip').style.opacity='1';"
         onmouseout="this.querySelector('.tooltip').style.visibility='hidden'; this.querySelector('.tooltip').style.opacity='0';"
         class="mention"
@@ -809,7 +858,9 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
             border-radius: 6px;
             position: absolute;
             z-index: 1;
-            bottom: 125%;
+            ${isFirstComment ? 'top' : 'bottom'} : ${
+        isFirstComment ? '30px' : '125%'
+      } ;
             ${tooltipPlacement}: 0%;
             // transform: translateX(-50%);
             font-size: 13px;
@@ -855,7 +906,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
               type: 'task',
             });
             comment.isDeleted = true;
-            this.emitTaskUpdate('comments', this.task.comments);
+            this.emitTaskUpdate('comments', this.task.comments.filter((c) => !c.isDeleted).length);
           }
         })
         .catch((error) => {
@@ -875,42 +926,74 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   }
 
   // Attachment methods
-  onFileUpload(event: any): void {
+  async onFileUpload(event: any): Promise<void> {
     const files = event.target.files;
     if (files && files.length > 0) {
-      // Simulate file upload
+      var formData = new FormData();
+
       for (let file of files) {
-        const newAttachment: TaskAttachment = {
-          _id: Date.now().toString() + Math.random(),
-          fileName: file.name,
-          fileUrl: `/uploads/${file.name}`,
-          fileType: file.type,
-          uploadedFrom: 'storage',
-          uploadedBy: this.dummyMembers[0],
-          createdAt: new Date().toISOString(),
-        };
-
-        this.task.attachments.push(newAttachment);
+        formData.append('files', file);
       }
+      formData.append('taskId', this.taskId);
+      formData.append('boardId', this.task.board);
+      formData.append('type', 'task');
 
-      this.emitTaskUpdate('attachments', this.task.attachments);
+      const response = await this.taskService.addAttachment(formData);
+
+      if (response) {
+        // Simulate file upload
+
+        this.task.attachments.push(response);
+
+        this.emitTaskUpdate('attachments', this.task.attachments.length);
+      }
     }
   }
 
-  deleteAttachment(attachmentId: string): void {
+  async deleteAttachment(fileId: string, attachmentId: string): Promise<void> {
     this.createBackup('attachments');
 
-    // Simulate API call
-    setTimeout(() => {
-      try {
-        this.task.attachments = this.task.attachments.filter(
-          (a) => a._id !== attachmentId
+    let confirm = await swalHelper.confirmation(
+      'Are you sure?',
+      'This action will permanently delete the file.',
+      'question'
+    );
+
+    if (confirm.isConfirmed) {
+      const response = await this.taskService.deleteAttachment({
+        taskId: this.taskId,
+        fileId: fileId,
+        attachmentId: attachmentId,
+        type: 'task',
+      });
+
+      if (response) {
+        const attachmentIndex = this.task.attachments.findIndex(
+          (attachment) => attachment._id === attachmentId
         );
-        this.emitTaskUpdate('attachments', this.task.attachments);
-      } catch (error) {
+
+        if (attachmentIndex !== -1) {
+          const attachment = this.task.attachments[attachmentIndex];
+
+          // Check if attachment has multiple files
+          if (attachment.files.length > 1) {
+            // Remove only the specific file from the attachment
+            attachment.files = attachment.files.filter(
+              (file) => file._id !== fileId
+            );
+          } else {
+            // Remove the entire attachment if it has only one file
+            this.task.attachments.splice(attachmentIndex, 1);
+          }
+
+          // Emit the updated attachments
+          this.emitTaskUpdate('attachments', this.task.attachments.length);
+        }
+      } else {
+        // Revert to backup if the deletion fails
         this.undoChanges('attachments');
       }
-    }, 300);
+    }
   }
 
   // Utility methods
@@ -931,11 +1014,13 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   }
 
   private emitTaskUpdate(field: string, value: any): void {
-    this.taskUpdated.emit({
+    const taskUpdate: TaskUpdate = {
       field,
       value,
       taskId: this.taskId,
-    });
+    };
+    this.taskUpdated.emit(taskUpdate); // Keep existing emitter for other potential listeners
+    this.teamTaskEventService.emitTaskUpdate(taskUpdate); // Emit through the service
   }
 
   closePopup(): void {

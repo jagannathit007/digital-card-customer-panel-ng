@@ -24,6 +24,13 @@ import { DragDropService } from 'src/app/services/drag-drop.service';
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 import { TaskPermissionsService } from './../../../../../../../services/task-permissions.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { TeamTaskEventService } from 'src/app/services/teamTaskEvent.service';
+
+interface TaskUpdate {
+  field: string;
+  value: any;
+  taskId: string;
+}
 
 export interface TeamMember {
   _id: string;
@@ -162,7 +169,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private dragDropService: DragDropService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private teamTaskEventService: TeamTaskEventService
   ) {}
 
   async ngOnInit() {
@@ -177,6 +185,58 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.loadData();
     this.setupKeyboardListeners();
     this.setupDragDropSubscription();
+    this.setupTaskUpdateSubscription();
+  }
+  
+  private setupTaskUpdateSubscription() {
+    this.teamTaskEventService.taskUpdated$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((taskUpdate: TaskUpdate) => {
+        this.handleTaskUpdate(taskUpdate);
+      });
+  }
+
+  private handleTaskUpdate(taskUpdate: TaskUpdate) {
+    const { taskId, field, value } = taskUpdate;
+    const columns = [...this.boardColumns()];
+    let updatedTask: Task | undefined;
+    let updatedColumn: BoardColumn | undefined;
+
+    // Find the task and its column
+    for (const column of columns) {
+      const taskIndex = column.tasks.findIndex((task) => task._id === taskId);
+      if (taskIndex !== -1) {
+        updatedTask = column.tasks[taskIndex];
+        updatedColumn = column;
+        
+        // Create new array for the column's tasks
+        const updatedTasks = [...column.tasks];
+        
+        // Create new task object with updated field
+        const updatedTaskObj = { ...updatedTask, [field]: value };
+        
+        // Replace the task in the array
+        updatedTasks[taskIndex] = updatedTaskObj;
+        
+        // Update the column with new tasks array
+        updatedColumn.tasks = updatedTasks;
+        
+        break;
+      }
+    }
+
+    if (updatedTask && updatedColumn) {
+      // Update the boardColumns signal with new column data
+      const updatedColumns = columns.map(col => 
+        col._id === updatedColumn._id ? updatedColumn : col
+      );
+      
+      this.boardColumns.set(updatedColumns);
+      this.cdr.detectChanges(); // Ensure UI updates
+      console.log(`Task ${taskId} updated: ${field} =`, value);
+    } else {
+      console.warn(`Task ${taskId} not found in board columns`);
+    }
   }
 
   // Add this custom validator

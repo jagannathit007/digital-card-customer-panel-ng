@@ -92,6 +92,7 @@
         [class.tw-ring-2]="selectedBoard()?._id === board._id"
         [class.tw-ring-blue-500]="selectedBoard()?._id === board._id"
         [class.tw-animate-pulse]="expandingBoardId() === board._id"
+        (dblclick)="onOpenBoard(board)"
         (click)="onBoardClick(board, $event)"
       >
         <!-- Board Header -->

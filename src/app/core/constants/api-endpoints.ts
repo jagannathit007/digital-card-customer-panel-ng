@@ -197,6 +197,11 @@ public UPDATE_TEAM_TASK_CATEGORY: string = `${this.PATH}/task/team/update/catego
 public UPDATE_TEAM_TASK_DESCRIPTION: string = `${this.PATH}/task/team/update/description`;
 public UPDATE_TEAM_TASK_ASSIGNED_TO: string = `${this.PATH}/task/team/update/assignment`;
 
+// attachment routes
+public ADD_ATTACHMENT: string = `${this.PATH}/task/attachment/add`;
+public DELETE_ATTACHMENT: string = `${this.PATH}/task/attachment/delete`;
+public RENAME_ATTACHMENT: string = `${this.PATH}/task/attachment/file-name/update`;
+
 // board column routes
 public RENAME_COLUMN: string = `${this.PATH}/task/board/column/name/update`;
 public ADD_NEW_COLUMN: string = `${this.PATH}/task/board/column/create`;

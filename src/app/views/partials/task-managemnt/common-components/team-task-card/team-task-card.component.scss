@@ -21,6 +21,30 @@
     }
   }
 
+  // Team member avatars
+  .tw-group {
+    transition: transform 0.15s ease;
+
+    &:hover {
+      transform: scale(1.1);
+      z-index: 10;
+    }
+
+    .tw-w-6.tw-h-6 {
+      transition: all 0.15s ease;
+    }
+
+    // Tooltip animations
+    .tw-absolute.tw-bottom-8 {
+      transform: translate(-50%, 10px);
+      transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+      &.tw-opacity-100 {
+        transform: translate(-50%, 0);
+      }
+    }
+  }
+
   // Selected state
   &.tw-ring-2 {
     border-color: #3b82f6;
