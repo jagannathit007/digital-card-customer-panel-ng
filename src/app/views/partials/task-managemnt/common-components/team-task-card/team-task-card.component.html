@@ -171,73 +171,86 @@
     <!-- Team Members (right side) -->
     <div class="tw-flex tw-items-center tw-gap-1">
       <!-- Display up to 2 members -->
-      <div *ngFor="let member of displayMembers()" class="tw-relative">
-        <div
-          (mouseenter)="onMouseEnterMember(member._id)"
-          (mouseleave)="onMouseLeaveMember()"
-        >
+      <div class="tw-flex tw--space-x-2">
+        <div *ngFor="let member of displayMembers()" class="tw-relative hover:tw-scale-102 hover:tw-z-10 tw-transition-all tw-duration-200">
           <div
-            class="tw-w-6 tw-h-6 tw-rounded-full tw-overflow-hidden tw-border-2 tw-border-white tw-shadow-sm"
+            (mouseenter)="onMouseEnterMember(member._id)"
+            (mouseleave)="onMouseLeaveMember()"
           >
-            <img
-              *ngIf="member.profileImage; else memberInitials"
-              [src]="imageBaseUrl + member.profileImage"
-              [alt]="member.name"
-              class="tw-w-full tw-h-full tw-object-cover"
-              (error)="onImageError($event)"
-            />
-            <ng-template #memberInitials>
-              <div
-                class="tw-w-full tw-h-full tw-bg-blue-500 tw-text-white tw-text-xs tw-font-medium tw-flex tw-items-center tw-justify-center"
-              >
-                {{ getMemberInitials(member) }}
-              </div>
-            </ng-template>
-          </div>
-
-          <!-- Tooltip -->
-          <div
-            class="tw-absolute tw-bottom-8 tw-right-0 tw-w-max tw-transform tw-bg-gray-900 tw-text-white tw-text-xs tw-px-2 tw-py-1 tw-rounded tw-transition-opacity tw-duration-200 tw-whitespace-nowrap tw-z-20 tw-pointer-events-none tw-max-w-[200px]"
-            [ngClass]="{
-              'tw-opacity-100': showTooltipForMember() === member._id,
-              'tw-opacity-0': showTooltipForMember() !== member._id,
-              'tw-hidden': isDragging
-            }"
-          >
-            <!-- <div class="tw-font-medium">{{ member.name }}</div>
-            <div class="tw-text-gray-300">{{ member.role }}</div> -->
-
-            <div class="tw-flex tw-items-center tw-space-x-3">
+            <div
+              class="tw-w-8 tw-h-8 tw-rounded-full tw-overflow-hidden tw-border-2 tw-border-white tw-shadow-sm"
+            >
               <img
+                *ngIf="member.profileImage; else memberInitials"
                 [src]="imageBaseUrl + member.profileImage"
                 [alt]="member.name"
-                class="tw-w-10 tw-h-10 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-600"
+                class="tw-w-full tw-h-full tw-object-cover"
+                (error)="onImageError($event)"
               />
-              <div class="tw-max-w-[132px]">
-                <p class="tw-font-medium tw-text-white tw-text-sm">
-                  {{ member.name }}
-                </p>
-                <p class="tw-text-gray-300 tw-text-xs tw-line-clamp-1 tw-truncate">{{ member.emailId }}</p>
-              </div>
+              <ng-template #memberInitials>
+                <div
+                  class="tw-w-full tw-h-full tw-bg-blue-500 tw-text-white tw-text-xs tw-font-medium tw-flex tw-items-center tw-justify-center"
+                >
+                  {{ getMemberInitials(member) }}
+                </div>
+              </ng-template>
             </div>
 
+            <!-- Tooltip -->
             <div
-              class="tw-absolute tw-top-full tw-right-1 tw-transform tw--translate-x-1/2 tw-border-4 tw-border-transparent tw-border-t-gray-900"
-            ></div>
-            <div
-              class="tw-absolute tw-top-full tw-right-1 tw-transform tw--translate-x-1/2 tw-border-4 tw-border-transparent tw-border-t-gray-900"
-            ></div>
+              class="tw-absolute tw-bottom-10 tw-right-0 tw-w-max tw-transform tw-bg-[#333] tw-text-white tw-text-xs tw-px-2 tw-py-1 tw-rounded tw-transition-opacity tw-duration-200 tw-whitespace-nowrap tw-z-20 tw-pointer-events-none tw-max-w-[200px]"
+              [ngClass]="{
+                'tw-opacity-100': showTooltipForMember() === member._id,
+                'tw-opacity-0': showTooltipForMember() !== member._id,
+                'tw-hidden': isDragging
+              }"
+            >
+              <!-- <div class="tw-font-medium">{{ member.name }}</div>
+            <div class="tw-text-gray-300">{{ member.role }}</div> -->
+
+              <div class="tw-flex tw-items-center tw-space-x-3">
+                <img
+                  [src]="imageBaseUrl + member.profileImage"
+                  [alt]="member.name"
+                  class="tw-w-10 tw-h-10 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-600"
+                />
+                <div class="tw-max-w-[132px]">
+                  <p class="tw-font-medium tw-text-white tw-text-sm">
+                    {{ member.name }}
+                  </p>
+                  <p
+                    class="tw-text-gray-300 tw-text-xs tw-line-clamp-1 tw-truncate"
+                  >
+                    {{ member.emailId }}
+                  </p>
+                </div>
+              </div>
+
+              <div
+                class="tw-absolute tw-top-full tw-right-4 tw-transform tw--translate-x-1/2 tw-border-4 tw-border-transparent tw-border-t-gray-900"
+              ></div>
+              <div
+                class="tw-absolute tw-top-full tw-right-4 tw-transform tw--translate-x-1/2 tw-border-4 tw-border-transparent tw-border-t-gray-900"
+              ></div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Show +N if more than 2 members -->
-      <div
+      <!-- <div
         *ngIf="additionalMembersCount() > 0"
         class="tw-w-6 tw-h-6 tw-rounded-full tw-bg-gray-200 tw-text-gray-600 tw-text-xs tw-font-medium tw-flex tw-items-center tw-justify-center tw-border-2 tw-border-white tw-shadow-sm"
       >
         +{{ additionalMembersCount() }}
-      </div>
+      </div> -->
+
+      <span
+            *ngIf="additionalMembersCount() > 0"
+            class="tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-font-medium tw-px-2 tw-py-1 tw-rounded-full tw-cursor-pointer tw-h-8 tw-w-8 tw-flex tw-items-center tw-justify-center"
+          >
+            +{{ additionalMembersCount() }}
+          </span>
 
       <!-- No members indicator -->
       <div
