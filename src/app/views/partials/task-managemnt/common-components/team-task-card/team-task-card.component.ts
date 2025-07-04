@@ -5,9 +5,6 @@ import {
   EventEmitter,
   computed,
   signal,
-  SimpleChanges,
-  OnChanges,
-  ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TaskPermissionsService } from 'src/app/services/task-permissions.service';
@@ -46,14 +43,14 @@ export interface Task {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './team-task-card.component.html',
-  styleUrls: ['./team-task-card.component.scss'],
+  styleUrl: './team-task-card.component.scss',
 })
-export class TeamTaskCardComponent implements OnChanges {
+export class TeamTaskCardComponent {
   @Input() task!: Task;
   @Input() isSelected = false;
   @Input() isDragging = false;
   @Input() completedColumnId: string = '';
-  @Input() deletedColumnId: string = '';
+  @Input() deleetdColumnId: string = '';
 
   @Output() taskClick = new EventEmitter<Event>();
   @Output() taskDoubleClick = new EventEmitter<void>();
@@ -65,14 +62,13 @@ export class TeamTaskCardComponent implements OnChanges {
 
   // Internal state
   showActions = signal<boolean>(false);
+
   showTooltipForMember = signal<string | null>(null);
   imageBaseUrl = environment.imageURL;
-  boardId = signal<string>('');
 
-  constructor(
-    public taskPermissionsService: TaskPermissionsService,
-    private cdr: ChangeDetectorRef
-  ) {}
+  @Input() boardId: string = '';
+
+  constructor(public taskPermissionsService: TaskPermissionsService) {}
 
   // Computed properties for displaying limited items
   displayCategories = computed(() => {
@@ -94,15 +90,6 @@ export class TeamTaskCardComponent implements OnChanges {
     const members = this.task?.assignedTo || [];
     return Math.max(0, members.length - 2);
   });
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['task']) {
-      // Force re-evaluation of computed properties when task changes
-      this.displayMembers();
-      this.additionalMembersCount();
-      this.cdr.detectChanges();
-    }
-  }
 
   onMouseEnterMember(memberId: string) {
     this.showTooltipForMember.set(memberId);
