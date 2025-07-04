@@ -539,6 +539,7 @@
                     class="tw-text-sm tw-leading-relaxed tw-break-words"
                     [innerHTML]="
                       formatComment(
+                        comment._id,
                         comment.text,
                         comment.mentionedMembers,
                         comment.createdBy._id

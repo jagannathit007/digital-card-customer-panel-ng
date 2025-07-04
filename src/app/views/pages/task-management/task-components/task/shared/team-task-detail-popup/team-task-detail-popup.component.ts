@@ -808,10 +808,13 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   }
 
   formatComment(
+    commentId: string,
     text: string,
     mentionedMembers: string[],
     createdBy: string
   ): SafeHtml {
+    const isFirstComment =
+      this.task.comments.findIndex((c) => c._id === commentId) === 0;
     let tooltipPlacement = 'left';
 
     if (createdBy === this.taskPermissionsService.getCurrentUser()._id) {
@@ -851,7 +854,9 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
             border-radius: 6px;
             position: absolute;
             z-index: 1;
-            bottom: 125%;
+            ${isFirstComment ? 'top' : 'bottom'} : ${
+        isFirstComment ? '30px' : '125%'
+      } ;
             ${tooltipPlacement}: 0%;
             // transform: translateX(-50%);
             font-size: 13px;
@@ -943,49 +948,48 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
 
   async deleteAttachment(fileId: string, attachmentId: string): Promise<void> {
     this.createBackup('attachments');
-    
+
     let confirm = await swalHelper.confirmation(
       'Are you sure?',
       'This action will permanently delete the file.',
       'question'
     );
 
-    if(confirm.isConfirmed){
-const response = await this.taskService.deleteAttachment({
-      taskId: this.taskId,
-      fileId: fileId,
-      attachmentId: attachmentId,
-      type: 'task',
-    });
+    if (confirm.isConfirmed) {
+      const response = await this.taskService.deleteAttachment({
+        taskId: this.taskId,
+        fileId: fileId,
+        attachmentId: attachmentId,
+        type: 'task',
+      });
 
-    if (response) {
-      const attachmentIndex = this.task.attachments.findIndex(
-        (attachment) => attachment._id === attachmentId
-      );
+      if (response) {
+        const attachmentIndex = this.task.attachments.findIndex(
+          (attachment) => attachment._id === attachmentId
+        );
 
-      if (attachmentIndex !== -1) {
-        const attachment = this.task.attachments[attachmentIndex];
+        if (attachmentIndex !== -1) {
+          const attachment = this.task.attachments[attachmentIndex];
 
-        // Check if attachment has multiple files
-        if (attachment.files.length > 1) {
-          // Remove only the specific file from the attachment
-          attachment.files = attachment.files.filter(
-            (file) => file._id !== fileId
-          );
-        } else {
-          // Remove the entire attachment if it has only one file
-          this.task.attachments.splice(attachmentIndex, 1);
+          // Check if attachment has multiple files
+          if (attachment.files.length > 1) {
+            // Remove only the specific file from the attachment
+            attachment.files = attachment.files.filter(
+              (file) => file._id !== fileId
+            );
+          } else {
+            // Remove the entire attachment if it has only one file
+            this.task.attachments.splice(attachmentIndex, 1);
+          }
+
+          // Emit the updated attachments
+          this.emitTaskUpdate('attachments', this.task.attachments);
         }
-
-        // Emit the updated attachments
-        this.emitTaskUpdate('attachments', this.task.attachments);
+      } else {
+        // Revert to backup if the deletion fails
+        this.undoChanges('attachments');
       }
-    } else {
-      // Revert to backup if the deletion fails
-      this.undoChanges('attachments');
     }
-    }
-    
   }
 
   // Utility methods
