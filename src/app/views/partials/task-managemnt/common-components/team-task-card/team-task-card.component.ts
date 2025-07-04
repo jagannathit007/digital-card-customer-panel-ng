@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TaskPermissionsService } from 'src/app/services/task-permissions.service';
-import { MemberDetailDropdownComponent } from '../add-members-dropdown/add-members-dropdown.component';
+import { environment } from 'src/env/env.local';
 
 export interface TeamMember {
   _id: string;
@@ -41,7 +41,7 @@ export interface Task {
 @Component({
   selector: 'app-team-task-card',
   standalone: true,
-  imports: [CommonModule, MemberDetailDropdownComponent],
+  imports: [CommonModule],
   templateUrl: './team-task-card.component.html',
   styleUrl: './team-task-card.component.scss',
 })
@@ -62,6 +62,9 @@ export class TeamTaskCardComponent {
 
   // Internal state
   showActions = signal<boolean>(false);
+
+  showTooltipForMember = signal<string | null>(null);
+  imageBaseUrl = environment.imageURL;
 
   @Input() boardId: string = '';
 
@@ -87,6 +90,14 @@ export class TeamTaskCardComponent {
     const members = this.task?.assignedTo || [];
     return Math.max(0, members.length - 2);
   });
+
+  onMouseEnterMember(memberId: string) {
+    this.showTooltipForMember.set(memberId);
+  }
+
+  onMouseLeaveMember() {
+    this.showTooltipForMember.set(null);
+  }
 
   // Status color mapping
   getStatusColor(status: string): string {
