@@ -381,7 +381,7 @@ export class MydaytaskComponent implements OnInit {
     this.selectedTaskDueDate = null;
   }
 
-  onTaskDateTimeUpdated(newDateTime: Date): void {
+  onTaskDateTimeUpdated(newDateTime: Date | null): void {
     const taskIndex = this.tasks.findIndex(t => t._id === this.selectedTaskId);
     if (taskIndex !== -1) {
       this.tasks[taskIndex].dueOn = newDateTime;

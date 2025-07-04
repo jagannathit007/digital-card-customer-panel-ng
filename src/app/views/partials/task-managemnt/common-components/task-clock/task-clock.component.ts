@@ -42,7 +42,7 @@ export class TaskClockComponent implements OnInit {
   @Input() currentDueDate: Date | null = null;
   @Input() isVisible: boolean = false;
   @Output() onClose = new EventEmitter<void>();
-  @Output() onDateTimeUpdated = new EventEmitter<Date>();
+  @Output() onDateTimeUpdated = new EventEmitter<Date | null>();
 
   // Component state
   currentStep: PickerStep = PickerStep.DATE;
@@ -284,7 +284,19 @@ ngOnChanges(): void {
   }
 
   async saveDateTime(): Promise<void> {
-  if (!this.taskId || !this.selectedDate) return;
+  if (!this.taskId ) return;
+
+  if(!this.selectedDate){
+    const response = await this.personalTaskService.UpdatePersonalTask({
+      taskId: this.taskId,
+    });
+
+    if (response) {
+      this.onDateTimeUpdated.emit(null);
+      this.closeComponent();
+    }
+    return;
+  }
 
   this.isUpdating = true;
 
@@ -320,7 +332,7 @@ ngOnChanges(): void {
   }
 
   canSave(): boolean {
-    return this.selectedDate !== null && !this.isUpdating;
+    return !this.isUpdating;
   }
 
   clearInputBox(): void {
