@@ -24,6 +24,13 @@ import { DragDropService } from 'src/app/services/drag-drop.service';
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 import { TaskPermissionsService } from './../../../../../../../services/task-permissions.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { TeamTaskEventService } from 'src/app/services/teamTaskEvent.service';
+
+interface TaskUpdate {
+  field: string;
+  value: any;
+  taskId: string;
+}
 
 export interface TeamMember {
   _id: string;
@@ -162,7 +169,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private dragDropService: DragDropService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private teamTaskEventService: TeamTaskEventService
   ) {}
 
   async ngOnInit() {
@@ -177,6 +185,42 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.loadData();
     this.setupKeyboardListeners();
     this.setupDragDropSubscription();
+    this.setupTaskUpdateSubscription();
+  }
+  
+  private setupTaskUpdateSubscription() {
+    this.teamTaskEventService.taskUpdated$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((taskUpdate: TaskUpdate) => {
+        this.handleTaskUpdate(taskUpdate);
+      });
+  }
+
+  private handleTaskUpdate(taskUpdate: TaskUpdate) {
+    const { taskId, field, value } = taskUpdate;
+
+    console.log(taskUpdate);
+    const columns = [...this.boardColumns()];
+    let updatedTask: Task | undefined;
+
+    // Find the task in any column
+    for (const column of columns) {
+      updatedTask = column.tasks.find((task) => task._id === taskId);
+      if (updatedTask) {
+        // Update the specific field
+        (updatedTask as any)[field] = value;
+        break;
+      }
+    }
+
+    if (updatedTask) {
+      // Update the boardColumns signal to trigger reactivity
+      this.boardColumns.set(columns);
+      this.cdr.detectChanges(); // Ensure UI updates
+      console.log(`Task ${taskId} updated: ${field} =`, value);
+    } else {
+      console.warn(`Task ${taskId} not found in board columns`);
+    }
   }
 
   // Add this custom validator

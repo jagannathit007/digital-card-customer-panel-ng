@@ -21,6 +21,7 @@ import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { environment } from 'src/env/env.local';
 import { MemberDetailDropdownComponent } from '../../../../../../partials/task-managemnt/common-components/add-members-dropdown/add-members-dropdown.component';
+import { TeamTaskEventService } from 'src/app/services/teamTaskEvent.service';
 
 interface TaskMember {
   _id: string;
@@ -266,7 +267,8 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private taskService: TaskService,
     public taskPermissionsService: TaskPermissionsService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private teamTaskEventService: TeamTaskEventService
   ) {}
 
   ngOnInit(): void {
@@ -409,6 +411,8 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       taskId: this.taskId,
       assignedTo: selectedMembers.map((member: TaskMember) => member._id),
     });
+
+    console.log('Assigned members updated:', response);
 
     if (!response) {
       // failed to update assigned members
@@ -804,7 +808,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       isDeleted: false,
     };
     this.task.comments.push(newComment);
-    this.emitTaskUpdate('comments', this.task.comments);
+    this.emitTaskUpdate('comments', this.task.comments.filter((c) => !c.isDeleted).length);
   }
 
   formatComment(
@@ -902,7 +906,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
               type: 'task',
             });
             comment.isDeleted = true;
-            this.emitTaskUpdate('comments', this.task.comments);
+            this.emitTaskUpdate('comments', this.task.comments.filter((c) => !c.isDeleted).length);
           }
         })
         .catch((error) => {
@@ -941,7 +945,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
 
         this.task.attachments.push(response);
 
-        this.emitTaskUpdate('attachments', this.task.attachments);
+        this.emitTaskUpdate('attachments', this.task.attachments.length);
       }
     }
   }
@@ -983,7 +987,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
           }
 
           // Emit the updated attachments
-          this.emitTaskUpdate('attachments', this.task.attachments);
+          this.emitTaskUpdate('attachments', this.task.attachments.length);
         }
       } else {
         // Revert to backup if the deletion fails
@@ -1010,11 +1014,13 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   }
 
   private emitTaskUpdate(field: string, value: any): void {
-    this.taskUpdated.emit({
+    const taskUpdate: TaskUpdate = {
       field,
       value,
       taskId: this.taskId,
-    });
+    };
+    this.taskUpdated.emit(taskUpdate); // Keep existing emitter for other potential listeners
+    this.teamTaskEventService.emitTaskUpdate(taskUpdate); // Emit through the service
   }
 
   closePopup(): void {
