@@ -198,24 +198,40 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
 
   private handleTaskUpdate(taskUpdate: TaskUpdate) {
     const { taskId, field, value } = taskUpdate;
-
-    console.log(taskUpdate);
     const columns = [...this.boardColumns()];
     let updatedTask: Task | undefined;
+    let updatedColumn: BoardColumn | undefined;
 
-    // Find the task in any column
+    // Find the task and its column
     for (const column of columns) {
-      updatedTask = column.tasks.find((task) => task._id === taskId);
-      if (updatedTask) {
-        // Update the specific field
-        (updatedTask as any)[field] = value;
+      const taskIndex = column.tasks.findIndex((task) => task._id === taskId);
+      if (taskIndex !== -1) {
+        updatedTask = column.tasks[taskIndex];
+        updatedColumn = column;
+        
+        // Create new array for the column's tasks
+        const updatedTasks = [...column.tasks];
+        
+        // Create new task object with updated field
+        const updatedTaskObj = { ...updatedTask, [field]: value };
+        
+        // Replace the task in the array
+        updatedTasks[taskIndex] = updatedTaskObj;
+        
+        // Update the column with new tasks array
+        updatedColumn.tasks = updatedTasks;
+        
         break;
       }
     }
 
-    if (updatedTask) {
-      // Update the boardColumns signal to trigger reactivity
-      this.boardColumns.set(columns);
+    if (updatedTask && updatedColumn) {
+      // Update the boardColumns signal with new column data
+      const updatedColumns = columns.map(col => 
+        col._id === updatedColumn._id ? updatedColumn : col
+      );
+      
+      this.boardColumns.set(updatedColumns);
       this.cdr.detectChanges(); // Ensure UI updates
       console.log(`Task ${taskId} updated: ${field} =`, value);
     } else {
