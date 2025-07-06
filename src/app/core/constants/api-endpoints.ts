@@ -56,10 +56,16 @@ class ApiEndpoints {
   public WEBSITE_OUR_CLIENTS_UPDATE: string = `${this.PATH}/website/client/update`;
   public WEBSITE_OUR_CLIENTS_DELETE: string = `${this.PATH}/website/client/delete`;
 
-  // our-services apis
-  public WEBSITE_OUR_SERVICS_ADD: string = `${this.PATH}/website/service/add`;
-  public WEBSITE_OUR_SERVICS_UPDATE: string = `${this.PATH}/website/service/update`;
-  public WEBSITE_OUR_SERVICS_DELETE: string = `${this.PATH}/website/service/delete`;
+  // Category wise services CRUD
+public ADD_OR_UPDATE_SERVICE_CATEGORY: string = `${this.PATH}/website/service/addOrUpdateServiceCategory`;
+public ADD_OR_UPDATE_SERVICE_IN_CATEGORY: string = `${this.PATH}/website/service/addOrUpdateServiceInCategory`;
+public DELETE_SERVICE_IN_CATEGORY: string = `${this.PATH}/website/service/deleteServiceInCategory`;
+public DELETE_SERVICE_CATEGORY: string = `${this.PATH}/website/service/deleteServiceCategory`;
+
+// "Our Services" outside category
+public WEBSITE_OUR_SERVICES_UPDATE: string = `${this.PATH}/website/service/update`;
+public WEBSITE_OUR_SERVICES_DELETE: string = `${this.PATH}/website/service/delete`;
+
 
   // our-Teams apis
   public WEBSITE_OUR_TEAM_ADD: string = `${this.PATH}/website/team/add`;

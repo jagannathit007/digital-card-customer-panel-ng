@@ -385,7 +385,6 @@ export class OurProductsComponent implements OnInit, OnDestroy, AfterViewInit {
     // Append existingImages only if there are any left
     if (this.selectedProducts.existingImages && this.selectedProducts.existingImages.length > 0) {
       formdata.append('existingImages', JSON.stringify(this.selectedProducts.existingImages));
-      console.log('Existing images:', this.selectedProducts.existingImages);
     }
 
     this.isLoading = true;

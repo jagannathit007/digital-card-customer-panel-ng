@@ -165,6 +165,152 @@ export class WebsiteBuilderService {
         return false;
       }
     }
+
+    // Website Services
+     async createService(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_OUR_SERVICES_UPDATE,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.showToast(response.message, 'success');
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+
+      async deleteService(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_OUR_SERVICES_DELETE,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+
+     async addOrUpdateServiceCategory(data: any) {
+      try {
+        this.getHeaders();
+        // console.log("catogrey craete",data);
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.ADD_OR_UPDATE_SERVICE_CATEGORY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+
+     async addOrUpdateServiceInCategory(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.ADD_OR_UPDATE_SERVICE_IN_CATEGORY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+
+    async deleteServiceInCategory(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.DELETE_SERVICE_IN_CATEGORY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+    
+        async deleteServiceCategory(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.DELETE_SERVICE_CATEGORY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
     
 
     async updateVisibility(data:any){
