@@ -222,6 +222,7 @@ public UPDATE_PERSONAL_TASK: string = `${this.PATH}/task/personal/update`;
 public DELETE_PERSONAL_TASK: string = `${this.PATH}/task/personal/delete`;
 public TOGGLE_PERSONAL_TASK_STATUS: string = `${this.PATH}/task/personal/staus/toggle`;
 public GET_PERSONAL_TASK_DETAILS: string = `${this.PATH}/task/personal/get-details`
+public GET_PERSONAL_ALL_TODAY_TASK_DETAILS: string = `${this.PATH}/task/personal/getTodayCreatedTasks`
 public GET_WEEK_TASK_DETAILS: string = `${this.PATH}/task/personal/getWeekTasks`
 public GET_PERSONAL_TASK_STATS: string = `${this.PATH}/task/personal/stats`;
 public GET_PERSONAL_TASK_DETAILS_COUNT: string = `${this.PATH}/task/personal/taskconut`;

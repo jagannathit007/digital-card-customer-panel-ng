@@ -22,12 +22,36 @@
   >
     <!-- Header Section with Date and Next Task -->
     <div class="tw-text-left tw-mb-6 tw-flex-shrink-0 header-section">
-      <h1 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-mb-2">
-        Good {{ getTimeOfDay() }}, {{ userName }}
-      </h1>
+      <!-- Toggle Switch at top right -->
+      <div class="tw-flex tw-justify-between tw-items-start tw-mb-4">
+        <h1 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-mb-2" *ngIf="!showTodayTasks">
+          Good {{ getTimeOfDay() }}, {{ userName }}
+        </h1>
+        <h1 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-mb-2" *ngIf="showTodayTasks">
+          Your today all created tasks
+        </h1>
+        
+        <!-- Toggle Icon -->
+        <div class="tw-flex tw-items-center tw-gap-2">
+          <span class="tw-text-sm tw-text-gray-600">Today's Tasks</span>
+          <button 
+            (click)="toggleTodayTasks()"
+            class="tw-p-2 tw-rounded-lg tw-transition-all tw-duration-200"
+            [class.tw-bg-blue-500]="showTodayTasks"
+            [class.tw-text-white]="showTodayTasks"
+            [class.tw-bg-gray-200]="!showTodayTasks"
+            [class.tw-text-gray-600]="!showTodayTasks"
+            [class.hover:tw-bg-blue-600]="showTodayTasks"
+            [class.hover:tw-bg-gray-300]="!showTodayTasks"
+          >
+            <i class="fa-solid fa-calendar-day tw-text-sm"></i>
+          </button>
+        </div>
+      </div>
 
-      <!-- Date and Next Task Container -->
+      <!-- Date and Next Task Container - Only show when toggle is OFF -->
       <div
+        *ngIf="!showTodayTasks"
         class="tw-mt-4 tw-flex tw-justify-between tw-rounded-lg tw-p-2 tw-items-center tw-gap-4 tw-bg-white"
       >
         <!-- Date Section -->
@@ -43,9 +67,19 @@
           </div>
         </div>
 
-        <!-- Next Task Section -->
+        <!-- Today Tasks Text - Show on right side of date when toggle is ON -->
+        <div 
+          *ngIf="showTodayTasks"
+          class="tw-flex-1 tw-flex tw-items-center tw-justify-center tw-text-center"
+        >
+          <div class="tw-text-lg tw-font-semibold tw-text-blue-600">
+            Your today all created tasks
+          </div>
+        </div>
+
+        <!-- Next Task Section - Only show when toggle is OFF -->
         <div
-          *ngIf="getNextTask()"
+          *ngIf="getNextTask() && !showTodayTasks"
           class="tw-bg-white tw-flex-1 tw-rounded-lg tw-shadow-sm tw-border tw-border-gray-200 tw-p-3 tw-min-w-[200px] tw-text-left"
         >
           <div class="tw-text-xs tw-text-gray-500 tw-mb-1">Next Task</div>
@@ -74,9 +108,9 @@
           </div>
         </div>
 
-        <!-- No Tasks Message -->
+        <!-- No Tasks Message - Only show when toggle is OFF -->
         <div
-          *ngIf="!getNextTask() && !isLoading"
+          *ngIf="!getNextTask() && !isLoading && !showTodayTasks"
           class="tw-bg-white tw-flex-1 tw-rounded-lg tw-shadow-sm tw-border tw-border-gray-200 tw-p-3 tw-min-w-[200px] tw-text-center"
         >
           <div class="tw-text-sm tw-text-gray-500">You have no latest task</div>
@@ -181,8 +215,8 @@
                     </span>
                   </div>
 
-                  <!-- Completed status -->
-                  <span
+                  <!-- Completed status with time -->
+                  <div
                     *ngIf="task.isCompleted"
                     class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-text-green-600 tw-font-medium tw-mt-1"
                   >
@@ -199,8 +233,8 @@
                         d="M5 13l4 4L19 7"
                       ></path>
                     </svg>
-                    Completed
-                  </span>
+                  Completed On {{ formatDate(task.completedOn!) }}
+                  </div>
                 </div>
 
                 <!-- Task Actions - Show on hover -->
@@ -316,8 +350,11 @@
           <h3 class="tw-text-lg tw-font-semibold tw-text-gray-700 tw-mb-2">
             No tasks yet
           </h3>
-          <p class="tw-text-sm tw-text-gray-500">
+          <p class="tw-text-sm tw-text-gray-500" *ngIf="!showTodayTasks">
             Add your first task below to get started!
+          </p>
+          <p class="tw-text-sm tw-text-gray-500" *ngIf="showTodayTasks">
+            Your today all created tasks
           </p>
         </div>
       </div>

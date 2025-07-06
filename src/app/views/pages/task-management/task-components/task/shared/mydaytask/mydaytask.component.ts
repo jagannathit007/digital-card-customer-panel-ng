@@ -41,6 +41,9 @@ export class MydaytaskComponent implements OnInit {
   selectedTaskId: string = '';
   selectedTaskDueDate: Date | null = null;
 
+  // Toggle property
+  showTodayTasks: boolean = false;
+
   constructor(
     private personalTaskService: PersonalTaskService,
     private storage: AppStorage
@@ -164,6 +167,47 @@ export class MydaytaskComponent implements OnInit {
     } finally {
       this.isLoading = false;
     }
+  }
+
+  async fetchTodayTasks(): Promise<void> {
+    if (this.isLoading) return;
+
+    this.isLoading = true;
+
+    try {
+      const response = await this.personalTaskService.getPersonalAllTodayTaskDetails({});
+
+      if (response && response.tasks && Array.isArray(response.tasks)) {
+        this.tasks = response.tasks;
+      }
+    } catch (error) {
+      console.error('Error fetching today tasks:', error);
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  async onToggleChange(): Promise<void> {
+    if (this.showTodayTasks) {
+      await this.fetchTodayTasks();
+    } else {
+      await this.fetchTasks();
+    }
+  }
+
+  toggleTodayTasks(): void {
+    this.showTodayTasks = !this.showTodayTasks;
+    this.onToggleChange();
+  }
+
+  formatCompletedTime(completedOn: Date | null): string {
+    if (!completedOn) return '';
+    const d = new Date(completedOn);
+    return 'at ' + d.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
   }
 
   async addTask(): Promise<void> {

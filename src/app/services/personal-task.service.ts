@@ -118,6 +118,29 @@ export class PersonalTaskService {
     }
   }
 
+  async getPersonalAllTodayTaskDetails(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.GET_PERSONAL_ALL_TODAY_TASK_DETAILS,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data) {
+        swalHelper.showToast('Task details fetched successfully', 'success');
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
     async getPersonalTaskDetails(data: any) {
     try {
       this.getHeaders();
