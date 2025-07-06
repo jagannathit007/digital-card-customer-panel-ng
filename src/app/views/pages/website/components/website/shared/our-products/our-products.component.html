@@ -157,21 +157,14 @@
 </div>
       </div>
 
-      <!-- catogrey content  -->
-      <!-- <div *ngIf="activeTab === 'category'">
-        <div class="row mt-4">
-          <div class="col">
-            <h4>Category Management</h4>
-            <p>Category content will go here. Let me know what to add!</p>
-          </div>
-        </div>
-      </div> -->
-
       <div *ngIf="activeTab === 'category'">
   <div class="row mt-4">
     <div class="col-md">
       <div class="d-flex">
-        <label class="fw-bold text-uppercase fs-3">Categories</label>
+            <label class="fw-bold text-uppercase fs-3 me-2">{{ sectionTitles.productscategories || 'Category List' }}</label>
+            <button class="btn btn-sm text-white bg-primary me-2" (click)="editSectionTitleOfCatogory()" title="Edit Section Title">
+                <i class="ri-edit-line"></i>
+            </button>  
         <app-toggle
           [isActive]="productcategoryVisible"
           [onText]="'Visible'"
@@ -589,132 +582,6 @@
 </div>
 
 
-<!-- <div>
-  <div class="row">
-    <div class="col-md">
-      <div class="d-flex">
-        <label class="fw-bold text-uppercase fs-3">Our Products</label>
-        <app-toggle
-          [isActive]="productVisible"
-          [onText]="'Visible'"
-          [offText]="'Hidden'"
-          class="ms-2 mt-2"
-          (changed)="this.productVisible=!this.productVisible;_updateVisibility()"
-        ></app-toggle>
-      </div>
-    </div>
-    <div class="col-md-auto pe-0">
-      <button class="btn btn-info" (click)="onOpenCraeteModal()">
-        <i class="ri-add-circle-line"></i> Add Products
-      </button>
-    </div>
-  </div>
-
-  <div class="row mt-3">
-    <div class="col">
-      <span class="fw-semibold">Search</span>
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Search..."
-        [(ngModel)]="searchTerm"
-        (input)="onSearch()"
-      />
-    </div>
-    <div class="col-auto">
-      <span class="fw-semibold">Page</span>
-      <select
-        class="form-select"
-        [(ngModel)]="itemsPerPage"
-        (change)="onItemsPerPageChange()"
-      >
-        <option value="10">10</option>
-        <option value="25">25</option>
-        <option value="50">50</option>
-        <option value="100">100</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="table-responsive mt-4">
-    <table class="table table-bordered table-hover">
-      <thead class="text-uppercase bg-light">
-        <tr>
-          <th class="text-center" style="width: 5%">#</th>
-          <th>Product Name</th>
-          <th style="width: 15%">Price</th>
-          <th style="width: 25%">Description</th>
-          <th class="text-center" style="width: 20%">Images</th>
-          <th class="text-center" style="width: 15%"><i class="ri-tools-fill"></i></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngIf="isLoading">
-          <td class="text-center" colspan="6">
-            <div class="spinner-border spinner-border-sm text-secondary" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </td>
-        </tr>
-        <tr *ngIf="!isLoading && filteredProducts.length === 0">
-          <td class="text-center" colspan="6">
-            <img src="../../../../../../../assets/images/NoRecordFound.png" alt="" style="width: 90px;">
-            <div class="fw-bold">No Records Found</div>
-          </td>
-        </tr>
-        <tr
-          *ngFor="
-            let item of filteredProducts
-              | paginate
-                : { id: 'products-pagination', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems };
-            let i = index
-          "
-        >
-          <td class="text-center">{{ (p - 1) * itemsPerPage + i + 1 }}</td>
-          <td><div [innerHTML]="sanitizeHtml(item.name)" class="name-preview"></div></td>
-          <td>{{ item.price ? (item.price | currency: 'INR') : 'N/A' }}</td>
-          <td>
-            <div [innerHTML]="sanitizeHtml(item.description)" class="description-preview"></div>
-          </td>
-          <td class="text-center">
-            <div class="tw-flex tw-items-center" style="cursor: pointer;" *ngIf="item.images.length > 0"
-                 (click)="onOpenImageModal(item.images)">
-              <img [src]="imageBaseURL + item.images[0]" alt="Product Image"
-                   style="width: 25px; height: 25px;" />
-              <span *ngIf="item.images.length > 1"
-                    [tooltip]="'... +' + (item.images.length - 1) + ' more images'" tooltipPosition="above">
-                <span class="mx-2 fw-bold text-success">. . .</span>
-                <span class="badge bg-success">+{{ item.images.length - 1 }}</span>
-              </span>
-            </div>
-            <div *ngIf="item.images.length === 0">:: NA ::</div>
-          </td>
-          <td class="text-center">
-            <button class="btn btn-sm btn-info" (click)="onOpenUpdateModal(item)">
-              <i class="ri-edit-fill"></i>
-            </button>
-            <button class="btn btn-danger btn-sm ms-1" (click)="_deleteProducts(item._id)">
-              <i class="ri-delete-bin-6-fill"></i>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="text-end">
-    <pagination-controls
-      [id]="'products-pagination'"
-      (pageChange)="onPageChange($event)"
-      [maxSize]="5"
-      [directionLinks]="true"
-      [autoHide]="false"
-      previousLabel="Previous"
-      nextLabel="Next"
-    ></pagination-controls>
-  </div>
-</div> -->
-
 <!-- Add/Update Product Modal -->
 <div class="modal fade" id="create-products" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
      role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
@@ -849,7 +716,7 @@
     </div>
 </div>
 
-<!-- Edit Section Title Modal -->
+<!-- Edit Section Title Modal For Single Products-->
 <div class="modal fade" id="EditTitleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="EditTitleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -870,6 +737,34 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" (click)="updateSectionTitle()" [disabled]="isLoading">
+                    <i class="ri-save-line"></i> {{ isLoading ? 'Saving...' : 'Save' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Section Title Modal For Catogrey Products-->
+<div class="modal fade" id="EditTitleModalForCatogory" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="EditTitleModalLabelss" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fw-medium" id="EditTitleModalLabelss">Edit Section Title</h4>
+                <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('EditTitleModalForCatogory')"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="sectionTitle" class="form-label">Section Title</label>
+                        <input type="text" class="form-control" id="sectionTitle" 
+                               placeholder="Enter section title" 
+                               [(ngModel)]="sectionTitles.productscategories" 
+                               name="sectionTitle" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" (click)="updateSectionTitleOfCatogory()" [disabled]="isLoading">
                     <i class="ri-save-line"></i> {{ isLoading ? 'Saving...' : 'Save' }}
                 </button>
             </div>

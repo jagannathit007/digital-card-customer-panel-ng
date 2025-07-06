@@ -106,7 +106,8 @@ export class OurProductsComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedCategoryProductId: string | null = null;
 
   sectionTitles: any = {
-    products: 'Our Products'
+    products: 'Our Products',
+    productscategories: 'ProductsCategories'
   };
 
 
@@ -481,6 +482,9 @@ export class OurProductsComponent implements OnInit, OnDestroy, AfterViewInit {
         this.filteredCategories = [...this.categories];
         this.categoryTotalItems = this.categories.length;
         this.productcategoryVisible = results.productcategoryVisible;
+        if (results.sectionTitles) {
+          this.sectionTitles = results.sectionTitles;
+        }
         this.cdr.markForCheck();
       } else {
         swalHelper.showToast('Failed to fetch categories!', 'warning');
@@ -554,36 +558,7 @@ export class OurProductsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.modal.close('create-category');
   }
 
-  // ! catogrey image size skip validation of image size dimension
-  // onUploadCategoryImage(event: any) {
-  //   const file: File = event.target.files[0];
-  //   if (!file) return;
 
-  //   const allowedDimensions = [
-  //     { width: 1250, height: 720 },
-  //     { width: 1600, height: 900 }
-  //   ];
-
-  //   const reader = new FileReader();
-  //   reader.onload = (e: any) => {
-  //     const img = new Image();
-  //     img.onload = () => {
-  //       const isValid = allowedDimensions.some(dim =>
-  //         img.width === dim.width && img.height === dim.height
-  //       );
-
-  //       if (isValid) {
-  //         this.selectedCategory.categoryImage = file;
-  //       } else {
-  //         swalHelper.warning(`Image "${file.name}" must be 1250x720 or 1600x900.`);
-  //         this.categoryFileInput.nativeElement.value = '';
-  //       }
-  //       this.cdr.markForCheck();
-  //     };
-  //     img.src = e.target.result;
-  //   };
-  //   reader.readAsDataURL(file);
-  // }
 
   onUploadCategoryImage(event: any) {
     const file: File = event.target.files[0];
@@ -747,57 +722,6 @@ export class OurProductsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.modal.close('create-category-product');
   }
 
-  // ! skip the category product image size validation
-  // onUploadCategoryProductImage(event: any) {
-  //   const files: FileList = event.target.files;
-  //   const newFiles: File[] = Array.from(files);
-
-  //   if (!this.selectedCategoryProduct.images) {
-  //     this.selectedCategoryProduct.images = [];
-  //   }
-
-  //   const totalImages = this.selectedCategoryProduct.images.length + newFiles.length;
-  //   if (totalImages > 5) {
-  //     swalHelper.warning('You can upload a maximum of 5 images.');
-  //     this.selectedCategoryProduct.images = [];
-  //     this.categoryProductFileInput.nativeElement.value = '';
-  //     return;
-  //   }
-
-  // const allowedDimensions = [
-  //   { width: 1250, height: 720 },
-  //   { width: 1600, height: 900 }
-  // ];
-
-  //   let validImages: File[] = [];
-  //   let processed = 0;
-
-  //   for (let file of newFiles) {
-  //     const reader = new FileReader();
-  //     reader.onload = (e: any) => {
-  //       const img = new Image();
-  //       img.onload = () => {
-  //         const isValid = allowedDimensions.some(dim =>
-  //           img.width === dim.width && img.height === dim.height
-  //         );
-
-  //         if (isValid) {
-  //           validImages.push(file);
-  //         } else {
-  //           swalHelper.warning(`Image "${file.name}" must be 1250x720 or 1600x900.`);
-  //         }
-
-  //         processed++;
-  //         if (processed === newFiles.length) {
-  //           this.selectedCategoryProduct.images.push(...validImages);
-  //           this.cdr.markForCheck();
-  //         }
-  //       };
-  //       img.src = e.target.result;
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // }
 
   onUploadCategoryProductImage(event: any) {
     const files: FileList = event.target.files;
@@ -861,56 +785,6 @@ export class OurProductsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.cdr.markForCheck();
   }
 
-  // async onCreateCategoryProduct() {
-  //   if (this.selectedCategoryProduct.price && isNaN(Number(this.selectedCategoryProduct.price))) {
-  //     swalHelper.showToast('Please enter a valid price!', 'warning');
-  //     return;
-  //   }
-
-  //   const strippedName = this.stripHtml(this.selectedCategoryProduct.name).trim();
-  //   if (!strippedName) {
-  //     swalHelper.showToast('Product name is required!', 'warning');
-  //     return;
-  //   }
-
-  //   const formdata = new FormData();
-  //   formdata.append('name', this.selectedCategoryProduct.name);
-  //   formdata.append('description', this.selectedCategoryProduct.description);
-  //   formdata.append('businessCardId', this.businessCardId);
-  //   formdata.append('categoryId', this.selectedCategory._id);
-  //   formdata.append('visible', String(this.selectedCategoryProduct.visible));
-  //   if (this.selectedCategoryProduct.price) {
-  //     formdata.append('price', this.selectedCategoryProduct.price);
-  //   }
-  //   if (this.selectedCategoryProduct._id) {
-  //     formdata.append('productId', this.selectedCategoryProduct._id);
-  //   }
-
-  //   this.selectedCategoryProduct.images.forEach((file: any, index: number) => {
-  //     if (file instanceof File) {
-  //       formdata.append('images', file);
-  //     }
-  //   });
-
-  //   if (this.selectedCategoryProduct.existingImages && this.selectedCategoryProduct.existingImages.length > 0) {
-  //     formdata.append('existingImages', JSON.stringify(this.selectedCategoryProduct.existingImages));
-  //   }
-
-  //   this.isCategoryLoading = true;
-  //   try {
-  //     await this.websiteService.addOrUpdateProductInCategory(formdata);
-  //     await this._getCategories();
-  //     this.modal.close('create-category-product');
-  //     this._resetCategoryProduct();
-  //     swalHelper.showToast('Product saved successfully!', 'success');
-  //   } catch (error) {
-  //     console.error('Error saving product: ', error);
-  //     swalHelper.showToast('Error saving product!', 'error');
-  //   } finally {
-  //     this.isCategoryLoading = false;
-  //     this.cdr.markForCheck();
-  //   }
-  // }
 
   async onCreateCategoryProduct() {
     if (this.selectedCategoryProduct.price && isNaN(Number(this.selectedCategoryProduct.price))) {
@@ -969,24 +843,6 @@ export class OurProductsComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  // async deleteCategoryProduct(productId: string) {
-  //   try {
-  //     const confirm = await swalHelper.delete();
-  //     if (confirm.isConfirmed) {
-  //       await this.websiteService.deleteProductInCategory({
-  //         productId,
-  //         categoryId: this.selectedCategory._id,
-  //         businessCardId: this.businessCardId
-  //       });
-  //       await this._getCategories();
-  //       this._resetCategoryProduct();
-  //       swalHelper.showToast('Product deleted successfully!', 'success');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error deleting product: ', error);
-  //     swalHelper.showToast('Error deleting product!', 'error');
-  //   }
-  // }
 
   async deleteCategoryProduct(productId: string) {
     try {
@@ -1054,6 +910,41 @@ export class OurProductsComponent implements OnInit, OnDestroy, AfterViewInit {
         businessCardId: businessCardId,
         sectionTitles: {
           products: this.sectionTitles.products
+        }
+      };
+
+      const result = await this.websiteService.updateSectionsTitles(data);
+      if (result) {
+        this.modal.close('EditTitleModal');
+        swalHelper.showToast('Section title updated successfully!', 'success');
+      }
+    } catch (error) {
+      console.error('Error updating section title: ', error);
+      swalHelper.showToast('Error updating section title!', 'error');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+
+editSectionTitleOfCatogory() {
+    this.modal.open('EditTitleModalForCatogory');
+  }
+
+  // Add this method to update section title
+  async updateSectionTitleOfCatogory() {
+    if (!this.sectionTitles.productscategories.trim()) {
+      swalHelper.showToast('Section title is required!', 'warning');
+      return;
+    }
+
+    this.isLoading = true;
+    try {
+      let businessCardId = this.storage.get(common.BUSINESS_CARD);
+      const data = {
+        businessCardId: businessCardId,
+        sectionTitles: {
+          productscategories: this.sectionTitles.productscategories
         }
       };
 
