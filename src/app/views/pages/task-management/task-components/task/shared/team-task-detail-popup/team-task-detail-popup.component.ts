@@ -323,10 +323,6 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     let boardId = '';
     this.route.queryParamMap.subscribe((params) => {
       boardId = params.get('boardId') || '';
-      console.log(
-        'Board ID from query params (subscription):',
-        params.get('boardId')
-      );
       // Handle the boardId (e.g., fetch data based on boardId)
     });
     if (!boardId) {
@@ -362,9 +358,9 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       } else {
         this.isLoading = false;
       }
-    }else{
+    } else {
       console.log('Task not found', this.task);
-        this.isLoading = false;
+      this.isLoading = false;
     }
     // this.task = {
     //   _id: this.taskId,

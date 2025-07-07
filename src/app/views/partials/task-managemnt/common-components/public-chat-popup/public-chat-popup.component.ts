@@ -85,10 +85,8 @@ export class PublicChatPopupComponent implements OnInit, OnDestroy {
     //   }
     // });
 
-    this.route.queryParamMap.subscribe(params => {
+    this.route.queryParamMap.subscribe((params) => {
       this.boardId = params.get('boardId') || '';
-      console.log('Board ID from query params (subscription):', this.boardId);
-      // Handle the boardId (e.g., fetch data based on boardId)
     });
   }
 
@@ -116,8 +114,8 @@ export class PublicChatPopupComponent implements OnInit, OnDestroy {
       const users = await this.loadAvailableUsers(this.boardId);
 
       if (users) {
-          this.isLoading = false;
-          this.scrollToBottom();
+        this.isLoading = false;
+        this.scrollToBottom();
       } else {
         this.isLoading = false;
       }
@@ -284,7 +282,7 @@ export class PublicChatPopupComponent implements OnInit, OnDestroy {
   formatDate(dateString: string): string {
     const date = new Date(dateString);
 
-    const isDateIsToday = date.getDate() === new Date().getDate(); 
+    const isDateIsToday = date.getDate() === new Date().getDate();
     return (
       (isDateIsToday ? 'Today' : date.toLocaleDateString()) +
       ' ' +
