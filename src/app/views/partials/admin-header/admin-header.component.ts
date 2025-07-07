@@ -320,6 +320,9 @@ export class AdminHeaderComponent implements OnInit {
     this.router.navigate(['/task-management/teamtask'], {
       queryParams: { boardId: board._id }
     });
+
+    // refresh whole page
+    window.location.reload();
   }
 
 

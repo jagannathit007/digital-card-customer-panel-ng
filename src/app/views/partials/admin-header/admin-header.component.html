@@ -5,87 +5,122 @@
       <!-- Left Side: Hamburger and Boards Dropdown -->
       <div class="tw-flex tw-items-center tw-space-x-3">
         <!-- Sidebar Toggle Button -->
-        <button class="tw-p-2 tw-rounded-md tw-hover:bg-gray-100 tw-transition-colors" (click)="appWorker.toggleSlider()">
+        <button
+          class="tw-p-2 tw-rounded-md tw-hover:bg-gray-100 tw-transition-colors"
+          (click)="appWorker.toggleSlider()"
+        >
           <i class="hamburger tw-text-gray-600"></i>
         </button>
 
         <!-- Boards Dropdown -->
-        <div class="tw-relative boards-dropdown-container" *ngIf="shouldShowElements">
+        <div
+          class="tw-relative boards-dropdown-container"
+          *ngIf="shouldShowElements"
+        >
           <!-- Boards Dropdown Toggle -->
-          <button class="tw-flex tw-items-center tw-space-x-2 tw-px-3 tw-py-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors tw-outline-none tw-border tw-border-gray-300" 
-                  (click)="toggleBoardsDropdown()" 
-                  data-boards-button>
+          <button
+            class="tw-flex tw-items-center tw-space-x-2 tw-px-3 tw-py-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors tw-outline-none tw-border tw-border-gray-300"
+            (click)="toggleBoardsDropdown()"
+            data-boards-button
+          >
             <i class="fa-solid fa-th-large tw-text-gray-600 tw-text-sm"></i>
             <span class="tw-text-gray-700 tw-font-medium">Boards</span>
-            <i class="fa-solid fa-chevron-down tw-text-gray-500 tw-text-xs tw-transition-transform tw-duration-200" 
-               [class.tw-rotate-180]="isBoardsDropdownOpen"></i>
+            <i
+              class="fa-solid fa-chevron-down tw-text-gray-500 tw-text-xs tw-transition-transform tw-duration-200"
+              [class.tw-rotate-180]="isBoardsDropdownOpen"
+            ></i>
           </button>
 
           <!-- Boards Dropdown Menu -->
-          <div class="tw-absolute tw-left-0 tw-top-full tw-mt-2 tw-w-64 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-200 tw-py-2 tw-transform tw-transition-all tw-duration-200 tw-z-50"
-          [class.tw-opacity-0]="!isBoardsDropdownOpen"
-          [class.tw-opacity-100]="isBoardsDropdownOpen"
-          [class.tw-scale-95]="!isBoardsDropdownOpen"
-          [class.tw-scale-100]="!isBoardsDropdownOpen"
-          [class.tw-pointer-events-none]="!isBoardsDropdownOpen"
-          *ngIf="isBoardsDropdownOpen">
-            
+          <div
+            class="tw-absolute tw-left-0 tw-top-full tw-mt-2 tw-w-64 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-200 tw-py-2 tw-transform tw-transition-all tw-duration-200 tw-z-50"
+            [class.tw-opacity-0]="!isBoardsDropdownOpen"
+            [class.tw-opacity-100]="isBoardsDropdownOpen"
+            [class.tw-scale-95]="!isBoardsDropdownOpen"
+            [class.tw-scale-100]="!isBoardsDropdownOpen"
+            [class.tw-pointer-events-none]="!isBoardsDropdownOpen"
+            *ngIf="isBoardsDropdownOpen"
+          >
             <!-- Home Link -->
-            <a class="tw-flex tw-items-center tw-px-4 tw-py-3 tw-text-gray-700 tw-hover:bg-blue-50 tw-hover:text-blue-600 tw-transition-colors tw-no-underline tw-block tw-border-b tw-border-gray-100" 
-               [routerLink]="['/task-management/boards']"
-               (click)="closeBoardsDropdown()">
+            <a
+              class="tw-flex tw-items-center tw-px-4 tw-py-3 tw-text-gray-700 tw-hover:bg-blue-50 tw-hover:text-blue-600 tw-transition-colors tw-no-underline tw-block tw-border-b tw-border-gray-100"
+              [routerLink]="['/task-management/boards']"
+              (click)="closeBoardsDropdown()"
+            >
               <i class="fa-solid fa-home tw-mr-3 tw-text-blue-500 tw-w-4"></i>
               <span class="tw-font-medium">Home</span>
             </a>
-            
+
             <!-- Boards Section Header -->
-            <div class="tw-px-4 tw-py-2 tw-text-xs tw-font-semibold tw-text-gray-500 tw-uppercase tw-tracking-wide">
+            <div
+              class="tw-px-4 tw-py-2 tw-text-xs tw-font-semibold tw-text-gray-500 tw-uppercase tw-tracking-wide"
+            >
               Your Boards
             </div>
-            
+
             <!-- Board Links -->
             <!-- admin-header.component.html - Updated board links section -->
 
-<!-- Board Links -->
-<div class="tw-max-h-64 tw-overflow-y-auto">
-  <ng-container *ngFor="let board of boardsList; let i = index">
-    <!-- Updated with onBoardSelect method -->
-    <button class="tw-w-full tw-flex tw-items-center tw-px-4 tw-py-2 tw-text-gray-700 tw-hover:bg-gray-50 tw-transition-all tw-duration-200 tw-no-underline tw-text-left tw-relative" 
-           [class.tw-bg-blue-50]="isCurrentBoard(board._id)"
-           [class.tw-text-blue-600]="isCurrentBoard(board._id)"
-           [class.tw-font-medium]="isCurrentBoard(board._id)"
-           [class.tw-shadow-sm]="isCurrentBoard(board._id)"
-           (click)="onBoardSelect(board)">
-      
-      <!-- Board Icon -->
-      <i class="fa-solid fa-clipboard-list tw-mr-3 tw-w-4 tw-text-sm tw-transition-colors tw-duration-200" 
-         [class.tw-text-gray-400]="!isCurrentBoard(board._id)"
-         [class.tw-text-blue-500]="isCurrentBoard(board._id)"></i>
-      
-      <!-- Board Name -->
-      <span class="tw-truncate tw-flex-1 tw-transition-colors tw-duration-200">{{ board.name }}</span>
-      
-      <!-- Active Board Notification Elements -->
-      <div *ngIf="isCurrentBoard(board._id)" class="tw-flex tw-items-center tw-ml-2 tw-space-x-1">
-        <!-- Pulse Animation Dot -->
-        <span class="tw-relative tw-flex tw-h-2 tw-w-2">
-          <span class="tw-animate-ping tw-absolute tw-inline-flex tw-h-full tw-w-full tw-rounded-full tw-bg-blue-400 tw-opacity-75"></span>
-          <span class="tw-relative tw-inline-flex tw-rounded-full tw-h-2 tw-w-2 tw-bg-blue-500"></span>
-        </span>
-        
-        <!-- Active Text -->
-        <span class="tw-text-xs tw-text-blue-600 tw-font-medium tw-ml-1">Active</span>
-      </div>
-    </button>
-  </ng-container>
-  
-  <!-- Empty State -->
-  <div *ngIf="!boardsList || boardsList.length === 0" 
-       class="tw-px-4 tw-py-3 tw-text-gray-500 tw-text-sm tw-text-center">
-    <i class="fa-solid fa-inbox tw-mb-2 tw-text-gray-300 tw-text-lg tw-block"></i>
-    No boards available
-  </div>
-</div>
+            <!-- Board Links -->
+            <div class="tw-max-h-64 tw-overflow-y-auto">
+              <ng-container *ngFor="let board of boardsList; let i = index">
+                <!-- Updated with onBoardSelect method -->
+                <button
+                  class="tw-w-full tw-flex tw-items-center tw-px-4 tw-py-2 tw-text-gray-700 tw-hover:bg-gray-50 tw-transition-all tw-duration-200 tw-no-underline tw-text-left tw-relative"
+                  [class.tw-bg-blue-50]="isCurrentBoard(board._id)"
+                  [class.tw-text-blue-600]="isCurrentBoard(board._id)"
+                  [class.tw-font-medium]="isCurrentBoard(board._id)"
+                  [class.tw-shadow-sm]="isCurrentBoard(board._id)"
+                  (click)="onBoardSelect(board)"
+                >
+                  <!-- Board Icon -->
+                  <i
+                    class="fa-solid fa-clipboard-list tw-mr-3 tw-w-4 tw-text-sm tw-transition-colors tw-duration-200"
+                    [class.tw-text-gray-400]="!isCurrentBoard(board._id)"
+                    [class.tw-text-blue-500]="isCurrentBoard(board._id)"
+                  ></i>
+
+                  <!-- Board Name -->
+                  <span
+                    class="tw-truncate tw-flex-1 tw-transition-colors tw-duration-200"
+                    >{{ board.name }}</span
+                  >
+
+                  <!-- Active Board Notification Elements -->
+                  <div
+                    *ngIf="isCurrentBoard(board._id)"
+                    class="tw-flex tw-items-center tw-ml-2 tw-space-x-1"
+                  >
+                    <!-- Pulse Animation Dot -->
+                    <span class="tw-relative tw-flex tw-h-2 tw-w-2">
+                      <span
+                        class="tw-animate-ping tw-absolute tw-inline-flex tw-h-full tw-w-full tw-rounded-full tw-bg-blue-400 tw-opacity-75"
+                      ></span>
+                      <span
+                        class="tw-relative tw-inline-flex tw-rounded-full tw-h-2 tw-w-2 tw-bg-blue-500"
+                      ></span>
+                    </span>
+
+                    <!-- Active Text -->
+                    <span
+                      class="tw-text-xs tw-text-blue-600 tw-font-medium tw-ml-1"
+                      >Active</span
+                    >
+                  </div>
+                </button>
+              </ng-container>
+
+              <!-- Empty State -->
+              <div
+                *ngIf="!boardsList || boardsList.length === 0"
+                class="tw-px-4 tw-py-3 tw-text-gray-500 tw-text-sm tw-text-center"
+              >
+                <i
+                  class="fa-solid fa-inbox tw-mb-2 tw-text-gray-300 tw-text-lg tw-block"
+                ></i>
+                No boards available
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -93,69 +128,84 @@
       <!-- Right Side Icons and Profile Section -->
       <div class="tw-flex tw-items-center tw-space-x-3">
         <!-- Three Icons on Left -->
-         <div  *ngIf="shouldShowElements">
-           <button class="tw-p-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors">
-             <i class="fa-solid fa-user-plus tw-text-gray-600 tw-text-lg"></i>
-           </button>
-           
-           <button class="tw-p-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors">
-             <i class="fa-solid fa-comments tw-text-gray-600 tw-text-lg"></i>
-           </button>
-           
-           <button class="tw-p-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors">
-             <i class="fa-solid fa-link tw-text-gray-600 tw-text-lg"></i>
-           </button>
-         </div>
+        <div *ngIf="shouldShowElements">
+          <button
+            class="tw-p-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors"
+          >
+            <i class="fa-solid fa-user-plus tw-text-gray-600 tw-text-lg"></i>
+          </button>
 
-  
+          <button
+            class="tw-p-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors"
+          >
+            <i class="fa-solid fa-comments tw-text-gray-600 tw-text-lg"></i>
+          </button>
+
+          <button
+            class="tw-p-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors"
+          >
+            <i class="fa-solid fa-link tw-text-gray-600 tw-text-lg"></i>
+          </button>
+        </div>
 
         <!-- Profile Section with Left Border -->
-        <div class="tw-relative tw-pl-3 tw-border-l tw-border-gray-300 profile-dropdown-container">
+        <div
+          class="tw-relative tw-pl-3 tw-border-l tw-border-gray-300 profile-dropdown-container"
+        >
           <!-- Profile Dropdown Toggle -->
-          <button class="tw-flex tw-items-center tw-space-x-2 tw-p-2 tw-rounded-lg tw-hover:bg-gray-50 tw-transition-colors tw-outline-none" 
-                  (click)="toggleDropdown()" 
-                  data-profile-button>
-          @if (memberDetails != null && memberDetails.profileImage && memberDetails.profileImage) {
+          <button
+            class="tw-flex tw-items-center tw-space-x-2 tw-p-2 tw-rounded-lg tw-hover:bg-gray-50 tw-transition-colors tw-outline-none"
+            (click)="toggleDropdown()"
+            data-profile-button
+          >
+            @if (memberDetails != null && memberDetails.profileImage &&
+            memberDetails.profileImage) {
             <img
               class="tw-w-8 tw-h-8 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-200"
               src="{{ imageUrl }}{{ memberDetails.profileImage }}"
               alt="Profile Image"
               (error)="handleImageError($event)"
             />
-          } @else {
-            <div class="tw-w-8 tw-h-8 tw-rounded-full tw-bg-gray-100 tw-flex tw-items-center tw-justify-center">
+            } @else {
+            <div
+              class="tw-w-8 tw-h-8 tw-rounded-full tw-bg-gray-100 tw-flex tw-items-center tw-justify-center"
+            >
               <i class="ri-user-3-line tw-text-gray-600 tw-text-lg"></i>
             </div>
-          }
-        </button>
-
-        <!-- Profile Dropdown Menu -->
-        <div class="tw-absolute tw-right-0 tw-top-full tw-mt-2 tw-w-48 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-200 tw-py-2 tw-transform tw-transition-all tw-duration-200"
-             [class.tw-opacity-0]="!isDropdownOpen"
-             [class.tw-opacity-100]="isDropdownOpen"
-             [class.tw-scale-95]="!isDropdownOpen"
-             [class.tw-scale-100]="isDropdownOpen"
-             [class.tw-pointer-events-none]="!isDropdownOpen"
-             *ngIf="isDropdownOpen">
-          <!-- Profile Link -->
-          <a class="tw-flex tw-items-center tw-px-4 tw-py-2 tw-text-gray-700 tw-hover:bg-gray-50 tw-transition-colors tw-no-underline tw-block" 
-             [routerLink]="['/task-management/profile']"
-             (click)="closeDropdown()">
-            <i class="ri-user-3-line tw-mr-3 tw-text-gray-500"></i>
-            Profile
-          </a>
-          
-          <!-- Logout Link -->
-          <button class="tw-w-full tw-flex tw-items-center tw-px-4 tw-py-2 tw-text-red-600 tw-hover:bg-red-50 tw-transition-colors tw-text-left" 
-                  (click)="logout(); closeDropdown()">
-            <i class="ri-logout-circle-r-line tw-mr-3"></i>
-            Logout
+            }
           </button>
+
+          <!-- Profile Dropdown Menu -->
+          <div
+            class="tw-absolute tw-right-0 tw-top-full tw-mt-2 tw-w-48 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-200 tw-py-2 tw-transform tw-transition-all tw-duration-200"
+            [class.tw-opacity-0]="!isDropdownOpen"
+            [class.tw-opacity-100]="isDropdownOpen"
+            [class.tw-scale-95]="!isDropdownOpen"
+            [class.tw-scale-100]="isDropdownOpen"
+            [class.tw-pointer-events-none]="!isDropdownOpen"
+            *ngIf="isDropdownOpen"
+          >
+            <!-- Profile Link -->
+            <a
+              class="tw-flex tw-items-center tw-px-4 tw-py-2 tw-text-gray-700 tw-hover:bg-gray-50 tw-transition-colors tw-no-underline tw-block"
+              [routerLink]="['/task-management/profile']"
+              (click)="closeDropdown()"
+            >
+              <i class="ri-user-3-line tw-mr-3 tw-text-gray-500"></i>
+              Profile
+            </a>
+
+            <!-- Logout Link -->
+            <button
+              class="tw-w-full tw-flex tw-items-center tw-px-4 tw-py-2 tw-text-red-600 tw-hover:bg-red-50 tw-transition-colors tw-text-left"
+              (click)="logout(); closeDropdown()"
+            >
+              <i class="ri-logout-circle-r-line tw-mr-3"></i>
+              Logout
+            </button>
+          </div>
         </div>
       </div>
     </div>
-    </div>
-    </nav>
-    </div>
-  
-
+  </nav>
+</div>
