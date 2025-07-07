@@ -45,7 +45,7 @@
           ></div>
         </div>
         <!-- Editable Title -->
-        <div class="tw-mb-2 tw-relative" *ngIf="!isLoading">  
+        <div class="tw-mb-2 tw-relative" *ngIf="!isLoading">
           <div
             *ngIf="!isEditingTitle"
             class="tw-group tw-cursor-pointer tw-py-[9px] tw-px-[13px] tw-rounded-lg hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
@@ -160,7 +160,10 @@
             </div>
 
             <!-- Due Date -->
-            <div class="tw-relative" *ngIf="task.status !== 'completed' && task.status !== 'deleted'">
+            <div
+              class="tw-relative"
+              *ngIf="task.status !== 'completed' && task.status !== 'deleted'"
+            >
               <ng-container *ngIf="task.dueDate; else noDueDateTemplate">
                 <div
                   [ngClass]="getDueDateDisplay().color"
@@ -348,9 +351,17 @@
         class="tw-bg-orange-50 tw-text-gray-500 tw-px-4 tw-py-2 tw-rounded-lg tw-text-sm tw-font-medium tw-flex tw-items-center tw-space-x-2 tw-mt-3"
       >
         <i class="fas fa-exclamation-circle tw-text-xs tw-text-orange-600"></i>
-        <span>Marked as {{ task.status }} At <strong>{{ task.status === 'completed' ? formatDate(task.completedAt || task.updatedAt) : formatDate(task.deletedAt || task.updatedAt) }}</strong>. If you want to make changes, move this out of the {{ task.status }} column.</span>
+        <span
+          >Marked as {{ task.status }} At
+          <strong>{{
+            task.status === "completed"
+              ? formatDate(task.completedAt || task.updatedAt)
+              : formatDate(task.deletedAt || task.updatedAt)
+          }}</strong
+          >. If you want to make changes, move this out of the
+          {{ task.status }} column.</span
+        >
       </div>
-
 
       <!-- Tabs -->
       <div class="tw-border-b tw-border-gray-200 tw-bg-white">
@@ -532,6 +543,15 @@
                     taskPermissionsService.getCurrentUser()?._id
                 }"
               >
+                <img
+                  *ngIf="
+                    comment.createdBy._id !==
+                    taskPermissionsService.getCurrentUser()?._id
+                  "
+                  class="tw-w-10 tw-h-10 tw-rounded-full tw-mr-2 tw-mt-1"
+                  [src]="imageBaseUrl + comment.createdBy.profileImage"
+                  alt="User Avatar"
+                />
                 <div
                   [ngClass]="{
                     'tw-bg-blue-100 tw-text-black':
@@ -543,6 +563,17 @@
                   }"
                   class="tw-max-w-xs md:tw-max-w-md tw-px-4 tw-py-3 tw-rounded-2xl tw-relative tw-shadow-sm"
                 >
+                  <div
+                    class="tw-flex tw-items-center tw-space-x-2 tw-mb-2 tw-w-full tw-text-gray-600"
+                    *ngIf="
+                      comment.createdBy._id !==
+                      taskPermissionsService.getCurrentUser()?._id
+                    "
+                  >
+                    <span class="tw-font-medium tw-text-sm">
+                      {{ comment.createdBy.name }}
+                    </span>
+                  </div>
                   <!-- Comment content -->
                   <div
                     class="tw-text-sm tw-leading-relaxed tw-break-words"
@@ -647,7 +678,7 @@
                 class="tw-space-y-4"
               >
                 <div
-                  *ngFor=" let file of attachment.files"
+                  *ngFor="let file of attachment.files"
                   class="tw-group tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-p-4 hover:tw-shadow-md tw-transition-all tw-duration-200"
                 >
                   <div class="tw-flex tw-items-center tw-justify-between">
@@ -703,7 +734,7 @@
                       </a>
 
                       <button
-                      *ngIf="taskPermissions"
+                        *ngIf="taskPermissions"
                         type="button"
                         (click)="deleteAttachment(file._id, attachment._id)"
                         class="tw-p-2 tw-text-gray-400 hover:tw-text-red-600 hover:tw-bg-red-50 tw-rounded-lg tw-transition-all tw-duration-200"
@@ -717,8 +748,16 @@
             </div>
 
             <!-- Upload Options -->
-            <div class="tw-border-t tw-border-gray-200 tw-pt-6" [ngClass]="{'tw-cursor-not-allowed': !taskPermissions}">
-              <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-1 tw-gap-4" [ngClass]="{'tw-pointer-events-none tw-opacity-50 ': !taskPermissions}">
+            <div
+              class="tw-border-t tw-border-gray-200 tw-pt-6"
+              [ngClass]="{ 'tw-cursor-not-allowed': !taskPermissions }"
+            >
+              <div
+                class="tw-grid tw-grid-cols-1 md:tw-grid-cols-1 tw-gap-4"
+                [ngClass]="{
+                  'tw-pointer-events-none tw-opacity-50 ': !taskPermissions
+                }"
+              >
                 <!-- File Upload -->
                 <div class="tw-relative">
                   <input
