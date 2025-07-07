@@ -73,6 +73,8 @@ interface TeamTask {
   createdBy: TaskMember;
   createdAt: string;
   updatedAt: string;
+  completedAt: string | null;
+  deletedAt: string | null;
 }
 
 interface TaskUpdate {
@@ -134,6 +136,8 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     },
     createdAt: '',
     updatedAt: '',
+    completedAt: null,
+    deletedAt: null,
   };
 
   // UI State

@@ -160,7 +160,7 @@
             </div>
 
             <!-- Due Date -->
-            <div class="tw-relative">
+            <div class="tw-relative" *ngIf="task.status !== 'completed' && task.status !== 'deleted'">
               <ng-container *ngIf="task.dueDate; else noDueDateTemplate">
                 <div
                   [ngClass]="getDueDateDisplay().color"
@@ -348,7 +348,7 @@
         class="tw-bg-orange-50 tw-text-gray-500 tw-px-4 tw-py-2 tw-rounded-lg tw-text-sm tw-font-medium tw-flex tw-items-center tw-space-x-2 tw-mt-3"
       >
         <i class="fas fa-exclamation-circle tw-text-xs tw-text-orange-600"></i>
-        <span>Marked as {{ task.status }}. If you want to make changes, move this out of the {{ task.status }} column.</span>
+        <span>Marked as {{ task.status }} At <strong>{{ task.status === 'completed' ? formatDate(task.completedAt || task.updatedAt) : formatDate(task.deletedAt || task.updatedAt) }}</strong>. If you want to make changes, move this out of the {{ task.status }} column.</span>
       </div>
 
 
