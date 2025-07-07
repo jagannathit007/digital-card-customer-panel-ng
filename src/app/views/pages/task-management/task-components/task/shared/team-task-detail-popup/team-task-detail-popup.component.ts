@@ -1036,8 +1036,10 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
 
   formatDate(dateString: string): string {
     const date = new Date(dateString);
+
+    const isDateIsToday = date.getDate() === new Date().getDate();
     return (
-      date.toLocaleDateString() +
+      (isDateIsToday ? 'Today' : date.toLocaleDateString()) +
       ' ' +
       date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     );

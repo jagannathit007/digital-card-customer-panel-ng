@@ -137,6 +137,7 @@
 
           <button
             class="tw-p-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors"
+            (click)="togglePublicChatPopup()"
           >
             <i class="fa-solid fa-comments tw-text-gray-600 tw-text-lg"></i>
           </button>
@@ -208,4 +209,10 @@
       </div>
     </div>
   </nav>
+
+  <app-public-chat-popup
+  [boardId]="currentBoardId()"
+  (closeChat)="closePublicChatPopup()"
+  *ngIf="showPublicChat">
+</app-public-chat-popup>
 </div>

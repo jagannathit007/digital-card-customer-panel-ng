@@ -1,0 +1,85 @@
+// Custom scrollbar for chat messages
+#chatCommentsList {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+}
+
+// Message bubble animations
+.tw-group:hover {
+  .tw-opacity-0 {
+    opacity: 1 !important;
+  }
+}
+
+// Mention styles
+.mention {
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: scale(1.02);
+  }
+}
+
+// Chat input focus enhancements
+app-add-comments {
+  ::ng-deep {
+    .comment-input {
+      border-radius: 20px;
+      padding: 12px 16px;
+      border: 2px solid #e5e7eb;
+      transition: all 0.2s ease;
+      
+      &:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      }
+    }
+    
+    .send-button {
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+  }
+}
+
+// Modal backdrop blur effect
+.tw-bg-black.tw-bg-opacity-50 {
+  backdrop-filter: blur(4px);
+}
+
+// Message timestamp fade in
+.tw-text-xs.tw-opacity-75 {
+  transition: opacity 0.2s ease;
+}
+
+// Better mobile responsiveness
+@media (max-width: 768px) {
+  .tw-max-w-xs {
+    max-width: calc(100vw - 120px);
+  }
+  
+  .tw-px-4.md\\:tw-p-6 {
+    padding: 1rem;
+  }
+}

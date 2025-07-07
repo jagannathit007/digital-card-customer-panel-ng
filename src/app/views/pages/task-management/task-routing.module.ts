@@ -11,6 +11,7 @@ import { MydaytaskComponent } from './task-components/task/shared/mydaytask/myda
 import { MemberprofileComponent } from './task-components/task/shared/memberprofile/memberprofile.component';
 import { AllBoardsComponent } from './task-components/task/shared/allBoards/allBoards.component';
 import { TeamTaskDetailPopupComponent } from './task-components/task/shared/team-task-detail-popup/team-task-detail-popup.component';
+import { PublicChatPopupComponent } from '../../partials/task-managemnt/common-components/public-chat-popup/public-chat-popup.component';
 
 const routes: Routes = [
   {
@@ -27,6 +28,10 @@ const routes: Routes = [
           {
             path: 'detail/:taskId',
             component: TeamTaskDetailPopupComponent
+          },
+          {
+            path: 'announcements',
+            component: PublicChatPopupComponent
           }
         ]
       },

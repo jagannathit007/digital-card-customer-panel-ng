@@ -212,6 +212,7 @@ public REORDER_COLUMN: string = `${this.PATH}/task/board/column/reorder`;
 public AI_ASSISTANT: string = `${this.PATH}/task/ai/process-user-voice`;
 
 //  ! Task Module Comment Mention api
+public GET_COMMENTS: string = `${this.PATH}/task/team/comment/get`;
 public ADD_COMMENT: string = `${this.PATH}/task/team/comment/add`;
 public DELETE_COMMENT: string = `${this.PATH}/task/team/comment/delete`;
 

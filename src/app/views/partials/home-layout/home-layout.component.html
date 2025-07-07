@@ -6,8 +6,8 @@
     @if  (businessId && !currentRoute.includes('/task-management')) {
       <app-header ></app-header>
     }
-    @if(!businessId) {
-      <app-memberheader></app-memberheader>
+    @if(!businessId || (isAdmin && currentRoute.includes('/task-management'))) {
+      <app-admin-header></app-admin-header>
     }
 
     @if(isAdmin && currentRoute.includes('/task-management')){
