@@ -463,6 +463,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
 
     const boardDetails = await this.taskService.getBoardDetails({
       boardId: this.boardId(),
+      type: 'board',
     });
 
     if (boardDetails) {

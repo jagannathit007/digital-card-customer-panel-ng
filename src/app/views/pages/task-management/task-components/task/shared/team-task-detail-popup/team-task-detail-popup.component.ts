@@ -22,6 +22,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { environment } from 'src/env/env.local';
 import { MemberDetailDropdownComponent } from '../../../../../../partials/task-managemnt/common-components/add-members-dropdown/add-members-dropdown.component';
 import { TeamTaskEventService } from 'src/app/services/teamTaskEvent.service';
+import { AppStorage } from 'src/app/core/utilities/app-storage';
+import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 
 interface TaskMember {
   _id: string;
@@ -272,7 +274,8 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     private taskService: TaskService,
     public taskPermissionsService: TaskPermissionsService,
     private sanitizer: DomSanitizer,
-    private teamTaskEventService: TeamTaskEventService
+    private teamTaskEventService: TeamTaskEventService,
+    private storage: AppStorage
   ) {}
 
   ngOnInit(): void {
@@ -317,10 +320,26 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   }
 
   private async loadTaskData() {
+    let boardId = '';
+    this.route.queryParamMap.subscribe((params) => {
+      boardId = params.get('boardId') || '';
+      console.log(
+        'Board ID from query params (subscription):',
+        params.get('boardId')
+      );
+      // Handle the boardId (e.g., fetch data based on boardId)
+    });
+    if (!boardId) {
+      boardId = this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '';
+    }
     // Simulate API call with dummy data
     const response = await this.taskService.getTeamTaskDetailsById({
       taskId: this.taskId,
+      type: 'board',
+      boardId: boardId,
     });
+
+    console.log('boardId', boardId);
 
     console.log('Task details response:', response);
 
@@ -330,15 +349,22 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
         setTimeout(async () => {
           this.task = response;
 
-          this.taskPermissions = ['completed', 'deleted'].includes(this.task?.status) ? false : await this.taskPermissionsService.isTeamTaskCardAccessible(
-              response
-            );
+          this.taskPermissions = ['completed', 'deleted'].includes(
+            this.task?.status
+          )
+            ? false
+            : await this.taskPermissionsService.isTeamTaskCardAccessible(
+                response
+              );
 
           this.isLoading = false;
         }, 1000);
       } else {
         this.isLoading = false;
       }
+    }else{
+      console.log('Task not found', this.task);
+        this.isLoading = false;
     }
     // this.task = {
     //   _id: this.taskId,
@@ -811,7 +837,10 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       isDeleted: false,
     };
     this.task.comments.push(newComment);
-    this.emitTaskUpdate('comments', this.task.comments.filter((c) => !c.isDeleted).length);
+    this.emitTaskUpdate(
+      'comments',
+      this.task.comments.filter((c) => !c.isDeleted).length
+    );
   }
 
   formatComment(
@@ -909,7 +938,10 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
               type: 'task',
             });
             comment.isDeleted = true;
-            this.emitTaskUpdate('comments', this.task.comments.filter((c) => !c.isDeleted).length);
+            this.emitTaskUpdate(
+              'comments',
+              this.task.comments.filter((c) => !c.isDeleted).length
+            );
           }
         })
         .catch((error) => {

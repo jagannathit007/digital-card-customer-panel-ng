@@ -278,7 +278,7 @@ export class PublicChatPopupComponent implements OnInit, OnDestroy {
 
   closePopup(): void {
     // this.closeChat.emit();
-    this.router.navigate(['/task-management/teamtask', this.boardId]);
+    this.router.navigate(['/task-management/teamtask']);
   }
 
   formatDate(dateString: string): string {

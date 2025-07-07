@@ -24,12 +24,11 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { BoardNotificationService } from 'src/app/services/board-notification.service';
-import { PublicChatPopupComponent } from '../task-managemnt/common-components/public-chat-popup/public-chat-popup.component';
 
 @Component({
   selector: 'app-admin-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, PublicChatPopupComponent],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './admin-header.component.html',
   styleUrl: './admin-header.component.scss',
 })
@@ -45,7 +44,6 @@ export class AdminHeaderComponent implements OnInit {
   isBoardsDropdownOpen = false;
   boardsList: any[] = [];
   currentBoardId = signal<string>('');
-  showPublicChat = false;
 
   private destroy$ = new Subject<void>();
   shouldShowElements = false;
@@ -108,15 +106,10 @@ export class AdminHeaderComponent implements OnInit {
   }
 
   togglePublicChatPopup() {
-    // this.showPublicChat = !this.showPublicChat;
     // redirect to announcement with boardId
-    this.router.navigate(['/task-management/teamtask/announcements'], {
+    this.router.navigate(['/task-management/teamtask/public-announcements'], {
       queryParams: { boardId: this.currentBoardId() },
     });
-  }
-
-  closePublicChatPopup() {
-    this.showPublicChat = false;
   }
 
   private checkShouldShowElements(url: string) {

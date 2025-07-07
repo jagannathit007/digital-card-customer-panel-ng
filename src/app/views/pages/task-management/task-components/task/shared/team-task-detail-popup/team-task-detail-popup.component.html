@@ -404,8 +404,23 @@
         ></div>
       </div>
 
+      <!-- if screen is not loading and this task is not find then i want to show unautomated message -->
+      <div
+        *ngIf="!isLoading && !task._id"
+        class="tw-flex tw-items-center tw-justify-center tw-h-full tw-w-full"
+      >
+        <div class="tw-flex tw-items-center tw-justify-center tw-h-full tw-w-full">
+          <div class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-space-y-3">
+            <i class="fas fa-exclamation-circle tw-text-6xl tw-text-gray-500"></i>
+            <span class="tw-text-2xl tw-font-semibold tw-text-gray-500"
+              >Task Not Found</span
+            >
+          </div>
+        </div>
+      </div>
+
       <!-- Tab Content -->
-      <div *ngIf="!isLoading" class="tw-flex-1 tw-overflow-hidden">
+      <div *ngIf="!isLoading && task._id" class="tw-flex-1 tw-overflow-hidden">
         <!-- Description Tab -->
         <div
           *ngIf="currentTab === 'description'"

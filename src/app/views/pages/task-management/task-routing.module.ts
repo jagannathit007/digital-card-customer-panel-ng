@@ -30,7 +30,7 @@ const routes: Routes = [
             component: TeamTaskDetailPopupComponent
           },
           {
-            path: 'announcements',
+            path: 'public-announcements',
             component: PublicChatPopupComponent
           }
         ]
