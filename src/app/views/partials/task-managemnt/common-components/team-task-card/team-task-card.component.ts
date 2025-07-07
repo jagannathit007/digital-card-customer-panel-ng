@@ -36,6 +36,8 @@ export interface Task {
   dueDate?: Date;
   visibility: 'public' | 'private';
   column: string;
+  completedAt?: Date | null;
+  deletedAt?: Date | null;
 }
 
 @Component({
@@ -123,11 +125,39 @@ export class TeamTaskCardComponent {
 
   // Priority indicator based on due date
   getDueDateIndicator(): { show: boolean; color: string; text: string } {
+    const today = new Date();
+
+    if((this.task?.status === 'deleted' && !this.task?.deletedAt) || (this.task?.status === 'completed' && !this.task?.completedAt)){
+      return { show: false, color: '', text: '' };
+    }
+
+    if (this.task?.status === 'deleted' && this.task?.deletedAt) {
+      const deletedAt = new Date(this.task.deletedAt);
+      const day = deletedAt.getDate();
+      const month = deletedAt
+        .toLocaleString('default', { month: 'short' })
+        .toUpperCase();
+      const year = deletedAt.getFullYear();
+      const yearDisplay = year !== today.getFullYear() ? ` ${year}` : '';
+      return { show: true, color: 'tw-text-gray-600', text: `Deleted At ${day} ${month}${yearDisplay}` };
+    }
+
+    if (this.task?.status === 'completed' && this.task?.completedAt) {
+      const completedAt = new Date(this.task.completedAt);
+      const day = completedAt.getDate();
+      const month = completedAt
+        .toLocaleString('default', { month: 'short' })
+        .toUpperCase();
+      const year = completedAt.getFullYear();
+      const yearDisplay = year !== today.getFullYear() ? ` ${year}` : '';
+      return { show: true, color: 'tw-text-gray-600', text: `Completed At ${day} ${month}${yearDisplay}` };
+    }
+
     if (!this.task?.dueDate) {
       return { show: false, color: '', text: '' };
     }
 
-    const today = new Date();
+    
     const dueDate = new Date(this.task.dueDate);
     const diffTime = dueDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));

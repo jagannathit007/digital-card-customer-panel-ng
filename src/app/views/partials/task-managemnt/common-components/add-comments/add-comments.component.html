@@ -15,8 +15,8 @@
   <div
     class="tw-relative tw-border tw-border-gray-300 tw-rounded-lg tw-focus-within:ring-2 tw-focus-within:ring-blue-500 tw-focus-within:border-blue-500 tw-transition-all tw-duration-200"
   >
-    <!-- Content Editable Input -->
-    <div
+    <!-- Content Editable Input Only for the autherized person -->
+    <!-- <div
       #chatInput
       [attr.contenteditable]="taskPermissions ? 'true' : 'false'"
       (input)="onInputChange($event)"
@@ -33,6 +33,18 @@
             ? 'You do not have permission to comment'
             : 'Type @ to mention someone... (Ctrl+Enter to send)'
           : null
+      "
+    ></div> -->
+
+    <div
+      #chatInput
+      [attr.contenteditable]="'true'"
+      (input)="onInputChange($event)"
+      (keydown)="onKeyDown($event)"
+      class="tw-w-full tw-min-h-[80px] tw-max-h-[200px] tw-p-3 tw-text-sm tw-text-gray-700 tw-bg-transparent tw-outline-none tw-overflow-y-auto tw-resize-none tw-leading-relaxed"
+      placeholder="Type @ to mention someone..."
+      [attr.data-placeholder]="
+        'Type @ to mention someone... (Ctrl+Enter to send)'
       "
     ></div>
 

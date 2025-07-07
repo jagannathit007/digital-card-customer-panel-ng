@@ -60,6 +60,8 @@ export interface Task {
   visibility: 'public' | 'private';
   column: string;
   createdBy: string;
+  completedAt?: Date | null;
+  deletedAt?: Date | null;
 }
 
 export interface BoardColumn {
@@ -781,9 +783,13 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     switch (column.title.toLowerCase()) {
       case 'completed':
         task.status = 'completed';
+        task.completedAt = new Date();
+        task.deletedAt = null;
         break;
       case 'deleted':
         task.status = 'deleted';
+        task.deletedAt = new Date();
+        task.completedAt = null;
         break;
       case 'in progress':
         task.status = 'in progress';

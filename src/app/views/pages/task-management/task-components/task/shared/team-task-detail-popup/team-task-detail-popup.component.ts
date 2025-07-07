@@ -326,8 +326,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
         setTimeout(async () => {
           this.task = response;
 
-          this.taskPermissions =
-            await this.taskPermissionsService.isTeamTaskCardAccessible(
+          this.taskPermissions = ['completed', 'deleted'].includes(this.task?.status) ? false : await this.taskPermissionsService.isTeamTaskCardAccessible(
               response
             );
 

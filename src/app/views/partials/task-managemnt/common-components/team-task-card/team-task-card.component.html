@@ -100,7 +100,9 @@
     *ngIf="getDueDateIndicator().show"
     class="tw-flex tw-items-center tw-gap-1 tw-mb-3"
   >
+    
     <svg
+      *ngIf="task?.status !== 'deleted' && task?.status !== 'completed'"
       class="tw-w-3 tw-h-3"
       [class]="getDueDateIndicator().color"
       fill="none"

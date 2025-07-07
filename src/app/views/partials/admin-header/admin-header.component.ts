@@ -324,6 +324,4 @@ export class AdminHeaderComponent implements OnInit {
     // refresh whole page
     window.location.reload();
   }
-
-
 }

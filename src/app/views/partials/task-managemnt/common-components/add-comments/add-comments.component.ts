@@ -172,9 +172,7 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onInputChange(event: any): void {
-    if (!this.taskPermissions) return;
-     
+  onInputChange(event: any): void {     
     const input = event.target;
 
     // Preserve mention tags during input changes
@@ -214,9 +212,7 @@ export class AddCommentsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onKeyDown(event: KeyboardEvent): void {
-    if (!this.taskPermissions) return;
-    
+  onKeyDown(event: KeyboardEvent): void {    
     const input = event.target as HTMLElement;
 
     // Handle Ctrl+Enter for message submission
