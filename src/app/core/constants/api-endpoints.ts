@@ -198,6 +198,7 @@ public UPDATE_TEAM_TASK_DESCRIPTION: string = `${this.PATH}/task/team/update/des
 public UPDATE_TEAM_TASK_ASSIGNED_TO: string = `${this.PATH}/task/team/update/assignment`;
 
 // attachment routes
+public GET_ATTACHMENTS: string = `${this.PATH}/task/attachment/get`;
 public ADD_ATTACHMENT: string = `${this.PATH}/task/attachment/add`;
 public DELETE_ATTACHMENT: string = `${this.PATH}/task/attachment/delete`;
 public RENAME_ATTACHMENT: string = `${this.PATH}/task/attachment/file-name/update`;

@@ -112,6 +112,13 @@ export class AdminHeaderComponent implements OnInit {
     });
   }
 
+  togglePublicAttachmentPopup() {
+    // redirect to announcement with boardId
+    this.router.navigate(['/task-management/teamtask/public-attachments'], {
+      queryParams: { boardId: this.currentBoardId() },
+    });
+  }
+
   private checkShouldShowElements(url: string) {
     // Exact match for /task-management/boards
     const isBoardsRoute = url.startsWith('/task-management/teamtask');

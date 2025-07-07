@@ -12,6 +12,7 @@ import { MemberprofileComponent } from './task-components/task/shared/memberprof
 import { AllBoardsComponent } from './task-components/task/shared/allBoards/allBoards.component';
 import { TeamTaskDetailPopupComponent } from './task-components/task/shared/team-task-detail-popup/team-task-detail-popup.component';
 import { PublicChatPopupComponent } from '../../partials/task-managemnt/common-components/public-chat-popup/public-chat-popup.component';
+import { PublicAttachmentPopupComponent } from '../../partials/task-managemnt/common-components/public-attachment-popup/public-attachment-popup.component';
 
 const routes: Routes = [
   {
@@ -32,6 +33,10 @@ const routes: Routes = [
           {
             path: 'public-announcements',
             component: PublicChatPopupComponent
+          },
+          {
+            path: 'public-attachments',
+            component: PublicAttachmentPopupComponent
           }
         ]
       },

@@ -161,7 +161,7 @@ export class LoginComponent implements OnInit {
         if (isProfileComplete) {
           console.log('LoginComponent: Redirecting to /task-management/allmembers'); // Debug log
 
-          this.router.navigate(['/task-management/allmembers']);
+          this.router.navigate(['/task-management/dashboard']);
         } else {
           console.log('LoginComponent: Redirecting to /task-management/dashboard'); // Debug log
           console.log("here log");
