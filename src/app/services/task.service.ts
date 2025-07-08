@@ -79,7 +79,7 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.success(response.message);
+        swalHelper.showToast(response.message, 'success');
         return true;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -103,7 +103,6 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        // swalHelper.success(response.message);
         return true;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -127,7 +126,7 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.success(response.message);
+        swalHelper.showToast(response.message, 'success');
         return true;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -151,7 +150,7 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.success(response.message);
+        swalHelper.showToast(response.message, 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -175,7 +174,7 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.success(response.message);
+        swalHelper.showToast(response.message, 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -199,7 +198,7 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.success(response.message);
+        swalHelper.showToast(response.message, 'success');
         return true;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -295,7 +294,7 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.success(response.message);
+        swalHelper.showToast(response.message, 'success');
         return true;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -480,7 +479,6 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast(response.message, 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -504,7 +502,6 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast(response.message, 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -574,7 +571,6 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast(response.message, 'success');
         return true;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -598,7 +594,6 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast(response.message, 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -743,7 +738,6 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast(response.message, 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -767,7 +761,6 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast(response.message, 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -791,7 +784,6 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast(response.message, 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -815,7 +807,6 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast(response.message, 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -839,7 +830,6 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast(response.message, 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -864,7 +854,6 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast(response.message, 'success');
         return response.data;
       }
       else {
@@ -937,7 +926,6 @@ export class TaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast(response.message, 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');

@@ -99,16 +99,16 @@ export class TaskTimerComponent implements OnInit, OnChanges {
       dateToUse = rounded;
     }
     
-    // // Set date values
-    // this.selectedDate = new Date(dateToUse);
-    // this.currentMonth = dateToUse.getMonth();
-    // this.currentYear = dateToUse.getFullYear();
+    // Set date values
+    this.selectedDate = new Date(dateToUse);
+    this.currentMonth = dateToUse.getMonth();
+    this.currentYear = dateToUse.getFullYear();
     
-    // // Set time values
-    // let hours = dateToUse.getHours();
-    // this.isAM = hours < 12;
-    // this.selectedHour = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
-    // this.selectedMinute = this.currentDueDate ? dateToUse.getMinutes() : Math.round(dateToUse.getMinutes() / 5) * 5;
+    // Set time values
+    let hours = dateToUse.getHours();
+    this.isAM = hours < 12;
+    this.selectedHour = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+    this.selectedMinute = this.currentDueDate ? dateToUse.getMinutes() : Math.round(dateToUse.getMinutes() / 5) * 5;
 
     // NEW: Set task title for edit mode
     this.taskTitle = this.currentTaskTitle || '';
@@ -388,13 +388,13 @@ export class TaskTimerComponent implements OnInit, OnChanges {
     this.selectedHour = 12;
     this.selectedMinute = 0;
     this.isAM = true;
-    this.taskTitle = '';
-    this.showTitleError = false;
+    // this.taskTitle = '';
+    // this.showTitleError = false;
     this.currentStep = PickerStep.DATE;
   }
 
   // NEW: Get modal title based on mode
   getModalTitle(): string {
-    return this.mode === 'add' ? 'Add New Task' : 'Set Reminder';
+    return this.mode === 'add' ? 'Add New Task' : 'Edit Task';
   }
 }
