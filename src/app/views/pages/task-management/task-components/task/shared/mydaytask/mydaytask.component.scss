@@ -27,12 +27,7 @@
 
 // ===== TASK CARD ANIMATIONS (Original Colors) =====
 .task-card {
-  transition: all 0.2s ease-in-out;
-  
-  &:hover {
-    transform: translateY(-1px);
-  }
-  
+  transition: all 0.2s ease-in-out;  
   &.completed {
     transform: none;
   }
