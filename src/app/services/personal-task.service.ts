@@ -21,7 +21,6 @@ export class PersonalTaskService {
     }
   };
 
-
   async AddPersonalTask(data: any) {
     try {
       this.getHeaders();
@@ -34,7 +33,6 @@ export class PersonalTaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast('Task added successfully', 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -46,7 +44,7 @@ export class PersonalTaskService {
     }
   }
 
-    async UpdatePersonalTask(data: any) {
+  async UpdatePersonalTask(data: any) {
     try {
       this.getHeaders();
       let response = await this.apiManager.request(
@@ -58,7 +56,6 @@ export class PersonalTaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast('Task updated successfully', 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -70,7 +67,7 @@ export class PersonalTaskService {
     }
   }
 
-    async DeletePersonalTask(data: any) {
+  async DeletePersonalTask(data: any) {
     try {
       this.getHeaders();
       let response = await this.apiManager.request(
@@ -82,7 +79,6 @@ export class PersonalTaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast('Task deleted successfully', 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -94,7 +90,7 @@ export class PersonalTaskService {
     }
   }
 
-    async TogglePersonalTaskStatus(data: any) {
+  async TogglePersonalTaskStatus(data: any) {
     try {
       this.getHeaders();
       let response = await this.apiManager.request(
@@ -106,7 +102,6 @@ export class PersonalTaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast('Task status updated successfully', 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -130,7 +125,6 @@ export class PersonalTaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast('Task details fetched successfully', 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -154,7 +148,6 @@ export class PersonalTaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast('Task details fetched successfully', 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -163,9 +156,9 @@ export class PersonalTaskService {
     } catch (err) {
       swalHelper.showToast('Something went wrong!', 'error');
       return false;
+    }
   }
-  }
-    async getPersonalTaskDetails(data: any) {
+  async getPersonalTaskDetails(data: any) {
     try {
       this.getHeaders();
       let response = await this.apiManager.request(
@@ -177,7 +170,6 @@ export class PersonalTaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast('Task details fetched successfully', 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -189,7 +181,7 @@ export class PersonalTaskService {
     }
   }
 
-    async getPersonalWeekTaskDetails() {
+  async getPersonalWeekTaskDetails() {
     try {
       this.getHeaders();
       let response = await this.apiManager.request(
@@ -201,7 +193,6 @@ export class PersonalTaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast('Task details fetched successfully', 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -213,7 +204,7 @@ export class PersonalTaskService {
     }
   }
 
-    async getPersonalTaskStats(data: any) {
+  async getPersonalTaskStats(data: any) {
     try {
       this.getHeaders();
       let response = await this.apiManager.request(
@@ -225,7 +216,6 @@ export class PersonalTaskService {
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast('Task stats fetched successfully', 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -237,8 +227,7 @@ export class PersonalTaskService {
     }
   }
 
-
-   async getPersonalTaskDetailsCount() {
+  async getPersonalTaskDetailsCount() {
     try {
       this.getHeaders();
       let response = await this.apiManager.request(
@@ -246,11 +235,10 @@ export class PersonalTaskService {
           url: apiEndpoints.GET_PERSONAL_TASK_DETAILS_COUNT,
           method: 'POST',
         },
-        {}, 
+        {},
         this.headers
       );
       if (response.status == 200 && response.data) {
-        swalHelper.showToast('Task details count fetched successfully', 'success');
         return response.data;
       } else {
         swalHelper.showToast(response.message, 'warning');
@@ -261,8 +249,4 @@ export class PersonalTaskService {
       return false;
     }
   }
-
-
-
-
 }
