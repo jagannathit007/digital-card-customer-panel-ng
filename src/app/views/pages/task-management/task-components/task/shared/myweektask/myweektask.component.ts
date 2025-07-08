@@ -342,8 +342,10 @@ async toggleTaskStatus(task: WeekTask): Promise<void> {
   const currentColumn = this.dayColumns[task.dayIndex];
   currentColumn.tasks = currentColumn.tasks.filter(t => t._id !== task._id);
   
-  // change due date as well
-  task.dueOn = new Date(this.dayColumns[targetDayIndex].date);
+  // change only due date not time
+  const dueDate = new Date(task.dueOn || task.createdAt);
+  dueDate.setDate(dueDate.getDate() + targetDayIndex - task.dayIndex);
+  task.dueOn = dueDate;
 
   // Add to target column
   task.dayIndex = targetDayIndex;
