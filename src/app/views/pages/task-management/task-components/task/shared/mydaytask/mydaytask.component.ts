@@ -453,14 +453,6 @@ export class MydaytaskComponent implements OnInit {
       this.updateCurrentTabTasks(filteredTasks);
     } else {
       // Move incomplete task to top
-      console.log(
-        'duedate : ',
-        task.dueOn,
-        ',current date : ',
-        new Date().getDate(),
-        'task date : ',
-        new Date(task.dueOn || task.createdAt).getDate()
-      );
       if (
         this.activeTab !== 'myday' ||
         (task.dueOn && new Date(task.dueOn).getDate() === new Date().getDate())

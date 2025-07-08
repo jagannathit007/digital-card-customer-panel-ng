@@ -99,20 +99,28 @@ export class TaskTimerComponent implements OnInit, OnChanges {
       dateToUse = rounded;
     }
     
-    // Set date values
-    this.selectedDate = new Date(dateToUse);
-    this.currentMonth = dateToUse.getMonth();
-    this.currentYear = dateToUse.getFullYear();
+    // // Set date values
+    // this.selectedDate = new Date(dateToUse);
+    // this.currentMonth = dateToUse.getMonth();
+    // this.currentYear = dateToUse.getFullYear();
     
-    // Set time values
-    let hours = dateToUse.getHours();
-    this.isAM = hours < 12;
-    this.selectedHour = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
-    this.selectedMinute = this.currentDueDate ? dateToUse.getMinutes() : Math.round(dateToUse.getMinutes() / 5) * 5;
+    // // Set time values
+    // let hours = dateToUse.getHours();
+    // this.isAM = hours < 12;
+    // this.selectedHour = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
+    // this.selectedMinute = this.currentDueDate ? dateToUse.getMinutes() : Math.round(dateToUse.getMinutes() / 5) * 5;
 
     // NEW: Set task title for edit mode
     this.taskTitle = this.currentTaskTitle || '';
     this.showTitleError = false;
+
+    // focus on task title input
+    setTimeout(() => {
+      const taskTitleInput = document.getElementById('taskTitleInput') as HTMLInputElement;
+      if (taskTitleInput) {
+        taskTitleInput.focus();
+      }
+    }, 100);
   }
 
   private generateAvailableYears(): void {
@@ -289,13 +297,13 @@ export class TaskTimerComponent implements OnInit, OnChanges {
       return;
     }
 
-    if (!this.selectedDate) return;
+    // if (!this.selectedDate) return;
 
     this.isUpdating = true;
 
     try {
       // Construct date
-      const date = new Date(this.selectedDate);
+      const date = new Date(this.selectedDate || new Date());
       const hours = this.isAM
         ? (this.selectedHour === 12 ? 0 : this.selectedHour)
         : (this.selectedHour === 12 ? 12 : this.selectedHour + 12);
@@ -304,7 +312,7 @@ export class TaskTimerComponent implements OnInit, OnChanges {
 
       const taskData = {
         title: this.taskTitle.trim(),
-        dueOn: date.toISOString()
+        dueOn: this.selectedDate ?date.toISOString() : null
       };
 
       const response = await this.personalTaskService.AddPersonalTask(taskData);
@@ -370,9 +378,9 @@ export class TaskTimerComponent implements OnInit, OnChanges {
 
   canSave(): boolean {
     if (this.mode === 'add') {
-      return this.selectedDate !== null && this.taskTitle.trim() !== '' && !this.isUpdating;
+      return this.taskTitle.trim() !== '' && !this.isUpdating;
     }
-    return this.selectedDate !== null && !this.isUpdating;
+    return !this.isUpdating;
   }
 
   clearInputBox(): void {

@@ -48,9 +48,9 @@
 .task-card {
   transition: all 0.2s ease-in-out;
   
-  &:hover {
-    transform: translateY(-1px);
-  }
+  // &:hover {
+  //   transform: translateY(-1px);
+  // }
   
   // Improved drag state
   &.tw-cursor-move:active {

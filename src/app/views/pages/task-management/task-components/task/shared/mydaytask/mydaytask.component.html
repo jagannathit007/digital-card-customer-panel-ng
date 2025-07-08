@@ -159,7 +159,7 @@
         *ngIf="!isLoading"
         class="tab-content tw-space-y-3 tw-h-full tw-overflow-y-auto mydaytask-container custom-scrollbar tw-pb-2"
         [ngClass]="{
-          'tw-max-h-full': activeTab === 'myday',
+          'tw-max-h-[calc(100vh-420px)]': activeTab === 'myday',
           'tw-max-h-[calc(100vh-500px)]': activeTab !== 'myday'
         }"
         style="min-height: 250px"
