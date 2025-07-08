@@ -60,7 +60,7 @@
         [cdkDropListData]="editableColumns()"
         [cdkDropListDisabled]="!taskPermissionsService.isBoardLevelPermission()"
         (cdkDropListDropped)="onColumnDrop($event)"
-        style="border: 2px solid #e5e7eb; min-width: 100%;"
+        style="min-width: 100%;"
       >
         <!-- FIXED: Updated cdkDropListGroup for cross-column drag -->
         <div cdkDropListGroup class="tw-flex tw-gap-6 tw-w-full" style="min-width: 2000px;">
