@@ -1,58 +1,27 @@
-<!-- Enhanced MyDayTask Component Template (CSS moved to separate SCSS file) -->
-<div
-  class="tw-min-h-[calc(100vh-109px)] tw-max-h-[calc(100vh-109px)] tw-bg-gray-50"
->
+<!-- Enhanced MyDayTask Component Template with Tabs -->
+<div class="tw-min-h-[calc(100vh-109px)] tw-max-h-[calc(100vh-109px)] tw-bg-gray-50">
   <!-- Full Screen Loader -->
   <div
     *ngIf="showFullScreenLoader"
     class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-z-50 tw-flex tw-items-center tw-justify-center"
   >
-    <div
-      class="tw-bg-white tw-rounded-lg tw-p-6 tw-flex tw-flex-col tw-items-center tw-shadow-xl"
-    >
-      <div
-        class="tw-animate-spin tw-rounded-full tw-h-8 tw-w-8 tw-border-b-2 tw-border-blue-500"
-      ></div>
+    <div class="tw-bg-white tw-rounded-lg tw-p-6 tw-flex tw-flex-col tw-items-center tw-shadow-xl">
+      <div class="tw-animate-spin tw-rounded-full tw-h-8 tw-w-8 tw-border-b-2 tw-border-blue-500"></div>
       <p class="tw-mt-3 tw-text-gray-600">Updating tasks...</p>
     </div>
   </div>
 
-  <div
-    class="tw-container tw-mx-auto tw-px-4 tw-py-6 tw-max-w-xl tw-min-h-[calc(100vh-109px)] tw-max-h-[calc(100vh-109px)] tw-flex tw-flex-col"
-  >
-    <!-- Header Section with Date and Next Task -->
-    <div class="tw-text-left tw-mb-6 tw-flex-shrink-0 header-section">
-      <!-- Toggle Switch at top right -->
-      <div class="tw-flex tw-justify-between tw-items-start tw-mb-4">
-        <h1 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-mb-2" *ngIf="!showTodayTasks">
-          Good {{ getTimeOfDay() }}, {{ userName }}
-        </h1>
-        <h1 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-mb-2" *ngIf="showTodayTasks">
-          Your today all created tasks
-        </h1>
-        
-        <!-- Toggle Icon -->
-        <div class="tw-flex tw-items-center tw-gap-2">
-          <span class="tw-text-sm tw-text-gray-600">Today's Tasks</span>
-          <button 
-            (click)="toggleTodayTasks()"
-            class="tw-p-2 tw-rounded-lg tw-transition-all tw-duration-200"
-            [class.tw-bg-blue-500]="showTodayTasks"
-            [class.tw-text-white]="showTodayTasks"
-            [class.tw-bg-gray-200]="!showTodayTasks"
-            [class.tw-text-gray-600]="!showTodayTasks"
-            [class.hover:tw-bg-blue-600]="showTodayTasks"
-            [class.hover:tw-bg-gray-300]="!showTodayTasks"
-          >
-            <i class="fa-solid fa-calendar-day tw-text-sm"></i>
-          </button>
-        </div>
-      </div>
+  <div class="tw-container tw-mx-auto sm:tw-px-4 sm:tw-py-4 tw-max-w-xl tw-min-h-[calc(100vh-109px)] tw-max-h-[calc(100vh-109px)] tw-flex tw-flex-col">
+    
+    <!-- Header Section -->
+    <div class="tw-text-left tw-mb-4 tw-flex-shrink-0 header-section">
+      <h1 class=" tw-text-xl sm:tw-text-2xl tw-font-bold tw-text-gray-800 tw-mb-1 sm:tw-mb-4">
+        Good {{ getTimeOfDay() }}, {{ userName }}
+      </h1>
 
-      <!-- Date and Next Task Container - Only show when toggle is OFF -->
-      <div
-        *ngIf="!showTodayTasks"
-        class="tw-mt-4 tw-flex tw-justify-between tw-rounded-lg tw-p-2 tw-items-center tw-gap-4 tw-bg-white"
+      <!-- Date Display - Show for My Day tab -->
+      <div 
+        class="tw-flex tw-justify-between tw-rounded-lg tw-p-3 tw-items-center tw-gap-4 tw-bg-white tw-shadow-sm tw-mb-4"
       >
         <!-- Date Section -->
         <div class="tw-text-center">
@@ -67,86 +36,107 @@
           </div>
         </div>
 
-        <!-- Today Tasks Text - Show on right side of date when toggle is ON -->
-        <div 
-          *ngIf="showTodayTasks"
-          class="tw-flex-1 tw-flex tw-items-center tw-justify-center tw-text-center"
-        >
-          <div class="tw-text-lg tw-font-semibold tw-text-blue-600">
-            Your today all created tasks
-          </div>
-        </div>
-
-        <!-- Next Task Section - Only show when toggle is OFF -->
+        <!-- Next Task Section -->
         <div
-          *ngIf="getNextTask() && !showTodayTasks"
+          *ngIf="getNextTask()"
           class="tw-bg-white tw-flex-1 tw-rounded-lg tw-shadow-sm tw-border tw-border-gray-200 tw-p-3 tw-min-w-[200px] tw-text-left"
         >
           <div class="tw-text-xs tw-text-gray-500 tw-mb-1">Next Task</div>
-          <div
-            class="tw-text-sm tw-font-medium tw-text-gray-800 tw-mb-1 tw-truncate"
-          >
+          <div class="tw-text-sm tw-font-medium tw-text-gray-800 tw-mb-1 tw-truncate">
             {{ getNextTask()?.title }}
           </div>
-          <div
-            class="tw-text-xs tw-text-blue-600 tw-flex tw-items-center tw-gap-1"
-          >
-            <svg
-              class="tw-w-3 tw-h-3"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
+          <div class="tw-text-xs tw-text-blue-600 tw-flex tw-items-center tw-gap-1">
+            <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             {{ formatTime(getNextTask()?.dueOn ?? null) }}
           </div>
         </div>
 
-        <!-- No Tasks Message - Only show when toggle is OFF -->
+        <!-- No Tasks Message -->
         <div
-          *ngIf="!getNextTask() && !isLoading && !showTodayTasks"
+          *ngIf="!getNextTask() && !isLoading"
           class="tw-bg-white tw-flex-1 tw-rounded-lg tw-shadow-sm tw-border tw-border-gray-200 tw-p-3 tw-min-w-[200px] tw-text-center"
         >
-          <div class="tw-text-sm tw-text-gray-500">You have no latest task</div>
+          <div class="tw-text-sm tw-text-gray-500">You have no upcoming task</div>
         </div>
       </div>
 
-      <div
-        class="tw-mt-3 tw-w-16 tw-h-0.5 tw-bg-blue-500 tw-mx-auto tw-rounded-full"
-      ></div>
+      <!-- Tab Navigation -->
+      <div class="tw-bg-white tw-rounded-lg tw-p-1 tw-shadow-sm tw-mb-4">
+        <div class="tw-flex tw-gap-1">
+          <button
+            (click)="switchTab('myday')"
+            class="tab-button tw-flex-1 tw-px-3 tw-py-2 tw-rounded-md tw-text-sm tw-font-medium tw-transition-all tw-duration-300"
+            [class.tw-bg-blue-500]="activeTab === 'myday'"
+            [class.tw-text-white]="activeTab === 'myday'"
+            [class.tw-shadow-sm]="activeTab === 'myday'"
+            [class.tw-text-gray-600]="activeTab !== 'myday'"
+            [class.hover:tw-bg-gray-100]="activeTab !== 'myday'"
+          >
+            <i class="fa-solid fa-sun tw-mr-2"></i>
+            <span class="tw-hidden sm:tw-inline">My Day</span>
+            <span class="tw-inline sm:tw-hidden">Day</span>
+          </button>
+          
+          <button
+            (click)="switchTab('today')"
+            class="tab-button tw-flex-1 tw-px-3 tw-py-2 tw-rounded-md tw-text-sm tw-font-medium tw-transition-all tw-duration-300"
+            [class.tw-bg-blue-500]="activeTab === 'today'"
+            [class.tw-text-white]="activeTab === 'today'"
+            [class.tw-shadow-sm]="activeTab === 'today'"
+            [class.tw-text-gray-600]="activeTab !== 'today'"
+            [class.hover:tw-bg-gray-100]="activeTab !== 'today'"
+          >
+            <i class="fa-solid fa-calendar-day tw-mr-2"></i>
+            <span class="tw-hidden sm:tw-inline">Today's Tasks</span>
+            <span class="tw-inline sm:tw-hidden">Today</span>
+          </button>
+          
+          <button
+            (click)="switchTab('nodedate')"
+            class="tab-button tw-flex-1 tw-px-3 tw-py-2 tw-rounded-md tw-text-sm tw-font-medium tw-transition-all tw-duration-300"
+            [class.tw-bg-blue-500]="activeTab === 'nodedate'"
+            [class.tw-text-white]="activeTab === 'nodedate'"
+            [class.tw-shadow-sm]="activeTab === 'nodedate'"
+            [class.tw-text-gray-600]="activeTab !== 'nodedate'"
+            [class.hover:tw-bg-gray-100]="activeTab !== 'nodedate'"
+          >
+            <i class="fa-solid fa-list tw-mr-2"></i>
+            <span class="tw-hidden sm:tw-inline">No Due Date</span>
+            <span class="tw-inline sm:tw-hidden">List</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="tw-w-16 tw-h-0.5 tw-bg-blue-500 tw-mx-auto tw-rounded-full"></div>
     </div>
 
-    <!-- Tasks Section (Fixed height with proper scrolling) -->
+    <!-- Tasks Section with Tab Content -->
     <div class="tw-flex-1 tw-mb-4 tw-overflow-hidden tw-h-full">
       <!-- Initial Loading -->
       <div *ngIf="isLoading" class="tw-flex tw-justify-center tw-py-8">
-        <div
-          class="tw-animate-spin tw-rounded-full tw-h-6 tw-w-6 tw-border-b-2 tw-border-blue-500"
-        ></div>
+        <div class="tw-animate-spin tw-rounded-full tw-h-6 tw-w-6 tw-border-b-2 tw-border-blue-500"></div>
       </div>
 
-      <!-- Tasks List with Custom Scrollbar and Fixed Height -->
+      <!-- Tasks List with Animation -->
       <div
         *ngIf="!isLoading"
-        class="tw-space-y-3 tw-h-full tw-overflow-y-auto mydaytask-container custom-scrollbar"
+        class="tab-content tw-space-y-3 tw-h-full tw-overflow-y-auto mydaytask-container custom-scrollbar tw-pb-2"
+        [ngClass]="{'tw-max-h-full': activeTab === 'myday', 'tw-max-h-[calc(100vh-500px)]': activeTab !== 'myday'}"
+        style="min-height: 250px"
         #scrollContainer
-        style="max-height: calc(100vh - 380px); min-height: 300px"
-      >
+        >
+        <!-- style="max-height: calc(100vh - 500px); min-height: 250px" -->
         <div
-          *ngFor="let task of tasks; trackBy: trackByTaskId"
+          *ngFor="let task of getCurrentTabTasks(); trackBy: trackByTaskId"
           class="task-card tw-bg-white tw-rounded-lg tw-shadow-sm tw-border tw-border-gray-200 tw-p-3 tw-transition-all tw-duration-300 tw-group hover:tw-shadow-md hover:tw-border-blue-200 task-fade-in"
           [class.tw-opacity-70]="task.isCompleted"
           [class.tw-bg-green-50]="task.isCompleted"
           [class.tw-border-green-200]="task.isCompleted"
           [class.completed]="task.isCompleted"
         >
-          <!-- Task Content Grid with Equal Columns -->
+          <!-- Task Content -->
           <div class="tw-flex tw-items-start tw-gap-3">
             <!-- Task Completion Toggle -->
             <div class="tw-flex-shrink-0 tw-mt-0.5">
@@ -167,12 +157,7 @@
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="3"
-                    d="M5 13l4 4L19 7"
-                  ></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                 </svg>
               </button>
             </div>
@@ -189,55 +174,36 @@
                     {{ task.title }}
                   </p>
 
-                  <!-- Due date - Always visible when exists -->
+                  <!-- Due date -->
                   <div *ngIf="task.dueOn" class="tw-mt-1">
                     <span
                       class="tw-text-xs tw-flex tw-items-center tw-gap-1 tw-bg-blue-50 tw-px-2 tw-py-1 tw-rounded-full tw-w-fit"
                       [ngClass]="{
-                        'tw-text-red-600': !task.isCompleted && isDueOverdue(task.dueOn),
-                        'tw-text-blue-600': !task.isCompleted && !isDueOverdue(task.dueOn)
+                        'tw-text-red-600 tw-bg-red-50': !task.isCompleted && isDueOverdue(task.dueOn),
+                        'tw-text-blue-600 tw-bg-blue-50': !task.isCompleted && !isDueOverdue(task.dueOn),
+                        'tw-text-gray-500 tw-bg-gray-50': task.isCompleted
                       }"
                     >
-                      <svg
-                        class="tw-w-3 tw-h-3"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
+                      <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                       </svg>
                       {{ formatDate(task.dueOn) }}
                     </span>
                   </div>
 
-                  <!-- Completed status with time -->
+                  <!-- Completed status -->
                   <div
                     *ngIf="task.isCompleted"
                     class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-text-green-600 tw-font-medium tw-mt-1"
                   >
-                    <svg
-                      class="tw-w-3 tw-h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M5 13l4 4L19 7"
-                      ></path>
+                    <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
-                  Completed On {{ formatDate(task.completedOn!) }}
+                    Completed On {{ formatDate(task.completedOn!) }}
                   </div>
                 </div>
 
-                <!-- Task Actions - Show on hover -->
+                <!-- Task Actions -->
                 <div
                   class="tw-flex tw-items-center tw-gap-1 tw-flex-shrink-0 tw-opacity-0 group-hover:tw-opacity-100 tw-transition-opacity tw-duration-200"
                   *ngIf="!task.isCompleted"
@@ -248,59 +214,33 @@
                     class="tw-p-1.5 tw-text-gray-400 hover:tw-text-red-500 hover:tw-bg-red-50 tw-rounded-md tw-transition-all tw-duration-200"
                     title="Delete task"
                   >
-                    <svg
-                      class="tw-w-4 tw-h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      ></path>
+                    <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
                   </button>
 
-                  <!-- More Options Dropdown -->
+                  <!-- More Options -->
                   <div class="tw-relative dropdown-container">
                     <button
                       (click)="toggleDropdown(task._id)"
                       class="tw-p-1.5 tw-text-gray-400 hover:tw-text-gray-600 hover:tw-bg-gray-50 tw-rounded-md tw-transition-all tw-duration-200"
                       title="More options"
                     >
-                      <svg
-                        class="tw-w-4 tw-h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-                        ></path>
+                      <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
                       </svg>
                     </button>
 
-                    <!-- Dropdown Menu - Fixed positioning -->
+                    <!-- Dropdown Menu -->
                     <div
                       *ngIf="activeDropdownId === task._id"
-                      class="tw-absolute tw-right-0 tw-top-10 tw-w-40 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-100 tw-py-1 tw-z-50"
-                      style="
-                        position: absolute !important;
-                        z-index: 9999 !important;
-                      "
+                      class="tw-absolute tw-right-0 tw-top-10 tw-w-40 tw-bg-white tw-rounded-lg tw-shadow-lg tw-border tw-border-gray-100 tw-py-1 tw-z-50 dropdown-menu"
                     >
                       <button
                         (click)="startEdit(task)"
                         class="tw-w-full tw-text-left tw-px-3 tw-py-2 tw-text-xs tw-text-gray-700 hover:tw-bg-blue-50 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-2"
                       >
-                        <i
-                          class="fa-regular fa-pen-to-square tw-text-[15px]"
-                        ></i>
+                        <i class="fa-regular fa-pen-to-square tw-text-[15px]"></i>
                         <span class="tw-text-[13px]">Edit Task</span>
                       </button>
                       <button
@@ -308,11 +248,7 @@
                         class="tw-w-full tw-text-left tw-px-3 tw-py-2 tw-text-xs tw-text-gray-700 hover:tw-bg-blue-50 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-2"
                       >
                         <i
-                          [ngClass]="
-                            task.dueOn
-                              ? 'fa-regular fa-pen-to-square'
-                              : 'fa-regular fa-clock'
-                          "
+                          [ngClass]="task.dueOn ? 'fa-regular fa-pen-to-square' : 'fa-regular fa-clock'"
                           class="tw-text-[15px]"
                         ></i>
                         <span class="tw-text-[13px]">
@@ -329,41 +265,26 @@
 
         <!-- Empty State -->
         <div
-          *ngIf="tasks.length === 0 && !isLoading"
+          *ngIf="getCurrentTabTasks().length === 0 && !isLoading"
           class="tw-text-center tw-py-16 empty-state"
         >
           <div class="tw-mb-4 illustration">
-            <svg
-              class="tw-w-16 tw-h-16 tw-mx-auto tw-text-gray-300"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="1.5"
-                d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-              ></path>
+            <svg class="tw-w-16 tw-h-16 tw-mx-auto tw-text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
             </svg>
           </div>
           <h3 class="tw-text-lg tw-font-semibold tw-text-gray-700 tw-mb-2">
-            No tasks yet
+            {{ getEmptyStateTitle() }}
           </h3>
-          <p class="tw-text-sm tw-text-gray-500" *ngIf="!showTodayTasks">
-            Add your first task below to get started!
-          </p>
-          <p class="tw-text-sm tw-text-gray-500" *ngIf="showTodayTasks">
-            Your today all created tasks
+          <p class="tw-text-sm tw-text-gray-500">
+            {{ getEmptyStateMessage() }}
           </p>
         </div>
       </div>
     </div>
 
-    <!-- Task Input Section (Compact & Fixed) -->
-    <div
-      class="tw-flex-shrink-0 tw-bg-white tw-rounded-lg tw-shadow-md tw-border tw-border-gray-200 tw-p-2"
-    >
+    <!-- Task Input Section -->
+    <div class="tw-flex-shrink-0 tw-bg-white tw-rounded-lg tw-shadow-md tw-border tw-border-gray-200 tw-p-3" *ngIf="activeTab !== 'myday'">
       <div class="tw-flex tw-items-end tw-gap-3">
         <div class="tw-flex-1">
           <input
@@ -391,10 +312,7 @@
           [class.tw-text-gray-400]="!canSendTask()"
           [class.tw-cursor-not-allowed]="!canSendTask()"
         >
-          <i
-            *ngIf="!isSubmitting"
-            class="fa-regular fa-paper-plane tw-text-[20px]"
-          ></i>
+          <i *ngIf="!isSubmitting" class="fa-regular fa-paper-plane tw-text-[20px]"></i>
           <div
             *ngIf="isSubmitting"
             class="tw-animate-spin tw-rounded-full tw-h-5 tw-w-5 tw-border-b-2 tw-border-white"
@@ -408,11 +326,9 @@
 <!-- Edit Task Modal -->
 <div
   *ngIf="editingTaskId"
-  class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-40 tw-flex tw-items-center tw-justify-center tw-z-[9999]"
+  class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-40 tw-flex tw-items-center tw-justify-center tw-z-[9999] tw-p-4"
 >
-  <div
-    class="tw-bg-white tw-rounded-lg tw-shadow-xl tw-p-6 tw-w-full tw-max-w-md tw-relative"
-  >
+  <div class="tw-bg-white tw-rounded-lg tw-shadow-xl tw-p-6 tw-w-full tw-max-w-md tw-relative modal-content">
     <h2 class="tw-text-lg tw-font-semibold tw-mb-4">Edit Task</h2>
     <input
       #editTaskInput
@@ -421,7 +337,7 @@
       class="form-input tw-w-full tw-px-4 tw-py-3 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500 tw-transition-all tw-duration-200 tw-text-sm tw-placeholder-gray-400"
       type="text"
       autocomplete="off"
-      [placeholder]="'Update task... (Enter to save)'"
+      placeholder="Update task... (Enter to save)"
     />
     <div class="tw-flex tw-justify-end tw-gap-2 tw-mt-6">
       <button
@@ -445,7 +361,7 @@
   </div>
 </div>
 
-<!-- Replace the existing TaskClockComponent at the end of your template with this: -->
+<!-- Task Clock Component -->
 <app-task-clock
   [taskId]="selectedTaskId"
   [currentDueDate]="selectedTaskDueDate"
