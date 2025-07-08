@@ -41,7 +41,7 @@ export class MydaytaskComponent implements OnInit {
   editingTaskTitle: string = '';
 
   // Tab Management
-  activeTab: TabType = 'myday';
+  activeTab: TabType = 'today';
 
   // UI State Properties
   userName: string = '';
@@ -63,6 +63,7 @@ export class MydaytaskComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.userName =
       this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA)?.name || 'User';
+    await this.fetchMyDayTasks();
     await this.loadTabData();
   }
 
@@ -480,10 +481,10 @@ export class MydaytaskComponent implements OnInit {
           tasksWithDueDate.unshift(task);
 
           tasksWithDueDate.sort((a, b) => {
-          const timeA = new Date(a.dueOn || a.createdAt).getTime();
-          const timeB = new Date(b.dueOn || b.createdAt).getTime();
-          return timeA - timeB;
-        });
+            const timeA = new Date(a.dueOn || a.createdAt).getTime();
+            const timeB = new Date(b.dueOn || b.createdAt).getTime();
+            return timeA - timeB;
+          });
         } else {
           tasksWithoutDueDate.unshift(task);
 
@@ -491,12 +492,14 @@ export class MydaytaskComponent implements OnInit {
             const timeA = new Date(a.updatedAt).getTime();
             const timeB = new Date(b.updatedAt).getTime();
             return timeA - timeB;
-          })
+          });
         }
 
-        
-
-        filteredTasks = [...tasksWithDueDate, ...tasksWithoutDueDate, ...filteredCompletedTasks];
+        filteredTasks = [
+          ...tasksWithDueDate,
+          ...tasksWithoutDueDate,
+          ...filteredCompletedTasks,
+        ];
 
         this.updateCurrentTabTasks(filteredTasks);
       } else {
