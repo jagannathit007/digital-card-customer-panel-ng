@@ -523,9 +523,7 @@ export class AiassistantComponent implements OnInit, OnDestroy {
       
     } finally {
       // Close modal after any response (success or fail)
-      setTimeout(() => {
         this.closeInteractionModal();
-      }, 1000); // Small delay to let speech finish
     }
   }
 
