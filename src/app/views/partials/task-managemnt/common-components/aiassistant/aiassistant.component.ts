@@ -73,15 +73,20 @@ export class AiassistantComponent implements OnInit, OnDestroy {
   isListening = false;
   recognizedText = '';
   isProcessing = false;
-  isSpeaking = false; // NEW: Track if AI is speaking
+  isSpeaking = false;
   
   // API states
   isApiCallInProgress = false;
   
-  // New timeout handling
+  // NEW: Track if user has had any interaction
+  hasHadInteraction = false;
+  
+  // Enhanced timeout handling for continuous listening
   private speechTimeout: any = null;
   private finalTranscript = '';
-  private currentSpeechPromise: Promise<void> | null = null; // NEW: Track current speech
+  private currentSpeechPromise: Promise<void> | null = null;
+  private silenceTimeout: any = null; // NEW: For handling silence
+  private continuousListening = false; // NEW: Track continuous mode
   
   private recognition: SpeechRecognition | null = null;
   private speechSynthesis = window.speechSynthesis;
@@ -104,10 +109,15 @@ export class AiassistantComponent implements OnInit, OnDestroy {
       this.recognition.abort();
     }
     
-    // Clear timeout
+    // Clear all timeouts
     if (this.speechTimeout) {
       clearTimeout(this.speechTimeout);
       this.speechTimeout = null;
+    }
+    
+    if (this.silenceTimeout) {
+      clearTimeout(this.silenceTimeout);
+      this.silenceTimeout = null;
     }
     
     this.speechSynthesis.cancel();
@@ -128,8 +138,6 @@ export class AiassistantComponent implements OnInit, OnDestroy {
 
     this.recognition.onstart = () => {
       this.isListening = true;
-      this.finalTranscript = '';
-      this.recognizedText = '';
       this.cdr.markForCheck();
     };
 
@@ -137,7 +145,19 @@ export class AiassistantComponent implements OnInit, OnDestroy {
       this.isListening = false;
       this.cdr.markForCheck();
       
-      if (this.finalTranscript.trim() && !this.isApiCallInProgress) {
+      // Auto-restart if in continuous listening mode and not processing
+      if (this.continuousListening && this.isInteractionModalOpen && !this.isApiCallInProgress && !this.isProcessing) {
+        setTimeout(() => {
+          if (this.continuousListening && this.recognition && !this.isListening) {
+            try {
+              this.recognition.start();
+            } catch (error) {
+              console.log('Auto-restart failed, stopping continuous mode');
+              this.continuousListening = false;
+            }
+          }
+        }, 100);
+      } else if (this.finalTranscript.trim() && !this.isApiCallInProgress) {
         this.processVoiceCommand(this.finalTranscript.trim());
       }
     };
@@ -158,16 +178,19 @@ export class AiassistantComponent implements OnInit, OnDestroy {
       this.recognizedText = (this.finalTranscript + interimTranscript).trim();
       this.cdr.markForCheck();
 
-      if (this.speechTimeout) {
-        clearTimeout(this.speechTimeout);
+      // Clear previous silence timeout
+      if (this.silenceTimeout) {
+        clearTimeout(this.silenceTimeout);
       }
 
+      // Set new silence timeout for 5 seconds
       if (this.recognizedText.length > 0) {
-        this.speechTimeout = setTimeout(() => {
-          if (this.isListening && !this.isApiCallInProgress) {
-            this.stopListening();
+        this.silenceTimeout = setTimeout(() => {
+          if (this.isListening && !this.isApiCallInProgress && this.recognizedText.trim()) {
+            console.log('5 seconds of silence detected, processing current text...');
+            this.continueToProcceed();
           }
-        }, 3000);
+        }, 5000); // 5 seconds silence detection
       }
     };
 
@@ -175,13 +198,15 @@ export class AiassistantComponent implements OnInit, OnDestroy {
       switch (event.error) {
         case 'network':
         case 'no-speech':
-          // Ignore harmless errors
+          // Ignore harmless errors in continuous mode
           break;
         case 'not-allowed':
           swalHelper.showToast('Microphone permission denied. Please allow microphone access.', 'error');
+          this.continuousListening = false;
           break;
         case 'audio-capture':
           swalHelper.showToast('No microphone found or audio capture failed', 'error');
+          this.continuousListening = false;
           break;
         default:
           break;
@@ -191,10 +216,16 @@ export class AiassistantComponent implements OnInit, OnDestroy {
         this.isListening = false;
         this.isProcessing = false;
         this.isApiCallInProgress = false;
+        this.continuousListening = false;
         
         if (this.speechTimeout) {
           clearTimeout(this.speechTimeout);
           this.speechTimeout = null;
+        }
+        
+        if (this.silenceTimeout) {
+          clearTimeout(this.silenceTimeout);
+          this.silenceTimeout = null;
         }
         
         this.cdr.markForCheck();
@@ -202,36 +233,45 @@ export class AiassistantComponent implements OnInit, OnDestroy {
     };
   }
 
-  // Open welcome modal and speak greeting
-  openWelcomeModal() {
-    this.isWelcomeModalOpen = true;
+  // NEW: Direct interaction without welcome modal
+  openDirectInteraction() {
+    this.isInteractionModalOpen = true;
+    this.recognizedText = '';
+    this.finalTranscript = '';
+    this.isProcessing = false;
+    this.isApiCallInProgress = false;
+    this.continuousListening = false;
+    // Don't reset hasHadInteraction here to preserve state
     this.cdr.markForCheck();
     
-    // Speak greeting automatically
-    setTimeout(() => {
-      this.speakText("What can I help you with today.");
+    // Speak greeting and start listening immediately
+    setTimeout(async () => {
+      await this.speakText("What can I help you with?");
+      // Start listening after greeting
+      setTimeout(() => {
+        if (this.isInteractionModalOpen) {
+          this.startListening();
+        }
+      }, 500);
     }, 500);
   }
 
-  // Close welcome modal
+  // Keep original methods for backward compatibility
+  openWelcomeModal() {
+    this.openDirectInteraction(); // Redirect to direct interaction
+  }
+
   closeWelcomeModal() {
     this.isWelcomeModalOpen = false;
     this.speechSynthesis.cancel();
     this.cdr.markForCheck();
   }
 
-  // Open interaction modal and start listening
   openInteractionModal() {
-    this.isWelcomeModalOpen = false;
-    this.isInteractionModalOpen = true;
-    this.recognizedText = '';
-    this.finalTranscript = '';
-    this.isProcessing = false;
-    this.isApiCallInProgress = false;
-    this.cdr.markForCheck();
+    this.openDirectInteraction(); // Redirect to direct interaction
   }
 
-  // Close interaction modal with speech stop
+  // Enhanced close modal with proper cleanup
   closeInteractionModal() {
     // Stop any ongoing speech first
     this.stopCurrentSpeech();
@@ -243,11 +283,18 @@ export class AiassistantComponent implements OnInit, OnDestroy {
     this.isProcessing = false;
     this.isApiCallInProgress = false;
     this.isSpeaking = false;
+    this.continuousListening = false; // Stop continuous mode
+    this.hasHadInteraction = false; // Reset interaction state when closing modal
     
-    // Clear any timeouts
+    // Clear all timeouts
     if (this.speechTimeout) {
       clearTimeout(this.speechTimeout);
       this.speechTimeout = null;
+    }
+    
+    if (this.silenceTimeout) {
+      clearTimeout(this.silenceTimeout);
+      this.silenceTimeout = null;
     }
     
     if (this.recognition) {
@@ -259,29 +306,33 @@ export class AiassistantComponent implements OnInit, OnDestroy {
     console.log('🚪 Modal closed - all speech stopped');
   }
 
-  // Start listening for voice command with retry mechanism
+  // Enhanced start listening with continuous mode
   startListening() {
     if (!this.recognition || this.isApiCallInProgress) {
       console.error('Speech recognition not initialized or API call in progress');
       return;
     }
 
-    // Clear any existing timeout
+    // Clear any existing timeouts
     if (this.speechTimeout) {
       clearTimeout(this.speechTimeout);
       this.speechTimeout = null;
     }
+    
+    if (this.silenceTimeout) {
+      clearTimeout(this.silenceTimeout);
+      this.silenceTimeout = null;
+    }
 
     this.finalTranscript = '';
     this.recognizedText = '';
+    this.continuousListening = true; // Enable continuous mode
 
     try {
-      // Check if already listening
       if (this.isListening) {
         console.log('Already listening, stopping first...');
         this.recognition.stop();
         
-        // Wait a bit then restart
         setTimeout(() => {
           this.recognition?.start();
         }, 100);
@@ -291,7 +342,6 @@ export class AiassistantComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error('Error starting speech recognition:', error);
       
-      // Retry after a short delay
       setTimeout(() => {
         try {
           if (!this.isListening && this.recognition) {
@@ -301,25 +351,70 @@ export class AiassistantComponent implements OnInit, OnDestroy {
         } catch (retryError) {
           console.error('Retry failed:', retryError);
           swalHelper.showToast('Unable to start speech recognition. Please try again.', 'error');
+          this.continuousListening = false;
         }
       }, 500);
     }
   }
 
-  // Stop listening manually
-  stopListening() {
+  // NEW: Stop mic and reset to Start Speaking section
+  stopMicAndReset() {
+    this.continuousListening = false;
+    
+    // Clear timeouts
+    if (this.speechTimeout) {
+      clearTimeout(this.speechTimeout);
+      this.speechTimeout = null;
+    }
+    
+    if (this.silenceTimeout) {
+      clearTimeout(this.silenceTimeout);
+      this.silenceTimeout = null;
+    }
+    
+    // Stop listening
     if (this.recognition && this.isListening) {
-      // Clear timeout
-      if (this.speechTimeout) {
-        clearTimeout(this.speechTimeout);
-        this.speechTimeout = null;
+      this.recognition.stop();
+    }
+    
+    // Reset to Start Speaking state
+    this.isListening = false;
+    this.recognizedText = '';
+    this.finalTranscript = '';
+    this.isProcessing = false;
+    this.isApiCallInProgress = false;
+    
+    this.cdr.markForCheck();
+    console.log('🛑 Mic stopped - returning to Start Speaking section');
+  }
+
+  // NEW: Continue to Proceed function
+  continueToProcceed() {
+    if (this.recognizedText.trim() && !this.isApiCallInProgress) {
+      this.continuousListening = false; // Stop continuous mode
+      
+      // Clear timeouts
+      if (this.silenceTimeout) {
+        clearTimeout(this.silenceTimeout);
+        this.silenceTimeout = null;
       }
       
-      this.recognition.stop();
+      // Stop listening and process
+      if (this.recognition && this.isListening) {
+        this.recognition.stop();
+      }
+      
+      // Process the command
+      this.processVoiceCommand(this.recognizedText.trim());
     }
   }
 
-  // IMPROVED: Speak text with completion tracking - Clean version
+  // Stop listening manually (legacy method - kept for compatibility)
+  stopListening() {
+    this.stopMicAndReset();
+  }
+
+  // Speak text with completion tracking
   private speakText(text: string): Promise<void> {
     return new Promise((resolve) => {
       this.speechSynthesis.cancel();
@@ -380,10 +475,11 @@ export class AiassistantComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
-  // Process voice command with clean logging
+  // Enhanced process voice command with auto-close after response
   private async processVoiceCommand(command: string) {
     this.isProcessing = true;
     this.isApiCallInProgress = true;
+    this.continuousListening = false; // Stop continuous mode during processing
     this.cdr.markForCheck();
 
     try {
@@ -406,12 +502,9 @@ export class AiassistantComponent implements OnInit, OnDestroy {
             
           } else {
             await this.speakText(response.response.message);
-            swalHelper.success(response.response.message);
 
-            // chandan - Handle modal opening based on action type
+            // Handle modal opening based on action type
             this.handleModalOpening(response.response.data);
-
-
           }
           
         } else if (response.response.status === 500) {
@@ -429,36 +522,11 @@ export class AiassistantComponent implements OnInit, OnDestroy {
       await this.speakText("I'm unable to connect to the server at the moment, Sir. Please check your internet connection and try again. If the problem continues, please contact your system administrator.");
       
     } finally {
-      this.isProcessing = false;
-      this.isApiCallInProgress = false;
-      this.cdr.markForCheck();
-      
+      // Close modal after any response (success or fail)
       setTimeout(() => {
-        if (!this.isSpeaking) {
-          this.closeInteractionModal();
-        } else {
-          this.waitForSpeechThenClose();
-        }
-      }, 1000);
+        this.closeInteractionModal();
+      }, 1000); // Small delay to let speech finish
     }
-  }
-
-  // NEW: Wait for speech to finish then close modal
-  private waitForSpeechThenClose(): void {
-    const checkInterval = setInterval(() => {
-      if (!this.isSpeaking) {
-        clearInterval(checkInterval);
-        this.closeInteractionModal();
-      }
-    }, 500); // Check every 500ms
-    
-    // Safety timeout - close after 30 seconds max
-    setTimeout(() => {
-      clearInterval(checkInterval);
-      if (this.isInteractionModalOpen) {
-        this.closeInteractionModal();
-      }
-    }, 30000);
   }
 
   // Handle backdrop click to close modals
@@ -472,7 +540,7 @@ export class AiassistantComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ! this line for openening the modal based on ai response
+  // Modal opening handler
   private handleModalOpening(data: any): void {
     if (!data || !data.action_type) {
       return;
