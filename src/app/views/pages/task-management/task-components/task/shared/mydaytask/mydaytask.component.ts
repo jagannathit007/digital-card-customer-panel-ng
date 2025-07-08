@@ -63,7 +63,6 @@ export class MydaytaskComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.userName =
       this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA)?.name || 'User';
-    await this.fetchMyDayTasks();
     await this.loadTabData();
   }
 
@@ -81,10 +80,12 @@ export class MydaytaskComponent implements OnInit {
       case 'myday':
         await this.fetchMyDayTasks();
         break;
-      case 'today':
+        case 'today':
+        await this.fetchMyDayTasks();
         await this.fetchTodayTasks();
         break;
-      case 'nodedate':
+        case 'nodedate':
+        await this.fetchMyDayTasks();
         await this.fetchNoDateTasks();
         break;
     }
