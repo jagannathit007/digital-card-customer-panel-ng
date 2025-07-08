@@ -6,6 +6,7 @@ import {
   signal,
   computed,
   ViewChild,
+  ElementRef
 } from '@angular/core';
 import {
   CdkDrag,
@@ -79,6 +80,14 @@ export interface BoardColumn {
   styleUrl: './teamtask.component.scss',
 })
 export class TeamtaskComponent implements OnInit, OnDestroy {
+
+  // ! Kanban View Auto Scrolling Properties
+  @ViewChild('kanbanContainer') kanbanContainer!: ElementRef<HTMLDivElement>;
+  private autoScrollInterval: any = null;
+  private autoScrollSpeed: number = 15;
+  private isDragActive = false;
+  // ! Kanban View Auto Scrolling Properties
+
   baseURL = environment.baseURL;
   private destroy$ = new Subject<void>();
 
@@ -128,8 +137,13 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     if (this.drag) {
       this.setupDragPreview();
     }
+    console.log('📋 ViewChild check:', this.kanbanContainer);
+    if (this.kanbanContainer) {
+      console.log('✅ Container found:', this.kanbanContainer.nativeElement);
+    }
   }
 
+  // ! Curently Comennt for testing
   private setupDragPreview() {
     document.addEventListener('cdkDragStarted', (event: any) => {
       if (event.detail.source._dragRef instanceof CdkDrag) {
@@ -219,7 +233,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       // Update the boardColumns signal to trigger reactivity
       this.boardColumns.set(columns);
       this.cdr.detectChanges(); // Ensure UI updates
-      console.log(`Task ${taskId} updated: ${field} =`, value);
     } else {
       console.warn(`Task ${taskId} not found in board columns`);
     }
@@ -233,7 +246,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     const currentColumnId = this.currentColumnId();
     const existingColumns = this.boardColumns();
 
-    console.log('existingColumns: ', existingColumns);
 
     // For rename operation, exclude the current column from validation
     const isDuplicate = existingColumns.some((column) => {
@@ -251,9 +263,12 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
-    document.removeEventListener('keydown', this.handleKeydown);
+    // this.destroy$.next();
+    // this.destroy$.complete();
+    // document.removeEventListener('keydown', this.handleKeydown);
+    this.clearAutoScroll();
+    this.isDragActive = false;
+    document.removeEventListener('mousemove', this.trackMouseDuringDrag);
   }
 
   private setupDragDropSubscription() {
@@ -467,7 +482,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     });
 
     if (boardDetails) {
-      console.log('Board details loaded:', boardDetails);
       this.boardColumns.set(boardDetails.columns);
 
       this.completedColumnId.set(
@@ -508,7 +522,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     const tasks = await this.taskService.getBoardsAllTasks({ boardId });
 
     if (tasks) {
-      console.log('Tasks loaded:', tasks);
 
       // Update board columns with tasks
       const columns = this.boardColumns();
@@ -534,10 +547,21 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
 
   // Drag and drop event handlers
   onDragStarted(task: Task) {
+    this.isDragActive = true;
+
+
     this.isDragging.set(true);
     this.draggedTask.set(task);
     this.clearSelection();
     this.dragDropService.startDrag(task, task.column, 'task');
+
+     if (this.kanbanContainer) {
+      this.kanbanContainer.nativeElement.classList.add('dragging');
+    }
+    
+    // Add mouse tracking listener
+    document.addEventListener('mousemove', this.trackMouseDuringDrag);
+
   }
 
   // For columns, you might need to add:
@@ -546,11 +570,30 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   }
 
   onDragEnded() {
+    // setTimeout(() => {
+    //   this.isDragging.set(false);
+    //   this.draggedTask.set(null);
+    //   this.dragDropService.endDrag();
+    // }, 100);
+
+    
+    this.isDragActive = false;
+    
     setTimeout(() => {
       this.isDragging.set(false);
       this.draggedTask.set(null);
       this.dragDropService.endDrag();
+      
+      if (this.kanbanContainer) {
+        this.kanbanContainer.nativeElement.classList.remove('dragging');
+      }
+      
+      // Remove mouse tracking listener
+      document.removeEventListener('mousemove', this.trackMouseDuringDrag);
+      
+      this.clearAutoScroll();
     }, 100);
+
   }
 
   // old code before improving chat gpt without fallback
@@ -663,6 +706,11 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
 
   // FIXED: Task drop handling for cross-column movement
   async onTaskDrop(event: CdkDragDrop<Task[]>, targetColumnId: string) {
+    
+    // Immediately clear auto scroll
+    this.isDragActive = false;
+    this.clearAutoScroll();
+
     const columns = [...this.boardColumns()];
     const sourceColumnId = event.previousContainer.id;
 
@@ -749,7 +797,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         toPosition: event.currentIndex,
       });
 
-      console.log('Update in database:', updateInDatabase);
 
       if (!updateInDatabase) {
         // Fallback: undo the move of local
@@ -1229,4 +1276,256 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       }
     }, 100); // Small delay to ensure the task is rendered
   }
+
+
+
+//  ! Kanban View Autoscrolling all The methods
+    private setupDragEventListeners() {
+    // Use CDK drag events instead of manual mouse events
+    document.addEventListener('dragover', this.handleCdkDragOver.bind(this), { passive: false });
+    document.addEventListener('dragend', this.handleCdkDragEnd.bind(this));
+  }
+
+  private handleCdkDragOver = (event: DragEvent) => {
+    if (!this.isDragActive) return;
+    
+    console.log('🖱️ CDK Drag over event:', {
+      x: event.clientX,
+      y: event.clientY,
+      isDragActive: this.isDragActive
+    });
+    
+    this.handleAutoScrollWithDragEvent(event);
+  }
+
+  private handleCdkDragEnd = (event: DragEvent) => {
+    this.isDragActive = false;
+    this.clearAutoScroll();
+  }
+
+  private handleAutoScrollWithDragEvent(event: DragEvent): void {
+    
+    if (!this.kanbanContainer) {
+      return;
+    }
+
+    const container = this.kanbanContainer.nativeElement;
+    const rect = container.getBoundingClientRect();
+    const scrollThreshold = 150; // Increased threshold for easier trigger
+    const x = event.clientX - rect.left;
+
+    // Clear any existing scroll
+    this.clearAutoScroll();
+
+    // Check left scroll trigger
+    if (x < scrollThreshold && container.scrollLeft > 0) {
+      this.startContinuousScroll('left', container);
+    } 
+    // Check right scroll trigger
+    else if (x > (rect.width - scrollThreshold)) {
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      if (container.scrollLeft < maxScroll) {
+        this.startContinuousScroll('right', container);
+      } else {
+      }
+    } 
+    else {
+    }
+  }
+
+  private startContinuousScroll(direction: 'left' | 'right', container: HTMLElement) {
+    
+    const scrollStep = () => {
+      if (!this.isDragActive) {
+        this.clearAutoScroll();
+        return;
+      }
+
+      const scrollAmount = direction === 'left' ? -this.autoScrollSpeed : this.autoScrollSpeed;
+      const beforeScroll = container.scrollLeft;
+      
+      container.scrollLeft += scrollAmount;
+      
+      
+      // Check boundaries
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      const canContinue = direction === 'left' 
+        ? container.scrollLeft > 0 
+        : container.scrollLeft < maxScroll;
+      
+      if (canContinue && this.isDragActive) {
+        this.autoScrollInterval = requestAnimationFrame(scrollStep);
+      } else {
+        this.clearAutoScroll();
+      }
+    };
+    
+    this.autoScrollInterval = requestAnimationFrame(scrollStep);
+  }
+
+   private clearAutoScroll(): void {
+    if (this.autoScrollInterval) {
+      cancelAnimationFrame(this.autoScrollInterval);
+      this.autoScrollInterval = null;
+    }
+  }
+
+  // FIXED: Mouse tracking during drag
+  private trackMouseDuringDrag = (event: MouseEvent) => {
+    if (this.isDragActive) {
+     
+      this.handleAutoScrollFromMousePosition(event.clientX, event.clientY);
+    }
+  }
+
+  // Test method to manually check container
+ testAutoScroll() {
+    
+    if (!this.kanbanContainer) {
+      return;
+    }
+
+    const container = this.kanbanContainer.nativeElement;
+  
+
+    // Test manual scroll
+    container.scrollLeft += 50;
+    setTimeout(() => {
+    }, 100);
+  }
+
+  testDragEvents() {
+    
+    // Simulate drag active
+    this.isDragActive = true;
+    
+    // Test auto-scroll with fake mouse position
+    const fakeEvent = {
+      clientX: 100, // Near left edge
+      clientY: 300
+    };
+    
+    this.handleAutoScrollFromMousePosition(fakeEvent.clientX, fakeEvent.clientY);
+  }
+
+  // MAIN FIX: Direct mouse position handling for task drag
+  private handleAutoScrollFromMousePosition(mouseX: number, mouseY: number): void {
+    
+    if (!this.kanbanContainer) {
+      return;
+    }
+
+    if (!this.isDragActive) {
+      return;
+    }
+
+    const container = this.kanbanContainer.nativeElement;
+    const rect = container.getBoundingClientRect();
+    const scrollThreshold = 150;
+    const x = mouseX - rect.left;
+
+    
+
+    // Check if mouse is within container vertically
+    if (mouseY < rect.top || mouseY > rect.bottom) {
+      this.clearAutoScroll();
+      return;
+    }
+
+    // Clear any existing scroll
+    this.clearAutoScroll();
+
+    // Check left scroll trigger
+    if (x < scrollThreshold && container.scrollLeft > 0) {
+      this.startContinuousScroll('left', container);
+    } 
+    // Check right scroll trigger
+    else if (x > (rect.width - scrollThreshold)) {
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      if (container.scrollLeft < maxScroll) {
+        this.startContinuousScroll('right', container);
+      } else {
+      }
+    } 
+    else {
+    }
+  }
+
+// Auto-scroll handling method - exactly like your working code
+   private handleAutoScroll(event: MouseEvent): void {
+    
+    if (!this.kanbanContainer) {
+      return;
+    }
+
+    const container = this.kanbanContainer.nativeElement;
+    const rect = container.getBoundingClientRect();
+    const scrollThreshold = 100; // Reduced for easier testing
+    const x = event.clientX - rect.left;
+
+
+    // Clear any existing scroll
+    this.clearAutoScroll();
+
+    // Check left scroll trigger
+    if (x < scrollThreshold && container.scrollLeft > 0) {
+      this.startAutoScrollLeft(container);
+    } 
+    // Check right scroll trigger
+    else if (x > (rect.width - scrollThreshold)) {
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      if (container.scrollLeft < maxScroll) {
+        this.startAutoScrollRight(container);
+      } else {
+      }
+    } 
+    else {
+    }
+  }
+
+   private startAutoScrollLeft(container: HTMLElement) {
+    const scrollStep = () => {
+      container.scrollLeft -= this.autoScrollSpeed;
+      
+      if (container.scrollLeft > 0) {
+        this.autoScrollInterval = requestAnimationFrame(scrollStep);
+      } else {
+        this.clearAutoScroll();
+      }
+    };
+    this.autoScrollInterval = requestAnimationFrame(scrollStep);
+  }
+  
+private startAutoScrollRight(container: HTMLElement) {
+    const scrollStep = () => {
+      container.scrollLeft += this.autoScrollSpeed;
+      
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      if (container.scrollLeft < maxScroll) {
+        this.autoScrollInterval = requestAnimationFrame(scrollStep);
+      } else {
+        this.clearAutoScroll();
+      }
+    };
+    this.autoScrollInterval = requestAnimationFrame(scrollStep);
+  }
+
+
+  // Add mouse move listener during drag
+ private handleDragMove = (event: MouseEvent) => {
+    
+    
+    if (!this.isDragging()) {
+      return;
+    }
+
+    if (!this.kanbanContainer) {
+      return;
+    }
+
+    this.handleAutoScroll(event);
+  }
+
+
+
 }

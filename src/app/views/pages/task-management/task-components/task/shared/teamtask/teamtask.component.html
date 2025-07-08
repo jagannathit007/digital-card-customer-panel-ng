@@ -52,6 +52,7 @@
 
       <!-- Kanban Board -->
       <div
+        #kanbanContainer
         class="tw-flex tw-gap-6 tw-overflow-x-auto tw-pb-4"
         *ngIf="boardId()"
         cdkDropList
@@ -59,9 +60,10 @@
         [cdkDropListData]="editableColumns()"
         [cdkDropListDisabled]="!taskPermissionsService.isBoardLevelPermission()"
         (cdkDropListDropped)="onColumnDrop($event)"
+        style="border: 2px solid #e5e7eb; min-width: 100%;"
       >
         <!-- FIXED: Updated cdkDropListGroup for cross-column drag -->
-        <div cdkDropListGroup class="tw-flex tw-gap-6 tw-w-full">
+        <div cdkDropListGroup class="tw-flex tw-gap-6 tw-w-full" style="min-width: 2000px;">
           <!-- Editable Columns -->
           <div
             *ngFor="let column of editableColumns(); trackBy: trackByColumnId"
@@ -279,6 +281,8 @@
                   [cdkDragDisabled]="
                     !taskPermissionsService.isTeamTaskCardAccessible(task)
                   "
+                  (cdkDragStarted)="onDragStarted(task)"
+                  (cdkDragEnded)="onDragEnded()"
                 >
                   <app-team-task-card
                     [task]="task"
@@ -427,6 +431,8 @@
                   [cdkDragDisabled]="
                     !taskPermissionsService.isTeamTaskCardAccessible(task)
                   "
+                  (cdkDragStarted)="onDragStarted(task)"
+                  (cdkDragEnded)="onDragEnded()"
                 >
                   <app-team-task-card
                     [task]="task"
