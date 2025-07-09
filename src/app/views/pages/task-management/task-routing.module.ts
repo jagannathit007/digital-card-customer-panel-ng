@@ -5,6 +5,7 @@ import { AllmembersComponent } from './task-components/task/shared/allmembers/al
 import { PersonaltaskComponent } from './task-components/task/shared/personaltask/personaltask.component';
 import { TeamtaskComponent } from './task-components/task/shared/teamtask/teamtask.component';
 import { DashboardComponent } from './task-components/task/shared/dashboard/dashboard.component';
+import { MycalendarComponent } from './task-components/task/shared/mycalendar/mycalendar.component';
 import { MyalltaskComponent } from './task-components/task/shared/myalltask/myalltask.component';
 import { MyweektaskComponent } from './task-components/task/shared/myweektask/myweektask.component';
 import { MydaytaskComponent } from './task-components/task/shared/mydaytask/mydaytask.component';
@@ -43,6 +44,7 @@ const routes: Routes = [
       { path: 'personal-task/my-day', component: MydaytaskComponent },
       { path: 'personal-task/next-seven-days', component: MyweektaskComponent },
       { path: 'personal-task/all', component: MyalltaskComponent },
+      { path: 'personal-task/mycalendar', component: MycalendarComponent },
       { path: 'profile', component: MemberprofileComponent },
       { path: '', redirectTo: 'allmembers', pathMatch: 'full' },
     ],

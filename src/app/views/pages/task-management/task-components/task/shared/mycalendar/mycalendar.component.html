@@ -1,0 +1,70 @@
+<!-- Your existing calendar content here -->
+<div class="calendar-container">
+  <!-- Add your calendar content here -->
+  <h1>My Calendar</h1>
+</div>
+
+<!-- Success/Error Modal -->
+<div
+  *ngIf="isModalOpen"
+  class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-3 sm:tw-p-4"
+  (click)="closeModal()"
+>
+  <div
+    class="tw-bg-white tw-rounded-2xl tw-p-5 sm:tw-p-6 md:tw-p-8 tw-max-w-xs sm:tw-max-w-sm md:tw-max-w-md tw-w-full tw-shadow-2xl tw-relative tw-mx-3 sm:tw-mx-4 tw-max-h-screen tw-overflow-y-auto"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Close Button -->
+    <button
+      class="tw-absolute tw-top-3 tw-right-3 sm:tw-top-4 sm:tw-right-4 tw-text-gray-400 tw-hover:text-gray-600 tw-text-lg sm:tw-text-xl tw-transition-colors tw-duration-200 tw-z-10"
+      (click)="onCloseClick()"
+    >
+      <i class="fa-solid fa-times"></i>
+    </button>
+
+    <!-- Modal Content -->
+    <div class="tw-text-center">
+      <!-- Success/Error Icon -->
+      <div class="tw-mb-3 sm:tw-mb-4 md:tw-mb-6">
+        <div
+          class="tw-inline-flex tw-items-center tw-justify-center tw-w-12 tw-h-12 sm:tw-w-16 sm:tw-h-16 md:tw-w-20 md:tw-h-20 tw-rounded-full tw-mb-3 sm:tw-mb-4"
+          [class.tw-bg-green-100]="isSuccess"
+          [class.tw-bg-red-100]="!isSuccess"
+        >
+          <i
+            class="tw-text-lg sm:tw-text-2xl md:tw-text-3xl"
+            [class.fa-solid]="true"
+            [class.fa-check-circle]="isSuccess"
+            [class.fa-times-circle]="!isSuccess"
+            [class.tw-text-green-600]="isSuccess"
+            [class.tw-text-red-600]="!isSuccess"
+          ></i>
+        </div>
+      </div>
+
+      <!-- Title -->
+      <h2
+        class="tw-text-lg sm:tw-text-xl md:tw-text-2xl tw-font-bold tw-mb-2 sm:tw-mb-3 md:tw-mb-4 tw-px-2"
+        [class.tw-text-green-800]="isSuccess"
+        [class.tw-text-red-800]="!isSuccess"
+      >
+        {{ isSuccess ? 'Success!' : 'Error!' }}
+      </h2>
+
+      <!-- Message -->
+      <p class="tw-text-gray-600 tw-text-xs sm:tw-text-sm md:tw-text-base tw-leading-relaxed tw-mb-4 sm:tw-mb-5 md:tw-mb-6 tw-px-2">
+        {{ modalMessage }}
+      </p>
+
+      <!-- Progress Bar (Auto-close indicator) -->
+      <div class="tw-w-full tw-bg-gray-200 tw-rounded-full tw-h-1 tw-mb-3 sm:tw-mb-4">
+        <div
+          class="tw-h-1 tw-rounded-full tw-transition-all tw-duration-300"
+          [class.tw-bg-green-500]="isSuccess"
+          [class.tw-bg-red-500]="!isSuccess"
+          style="width: 100%; animation: shrink 5s linear forwards;"
+        ></div>
+      </div>
+    </div>
+  </div>
+</div>

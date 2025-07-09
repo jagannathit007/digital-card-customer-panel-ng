@@ -21,6 +21,7 @@ import { TeamtaskComponent } from './task-components/task/shared/teamtask/teamta
 import { MydaytaskComponent } from './task-components/task/shared/mydaytask/mydaytask.component';
 import { MyweektaskComponent } from './task-components/task/shared/myweektask/myweektask.component';
 import { MyalltaskComponent } from './task-components/task/shared/myalltask/myalltask.component';
+import { MycalendarComponent } from './task-components/task/shared/mycalendar/mycalendar.component';
 import { MemberprofileComponent } from './task-components/task/shared/memberprofile/memberprofile.component';
 import { AddTeamMemberComponent } from '../../partials/task-managemnt/common-components/addTeamMember/addTeamMember.component';
 import { SendingMailComponent } from '../../partials/task-managemnt/common-components/sendingMail/sendingMail.component';
@@ -46,6 +47,7 @@ import { CalendarSyncComponent } from '../../partials/task-managemnt/common-comp
     MydaytaskComponent,
     MyweektaskComponent,
     MyalltaskComponent,
+    MycalendarComponent,
     MemberprofileComponent,
   ],
   imports: [
@@ -72,7 +74,7 @@ import { CalendarSyncComponent } from '../../partials/task-managemnt/common-comp
     TaskClockComponent,
     TeamTaskDetailPopupComponent,
     TaskTimerComponent,
-    CalendarSyncComponent
+    CalendarSyncComponent,
 ]
 })
 export class TaskModule {}

@@ -1,0 +1,20 @@
+@keyframes shrink {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+/* Additional mobile optimizations */
+@media (max-width: 640px) {
+  .calendar-container {
+    padding: 1rem;
+  }
+  
+  .calendar-container h1 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+}

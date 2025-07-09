@@ -50,6 +50,8 @@ export class AdminHeaderComponent implements OnInit {
   shouldShowElements = false;
 
   isCalendarSyncModalOpen = false;
+  shouldShowCalendarIcon = false;
+
 
 
   constructor(
@@ -135,6 +137,7 @@ export class AdminHeaderComponent implements OnInit {
       new URLSearchParams(url.split('?')[1]).has('boardId');
 
     this.shouldShowElements = isBoardsRoute || isTeamTaskWithBoardId;
+    this.shouldShowCalendarIcon = url === '/task-management/personal-task/mycalendar';
   }
 
   ngOnDestroy() {

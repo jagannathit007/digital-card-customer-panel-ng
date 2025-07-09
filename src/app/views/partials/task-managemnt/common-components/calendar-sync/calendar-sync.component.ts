@@ -42,16 +42,26 @@ export class CalendarSyncComponent implements OnInit, OnDestroy {
 
   async connectGoogleCalendar() {
     this.isLoading = true;
-    
+
     const response = await this.personalTaskService.GoogleInitiate();
-    
-    console.log("Google calendar response:", response);
-    
+
     if (response) {
       // redirect to new window to the response url
       window.open(response, '_blank');
     }
-    
+
     this.isLoading = false;
+  }
+
+  getCurrentDate(): string {
+    const today = new Date();
+    return today.getDate().toString().padStart(2, '0');
+  }
+
+  getCurrentMonth(): string {
+    const today = new Date();
+    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
+      'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    return months[today.getMonth()];
   }
 }
