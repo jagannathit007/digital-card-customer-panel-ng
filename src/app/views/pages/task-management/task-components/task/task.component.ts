@@ -126,6 +126,7 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   onTeamTaskCreationModalClose(): void {
     this.isTeamTaskCreationModalOpen = false;
+    console.log('Team task creation modal closed');
     this.currentModalData = {};
   }
 

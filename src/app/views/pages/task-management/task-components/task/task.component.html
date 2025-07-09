@@ -32,6 +32,15 @@
     (onClose)="onTaskClockModalClose()"
     (onTaskAdded)="onTaskAdded()">
   </app-task-timer>
+
+  <!-- team task creation -->
+   <app-common-team-task-create-popup
+   *ngIf="isTeamTaskCreationModalOpen"
+   [isVisible]="isTeamTaskCreationModalOpen"
+   [createBoardData]="currentModalData"
+   (popupClosed)="onTeamTaskCreationModalClose()"
+   (taskCreated)="onTeamMemberAdded($event)"
+   ></app-common-team-task-create-popup>
   
   <!-- chandan - Placeholder for other modals when they are created -->
   <!-- 

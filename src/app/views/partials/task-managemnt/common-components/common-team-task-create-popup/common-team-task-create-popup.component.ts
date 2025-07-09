@@ -6,12 +6,15 @@ import {
   EventEmitter,
   Input,
   ViewEncapsulation,
+  SimpleChanges,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgxEditorModule, Editor, Toolbar } from 'ngx-editor';
 import { MemberDetailDropdownComponent } from '../add-members-dropdown/add-members-dropdown.component';
 import { TaskService } from 'src/app/services/task.service';
+import { AppStorage } from 'src/app/core/utilities/app-storage';
+import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 
 interface TaskMember {
   _id: string;
@@ -55,8 +58,10 @@ interface Column {
   encapsulation: ViewEncapsulation.None,
 })
 export class CommonTeamTaskCreatePopupComponent implements OnInit, OnDestroy {
-  @Input() boardId: string = '';
+  @Input() boardId: string =
+    this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '';
   @Input() isVisible: boolean = false;
+  @Input() createBoardData: any = null;
 
   @Output() taskCreated = new EventEmitter<CreateTaskData>();
   @Output() popupClosed = new EventEmitter<void>();
@@ -132,18 +137,26 @@ export class CommonTeamTaskCreatePopupComponent implements OnInit, OnDestroy {
     },
   ];
 
-  constructor(private taskService: TaskService) {}
+  constructor(private taskService: TaskService, private storage: AppStorage) {}
 
   ngOnInit(): void {
     this.loadColumnOptions();
     this.initializeEditor();
     this.taskData.board = this.boardId;
+    this.applyDefaultValues();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['createBoardData'] && !changes['createBoardData'].firstChange) {
+      this.applyDefaultValues();
+    }
   }
 
   async loadColumnOptions() {
     const response = await this.taskService.getColumns({
       type: 'board',
-      boardId: this.boardId,
+      boardId:
+        this.boardId || this.storage.get(teamMemberCommon.BOARD_DATA)?._id,
     });
 
     if (response) {
@@ -168,6 +181,14 @@ export class CommonTeamTaskCreatePopupComponent implements OnInit, OnDestroy {
 
   private initializeEditor(): void {
     this.editor = new Editor();
+  }
+
+  applyDefaultValues() {
+    if (this.createBoardData) {
+      this.taskData.title = this.createBoardData?.title || '';
+      this.taskData.description = this.createBoardData?.description || '';
+      this.taskData.dueDate = this.createBoardData?.dueDate || null;
+    }
   }
 
   // Form validation
@@ -225,7 +246,7 @@ export class CommonTeamTaskCreatePopupComponent implements OnInit, OnDestroy {
       title: '',
       description: '',
       status: 'normal',
-      column: this.columnOptions[0]._id,
+      column: this.columnOptions[0]?._id || '',
       dueDate: null,
       assignedTo: [],
       board: this.boardId,
