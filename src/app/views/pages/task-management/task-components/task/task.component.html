@@ -8,6 +8,7 @@
 
 <div class="task-container">
   <router-outlet></router-outlet>
+  <app-calendar-sync *ngIf="isAdmin"></app-calendar-sync>
 
   
   <app-aiassistant *ngIf="isAdmin"></app-aiassistant>

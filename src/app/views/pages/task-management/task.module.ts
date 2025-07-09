@@ -21,6 +21,7 @@ import { TeamtaskComponent } from './task-components/task/shared/teamtask/teamta
 import { MydaytaskComponent } from './task-components/task/shared/mydaytask/mydaytask.component';
 import { MyweektaskComponent } from './task-components/task/shared/myweektask/myweektask.component';
 import { MyalltaskComponent } from './task-components/task/shared/myalltask/myalltask.component';
+import { MycalendarComponent } from './task-components/task/shared/mycalendar/mycalendar.component';
 import { MemberprofileComponent } from './task-components/task/shared/memberprofile/memberprofile.component';
 import { AddTeamMemberComponent } from '../../partials/task-managemnt/common-components/addTeamMember/addTeamMember.component';
 import { SendingMailComponent } from '../../partials/task-managemnt/common-components/sendingMail/sendingMail.component';
@@ -35,6 +36,7 @@ import { PersonalTaskComponent } from '../../partials/task-managemnt/common-comp
 import { TaskClockComponent } from '../../partials/task-managemnt/common-components/task-clock/task-clock.component';
 import { TeamTaskDetailPopupComponent } from './task-components/task/shared/team-task-detail-popup/team-task-detail-popup.component';
 import { TaskTimerComponent } from "../../partials/task-managemnt/common-components/task-timer/task-timer.component";
+import { CalendarSyncComponent } from '../../partials/task-managemnt/common-components/calendar-sync/calendar-sync.component';
 import { CommonTeamTaskCreatePopupComponent } from "src/app/views/partials/task-managemnt/common-components/common-team-task-create-popup/common-team-task-create-popup.component";
 
 @NgModule({
@@ -46,6 +48,7 @@ import { CommonTeamTaskCreatePopupComponent } from "src/app/views/partials/task-
     MydaytaskComponent,
     MyweektaskComponent,
     MyalltaskComponent,
+    MycalendarComponent,
     MemberprofileComponent,
   ],
   imports: [
@@ -72,6 +75,7 @@ import { CommonTeamTaskCreatePopupComponent } from "src/app/views/partials/task-
     TaskClockComponent,
     TeamTaskDetailPopupComponent,
     TaskTimerComponent,
+    CalendarSyncComponent,
     CommonTeamTaskCreatePopupComponent
 ]
 })

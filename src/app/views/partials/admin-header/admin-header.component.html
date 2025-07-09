@@ -150,6 +150,22 @@
           </button>
         </div>
 
+        <!-- Google Calendar Icon - Show only when permission is false -->
+        <button
+          *ngIf="
+            shouldShowCalendarIcon &&
+            !taskPermissionsService.isCalendarSyncsPermission()
+          "
+          class="tw-flex tw-items-center tw-space-x-2 tw-bg-blue-400 tw-text-white tw-px-4 tw-py-2 tw-rounded-lg tw-hover:bg-blue-700 tw-transition-colors tw-duration-200 tw-shadow-md tw-hover:shadow-lg"
+          (click)="openCalendarSyncModal()"
+        >
+          <img
+            src="../../../../../../assets/images/google-calendar.png"
+            alt="Google Calendar"
+            class="tw-w-5 tw-h-5"
+          />
+          <span class="tw-font-medium tw-text-sm">Connect</span>
+        </button>
         <!-- Profile Section with Left Border -->
         <div
           class="tw-relative tw-pl-3 tw-border-l tw-border-gray-300 profile-dropdown-container"

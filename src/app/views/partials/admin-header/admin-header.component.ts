@@ -24,6 +24,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { BoardNotificationService } from 'src/app/services/board-notification.service';
+import { CalendarSyncService } from 'src/app/services/calendar-sync.service';
 
 @Component({
   selector: 'app-admin-header',
@@ -48,6 +49,11 @@ export class AdminHeaderComponent implements OnInit {
   private destroy$ = new Subject<void>();
   shouldShowElements = false;
 
+  isCalendarSyncModalOpen = false;
+  shouldShowCalendarIcon = false;
+
+
+
   constructor(
     public appWorker: AppWorker,
     private storage: AppStorage,
@@ -57,7 +63,9 @@ export class AdminHeaderComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private sharedService: SharedService,
     private router: Router,
-    private boardNotificationService: BoardNotificationService
+    private boardNotificationService: BoardNotificationService,
+    public taskPermissionsService: TaskPermissionsService,
+    private calendarSyncService: CalendarSyncService
   ) {}
 
   async onInitFunction() {
@@ -129,6 +137,7 @@ export class AdminHeaderComponent implements OnInit {
       new URLSearchParams(url.split('?')[1]).has('boardId');
 
     this.shouldShowElements = isBoardsRoute || isTeamTaskWithBoardId;
+    this.shouldShowCalendarIcon = url === '/task-management/personal-task/mycalendar';
   }
 
   ngOnDestroy() {
@@ -361,4 +370,9 @@ export class AdminHeaderComponent implements OnInit {
     // refresh whole page
     window.location.reload();
   }
+
+openCalendarSyncModal() {
+  this.calendarSyncService.openModal();
+}
+
 }

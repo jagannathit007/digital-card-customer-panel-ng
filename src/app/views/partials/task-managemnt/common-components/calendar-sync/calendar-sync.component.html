@@ -1,0 +1,81 @@
+<!-- Calendar Sync Modal -->
+<div   
+  *ngIf="isCalendarSyncModalOpen"   
+  class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4"   
+  (click)="closeCalendarSyncModal()" 
+>   
+  <div     
+    class="tw-bg-white tw-rounded-2xl tw-p-6 sm:tw-p-8 md:tw-p-10 tw-max-w-sm sm:tw-max-w-md md:tw-max-w-lg tw-w-full tw-shadow-2xl tw-relative tw-max-h-screen tw-overflow-y-auto"     
+    (click)="$event.stopPropagation()"   
+  >     
+    <!-- Close Button -->     
+    <button       
+      class="tw-absolute tw-top-4 tw-right-4 sm:tw-top-5 sm:tw-right-5 tw-text-gray-400 tw-hover:text-gray-600 tw-text-xl sm:tw-text-2xl tw-transition-colors tw-duration-200 tw-z-10"       
+      (click)="closeCalendarSyncModal()"     
+    >       
+      <i class="fa-solid fa-times"></i>     
+    </button>      
+    
+    <!-- Today's Date Display -->     
+    <div class="tw-text-center tw-mb-6 sm:tw-mb-8">       
+      <div class="tw-inline-flex tw-flex-col tw-items-center tw-justify-center tw-w-16 tw-h-16 sm:tw-w-20 sm:tw-h-20 tw-bg-gradient-to-b tw-from-blue-50 tw-to-blue-100 tw-rounded-2xl tw-mb-4 sm:tw-mb-5 tw-shadow-sm">         
+        <div class="tw-text-xs sm:tw-text-xs tw-text-blue-600 tw-font-semibold tw-uppercase tw-tracking-wide">
+          {{ getCurrentMonth() }}
+        </div>
+        <div class="tw-text-xl sm:tw-text-2xl tw-font-bold tw-text-blue-700">
+          {{ getCurrentDate() }}
+        </div>
+      </div>       
+      <h2 class="tw-text-2xl sm:tw-text-3xl tw-font-bold tw-text-gray-900 tw-mb-2 sm:tw-mb-3 tw-px-2">Connect your calendar</h2>       
+    </div>      
+    
+    <!-- Features List -->     
+    <div class="tw-space-y-3 sm:tw-space-y-4 tw-mb-6 sm:tw-mb-8">       
+      <div class="tw-flex tw-items-start tw-space-x-3 sm:tw-space-x-4">         
+        <div class="tw-flex tw-items-center tw-justify-center tw-w-5 tw-h-5 sm:tw-w-6 sm:tw-h-6 tw-bg-green-100 tw-rounded-full tw-flex-shrink-0 tw-mt-0.5">
+          <i class="fa-solid fa-check tw-text-green-600 tw-text-xs sm:tw-text-sm"></i>
+        </div>         
+        <span class="tw-text-gray-700 tw-text-sm sm:tw-text-base tw-leading-relaxed">Connect your Google or Outlook calendars seamlessly</span>       
+      </div>       
+      <div class="tw-flex tw-items-start tw-space-x-3 sm:tw-space-x-4">         
+        <div class="tw-flex tw-items-center tw-justify-center tw-w-5 tw-h-5 sm:tw-w-6 sm:tw-h-6 tw-bg-green-100 tw-rounded-full tw-flex-shrink-0 tw-mt-0.5">
+          <i class="fa-solid fa-check tw-text-green-600 tw-text-xs sm:tw-text-sm"></i>
+        </div>         
+        <span class="tw-text-gray-700 tw-text-sm sm:tw-text-base tw-leading-relaxed">Schedule your personal and workspace tasks efficiently</span>       
+      </div>       
+      <div class="tw-flex tw-items-start tw-space-x-3 sm:tw-space-x-4">         
+        <div class="tw-flex tw-items-center tw-justify-center tw-w-5 tw-h-5 sm:tw-w-6 sm:tw-h-6 tw-bg-green-100 tw-rounded-full tw-flex-shrink-0 tw-mt-0.5">
+          <i class="fa-solid fa-check tw-text-green-600 tw-text-xs sm:tw-text-sm"></i>
+        </div>         
+        <span class="tw-text-gray-700 tw-text-sm sm:tw-text-base tw-leading-relaxed">Easily create, edit and delete events in real-time</span>       
+      </div>     
+    </div>      
+    
+    <!-- Connect Button -->
+    <button
+      class="tw-w-full tw-bg-gradient-to-r tw-bg-blue-400 tw-text-white tw-py-3 sm:tw-py-3 tw-px-4 sm:tw-px-5 tw-rounded-xl tw-font-semibold tw-text-sm sm:tw-text-base md:tw-text-lg tw-hover:from-purple-700 tw-hover:to-violet-800 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-justify-center tw-gap-2 tw-shadow-md tw-hover:shadow-lg tw-transform tw-hover:scale-105"
+      [class.tw-opacity-60]="isLoading"
+      [disabled]="isLoading"
+      (click)="connectGoogleCalendar()"
+    >
+      <!-- Loading Spinner -->
+      <div
+        *ngIf="isLoading"
+        class="tw-animate-spin tw-rounded-full tw-h-4 tw-w-4 sm:tw-h-5 sm:tw-w-5 tw-border-b-2 tw-border-white"
+      ></div>
+
+      <!-- Google Calendar Icon -->
+      <img
+        *ngIf="!isLoading"
+        src="../../../../../../assets/images/google-calendar.png"
+        alt="Google Calendar"
+        class="tw-h-4 tw-w-4 sm:tw-h-5 sm:tw-w-5 md:tw-h-6 md:tw-w-6"
+      />
+
+      <!-- Button Text -->
+      <span class="tw-font-medium">
+        {{ isLoading ? 'Connecting...' : 'Connect Google Calendar' }}
+      </span>
+    </button>
+  </div> 
+</div>
