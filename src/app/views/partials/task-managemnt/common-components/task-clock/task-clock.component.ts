@@ -50,7 +50,7 @@ export class TaskClockComponent implements OnInit {
   
   // Selected values
   selectedDate: Date | null = null;
-  selectedHour: number = 0;
+  selectedHour: number = 12;
   selectedMinute: number = 0;
   isAM: boolean = true;
   
@@ -97,9 +97,9 @@ private initializeComponent(): void {
   }
   
   // Set date values
-  // this.selectedDate = new Date(dateToUse);
-  // this.currentMonth = dateToUse.getMonth();
-  // this.currentYear = dateToUse.getFullYear();
+  this.selectedDate = new Date(dateToUse);
+  this.currentMonth = dateToUse.getMonth();
+  this.currentYear = dateToUse.getFullYear();
   
   // Set time values
   let hours = dateToUse.getHours();
