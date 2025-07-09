@@ -148,8 +148,19 @@
           >
             <i class="fa-solid fa-link tw-text-gray-600 tw-text-lg"></i>
           </button>
+
         </div>
 
+          <!-- Google Calendar Icon - Show only when permission is false -->
+          <button
+            *ngIf="!taskPermissionsService.isCalendarSyncsPermission()"
+            class="tw-p-2 tw-rounded-lg tw-hover:bg-gray-100 tw-transition-colors hover:tw-bg-gray-200"
+            (click)="openCalendarSyncModal()"
+          >
+            <i
+              class="fa-solid fa-calendar-days tw-text-gray-600 tw-text-lg"
+            ></i>
+          </button>
         <!-- Profile Section with Left Border -->
         <div
           class="tw-relative tw-pl-3 tw-border-l tw-border-gray-300 profile-dropdown-container"

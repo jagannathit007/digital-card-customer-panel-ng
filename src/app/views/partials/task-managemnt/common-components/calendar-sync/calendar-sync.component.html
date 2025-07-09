@@ -1,0 +1,53 @@
+<!-- Calendar Sync Modal - Add this as separate component or in header template -->
+<div
+  *ngIf="isCalendarSyncModalOpen"
+  class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50"
+  (click)="closeCalendarSyncModal()"
+>
+  <div
+    class="tw-bg-white tw-rounded-lg tw-p-8 tw-max-w-md tw-w-full tw-mx-4 tw-shadow-xl tw-relative"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Close Button -->
+    <button
+      class="tw-absolute tw-top-4 tw-right-4 tw-text-gray-400 tw-hover:text-gray-600 tw-text-xl"
+      (click)="closeCalendarSyncModal()"
+    >
+      <i class="fa-solid fa-times"></i>
+    </button>
+
+    <!-- Calendar Icon -->
+    <div class="tw-text-center tw-mb-6">
+      <div class="tw-inline-flex tw-items-center tw-justify-center tw-w-16 tw-h-16 tw-bg-blue-100 tw-rounded-full tw-mb-4">
+        <i class="fa-solid fa-calendar-days tw-text-blue-600 tw-text-2xl"></i>
+      </div>
+      <h2 class="tw-text-2xl tw-font-bold tw-text-gray-900 tw-mb-2">Connect your calendar</h2>
+      <p class="tw-text-gray-600 tw-text-sm">Sync your tasks with your calendar for better productivity</p>
+    </div>
+
+    <!-- Features List -->
+    <div class="tw-space-y-3 tw-mb-6">
+      <div class="tw-flex tw-items-center tw-space-x-3">
+        <i class="fa-solid fa-check tw-text-green-500 tw-text-sm"></i>
+        <span class="tw-text-gray-700 tw-text-sm">Connect your Google or Outlook calendars</span>
+      </div>
+      <div class="tw-flex tw-items-center tw-space-x-3">
+        <i class="fa-solid fa-check tw-text-green-500 tw-text-sm"></i>
+        <span class="tw-text-gray-700 tw-text-sm">Schedule your personal and workspace tasks</span>
+      </div>
+      <div class="tw-flex tw-items-center tw-space-x-3">
+        <i class="fa-solid fa-check tw-text-green-500 tw-text-sm"></i>
+        <span class="tw-text-gray-700 tw-text-sm">Easily create, edit and delete events</span>
+      </div>
+    </div>
+
+    <!-- Connect Button -->
+    <button
+      class="tw-w-full tw-bg-blue-600 tw-text-white tw-py-3 tw-px-4 tw-rounded-lg tw-font-medium tw-hover:bg-blue-700 tw-transition-colors tw-flex tw-items-center tw-justify-center tw-space-x-2"
+      (click)="connectGoogleCalendar()"
+    >
+      <i class="fa-brands fa-google tw-text-lg"></i>
+      <span>Connect Google Calendar</span>
+    </button>
+  </div>
+</div>

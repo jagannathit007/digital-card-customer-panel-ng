@@ -10,7 +10,7 @@ import { teamMemberCommon } from '../core/constants/team-members-common';
   providedIn: 'root',
 })
 export class TaskPermissionsService {
-  constructor(private apiManager: ApiManager, private storage: AppStorage) {}
+  constructor(private apiManager: ApiManager, private storage: AppStorage) { }
   private adminLevelRoles = ['admin'];
   private managementLevelRoles = ['admin', 'editor'];
   private boardLevelRoles = ['admin', 'editor', 'manager'];
@@ -205,7 +205,7 @@ export class TaskPermissionsService {
           (member: any) => member._id.toString() === userId.toString()
         );
         const isCreatorMember = taskDetails.createdBy.toString() === userId.toString();
-        
+
         return isPrivileged || isAssignedMember || isCreatorMember;
       } else {
         return false;
@@ -219,4 +219,29 @@ export class TaskPermissionsService {
       return false;
     }
   }
+  isCalendarSyncsPermission() {
+    try {
+      const currentUser = this.getCurrentUser();
+      if (!currentUser) {
+        return false;
+      }
+
+      const userCalendar = currentUser.calendarSync || {};
+
+      if (userCalendar.sync_enabled === true) {
+        return true;
+      } else {
+        return false;
+      }
+
+    } catch (err) {
+      swalHelper.showToast(
+        'Something went wrong while checking permissions!',
+        'error'
+      );
+      return false;
+    }
+  }
+
+
 }

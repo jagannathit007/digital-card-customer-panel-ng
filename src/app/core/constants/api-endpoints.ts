@@ -230,6 +230,12 @@ public GET_WEEK_TASK_DETAILS: string = `${this.PATH}/task/personal/getWeekTasks`
 public GET_PERSONAL_TASK_STATS: string = `${this.PATH}/task/personal/stats`;
 public GET_PERSONAL_TASK_DETAILS_COUNT: string = `${this.PATH}/task/personal/taskconut`;
 
+// ! ADMIN CALENDERSYNS
+public GET_GOOGLE_INITIATE: string = `${this.PATH}/task/google/initiate`;
+
+
+
+
 }
 
 export let apiEndpoints = new ApiEndpoints();
