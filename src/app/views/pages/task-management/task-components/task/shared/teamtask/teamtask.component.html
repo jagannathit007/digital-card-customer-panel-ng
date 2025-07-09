@@ -60,10 +60,14 @@
         [cdkDropListData]="editableColumns()"
         [cdkDropListDisabled]="!taskPermissionsService.isBoardLevelPermission()"
         (cdkDropListDropped)="onColumnDrop($event)"
-        style="min-width: 100%;"
+        style="min-width: 100%"
       >
         <!-- FIXED: Updated cdkDropListGroup for cross-column drag -->
-        <div cdkDropListGroup class="tw-flex tw-gap-6 tw-w-full" style="min-width: 2000px;">
+        <div
+          cdkDropListGroup
+          class="tw-flex tw-gap-6 tw-w-full"
+          style="min-width: 2000px"
+        >
           <!-- Editable Columns -->
           <div
             *ngFor="let column of editableColumns(); trackBy: trackByColumnId"
@@ -83,7 +87,7 @@
                 >
                   <!-- Drag Handle Button -->
                   <button
-                  *ngIf="taskPermissionsService.isBoardLevelPermission()"
+                    *ngIf="taskPermissionsService.isBoardLevelPermission()"
                     cdkDragHandle
                     class="tw-p-1 tw-text-gray-400 hover:tw-text-gray-600 hover:tw-bg-gray-100 tw-rounded hover:tw-cursor-move"
                   >
@@ -542,6 +546,33 @@
   </div>
 </div>
 
+<!-- NEW: Add Task Button (Floating) -->
+<button
+  (click)="openAddTeamTaskModal()"
+  class="tw-fixed tw-bottom-24 tw-right-7 tw-bg-blue-500 hover:tw-bg-blue-600 tw-text-white tw-rounded-full tw-p-4 tw-shadow-lg hover:tw-shadow-xl tw-transition-all tw-duration-200 tw-z-30"
+>
+  <svg
+    class="tw-w-6 tw-h-6"
+    fill="none"
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+    ></path>
+  </svg>
+</button>
+
+<!-- Task Creation Popup -->
+<app-common-team-task-create-popup
+  [boardId]="boardId()"
+  [isVisible]="showCreatePopup()"
+  (taskCreated)="onTaskCreated($event)"
+  (popupClosed)="onPopupClosed()"
+></app-common-team-task-create-popup>
 
 <!-- Needed for rendering popup -->
 <router-outlet></router-outlet>

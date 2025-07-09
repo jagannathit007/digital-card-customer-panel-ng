@@ -114,6 +114,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   availableUsersForSelectedBoard = signal<TeamMember[]>([]);
 
   columnForm!: FormGroup;
+  showCreatePopup = signal<boolean>(false);
 
   // Loading state
   isLoading = signal<boolean>(true);
@@ -542,6 +543,27 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
           element.select();
         }
       }
+    });
+  }
+
+  openAddTeamTaskModal() {
+    this.showCreatePopup.set(true);
+  }
+
+  onPopupClosed() {
+    this.showCreatePopup.set(false);
+  }
+
+  onTaskCreated(task: any) {
+    console.log(task);
+    this.showCreatePopup.set(false);
+
+    this.boardColumns.update((columns) => {
+      const column = columns.find((col) => col._id === task.column);
+      if (column) {
+        column.tasks.push(task);
+      }
+      return columns;
     });
   }
 

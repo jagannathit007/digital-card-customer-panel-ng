@@ -1,0 +1,323 @@
+<!-- Create Task Modal -->
+<div
+  *ngIf="isVisible"
+  class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4 md:tw-p-6 tw-animate-fade-in"
+  (click)="onBackdropClick($event)"
+>
+  <!-- Modal Container -->
+  <div
+    class="tw-bg-white tw-rounded-2xl tw-shadow-2xl tw-w-full tw-max-w-2xl tw-min-h-[90vh] tw-max-h-[90vh] tw-flex tw-flex-col tw-overflow-hidden tw-animate-scale-in"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Header -->
+    <div
+      class="tw-flex tw-items-center tw-justify-between tw-px-6 tw-py-3 tw-border-b tw-border-gray-200 tw-bg-gradient-to-r tw-from-blue-50 tw-to-indigo-50"
+    >
+      <div class="tw-flex tw-items-center tw-space-x-3">
+        <div
+          class="tw-w-10 tw-h-10 tw-bg-gradient-to-br tw-from-blue-500 tw-to-indigo-600 tw-rounded-xl tw-flex tw-items-center tw-justify-center tw-shadow-lg"
+        >
+          <i class="fas fa-plus tw-text-white tw-text-lg"></i>
+        </div>
+        <div>
+          <h2 class="tw-text-xl tw-font-bold tw-text-gray-900">
+            Create New Task
+          </h2>
+          <p class="tw-text-sm tw-text-gray-600">
+            Add a new task to your board
+          </p>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="tw-p-2 tw-text-gray-400 hover:tw-text-gray-600 hover:tw-bg-white hover:tw-bg-opacity-50 tw-rounded-lg tw-transition-all tw-duration-200"
+        (click)="closePopup()"
+      >
+        <i class="fas fa-times tw-text-lg"></i>
+      </button>
+    </div>
+
+    <!-- Content Area -->
+    <div class="tw-flex-1 tw-overflow-y-auto tw-p-6 tw-space-y-6">
+      <!-- Task Title -->
+      <div class="tw-space-y-2">
+        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
+          Task Title *
+        </label>
+        <input
+          type="text"
+          [(ngModel)]="taskData.title"
+          (keydown)="onTitleKeydown($event)"
+          class="tw-w-full tw-px-4 tw-py-3 tw-border tw-border-gray-300 tw-rounded-lg tw-text-lg tw-font-medium focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-transition-all tw-duration-200 placeholder:tw-text-gray-400"
+          placeholder="Enter task title..."
+          autofocus
+        />
+        <!-- <p class="tw-text-xs tw-text-gray-500">Press Enter to create task quickly</p> -->
+      </div>
+
+      <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4">
+        <!-- Assign Members -->
+        <div class="tw-space-y-2">
+          <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
+            Assign Members
+          </label>
+          <add-members-dropdown
+            [boardId]="taskData.board"
+            [taskId]="''"
+            [allignment]="'left'"
+            [placement]="'bottom'"
+            [type]="'task_add'"
+            [isModernMemberSelect]="true"
+            [taskPermissions]="true"
+            (onMemberAdded)="onMembersUpdated($event)"
+          ></add-members-dropdown>
+        </div>
+
+        <!-- Column -->
+        <div class="tw-space-y-2">
+          <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
+            Column
+          </label>
+          <div class="tw-relative">
+            <select
+              [(ngModel)]="taskData.column"
+              class="tw-w-full tw-appearance-none tw-bg-white tw-border tw-border-gray-300 tw-rounded-lg tw-px-4 tw-py-3 tw-text-sm tw-font-medium tw-text-gray-700 tw-pr-10 focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-transition-all tw-duration-200"
+            >
+              <option
+                *ngFor="let option of columnOptions"
+                [value]="option._id"
+              >
+                {{ option.title }}
+              </option>
+            </select>
+            <i
+              class="fas fa-chevron-down tw-absolute tw-right-3 tw-top-1/2 tw-transform tw--translate-y-1/2 tw-text-gray-400 tw-text-sm tw-pointer-events-none"
+            ></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task Properties Row -->
+      <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4">
+        <!-- Status -->
+        <div class="tw-space-y-2">
+          <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
+            Status
+          </label>
+          <div class="tw-relative">
+            <select
+              [(ngModel)]="taskData.status"
+              class="tw-w-full tw-appearance-none tw-bg-white tw-border tw-border-gray-300 tw-rounded-lg tw-px-4 tw-py-3 tw-text-sm tw-font-medium tw-text-gray-700 tw-pr-10 focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-transition-all tw-duration-200"
+            >
+              <option
+                *ngFor="let option of statusOptions"
+                [value]="option.value"
+              >
+                {{ option.label }}
+              </option>
+            </select>
+            <i
+              class="fas fa-chevron-down tw-absolute tw-right-3 tw-top-1/2 tw-transform tw--translate-y-1/2 tw-text-gray-400 tw-text-sm tw-pointer-events-none"
+            ></i>
+          </div>
+        </div>
+
+        <!-- Due Date -->
+        <div class="tw-space-y-2">
+          <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
+            Due Date
+          </label>
+          <div class="tw-relative">
+            <button
+              type="button"
+              (click)="toggleCustomDatePicker()"
+              [ngClass]="getDueDateDisplay().color"
+              class="tw-w-full tw-px-4 tw-py-3 tw-rounded-lg tw-text-sm tw-font-medium tw-inline-flex tw-items-center tw-justify-between tw-transition-all tw-duration-200 hover:tw-shadow-sm"
+            >
+              <div class="tw-flex tw-items-center tw-space-x-2">
+                <i class="fas fa-calendar-alt tw-text-xs"></i>
+                <span>{{ getDueDateDisplay().text }}</span>
+              </div>
+              <i class="fas fa-chevron-down tw-text-xs"></i>
+            </button>
+
+            <!-- Custom Date Picker Toggle overlay -->
+            <div
+              *ngIf="showCustomDatePicker"
+              class="tw-fixed tw-inset-0 tw-z-40"
+              (click)="toggleCustomDatePicker()"
+            ></div>
+
+            <!-- Date Picker Popup -->
+            <div
+              *ngIf="showCustomDatePicker"
+              class="date-picker-popup tw-absolute tw-top-full tw-left-0 tw-mt-2 tw-bg-white tw-border tw-border-gray-200 tw-rounded-xl tw-shadow-xl tw-p-4 tw-w-80 tw-z-50 tw-animate-slide-down"
+              (click)="$event.stopPropagation()"
+            >
+              <!-- Calendar Header -->
+              <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+                <button
+                  type="button"
+                  (click)="previousMonth()"
+                  class="tw-p-2 tw-text-gray-600 hover:tw-text-gray-800 hover:tw-bg-gray-100 tw-rounded-lg tw-transition-all tw-duration-200"
+                >
+                  <i class="fas fa-chevron-left tw-text-sm"></i>
+                </button>
+
+                <h3 class="tw-text-sm tw-font-bold tw-text-gray-900">
+                  {{ currentCalendarDate | date : "MMMM yyyy" }}
+                </h3>
+
+                <button
+                  type="button"
+                  (click)="nextMonth()"
+                  class="tw-p-2 tw-text-gray-600 hover:tw-text-gray-800 hover:tw-bg-gray-100 tw-rounded-lg tw-transition-all tw-duration-200"
+                >
+                  <i class="fas fa-chevron-right tw-text-sm"></i>
+                </button>
+              </div>
+
+              <!-- Calendar Grid -->
+              <div class="tw-grid tw-grid-cols-7 tw-gap-1 tw-mb-4">
+                <!-- Day Headers -->
+                <div
+                  *ngFor="let day of dayHeaders"
+                  class="tw-text-center tw-text-xs tw-font-semibold tw-text-gray-500 tw-py-2"
+                >
+                  {{ day }}
+                </div>
+
+                <!-- Calendar Days -->
+                <button
+                  *ngFor="let day of calendarDays"
+                  type="button"
+                  (click)="selectDate(day)"
+                  [disabled]="!day.isCurrentMonth"
+                  [class]="getDateButtonClass(day)"
+                  class="tw-w-9 tw-h-9 tw-text-sm tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-transition-all tw-duration-200 tw-font-medium"
+                >
+                  {{ day.date }}
+                </button>
+              </div>
+
+              <!-- Quick Actions -->
+              <div
+                class="tw-flex tw-items-center tw-justify-between tw-pt-3 tw-border-t tw-border-gray-200"
+              >
+                <button
+                  type="button"
+                  (click)="clearDate()"
+                  class="tw-text-xs tw-text-red-600 hover:tw-text-red-700 tw-px-3 tw-py-2 tw-rounded-lg hover:tw-bg-red-50 tw-transition-all tw-duration-200 tw-font-medium"
+                >
+                  <i class="fas fa-times tw-mr-1"></i>
+                  NO DATE
+                </button>
+
+                <button
+                  type="button"
+                  (click)="setToday()"
+                  class="tw-text-xs tw-text-blue-600 hover:tw-text-blue-700 tw-px-3 tw-py-2 tw-rounded-lg hover:tw-bg-blue-50 tw-transition-all tw-duration-200 tw-font-medium"
+                >
+                  <i class="fas fa-calendar-day tw-mr-1"></i>
+                  TODAY
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visibility -->
+      <!-- <div class="tw-space-y-2">
+        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
+          Visibility
+        </label>
+        <div class="tw-flex tw-space-x-4">
+          <label class="tw-flex tw-items-center tw-space-x-2 tw-cursor-pointer">
+            <input
+              type="radio"
+              [(ngModel)]="taskData.visibility"
+              value="public"
+              class="tw-w-4 tw-h-4 tw-text-blue-600 tw-border-gray-300 focus:tw-ring-blue-500"
+            />
+            <span class="tw-text-sm tw-font-medium tw-text-gray-700">
+              <i class="fas fa-globe tw-mr-1 tw-text-green-600"></i>
+              Public
+            </span>
+          </label>
+          <label class="tw-flex tw-items-center tw-space-x-2 tw-cursor-pointer">
+            <input
+              type="radio"
+              [(ngModel)]="taskData.visibility"
+              value="private"
+              class="tw-w-4 tw-h-4 tw-text-blue-600 tw-border-gray-300 focus:tw-ring-blue-500"
+            />
+            <span class="tw-text-sm tw-font-medium tw-text-gray-700">
+              <i class="fas fa-lock tw-mr-1 tw-text-orange-600"></i>
+              Private
+            </span>
+          </label>
+        </div>
+      </div> -->
+
+      <!-- Description -->
+      <div class="tw-space-y-2">
+        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
+          Description
+        </label>
+        <div
+          class="tw-border tw-border-gray-300 tw-rounded-lg tw-overflow-hidden focus-within:tw-ring-2 focus-within:tw-ring-blue-500 focus-within:tw-border-transparent tw-transition-all tw-duration-200"
+        >
+          <ngx-editor-menu
+            [editor]="editor!"
+            [toolbar]="toolbar"
+            class="tw-border-b tw-border-gray-200"
+          ></ngx-editor-menu>
+          <ngx-editor
+            [editor]="editor!"
+            [(ngModel)]="taskData.description"
+            [placeholder]="'Add task description...'"
+            class="tw-min-h-[300px] tw-max-h-[300px] tw-overflow-y-auto"
+            style="height: 300px"
+          >
+          </ngx-editor>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div
+      class="tw-flex tw-items-center tw-justify-between tw-p-6 tw-border-t tw-border-gray-200 tw-bg-gray-50"
+    >
+      <div
+        class="tw-flex tw-items-center tw-space-x-2 tw-text-sm tw-text-gray-500"
+      >
+        <i class="fas fa-info-circle"></i>
+        <span>Fill in the task title to enable creation</span>
+      </div>
+
+      <div class="tw-flex tw-items-center tw-space-x-3">
+        <button
+          type="button"
+          (click)="closePopup()"
+          [disabled]="isCreating"
+          class="tw-px-6 tw-py-2.5 tw-bg-white tw-text-gray-700 tw-text-sm tw-font-semibold tw-rounded-lg tw-border tw-border-gray-300 hover:tw-bg-gray-50 hover:tw-border-gray-400 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed tw-transition-all tw-duration-200"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          (click)="createTask()"
+          [disabled]="!isFormValid() || isCreating"
+          class="tw-px-6 tw-py-2.5 tw-bg-gradient-to-r tw-from-blue-500 tw-to-indigo-600 tw-text-white tw-text-sm tw-font-semibold tw-rounded-lg hover:tw-from-blue-600 hover:tw-to-indigo-700 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed tw-transition-all tw-duration-200 tw-flex tw-items-center tw-space-x-2 tw-shadow-lg hover:tw-shadow-xl tw-transform hover:tw--translate-y-0.5"
+        >
+          <i *ngIf="isCreating" class="fas fa-spinner fa-spin"></i>
+          <i *ngIf="!isCreating" class="fas fa-plus"></i>
+          <span>{{ isCreating ? "Creating..." : "Create Task" }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
