@@ -154,13 +154,15 @@ class ApiEndpoints {
 // router.get('/board/joined', isTaskAuth, boardCtrl.getJoinedBoards);
 
 
+// task management dashboard 
+public TASK_DASHBOARD_STATS: string = `${this.PATH}/task/dashboard/stats`;
+
 public TEAM_MEMBER_SIGNIN: string = `${this.PATH}/task/sign-in`;
 public TEAM_MEMBER_VERIFY_TOKEN: string = `${this.PATH}/task/verify-invitation-token`;
 public TEAM_MEMBER_PROFILE: string = `${this.PATH}/task/get-current-user`;
 public REINVITE_USER: string = `${this.PATH}/task/teamMember/resend-invitation`;
 
 public GET_ALL_MEMBERS: string = `${this.PATH}/task/teamMember/getAll`;
-// ! this api endpoint adding by chandan
 public GET_ALL_SELECTABLE_TEAMMEMBERS: string = `${this.PATH}/task/teamMember/getSelectableTeamMembers`;
 
 public ADD_TEAM_MEMBER: string = `${this.PATH}/task/teamMember/add`;

@@ -1,183 +1,531 @@
 <!-- Dashboard Header -->
 <div class="tw-bg-white tw-border-b tw-border-gray-200 tw-p-6">
-    <div class="tw-flex tw-items-center tw-gap-4">
-        <div class="tw-w-10 tw-h-10 tw-bg-blue-600 tw-rounded tw-flex tw-items-center tw-justify-center">
-            <svg class="tw-w-6 tw-h-6 tw-text-white" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-        </div>
+  <div class="tw-flex tw-items-center tw-gap-4">
+    <div
+      class="tw-w-10 tw-h-10 tw-bg-blue-600 tw-rounded tw-flex tw-items-center tw-justify-center"
+    >
+      <svg
+        class="tw-w-6 tw-h-6 tw-text-white"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+    </div>
+    <div>
+      <h1 class="tw-text-2xl tw-font-semibold tw-text-gray-900">
+        Welcome to Task Dashboard
+      </h1>
+      <p class="tw-text-gray-600">Manage your projects efficiently</p>
+    </div>
+  </div>
+</div>
+
+<!-- Loading  -->
+<div
+  *ngIf="isLoading()"
+  class="tw-flex tw-justify-center tw-py-8 tw-h-[70vh] tw-items-center"
+>
+  <div
+    class="tw-animate-spin tw-rounded-full tw-h-6 tw-w-6 tw-border-b-2 tw-border-blue-500"
+  ></div>
+</div>
+
+<div *ngIf="!isLoading()">
+  <!-- Stats Cards -->
+  <div
+    class="tw-grid tw-grid-cols-1 md:tw-grid-cols-4 tw-gap-6 tw-p-6 tw-bg-gray-50"
+  >
+    <div
+      *ngIf="!taskPermissionsService.isAdminLevelPermission()"
+      class="tw-bg-white tw-p-6 tw-rounded tw-shadow tw-border tw-border-gray-200 tw-h-fit"
+    >
+      <div class="tw-flex tw-items-center tw-justify-between">
         <div>
-            <h1 class="tw-text-2xl tw-font-semibold tw-text-gray-900">Welcome to Task Dashboard</h1>
-            <p class="tw-text-gray-600">Manage your projects efficiently</p>
+          <p class="tw-text-gray-500 tw-text-sm tw-font-medium">
+            Completed Tasks
+          </p>
+          <p class="tw-text-2xl tw-font-semibold tw-text-gray-900 tw-mt-1">
+            {{ dashboardStats.todaysCompletedTeamTasks }}
+          </p>
         </div>
-    </div>
-</div>
-
-<!-- Stats Cards -->
-<div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-4 tw-gap-6 tw-p-6 tw-bg-gray-50">
-    <div class="tw-bg-white tw-p-6 tw-rounded tw-shadow tw-border tw-border-gray-200">
-        <div class="tw-flex tw-items-center tw-justify-between">
-            <div>
-                <p class="tw-text-gray-500 tw-text-sm tw-font-medium">Completed Tasks</p>
-                <p class="tw-text-2xl tw-font-semibold tw-text-gray-900 tw-mt-1">24</p>
-            </div>
-            <div class="tw-w-12 tw-h-12 tw-bg-green-50 tw-rounded tw-flex tw-items-center tw-justify-center">
-                <svg class="tw-w-6 tw-h-6 tw-text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path>
-                </svg>
-            </div>
+        <div
+          class="tw-w-12 tw-h-12 tw-bg-green-50 tw-rounded tw-flex tw-items-center tw-justify-center"
+        >
+          <svg
+            class="tw-w-6 tw-h-6 tw-text-green-600"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+            ></path>
+          </svg>
         </div>
-    </div>
-
-    <div class="tw-bg-white tw-p-6 tw-rounded tw-shadow tw-border tw-border-gray-200">
-        <div class="tw-flex tw-items-center tw-justify-between">
-            <div>
-                <p class="tw-text-gray-500 tw-text-sm tw-font-medium">Pending Tasks</p>
-                <p class="tw-text-2xl tw-font-semibold tw-text-gray-900 tw-mt-1">12</p>
-            </div>
-            <div class="tw-w-12 tw-h-12 tw-bg-orange-50 tw-rounded tw-flex tw-items-center tw-justify-center">
-                <svg class="tw-w-6 tw-h-6 tw-text-orange-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"></path>
-                </svg>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <div class="tw-bg-white tw-p-6 tw-rounded tw-shadow tw-border tw-border-gray-200">
-        <div class="tw-flex tw-items-center tw-justify-between">
-            <div>
-                <p class="tw-text-gray-500 tw-text-sm tw-font-medium">Total Projects</p>
-                <p class="tw-text-2xl tw-font-semibold tw-text-gray-900 tw-mt-1">8</p>
-            </div>
-            <div class="tw-w-12 tw-h-12 tw-bg-blue-50 tw-rounded tw-flex tw-items-center tw-justify-center">
-                <svg class="tw-w-6 tw-h-6 tw-text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
-                </svg>
-            </div>
+    <div
+      *ngIf="!taskPermissionsService.isAdminLevelPermission()"
+      class="tw-bg-white tw-p-6 tw-rounded tw-shadow tw-border tw-border-gray-200 tw-h-fit"
+    >
+      <div class="tw-flex tw-items-center tw-justify-between">
+        <div>
+          <p class="tw-text-gray-500 tw-text-sm tw-font-medium">
+            Pending Tasks
+          </p>
+          <p class="tw-text-2xl tw-font-semibold tw-text-gray-900 tw-mt-1">
+            {{ dashboardStats.todaysPendingTeamTasks }}
+          </p>
         </div>
+        <div
+          class="tw-w-12 tw-h-12 tw-bg-orange-50 tw-rounded tw-flex tw-items-center tw-justify-center"
+        >
+          <svg
+            class="tw-w-6 tw-h-6 tw-text-orange-600"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+            ></path>
+          </svg>
+        </div>
+      </div>
     </div>
 
-    <div class="tw-bg-white tw-p-6 tw-rounded tw-shadow tw-border tw-border-gray-200">
-        <div class="tw-flex tw-items-center tw-justify-between">
-            <div>
-                <p class="tw-text-gray-500 tw-text-sm tw-font-medium">Team Members</p>
-                <p class="tw-text-2xl tw-font-semibold tw-text-gray-900 tw-mt-1">16</p>
+    <div
+      *ngIf="taskPermissionsService.isAdminLevelPermission()"
+      class="tw-bg-white tw-p-6 tw-rounded-lg tw-shadow-sm tw-border tw-border-gray-200 tw-transition-all tw-duration-200 hover:tw-shadow-md tw-h-fit"
+    >
+      <div class="tw-flex tw-items-start tw-justify-between">
+        <div class="tw-flex-1">
+          <div class="tw-flex tw-items-center tw-gap-2 tw-mb-3">
+            <div
+              class="tw-w-8 tw-h-8 tw-bg-green-50 tw-rounded-lg tw-flex tw-items-center tw-justify-center"
+            >
+              <svg
+                class="tw-w-4 tw-h-4 tw-text-green-600"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                ></path>
+              </svg>
             </div>
-            <div class="tw-w-12 tw-h-12 tw-bg-purple-50 tw-rounded tw-flex tw-items-center tw-justify-center">
-                <svg class="tw-w-6 tw-h-6 tw-text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"></path>
-                </svg>
+            <p class="tw-text-gray-700 tw-text-sm tw-font-medium">
+              Completed Tasks
+            </p>
+          </div>
+
+          <div class="tw-grid tw-grid-cols-2 tw-gap-4">
+            <div class="tw-text-center tw-bg-gray-50 tw-rounded-lg tw-p-3">
+              <div class="tw-text-xs tw-text-gray-500 tw-font-medium tw-mb-1">
+                Personal
+              </div>
+              <div class="tw-text-2xl tw-font-bold tw-text-gray-900">
+                {{ dashboardStats.todaysCompletedPersoalTasks }}
+              </div>
             </div>
+            <div class="tw-text-center tw-bg-green-50 tw-rounded-lg tw-p-3">
+              <div class="tw-text-xs tw-text-gray-500 tw-font-medium tw-mb-1">
+                Team
+              </div>
+              <div class="tw-text-2xl tw-font-bold tw-text-green-600">
+                {{ dashboardStats.todaysCompletedTeamTasks }}
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- <div class="tw-flex tw-items-center tw-justify-between tw-pt-3 tw-border-t tw-border-gray-100">
+    <div class="tw-flex tw-items-center tw-gap-2">
+      <div class="tw-w-2 tw-h-2 tw-bg-green-500 tw-rounded-full"></div>
+      <span class="tw-text-xs tw-text-gray-500">Today's Progress</span>
     </div>
-</div>
-
-<!-- Main Content Area -->
-<div class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-3 tw-gap-6 tw-p-6 tw-bg-gray-50">
-    <!-- Recent Tasks -->
-    <div class="tw-bg-white tw-rounded tw-shadow tw-border tw-border-gray-200 lg:tw-col-span-2 tw-h-fit">
-        <div class="tw-flex tw-items-center tw-justify-between tw-p-6 tw-border-b tw-border-gray-200">
-            <h2 class="tw-text-lg tw-font-semibold tw-text-gray-900">Recent Tasks</h2>
-            <button class="tw-bg-blue-600 tw-text-white tw-px-4 tw-py-2 tw-rounded tw-text-sm tw-font-medium tw-hover:tw-bg-blue-700">
-                View All
-            </button>
-        </div>
-        
-        <div class="tw-divide-y tw-divide-gray-200">
-            <div class="tw-flex tw-items-center tw-gap-4 tw-p-6">
-                <div class="tw-w-8 tw-h-8 tw-bg-green-600 tw-rounded tw-flex tw-items-center tw-justify-center">
-                    <svg class="tw-w-4 tw-h-4 tw-text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path>
-                    </svg>
-                </div>
-                <div class="tw-flex-1">
-                    <div class="tw-font-medium tw-text-gray-900">Complete Dashboard Design</div>
-                    <p class="tw-text-gray-500 tw-text-sm tw-mt-1">Project Alpha • Due: Today</p>
-                </div>
-                <span class="tw-bg-green-100 tw-text-green-800 tw-px-2 tw-py-1 tw-rounded tw-text-xs tw-font-medium">Completed</span>
-            </div>
-
-            <div class="tw-flex tw-items-center tw-gap-4 tw-p-6">
-                <div class="tw-w-8 tw-h-8 tw-bg-orange-600 tw-rounded tw-flex tw-items-center tw-justify-center">
-                    <svg class="tw-w-4 tw-h-4 tw-text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"></path>
-                    </svg>
-                </div>
-                <div class="tw-flex-1">
-                    <div class="tw-font-medium tw-text-gray-900">API Integration Testing</div>
-                    <p class="tw-text-gray-500 tw-text-sm tw-mt-1">Project Beta • Due: Tomorrow</p>
-                </div>
-                <span class="tw-bg-orange-100 tw-text-orange-800 tw-px-2 tw-py-1 tw-rounded tw-text-xs tw-font-medium">In Progress</span>
-            </div>
-
-            <div class="tw-flex tw-items-center tw-gap-4 tw-p-6">
-                <div class="tw-w-8 tw-h-8 tw-bg-blue-600 tw-rounded tw-flex tw-items-center tw-justify-center">
-                    <svg class="tw-w-4 tw-h-4 tw-text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a2 2 0 002 2h8a2 2 0 002-2V3a2 2 0 012 2v6h-3a2 2 0 00-2 2v3H6a2 2 0 01-2-2V5zm8 8a2 2 0 012-2h3l-3 3v-1z"></path>
-                    </svg>
-                </div>
-                <div class="tw-flex-1">
-                    <div class="tw-font-medium tw-text-gray-900">Documentation Update</div>
-                    <p class="tw-text-gray-500 tw-text-sm tw-mt-1">Project Gamma • Due: Next Week</p>
-                </div>
-                <span class="tw-bg-blue-100 tw-text-blue-800 tw-px-2 tw-py-1 tw-rounded tw-text-xs tw-font-medium">Pending</span>
-            </div>
-
-            <div class="tw-flex tw-items-center tw-gap-4 tw-p-6">
-                <div class="tw-w-8 tw-h-8 tw-bg-purple-600 tw-rounded tw-flex tw-items-center tw-justify-center">
-                    <svg class="tw-w-4 tw-h-4 tw-text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"></path>
-                    </svg>
-                </div>
-                <div class="tw-flex-1">
-                    <div class="tw-font-medium tw-text-gray-900">UI Components Review</div>
-                    <p class="tw-text-gray-500 tw-text-sm tw-mt-1">Project Delta • Due: Friday</p>
-                </div>
-                <span class="tw-bg-gray-100 tw-text-gray-800 tw-px-2 tw-py-1 tw-rounded tw-text-xs tw-font-medium">Pending</span>
-            </div>
-        </div>
+    <div class="tw-text-xs tw-text-gray-400">
+      {{ (dashboardStats.todaysCompletedPersoalTasks + dashboardStats.todaysCompletedTeamTasks) }} total
     </div>
+  </div> -->
+    </div>
+
+    <div
+      *ngIf="taskPermissionsService.isAdminLevelPermission()"
+      class="tw-bg-white tw-p-6 tw-rounded-lg tw-shadow-sm tw-border tw-border-gray-200 tw-transition-all tw-duration-200 hover:tw-shadow-md tw-h-fit"
+    >
+      <div class="tw-flex tw-items-start tw-justify-between">
+        <div class="tw-flex-1">
+          <div class="tw-flex tw-items-center tw-gap-2 tw-mb-3">
+            <div
+              class="tw-w-8 tw-h-8 tw-bg-orange-50 tw-rounded-lg tw-flex tw-items-center tw-justify-center"
+            >
+              <svg
+                class="tw-w-4 tw-h-4 tw-text-orange-600"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                ></path>
+              </svg>
+            </div>
+            <p class="tw-text-gray-700 tw-text-sm tw-font-medium">
+              Pending Tasks
+            </p>
+          </div>
+
+          <div class="tw-grid tw-grid-cols-2 tw-gap-4">
+            <div class="tw-text-center tw-bg-gray-50 tw-rounded-lg tw-p-3">
+              <div class="tw-text-xs tw-text-gray-500 tw-font-medium tw-mb-1">
+                Personal
+              </div>
+              <div class="tw-text-2xl tw-font-bold tw-text-gray-900">
+                {{ dashboardStats.todaysPendingPersoalTasks }}
+              </div>
+            </div>
+            <div class="tw-text-center tw-bg-orange-50 tw-rounded-lg tw-p-3">
+              <div class="tw-text-xs tw-text-gray-500 tw-font-medium tw-mb-1">
+                Team
+              </div>
+              <div class="tw-text-2xl tw-font-bold tw-text-orange-600">
+                {{ dashboardStats.todaysPendingTeamTasks }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <div class="tw-flex tw-items-center tw-justify-between tw-pt-3 tw-border-t tw-border-gray-100">
+    <div class="tw-flex tw-items-center tw-gap-2">
+      <div class="tw-w-2 tw-h-2 tw-bg-orange-500 tw-rounded-full"></div>
+      <span class="tw-text-xs tw-text-gray-500">Awaiting Action</span>
+    </div>
+    <div class="tw-text-xs tw-text-gray-400">
+      {{ (dashboardStats.todaysPendingPersoalTasks + dashboardStats.todaysPendingTeamTasks) }} total
+    </div>
+  </div> -->
+    </div>
+
+    <div
+      class="tw-bg-white tw-p-6 tw-rounded tw-shadow tw-border tw-border-gray-200 tw-h-fit"
+    >
+      <div class="tw-flex tw-items-center tw-justify-between">
+        <div>
+          <p class="tw-text-gray-500 tw-text-sm tw-font-medium">Total Boards</p>
+          <p class="tw-text-2xl tw-font-semibold tw-text-gray-900 tw-mt-1">
+            {{ dashboardStats.totalBoards }}
+          </p>
+        </div>
+        <div
+          class="tw-w-12 tw-h-12 tw-bg-blue-50 tw-rounded tw-flex tw-items-center tw-justify-center"
+        >
+          <svg
+            class="tw-w-6 tw-h-6 tw-text-blue-600"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"
+            ></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div
+    *ngIf="taskPermissionsService.isAdminLevelPermission()"
+      class="tw-bg-white tw-p-6 tw-rounded tw-shadow tw-border tw-border-gray-200 tw-h-fit"
+    >
+      <div class="tw-flex tw-items-center tw-justify-between">
+        <div>
+          <p class="tw-text-gray-500 tw-text-sm tw-font-medium">Team Members</p>
+          <p class="tw-text-2xl tw-font-semibold tw-text-gray-900 tw-mt-1">
+            {{ dashboardStats.totalTeamMembers }}
+          </p>
+        </div>
+        <div
+          class="tw-w-12 tw-h-12 tw-bg-purple-50 tw-rounded tw-flex tw-items-center tw-justify-center"
+        >
+          <svg
+            class="tw-w-6 tw-h-6 tw-text-purple-600"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"
+            ></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div
+    class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 2xl:tw-grid-cols-3 tw-gap-6 tw-p-2 sm:tw-p-6 tw-bg-gray-50"
+  >
+    <!-- Recent personal Tasks -->
+    <div
+      class="tw-bg-white tw-rounded tw-shadow tw-border tw-border-gray-200 tw-h-fit"
+      *ngIf="taskPermissionsService.isAdminLevelPermission()"
+    >
+      <div
+        class="tw-flex tw-items-center tw-justify-between tw-p-6 tw-border-b tw-border-gray-200"
+      >
+        <h2 class="tw-text-lg tw-font-semibold tw-text-gray-900">
+          Recent Personal Tasks
+        </h2>
+        <button
+          class="tw-bg-blue-600 tw-text-white tw-px-4 tw-py-2 tw-rounded tw-text-sm tw-font-medium tw-hover:tw-bg-blue-700"
+          (click)="router.navigate(['task-management/personal-task/my-day'])"
+        >
+          View All
+        </button>
+      </div>
+
+      <div class="tw-divide-y tw-divide-gray-200 tw-min-h-[375px]">
+        <div
+          class="tw-flex tw-items-center tw-gap-4 tw-p-6"
+          *ngFor="let task of dashboardStats.recentPersonalTasks"
+        >
+          <div
+            class="tw-p-2 tw-bg-red-600 tw-rounded tw-flex tw-items-center tw-justify-center"
+          >
+            <i class="fa-solid fa-calendar-days tw-text-white"></i>
+          </div>
+          <div class="tw-flex-1">
+            <div
+              class="tw-font-medium tw-text-gray-900 tw-line-clamp-1 tw-overflow-hidden tw-text-ellipsis"
+              title="{{ task.title }}"
+            >
+              {{ task.title }}
+            </div>
+            <p
+              class="tw-text-gray-500 tw-text-sm tw-mt-1 tw-line-clamp-1 tw-overflow-hidden tw-text-ellipsis"
+            >
+              <!-- {{ task?.board?.name || "N/A" }} -->
+              • Due: {{ getTime(task.dueOn) }}
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="tw-p-6 tw-flex tw-items-center tw-justify-center tw-text-sm tw-text-gray-500"
+          *ngIf="!dashboardStats.recentPersonalTasks.length"
+        >
+          No recent tasks
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Team Tasks -->
+    <div
+      class="tw-bg-white tw-rounded tw-shadow tw-border tw-border-gray-200 2xl:tw-col-span-2 tw-h-fit"
+    >
+      <div
+        class="tw-flex tw-items-center tw-justify-between tw-p-6 tw-border-b tw-border-gray-200"
+      >
+        <h2 class="tw-text-lg tw-font-semibold tw-text-gray-900">
+          Recent Team Tasks
+        </h2>
+        <button
+          class="tw-bg-blue-600 tw-text-white tw-px-4 tw-py-2 tw-rounded tw-text-sm tw-font-medium tw-hover:tw-bg-blue-700"
+          (click)="showAllTasks()"
+        >
+          View All
+        </button>
+      </div>
+
+      <div class="tw-divide-y tw-divide-gray-200 tw-min-h-[375px]">
+        <!-- <div class="tw-flex tw-items-center tw-gap-4 tw-p-6">
+          <div
+            class="tw-w-8 tw-h-8 tw-bg-green-600 tw-rounded tw-flex tw-items-center tw-justify-center"
+          >
+            <svg
+              class="tw-w-4 tw-h-4 tw-text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+              ></path>
+            </svg>
+          </div>
+          <div class="tw-flex-1">
+            <div class="tw-font-medium tw-text-gray-900">
+              Complete Dashboard Design
+            </div>
+            <p class="tw-text-gray-500 tw-text-sm tw-mt-1">
+              Project Alpha • Due: Today
+            </p>
+          </div>
+          <span
+            class="tw-bg-green-100 tw-text-green-800 tw-px-2 tw-py-1 tw-rounded tw-text-xs tw-font-medium"
+            >Completed</span
+          >
+        </div> -->
+
+        <div
+          class="tw-flex tw-items-center tw-gap-4 tw-p-6"
+          *ngFor="let task of dashboardStats.recentTeamTasks"
+        >
+          <div
+            class="tw-p-2 tw-bg-orange-600 tw-rounded tw-flex tw-items-center tw-justify-center"
+          >
+            <svg
+              class="tw-w-4 tw-h-4 tw-text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+              ></path>
+            </svg>
+          </div>
+          <div class="tw-flex-1">
+            <div
+              class="tw-font-medium tw-text-gray-900 tw-line-clamp-1 tw-overflow-hidden tw-text-ellipsis"
+              title="{{ task.title }}"
+            >
+              {{ task.title }}
+            </div>
+            <p
+              class="tw-text-gray-500 tw-text-sm tw-mt-1 tw-line-clamp-1 tw-overflow-hidden tw-text-ellipsis"
+              title="{{ task?.board?.name || 'N/A' }}"
+            >
+              {{ task?.board?.name || "N/A" }}
+              <!-- • Due: Tomorrow -->
+            </p>
+          </div>
+          <span
+            class="tw-px-2 tw-py-1 tw-rounded tw-text-xs tw-font-medium"
+            [class]="getStatusColorClass(task.status)"
+            >{{ task.status }}</span
+          >
+        </div>
+
+        <div
+          class="tw-p-6 tw-flex tw-items-center tw-justify-center tw-text-sm tw-text-gray-500"
+          *ngIf="!dashboardStats.recentTeamTasks.length"
+        >
+          No recent tasks
+        </div>
+
+        <!-- <div class="tw-flex tw-items-center tw-gap-4 tw-p-6">
+          <div
+            class="tw-w-8 tw-h-8 tw-bg-blue-600 tw-rounded tw-flex tw-items-center tw-justify-center"
+          >
+            <svg
+              class="tw-w-4 tw-h-4 tw-text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+              <path
+                fill-rule="evenodd"
+                d="M4 5a2 2 0 012-2v1a2 2 0 002 2h8a2 2 0 002-2V3a2 2 0 012 2v6h-3a2 2 0 00-2 2v3H6a2 2 0 01-2-2V5zm8 8a2 2 0 012-2h3l-3 3v-1z"
+              ></path>
+            </svg>
+          </div>
+          <div class="tw-flex-1">
+            <div class="tw-font-medium tw-text-gray-900">
+              Documentation Update
+            </div>
+            <p class="tw-text-gray-500 tw-text-sm tw-mt-1">
+              Project Gamma • Due: Next Week
+            </p>
+          </div>
+          <span
+            class="tw-bg-blue-100 tw-text-blue-800 tw-px-2 tw-py-1 tw-rounded tw-text-xs tw-font-medium"
+            >Pending</span
+          >
+        </div>
+
+        <div class="tw-flex tw-items-center tw-gap-4 tw-p-6">
+          <div
+            class="tw-w-8 tw-h-8 tw-bg-purple-600 tw-rounded tw-flex tw-items-center tw-justify-center"
+          >
+            <svg
+              class="tw-w-4 tw-h-4 tw-text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"
+              ></path>
+            </svg>
+          </div>
+          <div class="tw-flex-1">
+            <div class="tw-font-medium tw-text-gray-900">
+              UI Components Review
+            </div>
+            <p class="tw-text-gray-500 tw-text-sm tw-mt-1">
+              Project Delta • Due: Friday
+            </p>
+          </div>
+          <span
+            class="tw-bg-gray-100 tw-text-gray-800 tw-px-2 tw-py-1 tw-rounded tw-text-xs tw-font-medium"
+            >Pending</span
+          >
+        </div> -->
+      </div>
+    </div>
+    
 
     <!-- Sidebar -->
     <div class="tw-space-y-6">
-        <!-- Quick Actions -->
-        <div class="tw-bg-white tw-rounded tw-shadow tw-border tw-border-gray-200">
-            <div class="tw-p-6 tw-border-b tw-border-gray-200">
-                <h2 class="tw-text-lg tw-font-semibold tw-text-gray-900">Quick Actions</h2>
-            </div>
-            <div class="tw-p-6 tw-space-y-3">
-                <button class="tw-w-full tw-bg-blue-600 tw-text-white tw-py-2 tw-px-4 tw-rounded tw-text-sm tw-font-medium tw-hover:tw-bg-blue-700">
-                    <div class="tw-flex tw-items-center tw-justify-center tw-gap-2">
-                        <svg class="tw-w-4 tw-h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"></path>
-                        </svg>
-                        Add New Task
-                    </div>
-                </button>
-                
-                <button class="tw-w-full tw-bg-gray-100 tw-text-gray-700 tw-py-2 tw-px-4 tw-rounded tw-text-sm tw-font-medium tw-hover:tw-bg-gray-200">
-                    <div class="tw-flex tw-items-center tw-justify-center tw-gap-2">
-                        <svg class="tw-w-4 tw-h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
-                        </svg>
-                        Create Project
-                    </div>
-                </button>
-                
-                <button class="tw-w-full tw-bg-gray-100 tw-text-gray-700 tw-py-2 tw-px-4 tw-rounded tw-text-sm tw-font-medium tw-hover:tw-bg-gray-200">
-                    <div class="tw-flex tw-items-center tw-justify-center tw-gap-2">
-                        <svg class="tw-w-4 tw-h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"></path>
-                        </svg>
-                        Invite Team
-                    </div>
-                </button>
-            </div>
+      <!-- Quick Actions -->
+      <div
+        class="tw-bg-white tw-rounded tw-shadow tw-border tw-border-gray-200"
+      >
+        <div class="tw-p-6 tw-border-b tw-border-gray-200">
+          <h2 class="tw-text-lg tw-font-semibold tw-text-gray-900">
+            Quick Actions
+          </h2>
         </div>
+        <div class="tw-p-6 tw-space-y-3">
+          <button
+          *ngIf="!taskPermissionsService.isAdminLevelPermission()"
+            class="tw-w-full tw-bg-blue-600 tw-text-white tw-py-2 tw-px-4 tw-rounded tw-text-sm tw-font-medium tw-hover:tw-bg-blue-700"
+          >
+            <div class="tw-flex tw-items-center tw-justify-center tw-gap-2">
+              <i class="fa-solid fa-rocket"></i>
+              Start With AI
+            </div>
+          </button>
 
-        <!-- Progress Overview -->
-        <!-- <div class="tw-bg-white tw-rounded tw-shadow tw-border tw-border-gray-200">
+          <button
+            class="tw-w-full tw-bg-gray-100 tw-text-gray-700 tw-py-2 tw-px-4 tw-rounded tw-text-sm tw-font-medium tw-hover:tw-bg-gray-200"
+            (click)="router.navigate(['task-management/boards'])"
+          >
+            <div class="tw-flex tw-items-center tw-justify-center tw-gap-2">
+              <i class="fa-solid fa-chart-pie"></i>
+              All boards
+            </div>
+          </button>
+
+          <button
+            class="tw-w-full tw-bg-gray-100 tw-text-gray-700 tw-py-2 tw-px-4 tw-rounded tw-text-sm tw-font-medium tw-hover:tw-bg-gray-200"
+            (click)="router.navigate(['task-management/allmembers'])"
+          >
+            <div class="tw-flex tw-items-center tw-justify-center tw-gap-2">
+              <i class="fa-solid fa-user-group"></i>
+              All members
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- Progress Overview -->
+      <!-- <div class="tw-bg-white tw-rounded tw-shadow tw-border tw-border-gray-200">
             <div class="tw-p-6 tw-border-b tw-border-gray-200">
                 <h2 class="tw-text-lg tw-font-semibold tw-text-gray-900">Progress Overview</h2>
             </div>
@@ -214,8 +562,8 @@
             </div>
         </div> -->
 
-        <!-- Recent Activity -->
-        <!-- <div class="tw-bg-white tw-rounded tw-shadow tw-border tw-border-gray-200">
+      <!-- Recent Activity -->
+      <!-- <div class="tw-bg-white tw-rounded tw-shadow tw-border tw-border-gray-200">
             <div class="tw-p-6 tw-border-b tw-border-gray-200">
                 <h2 class="tw-text-lg tw-font-semibold tw-text-gray-900">Recent Activity</h2>
             </div>
@@ -249,7 +597,8 @@
             </div>
         </div> -->
     </div>
+  </div>
 </div>
 
 <!-- Compenent for profile data fillup  -->
- <app-customdata></app-customdata>
+<app-customdata></app-customdata>
