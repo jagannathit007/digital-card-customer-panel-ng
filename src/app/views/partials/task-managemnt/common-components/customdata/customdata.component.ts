@@ -1,14 +1,16 @@
+// customdata.component.ts
 import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
+  OnDestroy,
   ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AppStorage } from 'src/app/core/utilities/app-storage';
-import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
-import { ModalService } from 'src/app/core/utilities/modal';
+import { ProfileCheckService } from 'src/app/services/profile-check.service';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-customdata',
@@ -18,43 +20,33 @@ import { Router } from '@angular/router';
   styleUrl: './customdata.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CustomdataComponent implements OnInit {
+export class CustomdataComponent implements OnInit, OnDestroy {
   showModal: boolean = false;
+  private destroy$ = new Subject<void>();
 
   constructor(
-    private storage: AppStorage,
-    private modal: ModalService,
     private router: Router,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private profileCheckService: ProfileCheckService
   ) {}
 
   ngOnInit() {
-    this.checkProfileData();
+    // Service se modal status listen karo
+    this.profileCheckService.showModal$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(shouldShow => {
+        this.showModal = shouldShow;
+        this.cdr.detectChanges();
+      });
   }
 
-  checkProfileData() {
-    const teamMemberData = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA);
-    if (teamMemberData) {
-      const parsedData = typeof teamMemberData === 'string' ? JSON.parse(teamMemberData) : teamMemberData;
-      const { skills, mobile, experience } = parsedData;
-
-      // Check if skills, mobile, or experience is missing or empty
-      const isProfileIncomplete = !skills?.length || !mobile || !experience;
-
-      if (isProfileIncomplete) {
-        this.showModal = true;
-        this.cdr.detectChanges();
-      }
-    } else {
-      // If no data exists, show the modal
-      this.showModal = true;
-      this.cdr.detectChanges();
-    }
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   goToProfile() {
-    this.showModal = false;
+    this.profileCheckService.hideModal();
     this.router.navigate(['/task-management/profile']);
-    this.cdr.detectChanges();
   }
 }
