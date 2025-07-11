@@ -16,6 +16,8 @@ export class ProfileCheckService {
     private storage: AppStorage
   ) {
     this.startListening();
+    // Initial check when service is created (for page refresh)
+    this.checkCurrentRoute();
   }
 
   startListening() {
@@ -24,9 +26,20 @@ export class ProfileCheckService {
         const url = event.urlAfterRedirects;
         if (url.includes('/task-management/') && !url.includes('/task-management/profile')) {
           this.checkProfileData();
+        } else {
+          // Hide modal if not on task-management routes
+          this.showModalSubject.next(false);
         }
       }
     });
+  }
+
+  // Check current route on service initialization (for page refresh)
+  checkCurrentRoute() {
+    const currentUrl = this.router.url;
+    if (currentUrl.includes('/task-management/') && !currentUrl.includes('/task-management/profile')) {
+      this.checkProfileData();
+    }
   }
 
   checkProfileData() {
@@ -45,5 +58,10 @@ export class ProfileCheckService {
 
   hideModal() {
     this.showModalSubject.next(false);
+  }
+
+  // Manual method to force check (can be called from component)
+  forceCheck() {
+    this.checkCurrentRoute();
   }
 }
