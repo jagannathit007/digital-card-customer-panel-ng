@@ -57,14 +57,14 @@
   </button>
 
   <div
-    *ngIf="isModernMemberSelect && isLoading()"
+    *ngIf="isModernMemberSelect && isLoading() && teamMembers.length === 0"
     class="tw-w-full tw-h-[39px] tw-bg-gradient-to-r tw-from-gray-200 tw-to-gray-300 tw-rounded-lg tw-animate-pulse tw-min-w-[180px] tw-max-w-[180px]"
   ></div>
 
   <!-- Dropdown Trigger for tasks -->
   <div
     class="tw-flex tw-items-center tw-space-x-3"
-    *ngIf="isModernMemberSelect && !isLoading()"
+    *ngIf="isModernMemberSelect && (!isLoading() || teamMembers.length > 0)"
   >
     <ng-container *ngIf="addedMembers.length === 0; else hasAssignedTemplate">
       <button

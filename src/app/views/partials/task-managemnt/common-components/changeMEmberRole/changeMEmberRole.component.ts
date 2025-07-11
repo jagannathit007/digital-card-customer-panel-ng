@@ -78,7 +78,7 @@ export class ChangeMemberRoleComponent implements OnInit {
   isLoading: boolean = false;
   error: string = '';
   canChangeRole: boolean = false;
-  baseURL = environment.baseURL;
+  baseURL = environment.imageURL;
 
   ngOnInit() {
     this.initializeComponent();

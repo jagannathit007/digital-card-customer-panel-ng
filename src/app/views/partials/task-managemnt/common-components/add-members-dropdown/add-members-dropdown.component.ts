@@ -125,7 +125,7 @@ private tooltipTimeout: any;
 
     const response = await this.TaskService.GetSelectableTeamMembers({
       page: page,
-      limit: 10,
+      limit: 5,
       search: this.searchQuery.trim(),
       boardId: this.boardId,
       taskId: this.taskId,
