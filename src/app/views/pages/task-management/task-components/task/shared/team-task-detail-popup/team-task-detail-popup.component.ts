@@ -513,6 +513,10 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       this.task.completedAt = status === 'completed' ? `${new Date()}` : null;
       this.task.deletedAt = status === 'deleted' ? `${new Date()}` : null;
 
+      if (status === 'completed' || status === 'deleted') {
+        this.taskPermissions = false;
+      }
+
       this.emitTaskUpdate('status', status);
     } else {
       this.undoChanges('status');
