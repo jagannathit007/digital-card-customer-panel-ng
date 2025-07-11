@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PersonalTaskService } from 'src/app/services/personal-task.service';
 import { CalendarSyncService } from 'src/app/services/calendar-sync.service';
+import { TaskPermissionsService } from 'src/app/services/task-permissions.service';
 
 
 @Component({
@@ -27,6 +28,7 @@ export class MycalendarComponent implements OnInit, OnDestroy {
     private router: Router,
     private personalTaskService: PersonalTaskService,
     private CalendarSyncService: CalendarSyncService,
+    public taskPermissionsService: TaskPermissionsService,
     private sanitizer: DomSanitizer
   ) { }
 
