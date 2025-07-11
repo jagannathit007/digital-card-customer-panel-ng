@@ -111,7 +111,7 @@ export class TaskMemberAuthService {
         this.headers
       );
       if (response.status == 200 && response.data != 0) {
-        swalHelper.success(response.message);
+        swalHelper.showToast(response.message, 'success');
         return true;
       } else {
         swalHelper.showToast(response.message, 'warning');
