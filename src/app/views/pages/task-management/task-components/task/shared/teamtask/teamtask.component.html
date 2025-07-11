@@ -548,6 +548,7 @@
 
 <!-- NEW: Add Task Button (Floating) -->
 <button
+  *ngIf="boardId()"
   (click)="openAddTeamTaskModal()"
   class="tw-fixed tw-bottom-24 tw-right-7 tw-bg-blue-500 hover:tw-bg-blue-600 tw-text-white tw-rounded-full tw-p-4 tw-shadow-lg hover:tw-shadow-xl tw-transition-all tw-duration-200 tw-z-30"
 >
@@ -568,7 +569,7 @@
 
 <!-- Task Creation Popup -->
 <app-common-team-task-create-popup
-  [boardId]="boardId()"
+  *ngIf="showCreatePopup()"
   [isVisible]="showCreatePopup()"
   (taskCreated)="onTaskCreated($event)"
   (popupClosed)="onPopupClosed()"

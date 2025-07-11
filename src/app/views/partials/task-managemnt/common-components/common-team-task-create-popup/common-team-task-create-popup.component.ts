@@ -58,8 +58,6 @@ interface Column {
   encapsulation: ViewEncapsulation.None,
 })
 export class CommonTeamTaskCreatePopupComponent implements OnInit, OnDestroy {
-  @Input() boardId: string =
-    this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '';
   @Input() isVisible: boolean = false;
   @Input() createBoardData: any = null;
 
@@ -85,7 +83,8 @@ export class CommonTeamTaskCreatePopupComponent implements OnInit, OnDestroy {
   currentCalendarDate = new Date();
   dayHeaders = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   calendarDays: any[] = [];
-  isLoading = true;
+  isFetching = true;
+  boardsList: any[] = [];
   columnOptions: Column[] = [];
 
   // Description editor
@@ -140,9 +139,8 @@ export class CommonTeamTaskCreatePopupComponent implements OnInit, OnDestroy {
   constructor(private taskService: TaskService, private storage: AppStorage) {}
 
   ngOnInit(): void {
-    this.loadColumnOptions();
+    this.getBoardsNames();
     this.initializeEditor();
-    this.taskData.board = this.boardId;
     this.applyDefaultValues();
   }
 
@@ -152,11 +150,37 @@ export class CommonTeamTaskCreatePopupComponent implements OnInit, OnDestroy {
     }
   }
 
+  async getBoardsNames() {
+    try {
+      let result;
+      if (
+        this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA)?.role === 'admin' ||
+        this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA)?.role === 'editor'
+      ) {
+        result = await this.taskService.GetBoardByAdmin({});
+      } else {
+        result = await this.taskService.GetJoinedBoards({});
+      }
+
+      if (result && result.length > 0) {
+        this.taskData.board =
+          this.storage.get(teamMemberCommon.BOARD_DATA)?._id || result[0]._id;
+
+        console.log('Fetched board names:', result);
+        this.boardsList = result;
+        this.loadColumnOptions();
+      }
+      return result;
+    } catch (error) {
+      console.error('Error fetching board names:', error);
+      this.boardsList = []; // Set empty array on error
+    }
+  }
+
   async loadColumnOptions() {
     const response = await this.taskService.getColumns({
       type: 'board',
-      boardId:
-        this.boardId || this.storage.get(teamMemberCommon.BOARD_DATA)?._id,
+      boardId: this.taskData.board,
     });
 
     if (response) {
@@ -171,8 +195,14 @@ export class CommonTeamTaskCreatePopupComponent implements OnInit, OnDestroy {
       this.columnOptions = sortedColumns;
 
       console.log('Column options loaded:', this.columnOptions);
-      this.isLoading = false;
+      this.isFetching = false;
     }
+  }
+
+  onBoardChange() {
+    this.isFetching = true;
+    // this.taskData.board = boardId;
+    this.loadColumnOptions();
   }
 
   ngOnDestroy(): void {
@@ -188,6 +218,7 @@ export class CommonTeamTaskCreatePopupComponent implements OnInit, OnDestroy {
       this.taskData.title = this.createBoardData?.title || '';
       this.taskData.description = this.createBoardData?.description || '';
       this.taskData.dueDate = this.createBoardData?.dueDate || null;
+      this.taskData.status = this.createBoardData?.status || 'normal';
     }
   }
 
@@ -249,7 +280,7 @@ export class CommonTeamTaskCreatePopupComponent implements OnInit, OnDestroy {
       column: this.columnOptions[0]?._id || '',
       dueDate: null,
       assignedTo: [],
-      board: this.boardId,
+      board: this.taskData.board,
       category: null,
       visibility: 'public',
     };

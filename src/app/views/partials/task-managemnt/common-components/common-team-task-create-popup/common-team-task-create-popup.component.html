@@ -38,8 +38,24 @@
       </button>
     </div>
 
+    <!-- Board not found please seclect board -->
+    <div
+      *ngIf="boardsList.length === 0 && !isFetching"
+      class="tw-flex-1 tw-flex tw-items-center tw-justify-center tw-p-6"
+    >
+      <div class="tw-flex tw-flex-col tw-items-center tw-space-y-3">
+        <i class="fas fa-exclamation-triangle tw-text-4xl tw-text-gray-400"></i>
+        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900">
+          Board Not Found
+        </h3>
+        <p class="tw-text-sm tw-text-gray-600">
+          Their is not any board associated with your account
+        </p>
+      </div>
+    </div>
+
     <!-- Content Area -->
-    <div class="tw-flex-1 tw-overflow-y-auto tw-p-6 tw-space-y-6">
+    <div *ngIf="boardsList.length > 0" class="tw-flex-1 tw-overflow-y-auto tw-p-6 tw-space-y-6">
       <!-- Task Title -->
       <div class="tw-space-y-2">
         <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
@@ -62,7 +78,12 @@
           <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
             Assign Members
           </label>
+          <div
+            *ngIf="isFetching"
+            class="tw-w-full tw-h-[39px] tw-bg-gradient-to-r tw-from-gray-200 tw-to-gray-300 tw-rounded-lg tw-animate-pulse tw-min-w-[180px] tw-max-w-[180px]"
+          ></div>
           <add-members-dropdown
+            *ngIf="!isFetching"
             [boardId]="taskData.board"
             [taskId]="''"
             [allignment]="'left'"
@@ -72,29 +93,6 @@
             [taskPermissions]="true"
             (onMemberAdded)="onMembersUpdated($event)"
           ></add-members-dropdown>
-        </div>
-
-        <!-- Column -->
-        <div class="tw-space-y-2">
-          <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
-            Column
-          </label>
-          <div class="tw-relative">
-            <select
-              [(ngModel)]="taskData.column"
-              class="tw-w-full tw-appearance-none tw-bg-white tw-border tw-border-gray-300 tw-rounded-lg tw-px-4 tw-py-3 tw-text-sm tw-font-medium tw-text-gray-700 tw-pr-10 focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-transition-all tw-duration-200"
-            >
-              <option
-                *ngFor="let option of columnOptions"
-                [value]="option._id"
-              >
-                {{ option.title }}
-              </option>
-            </select>
-            <i
-              class="fas fa-chevron-down tw-absolute tw-right-3 tw-top-1/2 tw-transform tw--translate-y-1/2 tw-text-gray-400 tw-text-sm tw-pointer-events-none"
-            ></i>
-          </div>
         </div>
       </div>
 
@@ -224,6 +222,49 @@
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4">
+        <!-- Boards -->
+        <div class="tw-space-y-2">
+          <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
+            Board
+          </label>
+          <div class="tw-relative">
+            <select
+              [(ngModel)]="taskData.board"
+              (change)="onBoardChange()"
+              class="tw-w-full tw-appearance-none tw-bg-white tw-border tw-border-gray-300 tw-rounded-lg tw-px-4 tw-py-3 tw-text-sm tw-font-medium tw-text-gray-700 tw-pr-10 focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-transition-all tw-duration-200"
+            >
+              <option *ngFor="let option of boardsList" [value]="option._id">
+                {{ option.name }}
+              </option>
+            </select>
+            <i
+              class="fas fa-chevron-down tw-absolute tw-right-3 tw-top-1/2 tw-transform tw--translate-y-1/2 tw-text-gray-400 tw-text-sm tw-pointer-events-none"
+            ></i>
+          </div>
+        </div>
+
+        <!-- Columns -->
+        <div class="tw-space-y-2">
+          <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
+            Column
+          </label>
+          <div class="tw-relative">
+            <select
+              [(ngModel)]="taskData.column"
+              class="tw-w-full tw-appearance-none tw-bg-white tw-border tw-border-gray-300 tw-rounded-lg tw-px-4 tw-py-3 tw-text-sm tw-font-medium tw-text-gray-700 tw-pr-10 focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-transition-all tw-duration-200"
+            >
+              <option *ngFor="let option of columnOptions" [value]="option._id">
+                {{ option.title }}
+              </option>
+            </select>
+            <i
+              class="fas fa-chevron-down tw-absolute tw-right-3 tw-top-1/2 tw-transform tw--translate-y-1/2 tw-text-gray-400 tw-text-sm tw-pointer-events-none"
+            ></i>
           </div>
         </div>
       </div>
