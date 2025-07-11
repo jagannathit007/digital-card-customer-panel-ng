@@ -506,7 +506,7 @@ export class MemberprofileComponent implements OnInit {
   }
 
   // Skills management methods
-  addSkill(): void {
+   addSkill(): void {
     const skill = this.currentSkill.trim();
     if (skill && !this.skillsList.includes(skill)) {
       this.skillsList.push(skill);
@@ -756,6 +756,12 @@ export class MemberprofileComponent implements OnInit {
       return;
     }
 
+    if (!this.isSkillsValid) {
+        swalHelper.showToast('Please add at least one skill', 'warning');
+        return;
+      }
+    
+
     try {
       this.isSaving = true;
       const formData = this.profileForm.getRawValue();
@@ -853,4 +859,13 @@ export class MemberprofileComponent implements OnInit {
     const fileInput = document.getElementById('profileImageInput') as HTMLInputElement;
     fileInput?.click();
   }
+
+    get isSkillsValid(): boolean {
+    return this.skillsList.length > 0;
+  }
+
+    get isFormValid(): boolean {
+    return this.profileForm.valid && this.isSkillsValid;
+  }
+
 }
