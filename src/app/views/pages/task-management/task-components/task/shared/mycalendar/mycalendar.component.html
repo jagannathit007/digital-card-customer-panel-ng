@@ -1,5 +1,5 @@
 <!-- Main Calendar Container -->
-<div class="tw-h-screen tw-w-full tw-overflow-hidden">
+<div class="tw-h-[calc(100vh-130px)] tw-w-full tw-overflow-hidden">
   
   <!-- Loading State -->
   <div *ngIf="isLoadingCalendar" class="tw-flex tw-items-center tw-justify-center tw-h-full tw-bg-gray-50">
@@ -25,7 +25,10 @@
       <i class="fas fa-calendar-times tw-text-6xl tw-text-gray-400 tw-mb-4"></i>
       <h3 class="tw-text-xl tw-font-semibold tw-text-gray-700 tw-mb-2">No Calendar Connected</h3>
       <p class="tw-text-gray-500 tw-mb-6">Connect your Google Calendar to view your schedule</p>
-      <button class="tw-bg-blue-600 tw-text-white tw-px-6 tw-py-3 tw-rounded-lg tw-font-medium hover:tw-bg-blue-700 tw-transition-colors">
+      <button 
+      class="tw-bg-blue-600 tw-text-white tw-px-6 tw-py-3 tw-rounded-lg tw-font-medium hover:tw-bg-blue-700 tw-transition-colors"
+      (click)="openCalendarSyncModal()"
+      >
         <i class="fab fa-google tw-mr-2"></i>
         Connect Google Calendar
       </button>

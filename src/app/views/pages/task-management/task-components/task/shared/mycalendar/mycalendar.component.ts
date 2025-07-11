@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PersonalTaskService } from 'src/app/services/personal-task.service';
+import { CalendarSyncService } from 'src/app/services/calendar-sync.service';
+
 
 @Component({
   selector: 'app-mycalendar',
@@ -24,6 +26,7 @@ export class MycalendarComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private personalTaskService: PersonalTaskService,
+    private CalendarSyncService: CalendarSyncService,
     private sanitizer: DomSanitizer
   ) { }
 
@@ -102,4 +105,9 @@ export class MycalendarComponent implements OnInit, OnDestroy {
       this.isLoadingCalendar = false;
     }
   }
+
+  openCalendarSyncModal() {
+  this.CalendarSyncService.openModal();
+}
+
 }
