@@ -234,6 +234,7 @@ public GET_PERSONAL_TASK_DETAILS_COUNT: string = `${this.PATH}/task/personal/tas
 
 // ! ADMIN CALENDERSYNS
 public GET_GOOGLE_INITIATE: string = `${this.PATH}/task/google/initiate`;
+public GET_GOOGLE_CALENDAR_ID: string = `${this.PATH}/task/google/calendar-id`;
 
 
 
