@@ -1,8 +1,10 @@
 <div
-  class="task-card tw-relative tw-border tw-border-gray-200 tw-rounded-lg tw-p-4 tw-cursor-pointer tw-transition-all tw-duration-200 hover:tw-shadow-md hover:tw-border-gray-300 tw-group tw-select-none"
+  class="tw-border-blue-500 task-card tw-relative tw-border  tw-rounded-lg tw-p-4 tw-cursor-pointer tw-transition-all tw-duration-200 hover:tw-shadow-md hover:tw-border-gray-300 tw-group tw-select-none"
   [ngClass]="{
     'tw-bg-[#f0f0f0]': !taskPermissionsService.isTeamTaskCardAccessible(task),
     'tw-bg-[#f0f0f06c]': taskPermissionsService.isTeamTaskCardAccessible(task),
+    'tw-border-blue-700 tw-bg-blue-50': assignedToMe,
+    'tw-border-gray-200': !assignedToMe
   }"
   [class.tw-ring-2]="isSelected"
   [class.tw-ring-blue-500]="isSelected"

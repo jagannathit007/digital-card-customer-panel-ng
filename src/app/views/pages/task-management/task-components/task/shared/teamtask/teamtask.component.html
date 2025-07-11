@@ -289,6 +289,7 @@
                   (cdkDragEnded)="onDragEnded()"
                 >
                   <app-team-task-card
+                    [assignedToMe]="isAssignmentFilterActive() ? task.assignedToMe : false"
                     [task]="task"
                     [isSelected]="selectedTask()?._id === task._id"
                     [isDragging]="
@@ -545,6 +546,22 @@
     </form>
   </div>
 </div>
+
+<!-- NEW: filter -->
+<button
+  *ngIf="boardId()"
+  title="whats assigned to me"
+  (click)="onToggleAssignmentFilter()"
+  class="tw-fixed tw-bottom-40 tw-right-7 hover:tw-bg-blue-600 hover:tw-text-white tw-rounded-full tw-p-4 tw-shadow-lg hover:tw-shadow-xl tw-transition-all tw-duration-200 tw-z-30 tw-flex tw-items-center tw-justify-center tw-h-14 tw-w-14"
+  [ngClass]="{
+    'tw-bg-blue-100 tw-text-blue-600': isAssignmentFilterActive(),
+    'tw-bg-blue-500 tw-text-white': !isAssignmentFilterActive()
+  }"
+>
+  <i *ngIf="!isAssignmentFilterActive()" class="ri-filter-fill"></i>
+
+  <i *ngIf="isAssignmentFilterActive()" class="ri-filter-off-fill"></i>
+</button>
 
 <!-- NEW: Add Task Button (Floating) -->
 <button

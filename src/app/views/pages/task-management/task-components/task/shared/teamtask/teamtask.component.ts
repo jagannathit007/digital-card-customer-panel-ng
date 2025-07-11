@@ -63,6 +63,7 @@ export interface Task {
   createdBy: string;
   completedAt?: Date | null;
   deletedAt?: Date | null;
+  assignedToMe: boolean;
 }
 
 export interface BoardColumn {
@@ -108,6 +109,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   popupMode = signal<'add' | 'rename'>('add');
   positionForNewColumn: 'left' | 'right' = 'right';
   currentColumnId = signal<string | null>(null);
+  isAssignmentFilterActive = signal<boolean>(!!this.storage.get(teamMemberCommon.ASSIGNMENT_FILTER) || false);
 
   // available user for selected board
   availableUsersForSelectedBoard = signal<TeamMember[]>([]);
@@ -1257,6 +1259,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
           visibility: response.visibility,
           column: columnId,
           createdBy: response.createdBy,
+          assignedToMe: response.assignedToMe,
         };
         column.tasks.push(newTask);
         this.boardColumns.update((cols) => [...cols]);
@@ -1567,4 +1570,10 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
 
     this.handleAutoScroll(event);
   };
+
+  onToggleAssignmentFilter() {
+    this.isAssignmentFilterActive.set(!this.isAssignmentFilterActive());
+
+    this.storage.set(teamMemberCommon.ASSIGNMENT_FILTER, this.isAssignmentFilterActive());
+  }
 }

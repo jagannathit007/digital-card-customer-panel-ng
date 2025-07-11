@@ -53,6 +53,7 @@ export class TeamTaskCardComponent {
   @Input() isDragging = false;
   @Input() completedColumnId: string = '';
   @Input() deleetdColumnId: string = '';
+  @Input() assignedToMe: boolean = false;
 
   @Output() taskClick = new EventEmitter<Event>();
   @Output() taskDoubleClick = new EventEmitter<void>();
@@ -127,7 +128,10 @@ export class TeamTaskCardComponent {
   getDueDateIndicator(): { show: boolean; color: string; text: string } {
     const today = new Date();
 
-    if((this.task?.status === 'deleted' && !this.task?.deletedAt) || (this.task?.status === 'completed' && !this.task?.completedAt)){
+    if (
+      (this.task?.status === 'deleted' && !this.task?.deletedAt) ||
+      (this.task?.status === 'completed' && !this.task?.completedAt)
+    ) {
       return { show: false, color: '', text: '' };
     }
 
@@ -139,7 +143,11 @@ export class TeamTaskCardComponent {
         .toUpperCase();
       const year = deletedAt.getFullYear();
       const yearDisplay = year !== today.getFullYear() ? ` ${year}` : '';
-      return { show: true, color: 'tw-text-gray-600', text: `Deleted At ${day} ${month}${yearDisplay}` };
+      return {
+        show: true,
+        color: 'tw-text-gray-600',
+        text: `Deleted At ${day} ${month}${yearDisplay}`,
+      };
     }
 
     if (this.task?.status === 'completed' && this.task?.completedAt) {
@@ -150,14 +158,17 @@ export class TeamTaskCardComponent {
         .toUpperCase();
       const year = completedAt.getFullYear();
       const yearDisplay = year !== today.getFullYear() ? ` ${year}` : '';
-      return { show: true, color: 'tw-text-gray-600', text: `Completed At ${day} ${month}${yearDisplay}` };
+      return {
+        show: true,
+        color: 'tw-text-gray-600',
+        text: `Completed At ${day} ${month}${yearDisplay}`,
+      };
     }
 
     if (!this.task?.dueDate) {
       return { show: false, color: '', text: '' };
     }
 
-    
     const dueDate = new Date(this.task.dueDate);
     const diffTime = dueDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));

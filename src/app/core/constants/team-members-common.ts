@@ -6,6 +6,7 @@ class TeamMemberCommonConstant {
   public TOKEN: string = 'token';
   public BOARD_DATA: string = 'board_data';
   public THEME: string = 'theme';
+  public ASSIGNMENT_FILTER: string = 'assignment_filter_applied';
 }
 
 export let teamMemberCommon = new TeamMemberCommonConstant();
