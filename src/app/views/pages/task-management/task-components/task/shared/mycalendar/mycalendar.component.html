@@ -1,7 +1,37 @@
-<!-- Your existing calendar content here -->
-<div class="calendar-container">
-  <!-- Add your calendar content here -->
-  <h1>My Calendar</h1>
+<!-- Main Calendar Container -->
+<div class="tw-h-screen tw-w-full tw-overflow-hidden">
+  
+  <!-- Loading State -->
+  <div *ngIf="isLoadingCalendar" class="tw-flex tw-items-center tw-justify-center tw-h-full tw-bg-gray-50">
+    <div class="tw-text-center">
+      <i class="fas fa-spinner tw-animate-spin tw-text-4xl tw-text-blue-500 tw-mb-4"></i>
+      <p class="tw-text-gray-600 tw-text-lg">Loading your calendar...</p>
+    </div>
+  </div>
+
+  <!-- Google Calendar Iframe -->
+  <div *ngIf="!isLoadingCalendar && safeIframeUrl" class="tw-w-full tw-h-full">
+    <iframe 
+      [src]="safeIframeUrl" 
+      class="tw-w-full tw-h-full tw-border-0"
+      frameborder="0" 
+      scrolling="no">
+    </iframe>
+  </div>
+
+  <!-- No Calendar State -->
+  <div *ngIf="!isLoadingCalendar && !safeIframeUrl" class="tw-flex tw-items-center tw-justify-center tw-h-full tw-bg-gray-50">
+    <div class="tw-text-center tw-p-8">
+      <i class="fas fa-calendar-times tw-text-6xl tw-text-gray-400 tw-mb-4"></i>
+      <h3 class="tw-text-xl tw-font-semibold tw-text-gray-700 tw-mb-2">No Calendar Connected</h3>
+      <p class="tw-text-gray-500 tw-mb-6">Connect your Google Calendar to view your schedule</p>
+      <button class="tw-bg-blue-600 tw-text-white tw-px-6 tw-py-3 tw-rounded-lg tw-font-medium hover:tw-bg-blue-700 tw-transition-colors">
+        <i class="fab fa-google tw-mr-2"></i>
+        Connect Google Calendar
+      </button>
+    </div>
+  </div>
+
 </div>
 
 <!-- Success/Error Modal -->
@@ -56,13 +86,13 @@
         {{ modalMessage }}
       </p>
 
-      <!-- Progress Bar (Auto-close indicator) -->
+      <!-- Progress Bar -->
       <div class="tw-w-full tw-bg-gray-200 tw-rounded-full tw-h-1 tw-mb-3 sm:tw-mb-4">
         <div
           class="tw-h-1 tw-rounded-full tw-transition-all tw-duration-300"
           [class.tw-bg-green-500]="isSuccess"
           [class.tw-bg-red-500]="!isSuccess"
-          style="width: 100%; animation: shrink 5s linear forwards;"
+          style="width: 100%; animation: shrink 10s linear forwards;"
         ></div>
       </div>
     </div>

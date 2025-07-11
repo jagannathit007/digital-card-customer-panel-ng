@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { PersonalTaskService } from 'src/app/services/personal-task.service';
 
 @Component({
   selector: 'app-mycalendar',
@@ -13,18 +14,25 @@ export class MycalendarComponent implements OnInit, OnDestroy {
   modalMessage = '';
   isSuccess = false;
   private autoCloseTimer: any;
+  
+  // Calendar data ke liye
+  calendarData: any = null;
+  isLoadingCalendar = false;
+  safeIframeUrl: SafeResourceUrl | null = null;
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private personalTaskService: PersonalTaskService,
+    private sanitizer: DomSanitizer
   ) { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     this.checkUrlParameters();
+    await this.getGoogleCalendarId();
   }
 
   ngOnDestroy(): void {
-    // Clear timer if component is destroyed
     if (this.autoCloseTimer) {
       clearTimeout(this.autoCloseTimer);
     }
@@ -33,7 +41,7 @@ export class MycalendarComponent implements OnInit, OnDestroy {
   checkUrlParameters(): void {
     this.route.queryParams.subscribe(params => {
       const googleCalendar = params['googleCalendar'];
-      
+             
       if (googleCalendar === 'success') {
         this.modalMessage = 'You are successfully synced with Google Calendar.';
         this.isSuccess = true;
@@ -48,8 +56,7 @@ export class MycalendarComponent implements OnInit, OnDestroy {
 
   showModal(): void {
     this.isModalOpen = true;
-    
-    // Auto close after 5 seconds (changed from 3 to 5)
+         
     this.autoCloseTimer = setTimeout(() => {
       this.closeModal();
     }, 10000);
@@ -57,13 +64,11 @@ export class MycalendarComponent implements OnInit, OnDestroy {
 
   closeModal(): void {
     this.isModalOpen = false;
-    
-    // Clear timer
+         
     if (this.autoCloseTimer) {
       clearTimeout(this.autoCloseTimer);
     }
-    
-    // Remove query parameter from URL
+         
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {},
@@ -71,8 +76,30 @@ export class MycalendarComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Manual close by clicking X button
   onCloseClick(): void {
     this.closeModal();
+  }
+
+  async getGoogleCalendarId() {
+    try {
+      this.isLoadingCalendar = true;
+      let response = await this.personalTaskService.getGoogleCalendarId();
+      
+      if (response && response.iframeUrl) {
+        this.calendarData = response;      
+        this.safeIframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(response.iframeUrl);
+        return response;
+      } else {
+        this.calendarData = null;
+        this.safeIframeUrl = null;
+        return null;
+      }
+    } catch (err) {
+      this.calendarData = null;
+      this.safeIframeUrl = null;
+      return null;
+    } finally {
+      this.isLoadingCalendar = false;
+    }
   }
 }
