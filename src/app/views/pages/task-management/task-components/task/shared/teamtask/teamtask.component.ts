@@ -109,7 +109,9 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   popupMode = signal<'add' | 'rename'>('add');
   positionForNewColumn: 'left' | 'right' = 'right';
   currentColumnId = signal<string | null>(null);
-  isAssignmentFilterActive = signal<boolean>(!!this.storage.get(teamMemberCommon.ASSIGNMENT_FILTER) || false);
+  isAssignmentFilterActive = signal<boolean>(
+    !!this.storage.get(teamMemberCommon.ASSIGNMENT_FILTER) || false
+  );
 
   // available user for selected board
   availableUsersForSelectedBoard = signal<TeamMember[]>([]);
@@ -260,6 +262,16 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
               deletedColumn.tasks.unshift(updatedTask);
             }
           }
+          break;
+        } else if (field === 'assignedTo') {
+          updatedTask.assignedTo = value;
+
+          const isStillMember = updatedTask.assignedTo.some(
+            (member: any) =>
+              member._id === this.taskPermissionsService.getCurrentUser()?._id
+          );
+
+          updatedTask.assignedToMe = isStillMember;
           break;
         } else {
           (updatedTask as any)[field] = value;
@@ -1574,6 +1586,9 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   onToggleAssignmentFilter() {
     this.isAssignmentFilterActive.set(!this.isAssignmentFilterActive());
 
-    this.storage.set(teamMemberCommon.ASSIGNMENT_FILTER, this.isAssignmentFilterActive());
+    this.storage.set(
+      teamMemberCommon.ASSIGNMENT_FILTER,
+      this.isAssignmentFilterActive()
+    );
   }
 }
