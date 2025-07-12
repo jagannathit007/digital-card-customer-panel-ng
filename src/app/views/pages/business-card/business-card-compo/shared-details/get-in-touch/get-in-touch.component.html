@@ -2,8 +2,11 @@
   <div class="col-md">
     <div class="d-flex">
       <span class="fs-3 fw-bold">GET IN TOUCH REQUEST</span>
-      <app-toggle [isActive]="contactRequestVisible" [onText]="'Visible'" [offText]="'Hidden'" class="ms-2 mt-2"
+      <app-toggle [isActive]="contactRequestVisible" [onText]="'Contact On'" [offText]="'Contact Off'" class="ms-2 mt-2"
         (changed)="onVisibilityChanged()">
+      </app-toggle>
+      <app-toggle [isActive]="ThemePwaVisible" [onText]="'PWA On'" [offText]="'PWA Off'" class="ms-2 mt-2"
+        (changed)="onThemePwaVisibilityChanged()">
       </app-toggle>
     </div>
   </div>

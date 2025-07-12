@@ -42,6 +42,7 @@ export class GetInTouchComponent {
     if (response) {
       this.contactRequests = response;
       this.contactRequestVisible = response.contactRequestVisible;
+      this.ThemePwaVisible = response.ThemePwaVisible;
       this.customContactTitle = response.contactRequestTitle;
     }
     this.isLoading = false;
@@ -78,6 +79,18 @@ export class GetInTouchComponent {
     this._getContactRequests()
   }
 
+    ThemePwaVisible: boolean = false
+  async _updateThemePwaVisible() {
+    let response = await this.businessCardService.updateVisibility({
+      ThemePwaVisible: this.ThemePwaVisible,
+      businessCardId: this.businessCardId
+    });
+    if (response) {
+      swalHelper.showToast('Visibility successfully updated', 'success')
+    }
+    this._getContactRequests()
+  }
+
   async updateCustomTitle() {
     if (this.customContactTitle.trim().length > 0) {
       let response = await this.businessCardService.updateCustomTitle({
@@ -96,4 +109,11 @@ export class GetInTouchComponent {
     this.contactRequestVisible = !this.contactRequestVisible
     this._updateVisibility();
   }
+
+    onThemePwaVisibilityChanged() {
+    this.ThemePwaVisible = !this.ThemePwaVisible
+    this._updateThemePwaVisible();
+  }
+
+
 }
