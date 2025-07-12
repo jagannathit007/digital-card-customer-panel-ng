@@ -169,16 +169,9 @@ export class LoginComponent implements OnInit {
           this.router.navigate(['/task-management/dashboard']);
         }
 
-      } else {
-        // this.showError = true;
-        this.errorMessage = response?.message || 'Invalid credentials. Please try again.';
-        swalHelper.showToast(this.errorMessage, 'error');
       }
     } catch (error) {
       this.isLoading = false;
-      // this.showError = true;
-      this.errorMessage = 'Login failed. Please try again.';
-      swalHelper.showToast(this.errorMessage, 'error');
     }
   }
 
