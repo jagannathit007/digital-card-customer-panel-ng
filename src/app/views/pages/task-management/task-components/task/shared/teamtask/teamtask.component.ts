@@ -820,7 +820,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       const movedTask = targetData[event.currentIndex];
       if (movedTask) {
         movedTask.column = targetColumnId;
-        this.updateTaskStatus(movedTask, targetColumn);
+        this.updateTaskStatus(movedTask, targetColumn, sourceColumn);
       }
 
       // Update both columns
@@ -886,13 +886,14 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
           sourceColumn.tasks.splice(event.previousIndex, 0, revertedTask);
 
           // undo status update to last when moving task between column
-          this.updateTaskStatus(revertedTask, sourceColumn);
+          this.updateTaskStatus(revertedTask, sourceColumn, targetColumn);
         }
       }
     }
   }
 
-  private updateTaskStatus(task: Task, column: BoardColumn) {
+  private updateTaskStatus(task: Task, column: BoardColumn, sourceColumn: BoardColumn) {
+    if (!['completed', 'deleted'].includes(column.title.toLowerCase()) && !['completed', 'deleted'].includes(sourceColumn.title.toLowerCase())) return;
     switch (column.title.toLowerCase()) {
       case 'completed':
         task.status = 'completed';
@@ -903,9 +904,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         task.status = 'deleted';
         task.deletedAt = new Date();
         task.completedAt = null;
-        break;
-      case 'in progress':
-        task.status = 'in progress';
         break;
       default:
         task.status = 'normal';
@@ -1166,7 +1164,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
 
       task.column = targetColumnId;
       task.position = targetColumn.tasks.length;
-      this.updateTaskStatus(task, targetColumn);
+      this.updateTaskStatus(task, targetColumn, sourceColumn);
       targetColumn.tasks.unshift(task);
       this.boardColumns.set(columns);
 
