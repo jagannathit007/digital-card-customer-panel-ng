@@ -195,7 +195,7 @@ export class AiassistantComponent implements OnInit, OnDestroy {
             console.log('5 seconds of silence detected, processing current text...');
             this.continueToProcceed();
           }
-        }, 3000); // 5 seconds silence detection
+        }, 5000); // 5 seconds silence detection
       }
     };
 
@@ -373,9 +373,14 @@ export class AiassistantComponent implements OnInit, OnDestroy {
     }
   }
 
-  // CHANGE 3: Modified stop mic behavior - restart listening instead of resetting
+  // CHANGE 3: Modified stop mic behavior - no blinking, smooth transition
   stopMicAndReset() {
+    // Immediately clear states to prevent blinking
     this.continuousListening = false;
+    this.recognizedText = '';
+    this.finalTranscript = '';
+    this.isProcessing = false;
+    this.isApiCallInProgress = false;
     
     // Clear timeouts
     if (this.speechTimeout) {
@@ -393,26 +398,30 @@ export class AiassistantComponent implements OnInit, OnDestroy {
       this.recognition.stop();
     }
     
-    // Reset to listening state again (not Start Speaking state)
-    this.recognizedText = '';
-    this.finalTranscript = '';
-    this.isProcessing = false;
-    this.isApiCallInProgress = false;
-    
+    // Force immediate UI update to prevent blinking
     this.cdr.markForCheck();
     
-    // Restart listening immediately
-    setTimeout(() => {
-      this.startListening();
-    }, 500);
+    // Restart listening without any setTimeout to prevent blinking
+    if (this.recognition) {
+      // Use a very short delay only for speech recognition restart
+      setTimeout(() => {
+        if (!this.isListening && this.recognition) {
+          this.startListening();
+        }
+      }, 100); // Minimal delay only for speech recognition
+    }
     
-    console.log('🛑 Mic stopped - restarting listening');
+    console.log('🛑 Mic stopped - restarting listening smoothly');
   }
 
-  // NEW: Continue to Proceed function - no blinking
+  // NEW: Continue to Proceed function - completely prevent blinking
   continueToProcceed() {
     if (this.recognizedText.trim() && !this.isApiCallInProgress) {
+      // Immediately set processing state to prevent any blinking
+      this.isProcessing = true;
+      this.isApiCallInProgress = true;
       this.continuousListening = false; // Stop continuous mode
+      this.cdr.markForCheck(); // Force immediate UI update
       
       // Clear timeouts
       if (this.silenceTimeout) {
@@ -420,15 +429,13 @@ export class AiassistantComponent implements OnInit, OnDestroy {
         this.silenceTimeout = null;
       }
       
-      // Stop listening and process immediately without state flickering
+      // Stop listening
       if (this.recognition && this.isListening) {
         this.recognition.stop();
       }
       
-      // Process the command immediately to prevent blinking
-      setTimeout(() => {
-        this.processVoiceCommand(this.recognizedText.trim());
-      }, 50); // Very short delay to prevent blinking
+      // Process the command immediately without any setTimeout
+      this.processVoiceCommand(this.recognizedText.trim());
     }
   }
 

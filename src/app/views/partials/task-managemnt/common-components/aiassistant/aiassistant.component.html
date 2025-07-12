@@ -82,8 +82,8 @@
     <!-- Action Buttons Container -->
     <div class="tw-space-y-4">
       
-      <!-- Continue to Proceed and Stop Buttons (when listening) -->
-      <div *ngIf="isListening" class="tw-flex tw-justify-center tw-gap-3">
+      <!-- Continue to Proceed and Stop Buttons (when listening) - Prevent blinking -->
+      <div *ngIf="isListening && !isProcessing" class="tw-flex tw-justify-center tw-gap-3">
         <button class="tw-bg-gradient-to-r tw-from-red-500 tw-to-red-600 tw-text-white tw-px-6 tw-py-3 tw-rounded-full tw-font-medium tw-shadow-lg tw-shadow-red-500/30 hover:tw-shadow-red-500/50 hover:tw-scale-105 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-gap-2"
                 (click)="stopMicAndReset()">
           <svg class="tw-w-4 tw-h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -92,7 +92,7 @@
           Stop
         </button>
         
-        <!-- CHANGE 3: Continue to Proceed button disabled when no text -->
+        <!-- Continue to Proceed button disabled when no text -->
         <button class="tw-bg-gradient-to-r tw-from-green-500 tw-to-green-600 tw-text-white tw-px-6 tw-py-3 tw-rounded-full tw-font-medium tw-shadow-lg tw-shadow-green-500/30 hover:tw-shadow-green-500/50 hover:tw-scale-105 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-gap-2"
                 [disabled]="!recognizedText.trim()"
                 [class.tw-opacity-50]="!recognizedText.trim()"
@@ -105,8 +105,8 @@
         </button>
       </div>
 
-      <!-- Start Speaking Button (when ready) -->
-      <div *ngIf="!isListening && !isProcessing && !isSpeaking" class="tw-flex tw-justify-center">
+      <!-- Start Speaking Button (when ready) - More specific condition -->
+      <div *ngIf="!isListening && !isProcessing && !isSpeaking && !isApiCallInProgress" class="tw-flex tw-justify-center">
         <button class="tw-bg-gradient-to-r tw-from-green-500 tw-to-green-600 tw-text-white tw-px-8 tw-py-4 tw-rounded-full tw-font-semibold tw-text-lg tw-shadow-lg tw-shadow-green-500/30 hover:tw-shadow-green-500/50 hover:tw-scale-105 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-gap-3"
                 [disabled]="isApiCallInProgress"
                 [class.tw-opacity-50]="isApiCallInProgress"
@@ -119,7 +119,7 @@
         </button>
       </div>
 
-      <!-- CHANGE 4: Stop Button during processing - goes back to Start Speaking -->
+      <!-- Stop Button during processing -->
       <div *ngIf="isProcessing" class="tw-flex tw-justify-center">
         <button class="tw-bg-gradient-to-r tw-from-red-500 tw-to-red-600 tw-text-white tw-px-6 tw-py-3 tw-rounded-full tw-font-medium tw-shadow-lg tw-shadow-red-500/30 hover:tw-shadow-red-500/50 hover:tw-scale-105 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-gap-2"
                 (click)="stopProcessingAndReset()">
