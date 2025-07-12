@@ -350,6 +350,20 @@ export class SideBarService {
     private storage: AppStorage
   ) {}
 
+  autoExpandTaskManagement(menus: any[]): void {
+  // Find Task Management menu index and auto-expand it
+  for (let moduleIndex = 0; moduleIndex < menus.length; moduleIndex++) {
+    const module = menus[moduleIndex];
+    for (let menuIndex = 0; menuIndex < module.menus.length; menuIndex++) {
+      const menu = module.menus[menuIndex];
+      if (menu.title === 'Task Management' && menu.menu) {
+        this.activeSubMenuIndex = menuIndex;
+        return;
+      }
+    }
+  }
+}
+
   async getMenusByProducts(subscriptionData: any[]): Promise<any[]> {
     const teamMemberData = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA);
     const validRoles = ['member', 'leader', 'manager', 'editor', 'admin'];

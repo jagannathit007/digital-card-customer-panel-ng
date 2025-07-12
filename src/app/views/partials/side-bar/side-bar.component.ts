@@ -12,6 +12,7 @@ import { environment } from 'src/env/env.local';
 import { AppWorker } from 'src/app/core/workers/app.worker';
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 import { TaskMemberAuthService } from 'src/app/services/task-member-auth.service';
+import { TaskPermissionsService } from 'src/app/services/task-permissions.service';
 
 @Component({
   selector: 'app-side-bar',
@@ -34,6 +35,7 @@ export class SideBarComponent implements OnInit, AfterViewInit {
     private storage: AppStorage,
     public authService: AuthService,
     public taskMemberAuthService: TaskMemberAuthService,
+    public TaskPermissionsService: TaskPermissionsService,
     public sideBarService: SideBarService,
     public appWorker: AppWorker
   ) {
@@ -66,6 +68,15 @@ export class SideBarComponent implements OnInit, AfterViewInit {
         },
       ];
     }
+
+    // this.sideBarService.autoExpandTaskManagement(this.filteredMenuList);
+    const isAdminLevel = this.TaskPermissionsService.isAdminLevelPermission();
+    
+    if (!isAdminLevel) {
+      // Only expand if NOT admin level (false return means expand)
+      this.sideBarService.autoExpandTaskManagement(this.filteredMenuList);
+    } 
+
   }
 
   ngAfterViewInit() {
