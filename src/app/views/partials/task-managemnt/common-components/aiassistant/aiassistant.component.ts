@@ -81,6 +81,11 @@ export class AiassistantComponent implements OnInit, OnDestroy {
   // NEW: Track if user has had any interaction
   hasHadInteraction = false;
   
+  // NEW: Track API cancellation
+  private currentApiRequest: any = null;
+  private shouldCancelProcessing = false;
+  private abortController: AbortController | null = null;
+  
   // Enhanced timeout handling for continuous listening
   private speechTimeout: any = null;
   private finalTranscript = '';
@@ -241,19 +246,12 @@ export class AiassistantComponent implements OnInit, OnDestroy {
     this.isProcessing = false;
     this.isApiCallInProgress = false;
     this.continuousListening = false;
-    // Don't reset hasHadInteraction here to preserve state
+    this.shouldCancelProcessing = false; // Reset cancellation flag
+    this.hasHadInteraction = true; // CHANGE 2: Set this immediately to prevent "I'm ready to help" message
     this.cdr.markForCheck();
     
-    // Speak greeting and start listening immediately
-    setTimeout(async () => {
-      await this.speakText("What can I help you with?");
-      // Start listening after greeting
-      setTimeout(() => {
-        if (this.isInteractionModalOpen) {
-          this.startListening();
-        }
-      }, 500);
-    }, 500);
+    // CHANGE 2: Immediately start listening without any delay or greeting
+    this.startListening();
   }
 
   // Keep original methods for backward compatibility
@@ -273,6 +271,23 @@ export class AiassistantComponent implements OnInit, OnDestroy {
 
   // Enhanced close modal with proper cleanup
   closeInteractionModal() {
+    // CHANGE 4: Immediately stop all processes
+    this.shouldCancelProcessing = true;
+    
+    // Cancel any ongoing API request properly
+    if (this.abortController) {
+      this.abortController.abort();
+      this.abortController = null;
+    }
+    
+    if (this.currentApiRequest) {
+      // For Angular HTTP requests, use unsubscribe if it's a subscription
+      if (this.currentApiRequest.unsubscribe) {
+        this.currentApiRequest.unsubscribe();
+      }
+      this.currentApiRequest = null;
+    }
+    
     // Stop any ongoing speech first
     this.stopCurrentSpeech();
     
@@ -285,6 +300,7 @@ export class AiassistantComponent implements OnInit, OnDestroy {
     this.isSpeaking = false;
     this.continuousListening = false; // Stop continuous mode
     this.hasHadInteraction = false; // Reset interaction state when closing modal
+    this.shouldCancelProcessing = false; // Reset cancellation flag
     
     // Clear all timeouts
     if (this.speechTimeout) {
@@ -303,7 +319,7 @@ export class AiassistantComponent implements OnInit, OnDestroy {
     this.speechSynthesis.cancel();
     
     this.cdr.markForCheck();
-    console.log('🚪 Modal closed - all speech stopped');
+    console.log('🚪 Modal closed - all speech and processes stopped');
   }
 
   // Enhanced start listening with continuous mode
@@ -357,9 +373,14 @@ export class AiassistantComponent implements OnInit, OnDestroy {
     }
   }
 
-  // NEW: Stop mic and reset to Start Speaking section
+  // CHANGE 3: Modified stop mic behavior - no blinking, smooth transition
   stopMicAndReset() {
+    // Immediately clear states to prevent blinking
     this.continuousListening = false;
+    this.recognizedText = '';
+    this.finalTranscript = '';
+    this.isProcessing = false;
+    this.isApiCallInProgress = false;
     
     // Clear timeouts
     if (this.speechTimeout) {
@@ -377,21 +398,30 @@ export class AiassistantComponent implements OnInit, OnDestroy {
       this.recognition.stop();
     }
     
-    // Reset to Start Speaking state
-    this.isListening = false;
-    this.recognizedText = '';
-    this.finalTranscript = '';
-    this.isProcessing = false;
-    this.isApiCallInProgress = false;
-    
+    // Force immediate UI update to prevent blinking
     this.cdr.markForCheck();
-    console.log('🛑 Mic stopped - returning to Start Speaking section');
+    
+    // Restart listening without any setTimeout to prevent blinking
+    if (this.recognition) {
+      // Use a very short delay only for speech recognition restart
+      setTimeout(() => {
+        if (!this.isListening && this.recognition) {
+          this.startListening();
+        }
+      }, 100); // Minimal delay only for speech recognition
+    }
+    
+    console.log('🛑 Mic stopped - restarting listening smoothly');
   }
 
-  // NEW: Continue to Proceed function
+  // NEW: Continue to Proceed function - completely prevent blinking
   continueToProcceed() {
     if (this.recognizedText.trim() && !this.isApiCallInProgress) {
+      // Immediately set processing state to prevent any blinking
+      this.isProcessing = true;
+      this.isApiCallInProgress = true;
       this.continuousListening = false; // Stop continuous mode
+      this.cdr.markForCheck(); // Force immediate UI update
       
       // Clear timeouts
       if (this.silenceTimeout) {
@@ -399,14 +429,65 @@ export class AiassistantComponent implements OnInit, OnDestroy {
         this.silenceTimeout = null;
       }
       
-      // Stop listening and process
+      // Stop listening
       if (this.recognition && this.isListening) {
         this.recognition.stop();
       }
       
-      // Process the command
+      // Process the command immediately without any setTimeout
       this.processVoiceCommand(this.recognizedText.trim());
     }
+  }
+
+  // CHANGE 4: Stop processing immediately and go back to Start Speaking
+  stopProcessingAndReset() {
+    // CHANGE 1: Set cancellation flag to stop all processing
+    this.shouldCancelProcessing = true;
+    
+    // Cancel any ongoing API request properly
+    if (this.abortController) {
+      this.abortController.abort();
+      this.abortController = null;
+    }
+    
+    if (this.currentApiRequest) {
+      // For Angular HTTP requests, use unsubscribe if it's a subscription
+      if (this.currentApiRequest.unsubscribe) {
+        this.currentApiRequest.unsubscribe();
+      }
+      this.currentApiRequest = null;
+    }
+    
+    // Stop any ongoing speech
+    this.stopCurrentSpeech();
+    
+    // Reset all states
+    this.isProcessing = false;
+    this.isApiCallInProgress = false;
+    this.isListening = false;
+    this.recognizedText = '';
+    this.finalTranscript = '';
+    this.continuousListening = false;
+    this.hasHadInteraction = false; // Reset to show "Start Speaking" screen
+    
+    // Clear all timeouts
+    if (this.speechTimeout) {
+      clearTimeout(this.speechTimeout);
+      this.speechTimeout = null;
+    }
+    
+    if (this.silenceTimeout) {
+      clearTimeout(this.silenceTimeout);
+      this.silenceTimeout = null;
+    }
+    
+    // Stop recognition
+    if (this.recognition) {
+      this.recognition.abort();
+    }
+    
+    this.cdr.markForCheck();
+    console.log('🛑 Processing stopped completely - returning to Start Speaking');
   }
 
   // Stop listening manually (legacy method - kept for compatibility)
@@ -414,7 +495,7 @@ export class AiassistantComponent implements OnInit, OnDestroy {
     this.stopMicAndReset();
   }
 
-  // Speak text with completion tracking
+  // CHANGE 1: Speak text with increased speed
   private speakText(text: string): Promise<void> {
     return new Promise((resolve) => {
       this.speechSynthesis.cancel();
@@ -423,7 +504,7 @@ export class AiassistantComponent implements OnInit, OnDestroy {
       
       setTimeout(() => {
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.7;
+        utterance.rate = 1.2; // CHANGED: Increased from 0.7 to 1.2 for faster speech
         utterance.pitch = 1;
         utterance.volume = 1;
         utterance.lang = 'en-US';
@@ -475,55 +556,91 @@ export class AiassistantComponent implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
-  // Enhanced process voice command with auto-close after response
+  // Enhanced process voice command with proper cancellation support
   private async processVoiceCommand(command: string) {
     this.isProcessing = true;
     this.isApiCallInProgress = true;
     this.continuousListening = false; // Stop continuous mode during processing
+    this.shouldCancelProcessing = false; // Reset cancellation flag
     this.cdr.markForCheck();
 
     try {
-      await this.speakText("Please wait Sir, I'm working on your request...");
-
+      // CHANGE 3: Removed the "Please wait" message - no unnecessary speaking
+      
       const teamMemberToken = this.storage.get(teamMemberCommon.TEAM_MEMBER_TOKEN);
       const payload = {
         teamMemberToken: teamMemberToken,
         USER_VOICE_GENERATED_TEXT: command
       };
 
-      const response = await this.TaskMemberAuthService.processAICommand(payload);
+      // CHANGE 5: Create AbortController for proper cancellation
+      this.abortController = new AbortController();
+      
+      // Store the API request for cancellation - proper way for Angular HTTP
+      this.currentApiRequest = this.TaskMemberAuthService.processAICommand(payload);
+      const response = await this.currentApiRequest;
+
+      // CHANGE 1: Check if processing was cancelled
+      if (this.shouldCancelProcessing) {
+        console.log('🛑 Processing was cancelled by user');
+        return; // Exit immediately without any response
+      }
 
       if (response && response.success && response.response) {
         
         if (response.response.status === 200) {
           
           if (response.response.data && response.response.data.action_type === 'not_found') {
-            await this.speakText("I'm sorry Sir, I couldn't understand your request. Could you please try again with a different command or be more specific? I'm here to help you with generating reports, creating tasks, and managing your work efficiently.");
+            // Check cancellation before speaking
+            if (!this.shouldCancelProcessing) {
+              await this.speakText("I'm sorry Sir, I couldn't understand your request. Could you please try again with a different command or be more specific? I'm here to help you with generating reports, creating tasks, and managing your work efficiently.");
+            }
             
           } else {
-            await this.speakText(response.response.message);
-
-            // Handle modal opening based on action type
-            this.handleModalOpening(response.response.data);
+            // Check cancellation before speaking
+            if (!this.shouldCancelProcessing) {
+              // Handle modal opening based on action type
+              this.handleModalOpening(response.response.data);
+            }
           }
           
         } else if (response.response.status === 500) {
-          await this.speakText("I'm experiencing technical difficulties right now, Sir. The server is having issues. Please try again in a few moments, or contact your system administrator if the problem persists.");
+          if (!this.shouldCancelProcessing) {
+            await this.speakText("I'm experiencing technical difficulties right now, Sir. The server is having issues. Please try again in a few moments, or contact your system administrator if the problem persists.");
+          }
           
         } else {
-          await this.speakText(`I encountered an error while processing your request, Sir. The system returned status ${response.response.status}. Please try again later or contact support if this continues.`);
+          if (!this.shouldCancelProcessing) {
+            await this.speakText(`I encountered an error while processing your request, Sir. The system returned status ${response.response.status}. Please try again later or contact support if this continues.`);
+          }
         }
         
       } else {
-        await this.speakText("I'm having trouble communicating with the server right now, Sir. Please check your internet connection and try again.");
+        if (!this.shouldCancelProcessing) {
+          await this.speakText("I'm having trouble communicating with the server right now, Sir. Please check your internet connection and try again.");
+        }
       }
       
     } catch (error) {
-      await this.speakText("I'm unable to connect to the server at the moment, Sir. Please check your internet connection and try again. If the problem continues, please contact your system administrator.");
+      // Check if it was cancelled
+      if (this.shouldCancelProcessing) {
+        console.log('🛑 API request cancelled by user');
+        return;
+      }
+      
+      if (!this.shouldCancelProcessing) {
+        await this.speakText("I'm unable to connect to the server at the moment, Sir. Please check your internet connection and try again. If the problem continues, please contact your system administrator.");
+      }
       
     } finally {
-      // Close modal after any response (success or fail)
+      // Clean up API request reference
+      this.currentApiRequest = null;
+      this.abortController = null;
+      
+      // Only close modal if not cancelled
+      if (!this.shouldCancelProcessing) {
         this.closeInteractionModal();
+      }
     }
   }
 
