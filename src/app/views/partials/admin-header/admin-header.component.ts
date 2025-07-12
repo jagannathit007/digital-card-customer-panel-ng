@@ -56,7 +56,7 @@ export class AdminHeaderComponent implements OnInit {
 
   constructor(
     public appWorker: AppWorker,
-    private storage: AppStorage,
+    public storage: AppStorage,
     public authService: AuthService,
     public TaskService: TaskService,
     public taskMemberAuthService: TaskMemberAuthService,
@@ -65,7 +65,7 @@ export class AdminHeaderComponent implements OnInit {
     private router: Router,
     private boardNotificationService: BoardNotificationService,
     public taskPermissionsService: TaskPermissionsService,
-    private calendarSyncService: CalendarSyncService
+    private calendarSyncService: CalendarSyncService,
   ) {}
 
   async onInitFunction() {
