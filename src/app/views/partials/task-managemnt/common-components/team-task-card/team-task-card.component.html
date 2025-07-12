@@ -186,7 +186,7 @@
             >
               <img
                 *ngIf="member.profileImage; else memberInitials"
-                [src]="imageBaseUrl + member.profileImage"
+                [src]="member.isDeleted ? imageBaseUrl + '/task_management/profiles/default-deleted-profile-image.png' : imageBaseUrl + member.profileImage"
                 [alt]="member.name"
                 class="tw-w-full tw-h-full tw-object-cover"
                 (error)="onImageError($event)"
@@ -214,9 +214,9 @@
 
               <div class="tw-flex tw-items-center tw-space-x-3">
                 <img
-                  [src]="imageBaseUrl + member.profileImage"
+                  [src]="member.isDeleted ? imageBaseUrl + '/task_management/profiles/default-deleted-profile-image.png' : imageBaseUrl + member.profileImage"
                   [alt]="member.name"
-                  class="tw-w-10 tw-h-10 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-600"
+                  class="tw-w-10 tw-h-10 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-600 tw-bg-gray-100"
                 />
                 <div class="tw-max-w-[132px]">
                   <p class="tw-font-medium tw-text-white tw-text-sm">

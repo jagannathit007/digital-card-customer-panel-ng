@@ -39,6 +39,7 @@ export interface TeamMember {
   emailId: string;
   role: string;
   profileImage: string;
+  isDeleted: boolean;
 }
 
 export interface TaskCategory {

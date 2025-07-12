@@ -29,6 +29,7 @@ interface TeamMember {
   emailId: string;
   role: string;
   id?: string;
+  isDeleted?: boolean;
 }
 
 @Component({
@@ -132,6 +133,8 @@ private tooltipTimeout: any;
       type: this.type,
     });
 
+    console.log('Team members response:', response);
+
     if (!response) {
       this.isLoading.set(false);
       return;
@@ -139,6 +142,7 @@ private tooltipTimeout: any;
 
     if (firstTime && response.assignedMembers.length > 0) {
       this.selectedMembers = response.assignedMembers;
+      console.log('Selected members:', this.selectedMembers);
       this.addedMembers = [...this.selectedMembers];
       this.selectedMembersChange.emit([...this.selectedMembers]);
     }

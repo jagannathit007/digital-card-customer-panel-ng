@@ -94,9 +94,15 @@
             (mouseleave)="hideIndividualProfileTooltip()"
           >
             <img
-              [src]="getProfileImageUrl(member.profileImage)"
+              [src]="
+                member.isDeleted
+                  ? getProfileImageUrl(
+                      '/task_management/profiles/default-deleted-profile-image.png'
+                    )
+                  : getProfileImageUrl(member.profileImage)
+              "
               [alt]="member.name"
-              class="tw-w-8 tw-h-8 tw-rounded-full tw-border-2 tw-border-white tw-shadow-sm tw-object-cover tw-cursor-pointer"
+              class="tw-w-8 tw-h-8 tw-rounded-full tw-border-2 tw-border-white tw-shadow-sm tw-object-cover tw-cursor-pointer tw-bg-gray-100"
             />
           </div>
         </div>
@@ -270,9 +276,15 @@
         <!-- Profile Image -->
         <div class="tw-flex-shrink-0 tw-mr-3">
           <img
-            [src]="getProfileImageUrl(member.profileImage)"
+            [src]="
+              member.isDeleted
+                ? getProfileImageUrl(
+                    '/task_management/profiles/default-deleted-profile-image.png'
+                  )
+                : getProfileImageUrl(member.profileImage)
+            "
             [alt]="member.name"
-            class="tw-w-10 tw-h-10 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-200"
+            class="tw-w-10 tw-h-10 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-200 tw-bg-gray-100"
           />
         </div>
 
@@ -394,9 +406,15 @@
 >
   <div class="tw-flex tw-items-center tw-space-x-3">
     <img
-      [src]="getProfileImageUrl(hoveredMember.profileImage)"
+      [src]="
+        hoveredMember.isDeleted
+          ? getProfileImageUrl(
+              '/task_management/profiles/default-deleted-profile-image.png'
+            )
+          : getProfileImageUrl(hoveredMember.profileImage)
+      "
       [alt]="hoveredMember.name"
-      class="tw-w-10 tw-h-10 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-600"
+      class="tw-w-10 tw-h-10 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-600 tw-bg-gray-100"
     />
     <div>
       <p class="tw-font-medium tw-text-white tw-text-sm">
@@ -437,9 +455,15 @@
       (mouseleave)="hideIndividualProfileTooltip()"
     >
       <img
-        [src]="getProfileImageUrl(member.profileImage)"
+        [src]="
+          member.isDeleted
+            ? getProfileImageUrl(
+                '/task_management/profiles/default-deleted-profile-image.png'
+              )
+            : getProfileImageUrl(member.profileImage)
+        "
         [alt]="member.name"
-        class="tw-w-10 tw-h-10 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-600 tw-transition-transform tw-duration-200 hover:tw-scale-110"
+        class="tw-w-10 tw-h-10 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-600 tw-transition-transform tw-duration-200 hover:tw-scale-110 tw-bg-gray-100"
       />
     </div>
   </div>
