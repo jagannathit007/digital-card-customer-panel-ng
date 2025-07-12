@@ -92,7 +92,11 @@
           Stop
         </button>
         
+        <!-- CHANGE 3: Continue to Proceed button disabled when no text -->
         <button class="tw-bg-gradient-to-r tw-from-green-500 tw-to-green-600 tw-text-white tw-px-6 tw-py-3 tw-rounded-full tw-font-medium tw-shadow-lg tw-shadow-green-500/30 hover:tw-shadow-green-500/50 hover:tw-scale-105 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-gap-2"
+                [disabled]="!recognizedText.trim()"
+                [class.tw-opacity-50]="!recognizedText.trim()"
+                [class.tw-cursor-not-allowed]="!recognizedText.trim()"
                 (click)="continueToProcceed()">
           <svg class="tw-w-4 tw-h-4" fill="currentColor" viewBox="0 0 24 24">
             <path d="M8 5v14l11-7z"/>
@@ -115,14 +119,15 @@
         </button>
       </div>
 
-      <!-- Close Now Button (when processing) -->
+      <!-- CHANGE 4: Stop Button during processing - goes back to Start Speaking -->
       <div *ngIf="isProcessing" class="tw-flex tw-justify-center">
         <button class="tw-bg-gradient-to-r tw-from-red-500 tw-to-red-600 tw-text-white tw-px-6 tw-py-3 tw-rounded-full tw-font-medium tw-shadow-lg tw-shadow-red-500/30 hover:tw-shadow-red-500/50 hover:tw-scale-105 tw-transition-all tw-duration-300 tw-flex tw-items-center tw-gap-2"
-                (click)="closeInteractionModal()">
+                (click)="stopProcessingAndReset()">
           <svg class="tw-w-4 tw-h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10l2 2 4-4"/>
           </svg>
-          Close Now
+          Stop
         </button>
       </div>
     </div>
