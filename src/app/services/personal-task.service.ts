@@ -288,7 +288,7 @@ export class PersonalTaskService {
       if (response.status == 200 && response.data) {
         return response.data;
       } else {
-        swalHelper.showToast(response.message, 'warning');
+        // swalHelper.showToast(response.message, 'warning');
         return null;
       }
     } catch (err) {
