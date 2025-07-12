@@ -198,7 +198,7 @@
     </div>
 
     <!-- Pagination -->
-    <div class="tw-flex tw-justify-center tw-items-center tw-gap-4 tw-py-8">
+    <div *ngIf="totalPages > 1" class="tw-flex tw-justify-center tw-items-center tw-gap-4 tw-py-8">
       <button
         class="tw-px-4 tw-py-2 tw-rounded-lg tw-border tw-border-gray-200 tw-text-gray-600 hover:tw-bg-gray-50 tw-transition-colors tw-disabled:opacity-50 tw-disabled:cursor-not-allowed"
         [disabled]="page === 1"

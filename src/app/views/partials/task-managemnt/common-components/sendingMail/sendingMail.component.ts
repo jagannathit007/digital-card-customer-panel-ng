@@ -38,7 +38,7 @@ export class SendingMailComponent implements OnInit {
   @Output() closeModal = new EventEmitter<void>();
   @Output() mailSent = new EventEmitter<Member>();
 
-  baseURL = environment.baseURL;
+  baseURL = environment.imageURL;
   isAnimating: boolean = false;
   showSuccess: boolean = false;
 
