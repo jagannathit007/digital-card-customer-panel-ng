@@ -222,6 +222,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       console.log('data from sockets : ', data);
       this.updateTaskInColumns(
         data.taskId,
+        data.boardId,
         data.updates.fromColumn,
         data.updates.toColumn,
         data.updates.fromPosition,
@@ -232,11 +233,14 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
 
   private updateTaskInColumns(
     taskId: string,
+    boardId: string,
     fromColumn: string,
     toColumn: string,
     fromPosition: number,
     toPosition: number
   ) {
+    if(!this.boardId() || this.boardId() !== boardId) return;
+    
     const columns = [...this.boardColumns()];
     let updatedTask: Task | undefined;
 
