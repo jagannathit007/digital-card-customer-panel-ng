@@ -25,6 +25,7 @@ import { DragDropService } from 'src/app/services/drag-drop.service';
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 import { TaskPermissionsService } from './../../../../../../../services/task-permissions.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { SocketService } from 'src/app/services/socket.service';
 import { TeamTaskEventService } from 'src/app/services/teamTaskEvent.service';
 
 interface TaskUpdate {
@@ -191,10 +192,16 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private dragDropService: DragDropService,
     private fb: FormBuilder,
-    private teamTaskEventService: TeamTaskEventService
+    private teamTaskEventService: TeamTaskEventService,
+    private socketService: SocketService
   ) {}
 
   async ngOnInit() {
+    // joining in team task room
+    this.socketService.joinRoom('team_task');
+
+    this.setupTaskUpdateSubscriptionBySocket();
+
     this.boardId.set(this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '');
     this.columnForm = this.fb.group({
       columnName: [
@@ -207,6 +214,108 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.setupKeyboardListeners();
     this.setupDragDropSubscription();
     this.setupTaskUpdateSubscription();
+  }
+
+  private setupTaskUpdateSubscriptionBySocket() {
+    this.socketService.onTaskUpdated().subscribe((data) => {
+      // this.messages.push(data);
+      console.log('data from sockets : ', data);
+      this.updateTaskInColumns(
+        data.taskId,
+        data.updates.fromColumn,
+        data.updates.toColumn,
+        data.updates.fromPosition,
+        data.updates.toPosition
+      );
+
+      // sockets data example
+      //       {
+      //     "taskId": "687233394cd7895818265372",
+      //     "boardId": "687233164cd789581826533d",
+      //     "updates": {
+      //         "fromColumn": "687233164cd7895818265342",
+      //         "toColumn": "687233164cd7895818265341",
+      //         "fromPosition": 1,
+      //         "toPosition": 1
+      //     },
+      //     "timestamp": "2025-07-14T06:12:21.955Z"
+      // }
+    });
+  }
+
+  private updateTaskInColumns(
+    taskId: string,
+    fromColumn: string,
+    toColumn: string,
+    fromPosition: number,
+    toPosition: number
+  ) {
+    const columns = [...this.boardColumns()];
+    let updatedTask: Task | undefined;
+
+    // Find the task in any column
+    const sourceColumn = columns.find((col) => col._id === fromColumn);
+    const targetColumn = columns.find((col) => col._id === toColumn);
+
+    if (!sourceColumn || !targetColumn) {
+      console.warn(
+        `Source or target column not found: ${fromColumn} -> ${toColumn}`
+      );
+      return;
+    }
+
+    // Find the task in the source column
+    updatedTask = sourceColumn.tasks.find((task) => task._id === taskId);
+
+    if (!updatedTask) {
+      console.warn(`Task ${taskId} not found in source column ${fromColumn}`);
+      return;
+    }
+
+    // Remove task from source column
+    sourceColumn.tasks = sourceColumn.tasks.filter(
+      (task) => task._id !== taskId
+    );
+
+    // Update task properties
+    updatedTask.column = toColumn;
+    updatedTask.position = toPosition;
+
+    // Update task status based on target column
+    this.updateTaskStatus(updatedTask, targetColumn, sourceColumn);
+
+    // Insert task at the specified position in the target column
+    targetColumn.tasks.splice(toPosition, 0, updatedTask);
+
+    // Update positions in both source and target columns
+    sourceColumn.tasks.forEach((task, index) => {
+      task.position = index;
+    });
+    targetColumn.tasks.forEach((task, index) => {
+      task.position = index;
+    });
+
+    // Update the board columns
+    this.boardColumns.set(columns);
+
+    // Trigger change detection for UI update
+    this.cdr.detectChanges();
+
+    console.log('Task updated via socket:', {
+      taskId,
+      fromColumn,
+      toColumn,
+      fromPosition,
+      toPosition,
+      targetColumnTasks: targetColumn.tasks.map((t) => ({
+        id: t._id,
+        position: t.position,
+      })),
+      sourceColumnTasks: sourceColumn.tasks.map((t) => ({
+        id: t._id,
+        position: t.position,
+      })),
+    });
   }
 
   private setupTaskUpdateSubscription() {
@@ -320,6 +429,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.clearAutoScroll();
     this.isDragActive = false;
     document.removeEventListener('mousemove', this.trackMouseDuringDrag);
+
+    this.socketService.leaveRoom('team_task');
   }
 
   private setupDragDropSubscription() {
@@ -863,6 +974,21 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         toPosition: event.currentIndex,
       });
 
+      if (updateInDatabase) {
+        const taskId = event.container.data[event.currentIndex]._id;
+        const fromColumn = sourceColumn._id;
+        const toColumn = targetColumnId;
+        const fromPosition = event.previousIndex;
+        const toPosition = event.currentIndex;
+
+        this.socketService.sendTaskUpdate('team_task', taskId, this.boardId(), {
+          fromColumn,
+          toColumn,
+          fromPosition,
+          toPosition,
+        });
+      }
+
       if (!updateInDatabase) {
         // Fallback: undo the move of local
         if (sourceColumnId === targetColumnId) {
@@ -892,8 +1018,16 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     }
   }
 
-  private updateTaskStatus(task: Task, column: BoardColumn, sourceColumn: BoardColumn) {
-    if (!['completed', 'deleted'].includes(column.title.toLowerCase()) && !['completed', 'deleted'].includes(sourceColumn.title.toLowerCase())) return;
+  private updateTaskStatus(
+    task: Task,
+    column: BoardColumn,
+    sourceColumn: BoardColumn
+  ) {
+    if (
+      !['completed', 'deleted'].includes(column.title.toLowerCase()) &&
+      !['completed', 'deleted'].includes(sourceColumn.title.toLowerCase())
+    )
+      return;
     switch (column.title.toLowerCase()) {
       case 'completed':
         task.status = 'completed';
@@ -1171,6 +1305,12 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       const updateInDatabase = this.taskService.reorderBoardTasks({
         toColumn: targetColumnId,
         taskId: task._id,
+        toPosition: 0,
+      });
+      this.socketService.sendTaskUpdate('team_task', task._id, this.boardId(), {
+        fromColumn: sourceColumn._id,
+        toColumn: targetColumnId,
+        fromPosition: taskIndex,
         toPosition: 0,
       });
       if (!updateInDatabase) {
