@@ -227,19 +227,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         data.updates.fromPosition,
         data.updates.toPosition
       );
-
-      // sockets data example
-      //       {
-      //     "taskId": "687233394cd7895818265372",
-      //     "boardId": "687233164cd789581826533d",
-      //     "updates": {
-      //         "fromColumn": "687233164cd7895818265342",
-      //         "toColumn": "687233164cd7895818265341",
-      //         "fromPosition": 1,
-      //         "toPosition": 1
-      //     },
-      //     "timestamp": "2025-07-14T06:12:21.955Z"
-      // }
     });
   }
 
