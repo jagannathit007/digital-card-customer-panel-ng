@@ -47,4 +47,19 @@ export class SocketService {
       });
     });
   }
+
+  // comment update
+  sendCommentUpdate(room: string, taskId: string, boardId: string, type: string, updates: any): void {
+    console.log('Sending comment update:', { taskId, boardId, type, updates });
+    this.socket.emit('comment_update', room, { taskId, boardId, type, updates });
+  }
+
+  // Listen to comment_updated event
+  onCommentUpdated(): Observable<any> {
+    return new Observable(observer => {
+      this.socket.on('comment_update', (data) => {
+        observer.next(data);
+      });
+    });
+  }
 }

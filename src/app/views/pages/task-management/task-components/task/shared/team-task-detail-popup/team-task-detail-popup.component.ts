@@ -24,6 +24,7 @@ import { MemberDetailDropdownComponent } from '../../../../../../partials/task-m
 import { TeamTaskEventService } from 'src/app/services/teamTaskEvent.service';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
+import { SocketService } from 'src/app/services/socket.service';
 
 interface TaskMember {
   _id: string;
@@ -275,7 +276,8 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     public taskPermissionsService: TaskPermissionsService,
     private sanitizer: DomSanitizer,
     private teamTaskEventService: TeamTaskEventService,
-    private storage: AppStorage
+    private storage: AppStorage,
+    private socketService: SocketService
   ) {}
 
   ngOnInit(): void {
@@ -283,6 +285,29 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     this.initializeEditor();
     this.setupRouteSubscriptions();
     this.loadTaskData();
+
+    this.setupCommentsUpdateBySocket();
+  }
+
+  setupCommentsUpdateBySocket() {
+    this.socketService.onCommentUpdated().subscribe((data) => {
+      // this.messages.push(data);
+      console.log('commnents updated from sockets : ', data);
+      console.log(this.task.board, data.boardId, !this.task.board, this.task.board !== data.boardId);
+      
+      if (!this.task.board || this.task.board !== data.boardId) return;
+      
+      if(data.type == 'add'){
+        this.task.comments.push(data.updates);
+        this.scrollToBottom();
+      }
+      if(data.type == 'remove'){
+        const comment = this.task.comments.find((c) => c._id === data.updates._id);
+        if (comment) {
+          comment.isDeleted = true;
+        }
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -840,6 +865,15 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       isDeleted: false,
     };
     this.task.comments.push(newComment);
+
+    this.socketService.sendCommentUpdate(
+      'team_task',
+      this.task._id,
+      this.task.board,
+      'add',
+      newComment
+    )
+
     this.emitTaskUpdate(
       'comments',
       this.task.comments.filter((c) => !c.isDeleted).length
@@ -941,6 +975,15 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
               type: 'task',
             });
             comment.isDeleted = true;
+
+            this.socketService.sendCommentUpdate(
+              'team_task',
+              this.task._id,
+              this.task.board,
+              'remove',
+              comment
+            )
+
             this.emitTaskUpdate(
               'comments',
               this.task.comments.filter((c) => !c.isDeleted).length
