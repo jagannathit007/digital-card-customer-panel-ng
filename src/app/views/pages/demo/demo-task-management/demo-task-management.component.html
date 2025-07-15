@@ -1,0 +1,37 @@
+<div class="card">
+  <div class="card-body text-center py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="mb-4">
+          <i class="ri-task-line text-primary" style="font-size: 5rem;"></i>
+        </div>
+        <h2 class="fw-bold mb-3">Task Management System</h2>
+        <p class="lead mb-4">
+          You are being redirected to our task management platform. Please wait a moment...
+        </p>
+        
+        <div class="d-flex justify-content-center mb-4">
+          <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+
+        <div class="alert alert-info">
+          <div class="d-flex align-items-center">
+            <i class="ri-information-line me-2" style="font-size: 1.5rem;"></i>
+            <div>
+              If you are not redirected automatically within <strong class="countdown">5</strong> seconds, 
+              please click the button below.
+            </div>
+          </div>
+        </div>
+
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mt-4">
+          <button class="btn btn-primary btn-lg px-4 gap-3" (click)="redirectToTaskManager()">
+            <i class="ri-external-link-line me-2"></i> Go to Task Manager Now
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

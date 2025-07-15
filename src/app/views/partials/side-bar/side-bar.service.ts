@@ -9,7 +9,13 @@ import { Subscription } from 'rxjs';
   providedIn: 'root',
 })
 export class SideBarService {
-  constructor(private router: Router, public authService: AuthService, private storage: AppStorage) {}
+  constructor(private router: Router, public authService: AuthService, private storage: AppStorage) {
+    let userData = this.storage.get(common.USER_DATA);
+    if (userData != null) {
+      this.isAdminLogin = (userData.emailId == "info@itfuturz.com");
+      // this.isAdminLogin = (userData.emailId == "dgr@gmail.com");
+    }
+  }
 
   async getMenusByProducts(subscriptionData: any[]): Promise<any[]> {
     const products = subscriptionData.map(item => item.product);
@@ -35,7 +41,7 @@ export class SideBarService {
 
     const googleReviewMenu = {
       title: 'Google Review',
-      link: 'google-standee',
+      link: 'google-reviews',
       icon: 'star',
     };
 
@@ -57,25 +63,31 @@ export class SideBarService {
       icon: 'user',
     };
 
-    const taskManagementMenu = {
-    title: 'Task Management',
-    link: 'task-management',
-    icon: 'file-text',
-  };
+    const attendanceManagementMenu = {
+      title: 'Attendance',
+      link: 'attendance',
+      icon: 'users',
+    };
 
-    const hasDigitalOrNFC = products.some(product => 
+    const taskManagementMenu = {
+      title: 'Task Management',
+      link: 'task-management',
+      icon: 'file-text',
+    };
+
+    const hasDigitalOrNFC = products.some(product =>
       product === "digital-card" || product === "nfc-card"
     );
 
-    const hasWebsiteDetails = products.some(product => 
+    const hasWebsiteDetails = products.some(product =>
       product === "website-details"
     );
 
-    const hasGoogleReview = products.some(product => 
+    const hasGoogleReview = products.some(product =>
       product === "google-standee"
     );
-   
-    const hasTaskManagement = products.some(product => 
+
+    const hasTaskManagement = products.some(product =>
       product === "task-management"
     );
 
@@ -95,19 +107,39 @@ export class SideBarService {
       }
     }
 
+    if (this.isAdminLogin) {
+
+      //has attendance review
+      let hasAttendance = menus.filter((e)=> e.title == attendanceManagementMenu.title);
+      if(hasAttendance.length == 0){
+        menus.splice(menus.length - 1, 0, attendanceManagementMenu);
+      }
+      
+      //has task management
+      let hasTask = menus.filter((e)=> e.title == taskManagementMenu.title);
+      if(hasTask.length == 0){
+        menus.splice(menus.length - 1, 0, taskManagementMenu);
+      }
+
+      //has google review
+      let hasGoogleReview = menus.filter((e)=> e.title == googleReviewMenu.title);
+      if(hasGoogleReview.length == 0){
+        menus.splice(menus.length - 1, 0, googleReviewMenu);
+      }
+       
+    }
+
     // if (hasGoogleReview) {
     //   menus.splice(menus.length - 1, 0, googleReviewMenu);
     // }
-
-    if (hasTaskManagement) {
-    menus.splice(menus.length - 1, 0, taskManagementMenu);
-  }
 
     return [{
       moduleName: 'Member',
       menus: menus
     }];
   }
+
+  isAdminLogin: boolean = false;
 
   isMobile: boolean = false;
   activeSubMenuIndex: number | null = null;

@@ -4,6 +4,9 @@ import { SignInComponent } from './views/pages/auth/sign-in/sign-in.component';
 import { HomeLayoutComponent } from './views/partials/home-layout/home-layout.component';
 import { AuthGuard } from './guards/auth.guard';
 import { TokenVerificationComponent } from './views/standalone/token-verification/token-verification.component';
+import { DemoTaskManagementComponent } from './views/pages/demo/demo-task-management/demo-task-management.component';
+import { DemoGoogleReviewComponent } from './views/pages/demo/demo-google-review/demo-google-review.component';
+import { DemoAttendanceComponent } from './views/pages/demo/demo-attendance/demo-attendance.component';
 
 
 export const routes: Routes = [
@@ -33,17 +36,29 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
         data: { requiredProduct: 'website-details' }
       },
+      // {
+      //   path: 'task-management',
+      //   loadChildren:()=>import('./views/pages/task-management/task.module').then(m=>m.TaskModule),
+      //   canActivate: [AuthGuard],
+      //   data: { requiredProduct: 'task-management' }
+      // },
+      // {
+      //   path: 'google-standee',
+      //   loadComponent:()=>import('./views/pages/google-standee/google-standee.component').then(m=>m.GoogleStandeeComponent),
+      //   canActivate: [AuthGuard],
+      //   data: { requiredProduct: 'google-standee' }
+      // },
       {
-        path: 'task-management',
-        loadChildren:()=>import('./views/pages/task-management/task.module').then(m=>m.TaskModule),
-        canActivate: [AuthGuard],
-        data: { requiredProduct: 'task-management' }
+        path: 'attendance',
+        component: DemoAttendanceComponent,
       },
       {
-        path: 'google-standee',
-        loadComponent:()=>import('./views/pages/google-standee/google-standee.component').then(m=>m.GoogleStandeeComponent),
-        canActivate: [AuthGuard],
-        data: { requiredProduct: 'google-standee' }
+        path: 'task-management',
+        component: DemoTaskManagementComponent,
+      },
+      {
+        path: 'google-reviews',
+        component: DemoGoogleReviewComponent,
       },
       {
         path: 'profile',
