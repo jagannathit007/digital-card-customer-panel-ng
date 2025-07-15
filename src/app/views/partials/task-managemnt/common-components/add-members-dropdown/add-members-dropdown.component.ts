@@ -142,7 +142,6 @@ private tooltipTimeout: any;
 
     if (firstTime && response.assignedMembers.length > 0) {
       this.selectedMembers = response.assignedMembers;
-      console.log('Selected members:', this.selectedMembers);
       this.addedMembers = [...this.selectedMembers];
       this.selectedMembersChange.emit([...this.selectedMembers]);
     }
@@ -219,7 +218,6 @@ private tooltipTimeout: any;
 }
 
 hideMembersTooltip(): void {
-  console.log('Hiding members tooltip');
   // Set a 100 miliseconds delay before hiding
   this.tooltipTimeout = setTimeout(() => {
     this.showTooltip = false;
