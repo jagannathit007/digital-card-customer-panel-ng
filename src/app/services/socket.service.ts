@@ -48,6 +48,20 @@ export class SocketService {
     });
   }
 
+  // send task details update
+  sendTaskDetailsUpdate(room: string, taskId: string, boardId: string, type: string, updates: any): void {
+    this.socket.emit('task_details_update', room, { taskId, boardId, type, updates });
+  }
+
+  // on task details update
+  onTaskDetailsUpdate(): Observable<any> {
+    return new Observable(observer => {
+      this.socket.on('task_details_update', (data) => {
+        observer.next(data);
+      });
+    });
+  }
+
   // comment update
   sendCommentUpdate(room: string, taskId: string, boardId: string, type: string, updates: any): void {
     console.log('Sending comment update:', { taskId, boardId, type, updates });

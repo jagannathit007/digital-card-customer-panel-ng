@@ -334,6 +334,7 @@
             </ng-template> -->
 
             <add-members-dropdown
+            *ngIf="!isMemberLoad"
               #addMembersDropdown
               [boardId]="task.board"
               [taskId]="task._id"

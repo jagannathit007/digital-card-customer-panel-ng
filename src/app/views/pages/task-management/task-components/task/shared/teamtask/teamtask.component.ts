@@ -143,10 +143,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     if (this.drag) {
       this.setupDragPreview();
     }
-    console.log('📋 ViewChild check:', this.kanbanContainer);
-    if (this.kanbanContainer) {
-      console.log('✅ Container found:', this.kanbanContainer.nativeElement);
-    }
   }
 
   // ! Curently Comennt for testing
@@ -214,6 +210,32 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.setupKeyboardListeners();
     this.setupDragDropSubscription();
     this.setupTaskUpdateSubscription();
+
+    this.setupTaskUpdateBySocket();
+  }
+
+  setupTaskUpdateBySocket() {
+    this.socketService.onTaskDetailsUpdate().subscribe((data) => {
+      // this.messages.push(data);
+      console.log('task updated from sockets : ', data);
+      if (!this.boardId() || this.boardId() !== data.boardId || !data.taskId)
+        return;
+
+      if (['attachments'].includes(data.type)) {
+        console.log('data.type', data);
+        this.handleTaskUpdate({
+          taskId: data.taskId,
+          field: data.type,
+          value: data.updates.data.length,
+        });
+      } else {
+        this.handleTaskUpdate({
+          taskId: data.taskId,
+          field: data.type,
+          value: data.updates.data,
+        });
+      }
+    });
   }
 
   private setupTaskUpdateSubscriptionBySocket() {
@@ -239,8 +261,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     fromPosition: number,
     toPosition: number
   ) {
-    if(!this.boardId() || this.boardId() !== boardId) return;
-    
+    if (!this.boardId() || this.boardId() !== boardId) return;
+
     const columns = [...this.boardColumns()];
     let updatedTask: Task | undefined;
 
@@ -320,7 +342,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   private handleTaskUpdate(taskUpdate: TaskUpdate) {
     const { taskId, field, value } = taskUpdate;
 
-    console.log(taskUpdate);
     const columns = [...this.boardColumns()];
     let updatedTask: Task | undefined;
 

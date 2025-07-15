@@ -151,6 +151,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   isSavingTitle = false;
   isSavingDescription = false;
   isLoading = true;
+  isMemberLoad = false;
 
   BoardMembers: any = [];
   imageBaseUrl = '';
@@ -169,6 +170,14 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     if (this.dueDateInput?.nativeElement) {
       this.dueDateInput.nativeElement.value = '';
     }
+
+    this.socketService.sendTaskDetailsUpdate(
+      'team_task',
+      this.taskId,
+      this.task.board,
+      'dueDate',
+      { data: null }
+    );
 
     // Emit the update
     this.emitTaskUpdate('dueDate', null);
@@ -286,23 +295,79 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     this.setupRouteSubscriptions();
     this.loadTaskData();
 
+    this.setupTaskUpdateBySocket();
     this.setupCommentsUpdateBySocket();
+  }
+
+  setupTaskUpdateBySocket() {
+    this.socketService.onTaskDetailsUpdate().subscribe((data) => {
+      // this.messages.push(data);
+      console.log('task updated from sockets : ', data);
+      if (
+        !this.task.board ||
+        this.task.board !== data.boardId ||
+        !data.taskId ||
+        data.taskId !== this.task._id
+      )
+        return;
+
+      const updateType = data.type;
+      const updateData = data.updates.data;
+
+      console.log('updateType', updateType, 'updateData', updateData);
+
+      if (updateType === 'title' && typeof updateData === 'string') {
+        this.task.title = updateData;
+      } else if (
+        updateType === 'description' &&
+        typeof updateData === 'string'
+      ) {
+        this.task.description = updateData;
+      } else if (updateType === 'status' && typeof updateData === 'string') {
+        this.task.status = updateData;
+
+        this.task.completedAt =
+          updateData === 'completed' ? `${new Date()}` : null;
+        this.task.deletedAt = updateData === 'deleted' ? `${new Date()}` : null;
+
+        if (updateData === 'completed' || updateData === 'deleted') {
+          this.taskPermissions = false;
+        }
+      } else if (
+        updateType === 'dueDate' &&
+        (typeof updateData === 'string' || updateData === null)
+      ) {
+        this.task.dueDate = updateData;
+      } else if (updateType === 'assignedTo' && Array.isArray(updateData)) {
+        this.task.assignedTo = updateData;
+        this.isMemberLoad = true;
+        this.taskPermissions = ['completed', 'deleted'].includes(
+          this.task?.status
+        )
+          ? false
+          : this.taskPermissionsService.isTeamTaskCardAccessible(this.task);
+
+        setTimeout(() => {
+          this.isMemberLoad = false;
+        }, 10);
+      } else if (updateType === 'attachments' && Array.isArray(updateData)) {
+        this.task.attachments = updateData;
+      }
+    });
   }
 
   setupCommentsUpdateBySocket() {
     this.socketService.onCommentUpdated().subscribe((data) => {
-      // this.messages.push(data);
-      console.log('commnents updated from sockets : ', data);
-      console.log(this.task.board, data.boardId, !this.task.board, this.task.board !== data.boardId);
-      
       if (!this.task.board || this.task.board !== data.boardId) return;
-      
-      if(data.type == 'add'){
+
+      if (data.type == 'add') {
         this.task.comments.push(data.updates);
         this.scrollToBottom();
       }
-      if(data.type == 'remove'){
-        const comment = this.task.comments.find((c) => c._id === data.updates._id);
+      if (data.type == 'remove') {
+        const comment = this.task.comments.find(
+          (c) => c._id === data.updates._id
+        );
         if (comment) {
           comment.isDeleted = true;
         }
@@ -359,10 +424,6 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       type: 'board',
       boardId: boardId,
     });
-
-    console.log('boardId', boardId);
-
-    console.log('Task details response:', response);
 
     if (response) {
       const users = await this.loadAvailableUsers(response.board);
@@ -462,7 +523,19 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       assignedTo: selectedMembers.map((member: TaskMember) => member._id),
     });
 
-    console.log('Assigned members updated:', response);
+    this.socketService.sendTaskDetailsUpdate(
+      'team_task',
+      this.taskId,
+      this.task.board,
+      'assignedTo',
+      { data: selectedMembers }
+    );
+
+    this.emitTaskUpdate('assignedTo', this.task.assignedTo);
+
+    this.taskPermissions = ['completed', 'deleted'].includes(this.task?.status)
+      ? false
+      : await this.taskPermissionsService.isTeamTaskCardAccessible(this.task);
 
     if (!response) {
       // failed to update assigned members
@@ -498,6 +571,14 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       taskId: this.taskId,
       title: this.editTitle.trim(),
     });
+
+    this.socketService.sendTaskDetailsUpdate(
+      'team_task',
+      this.taskId,
+      this.task.board,
+      'title',
+      { data: this.editTitle.trim() }
+    );
 
     if (response) {
       this.task.title = this.editTitle.trim();
@@ -541,6 +622,14 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       if (status === 'completed' || status === 'deleted') {
         this.taskPermissions = false;
       }
+
+      this.socketService.sendTaskDetailsUpdate(
+        'team_task',
+        this.taskId,
+        this.task.board,
+        'status',
+        { data: status }
+      );
 
       this.emitTaskUpdate('status', status);
     } else {
@@ -638,6 +727,15 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     }
 
     this.task.dueDate = day.fullDate.toISOString();
+
+    this.socketService.sendTaskDetailsUpdate(
+      'team_task',
+      this.taskId,
+      this.task.board,
+      'dueDate',
+      { data: this.task.dueDate }
+    );
+
     this.emitTaskUpdate('dueDate', this.task.dueDate);
     this.showCustomDatePicker = false;
     // Update currentCalendarDate to the selected date
@@ -669,6 +767,15 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
 
   clearDate(): void {
     this.task.dueDate = null;
+
+    this.socketService.sendTaskDetailsUpdate(
+      'team_task',
+      this.taskId,
+      this.task.board,
+      'dueDate',
+      { data: null }
+    );
+
     this.emitTaskUpdate('dueDate', null);
     this.showCustomDatePicker = false;
 
@@ -682,6 +789,15 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   setToday(): void {
     const today = new Date();
     this.task.dueDate = today.toISOString();
+
+    this.socketService.sendTaskDetailsUpdate(
+      'team_task',
+      this.taskId,
+      this.task.board,
+      'dueDate',
+      { data: this.task.dueDate }
+    );
+
     this.emitTaskUpdate('dueDate', this.task.dueDate);
     this.showCustomDatePicker = false;
 
@@ -811,6 +927,15 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
 
     if (response) {
       this.isEditingDescription = false;
+
+      this.socketService.sendTaskDetailsUpdate(
+        'team_task',
+        this.taskId,
+        this.task.board,
+        'description',
+        { data: this.task.description }
+      );
+
       this.emitTaskUpdate('description', this.task.description);
       this.isSavingDescription = false;
     } else {
@@ -872,7 +997,15 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       this.task.board,
       'add',
       newComment
-    )
+    );
+
+    this.socketService.sendTaskDetailsUpdate(
+      'team_task',
+      this.taskId,
+      this.task.board,
+      'comments',
+      { data: this.task.comments.filter((c) => !c.isDeleted).length }
+    );
 
     this.emitTaskUpdate(
       'comments',
@@ -982,7 +1115,15 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
               this.task.board,
               'remove',
               comment
-            )
+            );
+
+            this.socketService.sendTaskDetailsUpdate(
+              'team_task',
+              this.taskId,
+              this.task.board,
+              'comments',
+              { data: this.task.comments.filter((c) => !c.isDeleted).length }
+            );
 
             this.emitTaskUpdate(
               'comments',
@@ -1026,6 +1167,14 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
 
         this.task.attachments.push(response);
 
+        this.socketService.sendTaskDetailsUpdate(
+          'team_task',
+          this.taskId,
+          this.task.board,
+          'attachments',
+          { data: this.task.attachments }
+        );
+
         this.emitTaskUpdate('attachments', this.task.attachments.length);
       }
     }
@@ -1066,6 +1215,14 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
             // Remove the entire attachment if it has only one file
             this.task.attachments.splice(attachmentIndex, 1);
           }
+
+          this.socketService.sendTaskDetailsUpdate(
+            'team_task',
+            this.taskId,
+            this.task.board,
+            'attachments',
+            { data: this.task.attachments }
+          );
 
           // Emit the updated attachments
           this.emitTaskUpdate('attachments', this.task.attachments.length);
