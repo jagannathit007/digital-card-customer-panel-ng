@@ -1,19 +1,180 @@
-<p>myalltask works!</p>
-<!-- In your personal-task.component.html -->
-<button (click)="openAddTaskModal()" class="tw-bg-blue-600 tw-text-white tw-px-4 tw-py-2 tw-rounded">
-  Add Task
-</button>
+<!-- Simple All Tasks Component -->
+<div class="tw-min-h-[calc(100vh-109px)] tw-bg-gray-50">
+  
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="tw-text-center tw-py-8">
+    <div class="tw-animate-spin tw-rounded-full tw-h-6 tw-w-6 tw-border-b-2 tw-border-blue-500 tw-mx-auto"></div>
+    <p class="tw-mt-2 tw-text-gray-600">Loading...</p>
+  </div>
 
-<!-- <app-personal-task
-  #addTaskModal
-  (taskAdded)="onTaskAdded()">
-</app-personal-task> -->
-<!-- <app-task-timer></app-task-timer> -->
-<app-task-timer
-  [isVisible]="isTaskClockVisible"
-  [mode]="taskClockMode"
-  >
-</app-task-timer>
+  <div class="tw-container tw-mx-auto tw-px-4 tw-py-4 tw-max-w-2xl">
+    
+    <!-- Header -->
+    <div class="tw-mb-6">
+      <h1 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-mb-2">All Tasks</h1>
+      <div class="tw-w-16 tw-h-0.5 tw-bg-blue-500 tw-rounded-full"></div>
+    </div>
 
+    <!-- Tasks Container with Scroll -->
+    <div 
+      class="tw-max-h-[70vh] tw-overflow-y-auto tw-space-y-4 custom-scrollbar"
+      style="max-height: calc(100vh - 200px);"
+    >
+      
+      <!-- Date Groups -->
+      <div *ngFor="let dateGroup of allTaskGroups" class="tw-mb-6">
+        
+        <!-- Date Header with Toggle -->
+        <h3 
+          (click)="toggleGroupExpansion(dateGroup)"
+          class="tw-text-lg tw-font-semibold tw-text-gray-700 tw-mb-3 tw-sticky tw-top-0 tw-bg-gray-50 tw-py-2 tw-cursor-pointer tw-flex tw-items-center tw-justify-between"
+        >
+          {{ formatDateHeader(dateGroup.date) }}
+          <i class="fa-solid" [class.fa-chevron-down]="dateGroup.isExpanded" [class.fa-chevron-right]="!dateGroup.isExpanded"></i>
+        </h3>
 
-<app-task-clock></app-task-clock>
+        <!-- Tasks (shown only if expanded) -->
+        <div *ngIf="dateGroup.isExpanded" class="tw-space-y-3">
+          <div *ngFor="let task of dateGroup.tasks" 
+               class="tw-bg-white tw-p-4 tw-rounded-lg tw-shadow-sm tw-border">
+            
+            <div class="tw-flex tw-items-start tw-justify-between">
+              
+              <!-- Task Content -->
+              <div class="tw-flex tw-items-start tw-gap-3 tw-flex-1">
+                
+                <!-- Checkbox -->
+                <button 
+                  (click)="toggleTaskStatus(task)"
+                  class="tw-w-5 tw-h-5 tw-border-2 tw-rounded-full tw-mt-0.5 tw-flex tw-items-center tw-justify-center"
+                  [class.tw-bg-green-500]="task.isCompleted"
+                  [class.tw-border-green-500]="task.isCompleted"
+                  [class.tw-border-gray-300]="!task.isCompleted"
+                >
+                  <i *ngIf="task.isCompleted" class="fa-solid fa-check tw-text-white tw-text-xs"></i>
+                </button>
+
+                <!-- Task Info -->
+                <div class="tw-flex-1">
+                  <p class="tw-text-gray-800 tw-text-sm"
+                     [class.tw-line-through]="task.isCompleted"
+                     [class.tw-text-gray-500]="task.isCompleted">
+                    {{ task.title }}
+                  </p>
+                  
+                  <!-- Due Date -->
+                  <div *ngIf="task.dueOn" class="tw-mt-1">
+                    <span class="tw-text-xs tw-bg-blue-100 tw-text-blue-600 tw-px-2 tw-py-1 tw-rounded tw-flex tw-items-center tw-gap-1 tw-w-fit">
+                      <i class="fa-regular fa-calendar"></i>
+                      {{ formatDate(task.dueOn) }}
+                    </span>
+                  </div>
+
+                  <!-- Completed Date -->
+                  <div *ngIf="task.isCompleted && task.completedOn" class="tw-mt-1">
+                    <span class="tw-text-xs tw-bg-green-100 tw-text-green-600 tw-px-2 tw-py-1 tw-rounded tw-flex tw-items-center tw-gap-1 tw-w-fit">
+                      <i class="fa-solid fa-check"></i>
+                      Completed {{ formatDate(task.completedOn) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Actions: Delete Icon + Three Dots Menu -->
+              <div class="tw-flex tw-items-center tw-gap-2">
+                <!-- Delete Icon (left of three dots) -->
+                <button 
+                  (click)="deleteTask(task._id)"
+                  class="tw-p-2 tw-text-red-500 hover:tw-text-red-700 tw-rounded"
+                >
+                  <i class="fa-regular fa-trash-can"></i>
+                </button>
+
+                <!-- Three Dots Menu -->
+                <div class="tw-relative">
+                  <button 
+                    (click)="toggleDropdown(task._id)"
+                    class="tw-p-2 tw-text-gray-400 hover:tw-text-gray-600 tw-rounded"
+                  >
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                  </button>
+
+                  <!-- Dropdown (removed delete) -->
+                  <div *ngIf="activeDropdownId === task._id" 
+                       class="tw-absolute tw-right-0 tw-top-full tw-mt-1 tw-w-48 tw-bg-white tw-border tw-rounded-lg tw-shadow-lg tw-z-50">
+                    
+                    <!-- Edit Task -->
+                    <button 
+                      (click)="startEdit(task)"
+                      class="tw-w-full tw-text-left tw-px-4 tw-py-3 tw-text-sm tw-text-gray-700 hover:tw-bg-gray-100 tw-border-b tw-flex tw-items-center tw-gap-2">
+                      <i class="fa-regular fa-pen-to-square"></i>
+                      Edit Task
+                    </button>
+
+                    <!-- Set Due Date -->
+                    <button 
+                      (click)="openDateTimePicker(task._id, task.dueOn)"
+                      class="tw-w-full tw-text-left tw-px-4 tw-py-3 tw-text-sm tw-text-gray-700 hover:tw-bg-gray-100 tw-border-b tw-flex tw-items-center tw-gap-2">
+                      <i class="fa-regular fa-clock"></i>
+                      {{ task.dueOn ? 'Edit Due Date' : 'Set Due Date' }}
+                    </button>
+
+                    <!-- Toggle Complete -->
+                    <button 
+                      (click)="toggleTaskStatus(task)"
+                      class="tw-w-full tw-text-left tw-px-4 tw-py-3 tw-text-sm tw-text-gray-700 hover:tw-bg-gray-100 tw-flex tw-items-center tw-gap-2">
+                      <i [class]="task.isCompleted ? 'fa-regular fa-circle' : 'fa-regular fa-check-circle'"></i>
+                      {{ task.isCompleted ? 'Mark Incomplete' : 'Mark Complete' }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="allTaskGroups.length === 0 && !isLoading" class="tw-text-center tw-py-16">
+        <p class="tw-text-gray-500">No tasks found</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div *ngIf="editingTaskId" 
+     class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50">
+  <div class="tw-bg-white tw-p-6 tw-rounded-lg tw-w-96 tw-max-w-full tw-mx-4">
+    <h2 class="tw-text-lg tw-font-semibold tw-mb-4">Edit Task</h2>
+    <input 
+      [(ngModel)]="editTaskTitle"
+      (keydown.enter)="updateTask()"
+      (keydown.escape)="cancelEdit()"
+      class="tw-w-full tw-px-3 tw-py-2 tw-border tw-rounded tw-mb-4"
+      placeholder="Task title..."
+      #editInput
+    />
+    <div class="tw-flex tw-gap-2 tw-justify-end">
+      <button 
+        (click)="cancelEdit()"
+        class="tw-px-4 tw-py-2 tw-text-gray-600 tw-border tw-rounded">
+        Cancel
+      </button>
+      <button 
+        (click)="updateTask()"
+        class="tw-px-4 tw-py-2 tw-bg-blue-500 tw-text-white tw-rounded">
+        Save
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Task Clock Component -->
+<app-task-clock
+  [taskId]="selectedTaskId"
+  [currentDueDate]="selectedTaskDueDate"
+  [isVisible]="showDateTimePicker"
+  (onClose)="closeDateTimePicker()"
+  (onDateTimeUpdated)="onTaskDateTimeUpdated($event)"
+></app-task-clock>

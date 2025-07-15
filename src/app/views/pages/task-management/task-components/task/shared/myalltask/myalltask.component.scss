@@ -1,0 +1,104 @@
+// ===== CUSTOM SCROLLBAR STYLING =====
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9; // Updated colors for better look
+  
+  &::-webkit-scrollbar {
+    width: 8px; // Slightly thicker for better visibility
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 4px;
+    
+    &:hover {
+      background: #64748b;
+    }
+  }
+}
+
+// ===== TASK CARD ANIMATIONS =====
+.task-card {
+  transition: all 0.2s ease-in-out;  
+}
+
+// ===== TASK CHECKBOX ANIMATIONS =====
+.task-checkbox {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &.completed {
+    animation: checkmarkScale 0.3s ease-in-out;
+  }
+}
+
+@keyframes checkmarkScale {
+  0% {
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+// ===== DROPDOWN MENU STYLING =====
+.tw-relative {
+  position: relative !important;
+  
+  // Dropdown menu
+  .tw-absolute {
+    position: absolute !important;
+    z-index: 9999 !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid #e5e7eb !important;
+    
+    // Animation
+    animation: dropdownShow 0.2s ease-out;
+  }
+}
+
+@keyframes dropdownShow {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ===== TASK TITLE STYLING =====
+.task-title {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+// ===== RESPONSIVE IMPROVEMENTS =====
+@media (max-width: 640px) {
+  .task-card {
+    margin-bottom: 0.5rem;
+  }
+  
+  .dropdown-menu {
+    right: 0 !important;
+    left: auto !important;
+  }
+}
+
+// ===== ACCESSIBILITY =====
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

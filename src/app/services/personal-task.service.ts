@@ -249,6 +249,31 @@ export class PersonalTaskService {
       return false;
     }
   }
+
+
+   async getAllTasks(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.GET_ALL_TASKS,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+
+      if (response) {
+        return response.data;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
   async GoogleInitiate() {
     try {
       this.getHeaders();
