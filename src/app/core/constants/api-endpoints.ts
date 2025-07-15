@@ -85,6 +85,7 @@ public WEBSITE_OUR_SERVICES_DELETE: string = `${this.PATH}/website/service/delet
   public DELETE_CATEGORY: string = `${this.PATH}/website/category/deleteCategory`;
 
   // website_ABOUT-SECTION_apis
+  public WEBSITE_ABOUT_ADD: string = `${this.PATH}/website/about/add`;
   public WEBSITE_ABOUT_UPDATE: string = `${this.PATH}/website/about/update`;
   public DELETE_ABOUT_DATA: string = `${this.PATH}/website/about/delete`;
 
