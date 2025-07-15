@@ -27,7 +27,6 @@ interface PersonalTask {
 interface TaskDateGroup {
   date: string;
   tasks: PersonalTask[];
-  isExpanded?: boolean; // Added for collapse/expand
 }
 
 @Component({
@@ -45,6 +44,7 @@ export class MyalltaskComponent implements OnInit {
   isLoading: boolean = false;
   showFullScreenLoader: boolean = false;
   activeDropdownId: string | null = null;
+  collapsedDates: Set<string> = new Set<string>();
 
   // Edit Modal
   editingTaskId: string | null = null;
@@ -73,17 +73,20 @@ export class MyalltaskComponent implements OnInit {
     try {
       const response = await this.personalTaskService.getAllTasks({
         search: ''
-      }); // Removed page and limit since API pagination is gone
+      });
 
       console.log('API Response:', response);
 
       if (response && response.tasks) {
-        this.allTaskGroups = response.tasks.map((group: TaskDateGroup) => {
-          const isToday = this.isToday(group.date);
-          return {
-            ...group,
-            isExpanded: isToday // Expand today by default, collapse others
-          };
+        this.allTaskGroups = response.tasks;
+        // Collapse all previous dates by default
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        this.allTaskGroups.forEach(group => {
+          const groupDate = this.parseDate(group.date);
+          if (groupDate < today) {
+            this.collapsedDates.add(group.date);
+          }
         });
         console.log('Tasks loaded:', this.allTaskGroups); 
       }
@@ -92,6 +95,11 @@ export class MyalltaskComponent implements OnInit {
     } finally {
       this.isLoading = false;
     }
+  }
+
+  parseDate(dateString: string): Date {
+    const [day, month, year] = dateString.split('-');
+    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
   }
 
   // Task Management Methods
@@ -304,8 +312,16 @@ export class MyalltaskComponent implements OnInit {
     }
   }
 
-  toggleGroupExpansion(group: TaskDateGroup): void {
-    group.isExpanded = !group.isExpanded;
+  isDateCollapsed(dateString: string): boolean {
+    return this.collapsedDates.has(dateString);
+  }
+
+  toggleDateCollapse(dateString: string): void {
+    if (this.collapsedDates.has(dateString)) {
+      this.collapsedDates.delete(dateString);
+    } else {
+      this.collapsedDates.add(dateString);
+    }
   }
 
   // UI Event Handlers

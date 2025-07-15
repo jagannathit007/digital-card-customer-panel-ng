@@ -1,24 +1,35 @@
 // ===== CUSTOM SCROLLBAR STYLING =====
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #94a3b8 #f1f5f9; // Updated colors for better look
+  scrollbar-color: #3b82f6 #f1f5f9;
   
   &::-webkit-scrollbar {
-    width: 8px; // Slightly thicker for better visibility
+    width: 8px;
   }
   
   &::-webkit-scrollbar-track {
     background: #f1f5f9;
     border-radius: 4px;
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.1);
   }
   
   &::-webkit-scrollbar-thumb {
-    background: #94a3b8;
+    background: linear-gradient(180deg, #3b82f6, #1d4ed8);
     border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     
     &:hover {
-      background: #64748b;
+      background: linear-gradient(180deg, #2563eb, #1e40af);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     }
+    
+    &:active {
+      background: linear-gradient(180deg, #1d4ed8, #1e3a8a);
+    }
+  }
+  
+  &::-webkit-scrollbar-corner {
+    background: #f1f5f9;
   }
 }
 
@@ -56,7 +67,7 @@
   .tw-absolute {
     position: absolute !important;
     z-index: 9999 !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
     border: 1px solid #e5e7eb !important;
     
     // Animation
@@ -72,6 +83,15 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+// ===== DATE HEADER HOVER EFFECTS =====
+.tw-cursor-pointer {
+  &:hover {
+    background-color: rgba(243, 244, 246, 0.8) !important;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
   }
 }
 
@@ -91,6 +111,12 @@
   .dropdown-menu {
     right: 0 !important;
     left: auto !important;
+  }
+  
+  .custom-scrollbar {
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
   }
 }
 

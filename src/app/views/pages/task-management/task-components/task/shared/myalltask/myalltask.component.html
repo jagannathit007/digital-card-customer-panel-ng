@@ -24,17 +24,25 @@
       <!-- Date Groups -->
       <div *ngFor="let dateGroup of allTaskGroups" class="tw-mb-6">
         
-        <!-- Date Header with Toggle -->
-        <h3 
-          (click)="toggleGroupExpansion(dateGroup)"
-          class="tw-text-lg tw-font-semibold tw-text-gray-700 tw-mb-3 tw-sticky tw-top-0 tw-bg-gray-50 tw-py-2 tw-cursor-pointer tw-flex tw-items-center tw-justify-between"
+        <!-- Date Header (Clickable for previous dates) -->
+        <div 
+          class="tw-sticky tw-top-0 tw-bg-gray-50 tw-py-2 tw-mb-3"
+          [class.tw-cursor-pointer]="!isToday(dateGroup.date)"
+          [class.tw-cursor-default]="isToday(dateGroup.date)"
+          (click)="!isToday(dateGroup.date) && toggleDateCollapse(dateGroup.date)"
         >
-          {{ formatDateHeader(dateGroup.date) }}
-          <i class="fa-solid" [class.fa-chevron-down]="dateGroup.isExpanded" [class.fa-chevron-right]="!dateGroup.isExpanded"></i>
-        </h3>
+          <h3 class="tw-text-lg tw-font-semibold tw-text-gray-700 tw-flex tw-items-center tw-gap-2">
+            <i *ngIf="!isToday(dateGroup.date)" 
+               [class]="isDateCollapsed(dateGroup.date) ? 'fa-solid fa-chevron-right' : 'fa-solid fa-chevron-down'"
+               class="tw-text-sm"></i>
+            {{ formatDateHeader(dateGroup.date) }}
+            <span class="tw-text-sm tw-text-gray-500">({{ dateGroup.tasks.length }})</span>
+          </h3>
+        </div>
 
-        <!-- Tasks (shown only if expanded) -->
-        <div *ngIf="dateGroup.isExpanded" class="tw-space-y-3">
+        <!-- Tasks (Show/Hide based on collapse state) -->
+        <div *ngIf="isToday(dateGroup.date) || !isDateCollapsed(dateGroup.date)" 
+             class="tw-space-y-3">
           <div *ngFor="let task of dateGroup.tasks" 
                class="tw-bg-white tw-p-4 tw-rounded-lg tw-shadow-sm tw-border">
             
@@ -80,12 +88,14 @@
                 </div>
               </div>
 
-              <!-- Actions: Delete Icon + Three Dots Menu -->
+              <!-- Action Buttons -->
               <div class="tw-flex tw-items-center tw-gap-2">
-                <!-- Delete Icon (left of three dots) -->
+                
+                <!-- Delete Button -->
                 <button 
                   (click)="deleteTask(task._id)"
-                  class="tw-p-2 tw-text-red-500 hover:tw-text-red-700 tw-rounded"
+                  class="tw-p-2 tw-text-gray-400 hover:tw-text-red-500 tw-rounded"
+                  title="Delete task"
                 >
                   <i class="fa-regular fa-trash-can"></i>
                 </button>
@@ -99,7 +109,7 @@
                     <i class="fa-solid fa-ellipsis-vertical"></i>
                   </button>
 
-                  <!-- Dropdown (removed delete) -->
+                  <!-- Dropdown -->
                   <div *ngIf="activeDropdownId === task._id" 
                        class="tw-absolute tw-right-0 tw-top-full tw-mt-1 tw-w-48 tw-bg-white tw-border tw-rounded-lg tw-shadow-lg tw-z-50">
                     
@@ -153,7 +163,7 @@
       (keydown.escape)="cancelEdit()"
       class="tw-w-full tw-px-3 tw-py-2 tw-border tw-rounded tw-mb-4"
       placeholder="Task title..."
-      #editInput
+      #editTaskInput
     />
     <div class="tw-flex tw-gap-2 tw-justify-end">
       <button 
