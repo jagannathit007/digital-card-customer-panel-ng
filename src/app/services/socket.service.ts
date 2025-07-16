@@ -90,4 +90,18 @@ export class SocketService {
       });
     });
   }
+
+  // send task creation
+  sendTaskCreated(room: string, taskId: string, boardId: string, updates: any): void {
+    this.socket.emit('task_created', room, { taskId, boardId, updates });
+  }
+
+  // task created
+  onTaskCreated(): Observable<any> {
+    return new Observable(observer => {
+      this.socket.on('task_created', (data) => {
+        observer.next(data);
+      });
+    });
+  }
 }

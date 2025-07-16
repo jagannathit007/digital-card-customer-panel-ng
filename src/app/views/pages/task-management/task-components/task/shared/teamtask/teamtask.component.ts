@@ -214,6 +214,24 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.setupTaskUpdateBySocket();
 
     this.listenBordsUpdateSocket();
+    this.listenTaskCreationSocket();
+  }
+
+  listenTaskCreationSocket() {
+    this.socketService.onTaskCreated().subscribe((data) => {
+      // this.messages.push(data);
+      console.log('data from sockets : ', data);
+
+      const task = data.updates;
+
+      this.boardColumns.update((columns) => {
+      const column = columns.find((col) => col._id === task.column);
+      if (column) {
+        column.tasks.push(task);
+      }
+      return columns;
+    });
+    });
   }
 
   listenBordsUpdateSocket() {
@@ -756,7 +774,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   }
 
   onTaskCreated(task: any) {
-    console.log(task);
     this.showCreatePopup.set(false);
 
     this.boardColumns.update((columns) => {
@@ -766,6 +783,13 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       }
       return columns;
     });
+
+    this.socketService.sendTaskCreated(
+      'team_task',
+      task._id,
+      this.boardId(),
+      task
+    );
   }
 
   // Drag and drop event handlers
@@ -1038,8 +1062,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       }
 
       if (!updateInDatabase) {
-      this.boardId.set('');
-      this.storage.set(teamMemberCommon.BOARD_DATA, '');
+        this.boardId.set('');
+        this.storage.set(teamMemberCommon.BOARD_DATA, '');
         // Fallback: undo the move of local
         if (sourceColumnId === targetColumnId) {
           console.log(
@@ -1224,11 +1248,11 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
               this.boardColumns.set(columns);
 
               this.socketService.sendBoardUpdate(
-          'team_task',
-          this.boardId(),
-          'column_reorder',
-          this.boardColumns()
-        );
+                'team_task',
+                this.boardId(),
+                'column_reorder',
+                this.boardColumns()
+              );
 
               console.log('Column deleted:', columnId);
             }
@@ -1311,11 +1335,11 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       this.boardColumns.set(columns);
 
       this.socketService.sendBoardUpdate(
-          'team_task',
-          this.boardId(),
-          'column_reorder',
-          this.boardColumns()
-        );
+        'team_task',
+        this.boardId(),
+        'column_reorder',
+        this.boardColumns()
+      );
 
       console.log('Column added:', { position, referenceColumnId, response });
     }
@@ -1391,14 +1415,19 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         );
 
         this.boardId.set('');
-      this.storage.set(teamMemberCommon.BOARD_DATA, '');
+        this.storage.set(teamMemberCommon.BOARD_DATA, '');
       } else {
-        this.socketService.sendTaskUpdate('team_task', task._id, this.boardId(), {
-        fromColumn: sourceColumn._id,
-        toColumn: targetColumnId,
-        fromPosition: taskIndex,
-        toPosition: 0,
-      });
+        this.socketService.sendTaskUpdate(
+          'team_task',
+          task._id,
+          this.boardId(),
+          {
+            fromColumn: sourceColumn._id,
+            toColumn: targetColumnId,
+            fromPosition: taskIndex,
+            toPosition: 0,
+          }
+        );
 
         console.log('Task moved to column:', {
           taskId: task._id,
@@ -1471,8 +1500,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         board: this.boardId(),
       });
 
-      console.log('New task created:', response);
-
       if (response) {
         const newTask: Task = {
           _id: response._id,
@@ -1490,6 +1517,13 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
           assignedToMe: response.assignedToMe,
         };
         column.tasks.push(newTask);
+
+        this.socketService.sendTaskCreated(
+          'team_task',
+          newTask._id,
+          this.boardId(),
+          newTask
+        );
         this.boardColumns.update((cols) => [...cols]);
         this.newTaskInputColumnId.set(null);
         this.newTaskDraftTitle.set('');

@@ -91,7 +91,8 @@ export class CreateBoardComponent implements OnInit {
 
   addCategoryFromInput(): void {
     const trimmedName = this.newCategoryName?.trim();
-    if (trimmedName && this.categories.length < 10) {
+    // if (trimmedName && this.categories.length < 10) {
+    if (trimmedName) {
       // Check for duplicates
       const isDuplicate = this.categories.some(
         (cat) => cat.name.toLowerCase() === trimmedName.toLowerCase()
@@ -108,7 +109,8 @@ export class CreateBoardComponent implements OnInit {
   isCategoryisDuplicate(): boolean {
     const trimmedName = this.newCategoryName?.trim();
     let isDuplicate = false;
-    if (trimmedName && this.categories.length < 10) {
+    // if (trimmedName && this.categories.length < 10) {
+    if (trimmedName) {
       // Check for duplicates
       isDuplicate = this.categories.some(
         (cat) => cat.name.toLowerCase() === trimmedName.toLowerCase()

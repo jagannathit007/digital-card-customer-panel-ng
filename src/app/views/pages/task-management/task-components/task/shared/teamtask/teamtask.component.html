@@ -94,12 +94,17 @@
                     <i class="ri-draggable"></i>
                   </button>
                   <!-- Column Title -->
-                  <div class="tw-flex tw-items-center tw-flex-1">
+                  <div
+                    class="tw-flex tw-items-center tw-flex-1 tw-line-clamp-1 tw-truncate"
+                  >
                     <div
                       *ngIf="editingColumnId() !== column._id"
-                      class="tw-flex tw-items-center tw-gap-2 tw-flex-1"
+                      class="tw-flex tw-items-center tw-gap-2 tw-flex-1 tw-line-clamp-1 tw-truncate"
                     >
-                      <h3 class="tw-font-semibold tw-text-gray-900 tw-text-sm">
+                      <h3
+                        class="tw-font-semibold tw-text-gray-900 tw-text-sm tw-line-clamp-1 tw-truncate"
+                        title="{{ column.title }}"
+                      >
                         {{ column.title }}
                       </h3>
                       <span
@@ -289,7 +294,9 @@
                   (cdkDragEnded)="onDragEnded()"
                 >
                   <app-team-task-card
-                    [assignedToMe]="isAssignmentFilterActive() ? task.assignedToMe : false"
+                    [assignedToMe]="
+                      isAssignmentFilterActive() ? task.assignedToMe : false
+                    "
                     [task]="task"
                     [isSelected]="selectedTask()?._id === task._id"
                     [isDragging]="
