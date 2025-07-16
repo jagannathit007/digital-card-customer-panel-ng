@@ -700,6 +700,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       }
     } else {
       this.isLoading.set(false);
+      this.boardId.set('');
+      this.storage.set(teamMemberCommon.BOARD_DATA, '');
     }
   }
 
@@ -1013,7 +1015,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         event.previousIndex !== event.currentIndex)
     ) {
       const updateInDatabase = await this.taskService.reorderBoardTasks({
-        // boardId: this.boardId(),
+        boardId: this.boardId(),
         // sourceColumnId,
         toColumn: targetColumnId,
         taskId: event.container.data[event.currentIndex]?._id,
@@ -1036,6 +1038,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       }
 
       if (!updateInDatabase) {
+      this.boardId.set('');
+      this.storage.set(teamMemberCommon.BOARD_DATA, '');
         // Fallback: undo the move of local
         if (sourceColumnId === targetColumnId) {
           console.log(
@@ -1352,7 +1356,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.router.navigate(['detail', task._id], { relativeTo: this.route });
   }
 
-  private moveTaskToColumn(task: Task, targetColumnId: string) {
+  private async moveTaskToColumn(task: Task, targetColumnId: string) {
     const columns = [...this.boardColumns()];
 
     const sourceColumn = columns.find((col) => col._id === task.column);
@@ -1370,15 +1374,10 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       targetColumn.tasks.unshift(task);
       this.boardColumns.set(columns);
 
-      const updateInDatabase = this.taskService.reorderBoardTasks({
+      const updateInDatabase = await this.taskService.reorderBoardTasks({
+        boardId: this.boardId(),
         toColumn: targetColumnId,
         taskId: task._id,
-        toPosition: 0,
-      });
-      this.socketService.sendTaskUpdate('team_task', task._id, this.boardId(), {
-        fromColumn: sourceColumn._id,
-        toColumn: targetColumnId,
-        fromPosition: taskIndex,
         toPosition: 0,
       });
       if (!updateInDatabase) {
@@ -1390,7 +1389,17 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         console.error(
           'Failed to update task in database, reverted changes locally.'
         );
+
+        this.boardId.set('');
+      this.storage.set(teamMemberCommon.BOARD_DATA, '');
       } else {
+        this.socketService.sendTaskUpdate('team_task', task._id, this.boardId(), {
+        fromColumn: sourceColumn._id,
+        toColumn: targetColumnId,
+        fromPosition: taskIndex,
+        toPosition: 0,
+      });
+
         console.log('Task moved to column:', {
           taskId: task._id,
           targetColumnId,
