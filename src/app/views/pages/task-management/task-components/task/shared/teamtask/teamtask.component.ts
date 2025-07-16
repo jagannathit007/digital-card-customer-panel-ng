@@ -711,6 +711,9 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       this.availableUsersForSelectedBoard.set(users);
       return true;
     } else {
+      this.boardId.set('');
+      this.storage.set(teamMemberCommon.BOARD_DATA, '');
+      this.isLoading.set(false);
       return false;
     }
   }
@@ -1309,7 +1312,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
           'column_reorder',
           this.boardColumns()
         );
-        
+
       console.log('Column added:', { position, referenceColumnId, response });
     }
 

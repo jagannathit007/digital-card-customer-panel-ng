@@ -501,6 +501,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     const users = await this.taskService.GetAllAvailableMembersForBoard({
       boardId: boardId,
     });
+    
     if (users) {
       this.BoardMembers = users;
       console.log('Available users loaded:', users);
