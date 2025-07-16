@@ -1204,8 +1204,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         if (!updateInDatabase) {
           columns[columnIndex].title = oldTitle || '';
           this.boardColumns.set(columns);
-        } else {
-          console.log('Update in database:', updateInDatabase);
         }
       }
     }
