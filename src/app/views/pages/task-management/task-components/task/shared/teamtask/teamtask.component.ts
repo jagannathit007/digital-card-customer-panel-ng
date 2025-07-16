@@ -212,6 +212,30 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.setupTaskUpdateSubscription();
 
     this.setupTaskUpdateBySocket();
+
+    this.listenBordsUpdateSocket();
+  }
+
+  listenBordsUpdateSocket() {
+    this.socketService.onBoardUpdate().subscribe((data) => {
+      console.log('data from sockets : ', data);
+
+      if (data.type === 'comment_add') {
+        if (
+          data.updates.mentionedMembers.includes(
+            this.taskPermissionsService.getCurrentUser()._id
+          )
+        ) {
+          swalHelper.showToast(
+            `you have been mentioned in public chat`,
+            'info'
+          );
+        }
+      } else if (data.type === 'column_reorder') {
+        this.boardColumns.set(data.updates);
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   setupTaskUpdateBySocket() {
@@ -883,6 +907,13 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
           newPosition: movedColumn.position,
         });
 
+        this.socketService.sendBoardUpdate(
+          'team_task',
+          this.boardId(),
+          'column_reorder',
+          newColumnList
+        );
+
         if (!success) {
           this.boardColumns.set(previousColumnState);
           console.warn('Failed to reorder columns on backend. Reverting...');
@@ -1132,6 +1163,13 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
           boardId: this.boardId(),
         });
 
+        this.socketService.sendBoardUpdate(
+          'team_task',
+          this.boardId(),
+          'column_reorder',
+          this.boardColumns()
+        );
+
         if (!updateInDatabase) {
           columns[columnIndex].title = oldTitle || '';
           this.boardColumns.set(columns);
@@ -1177,6 +1215,13 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
                 (col) => col._id !== columnId
               );
               this.boardColumns.set(columns);
+
+              this.socketService.sendBoardUpdate(
+          'team_task',
+          this.boardId(),
+          'column_reorder',
+          this.boardColumns()
+        );
 
               console.log('Column deleted:', columnId);
             }
@@ -1257,6 +1302,14 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     if (response) {
       columns.splice(response.position, 0, response);
       this.boardColumns.set(columns);
+
+      this.socketService.sendBoardUpdate(
+          'team_task',
+          this.boardId(),
+          'column_reorder',
+          this.boardColumns()
+        );
+        
       console.log('Column added:', { position, referenceColumnId, response });
     }
 

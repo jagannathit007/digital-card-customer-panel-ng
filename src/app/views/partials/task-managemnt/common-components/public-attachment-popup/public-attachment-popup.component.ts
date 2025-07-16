@@ -14,6 +14,7 @@ import { TaskService } from 'src/app/services/task.service';
 import { TaskPermissionsService } from 'src/app/services/task-permissions.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
+import { SocketService } from 'src/app/services/socket.service';
 
 interface TaskMember {
   _id: string;
@@ -72,13 +73,30 @@ export class PublicAttachmentPopupComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private taskService: TaskService,
-    public taskPermissionsService: TaskPermissionsService
+    public taskPermissionsService: TaskPermissionsService,
+    private socketService: SocketService
   ) {}
 
   ngOnInit(): void {
     this.imageBaseUrl = environment.imageURL;
     this.setupRouteSubscriptions();
     this.loadAttachmentData();
+
+    this.listenSockets();
+  }
+
+  listenSockets() {
+    this.socketService.onBoardUpdate().subscribe((data) => {
+      if (data.boardId !== this.boardId) return;
+
+      console.log('data from sockets : ', data);
+
+      if (data.type === 'attachment_add') {
+        this.attachments.push(data.updates);
+      } else if (data.type === 'attachment_remove') {
+        this.attachments = data.updates;
+      }
+    });
   }
 
   isAttachmentAccessible(attachment: BoardAttachment): boolean {
@@ -167,6 +185,19 @@ export class PublicAttachmentPopupComponent implements OnInit, OnDestroy {
   async onFileUpload(event: any): Promise<void> {
     const files = event.target.files;
     if (files && files.length > 0) {
+      // Check each file size
+      for (let file of files) {
+        if (file.size > 10 * 1024 * 1024) {
+          // 10MB in bytes
+          await swalHelper.showToast(
+            'File size exceeded the 10MB limit',
+            'error'
+          );
+          event.target.value = ''; // Clear the file input
+          return;
+        }
+      }
+
       var formData = new FormData();
 
       for (let file of files) {
@@ -181,6 +212,12 @@ export class PublicAttachmentPopupComponent implements OnInit, OnDestroy {
 
       if (response) {
         this.attachments.push(response);
+        this.socketService.sendBoardUpdate(
+          'team_task',
+          this.boardId,
+          'attachment_add',
+          response
+        );
       }
     }
   }
@@ -220,6 +257,13 @@ export class PublicAttachmentPopupComponent implements OnInit, OnDestroy {
             // Remove the entire attachment if it has only one file
             this.attachments.splice(attachmentIndex, 1);
           }
+
+          this.socketService.sendBoardUpdate(
+            'team_task',
+            this.boardId,
+            'attachment_remove',
+            this.attachments
+          );
         }
       } else {
         // Revert to backup if the deletion fails

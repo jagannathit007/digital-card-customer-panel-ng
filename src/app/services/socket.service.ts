@@ -76,4 +76,18 @@ export class SocketService {
       });
     });
   }
+
+  // send board public attchments and comments updates
+  sendBoardUpdate(room: string, boardId: string, type: string, updates: any): void {
+    this.socket.emit('board_update', room, { boardId, type, updates });
+  }
+
+  // on board update
+  onBoardUpdate(): Observable<any> {
+    return new Observable(observer => {
+      this.socket.on('board_update', (data) => {
+        observer.next(data);
+      });
+    });
+  }
 }

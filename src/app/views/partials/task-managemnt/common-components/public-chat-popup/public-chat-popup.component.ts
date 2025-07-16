@@ -16,6 +16,7 @@ import { TaskPermissionsService } from 'src/app/services/task-permissions.servic
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { environment } from 'src/env/env.local';
+import { SocketService } from 'src/app/services/socket.service';
 
 interface TaskMember {
   _id: string;
@@ -64,17 +65,38 @@ export class PublicChatPopupComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private taskService: TaskService,
     public taskPermissionsService: TaskPermissionsService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private socketService: SocketService
   ) {}
 
   ngOnInit(): void {
     this.imageBaseUrl = environment.imageURL;
     this.setupRouteSubscriptions();
     this.loadChatData();
+
+    this.listenSockets();
   }
 
   ngOnDestroy(): void {
     this.routeSubscription?.unsubscribe();
+  }
+
+  listenSockets() {
+    this.socketService.onBoardUpdate().subscribe((data) => {
+      if(data.boardId !== this.boardId) return;
+      
+      console.log('data from sockets : ', data);
+
+      if(data.type==='comment_add') {
+        this.comments.push(data.updates);
+        this.scrollToBottom();
+      }else if(data.type==='comment_remove') {
+        const comment = this.comments.find((c) => c._id === data.updates._id);
+        if (comment) {
+          comment.isDeleted = true;
+        }
+      }
+    })
   }
 
   private setupRouteSubscriptions(): void {
@@ -169,6 +191,13 @@ export class PublicChatPopupComponent implements OnInit, OnDestroy {
       isDeleted: false,
     };
     this.comments.push(newComment);
+
+    this.socketService.sendBoardUpdate(
+      'team_task',
+      this.boardId,
+      'comment_add',
+      newComment
+    );
   }
 
   formatComment(
@@ -265,6 +294,13 @@ export class PublicChatPopupComponent implements OnInit, OnDestroy {
 
             if (response) {
               comment.isDeleted = true;
+
+              this.socketService.sendBoardUpdate(
+                'team_task',
+                this.boardId,
+                'comment_remove',
+                comment
+              );
             }
           }
         })
