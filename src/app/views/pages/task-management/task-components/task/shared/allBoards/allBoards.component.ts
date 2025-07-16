@@ -201,6 +201,7 @@ export class AllBoardsComponent implements OnInit {
     console.log('board created from all boards page  : ', board);
     this.loadData();
     this.showCreateBoardModal.set(false);
+    this.editingBoard.set(null);
   }
 
   async availableTeamMembersToAdd(board: Board | null) {
