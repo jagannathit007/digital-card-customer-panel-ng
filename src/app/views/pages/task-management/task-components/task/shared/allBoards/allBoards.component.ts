@@ -19,6 +19,7 @@ import { CreateBoardComponent } from '../../../../../../partials/task-managemnt/
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { BoardNotificationService } from 'src/app/services/board-notification.service';
+import { SocketService } from 'src/app/services/socket.service';
 
 interface Category {
   _id: string;
@@ -129,7 +130,8 @@ export class AllBoardsComponent implements OnInit {
     private taskService: TaskService,
     public taskPermissionsService: TaskPermissionsService,
     private boardNotificationService: BoardNotificationService,
-    public storage: AppStorage
+    public storage: AppStorage,
+    private socketService: SocketService
   ) {}
 
   ngOnInit() {
@@ -560,6 +562,13 @@ export class AllBoardsComponent implements OnInit {
               boards.map((b) =>
                 b._id === board._id ? { ...b, members: updatedMembers } : b
               )
+            );
+
+            this.socketService.sendBoardMemberUpdate(
+              'team_task',
+              board._id,
+              'update',
+              updatedMembers
             );
 
             // Update original selection to reflect saved state

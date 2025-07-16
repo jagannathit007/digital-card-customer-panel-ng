@@ -88,7 +88,7 @@
       <!-- Board Cards -->
       <div
         *ngFor="let board of filteredBoards()"
-        class="tw-group tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border tw-border-gray-100 tw-cursor-pointer tw-transition-all tw-duration-300 hover:tw-shadow-xl hover:tw-scale-105 tw-relative tw-min-h-[300px] tw-min-w-[300px] tw-max-h-[300px] tw-max-w-[300px] tw-overflow-x-auto"
+        class="tw-group tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border tw-border-gray-100 tw-cursor-pointer tw-transition-all tw-duration-300 hover:tw-shadow-xl hover:tw-scale-105 tw-relative tw-min-h-[300px] tw-min-w-[300px] tw-max-h-[300px] tw-max-w-[300px] tw-overflow-x-auto tw-select-none"
         [class.tw-ring-2]="selectedBoard()?._id === board._id"
         [class.tw-ring-blue-500]="selectedBoard()?._id === board._id"
         [class.tw-animate-pulse]="expandingBoardId() === board._id"

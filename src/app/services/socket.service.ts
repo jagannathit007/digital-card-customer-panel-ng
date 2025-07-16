@@ -104,4 +104,18 @@ export class SocketService {
       });
     });
   }
+
+  // send board member updated event
+  sendBoardMemberUpdate(room: string, boardId: string, type: string, updates: any): void {
+    this.socket.emit('board_member_update', room, { boardId, type, updates });
+  }
+
+  // on board member update
+  onBoardMembersUpdate(): Observable<any> {
+    return new Observable(observer => {
+      this.socket.on('board_member_update', (data) => {
+        observer.next(data);
+      });
+    });
+  }
 }

@@ -215,7 +215,29 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
 
     this.listenBordsUpdateSocket();
     this.listenTaskCreationSocket();
+    this.listenBoardMembersUpdateSocket();
   }
+
+  listenBoardMembersUpdateSocket() {
+    this.socketService.onBoardMembersUpdate().subscribe((data) => {
+      console.log('members updated in board from sockets : ', data);
+      let isStillMember = false;
+
+      data.updates.forEach((member: any) => {
+        if (member._id === this.taskPermissionsService.getCurrentUser()._id) {
+          isStillMember = true;
+        }
+      });
+      console.log('member still member : ', isStillMember);
+
+      if (!isStillMember) {
+        this.boardId.set('');
+        this.storage.set(teamMemberCommon.BOARD_DATA, '');
+      }
+    });
+
+  }
+  
 
   listenTaskCreationSocket() {
     this.socketService.onTaskCreated().subscribe((data) => {
