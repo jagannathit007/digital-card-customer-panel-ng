@@ -34,11 +34,30 @@ import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { interval } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
 import { TaskService } from 'src/app/services/task.service';
+import { trigger, transition, style, animate } from '@angular/animations';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-task',
   templateUrl: './task.component.html',
   styleUrl: './task.component.scss',
+  animations: [
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateX(20px)' }),
+        animate(
+          '200ms ease-out',
+          style({ opacity: 1, transform: 'translateX(0)' })
+        ),
+      ]),
+      transition(':leave', [
+        animate(
+          '200ms ease-in',
+          style({ opacity: 0, transform: 'translateX(20px)' })
+        ),
+      ]),
+    ]),
+  ],
 })
 export class TaskComponent implements OnInit, OnDestroy {
   constructor(
@@ -46,8 +65,11 @@ export class TaskComponent implements OnInit, OnDestroy {
     private modalCommunicationService: ModalCommunicationService,
     private socketService: SocketService,
     private storage: AppStorage,
-    private taskService: TaskService
-  ) {}
+    private taskService: TaskService,
+    private router: Router
+  ) {
+    this.toastStartTime = 0;
+  }
 
   isAdmin = false;
 
@@ -70,6 +92,13 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   private modalSubscription: Subscription = new Subscription();
 
+  isMentionToastVisible = false;
+  mentionedTaskId: string = '';
+  private mentionToastTimeout: any;
+  private toastTimerPaused = false;
+  private remainingToastTime = 0;
+  private toastStartTime: number;
+
   ngOnInit(): void {
     this.isAdmin = this.TaskPermissionsService.isAdminLevelPermission();
 
@@ -82,6 +111,21 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.socketService.joinRoom('task_management');
     this.listenBoardMembersUpdateSocket();
     this.listenAllBoardsUpdateSocket();
+    this.setupCommentsUpdateBySocket();
+  }
+
+  setupCommentsUpdateBySocket() {
+    this.socketService.onCommentUpdated().subscribe((data) => {
+      console.log('comment updated from sockets : ', data);
+
+      let isMemberMentioned = data.updates.mentionedMembers.includes(
+        this.TaskPermissionsService.getCurrentUser()._id
+      );
+
+      if (isMemberMentioned) {
+        this.showMentionToast(data.taskId);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -120,8 +164,15 @@ export class TaskComponent implements OnInit, OnDestroy {
           this.storage.set(teamMemberCommon.BOARD_DATA, '');
         }
         this.showRefreshWarning();
+
+        // remove the board from the local state
+        this.boards.update((boards) =>
+          boards.filter((b) => b._id !== data.boardId)
+        );
       } else if (!isBoardExists && isStillMember) {
         this.showRefreshWarning();
+
+        this.boards.update((boards) => [...boards, data.updates]);
       }
     });
   }
@@ -150,7 +201,10 @@ export class TaskComponent implements OnInit, OnDestroy {
         this.TaskPermissionsService.getCurrentUser()._id
       );
 
-      if (data.type === 'board_create' && ((isBoardExists && !isMember) || (!isBoardExists && isMember))) {
+      if (
+        data.type === 'board_create' &&
+        ((isBoardExists && !isMember) || (!isBoardExists && isMember))
+      ) {
         this.showRefreshWarning();
       }
 
@@ -160,8 +214,9 @@ export class TaskComponent implements OnInit, OnDestroy {
         if (boardId === this.storage.get(teamMemberCommon.BOARD_DATA)._id) {
           this.storage.set(teamMemberCommon.BOARD_DATA, '');
         }
-          this.showRefreshWarning();
+        this.showRefreshWarning();
 
+        this.boards.update((boards) => boards.filter((b) => b._id !== boardId));
       }
     });
   }
@@ -183,6 +238,61 @@ export class TaskComponent implements OnInit, OnDestroy {
     } else {
       this.boards.set([]);
       // this.loading = false;
+    }
+  }
+
+  showMentionToast(taskId: string) {
+    this.mentionedTaskId = taskId;
+    this.isMentionToastVisible = true;
+    this.toastStartTime = Date.now();
+
+    // Clear any existing timeout
+    if (this.mentionToastTimeout) {
+      clearTimeout(this.mentionToastTimeout);
+    }
+
+    // Hide after 5 seconds
+    this.remainingToastTime = 5000;
+    this.mentionToastTimeout = setTimeout(() => {
+      if (!this.toastTimerPaused) {
+        this.isMentionToastVisible = false;
+      }
+    }, this.remainingToastTime);
+  }
+
+  pauseToastTimer() {
+    if (this.mentionToastTimeout) {
+      this.toastTimerPaused = true;
+      clearTimeout(this.mentionToastTimeout);
+      this.remainingToastTime =
+        this.remainingToastTime - (Date.now() - this.toastStartTime);
+    }
+  }
+
+  resumeToastTimer() {
+    if (this.mentionToastTimeout && this.toastTimerPaused) {
+      this.toastTimerPaused = false;
+      this.toastStartTime = Date.now();
+      this.mentionToastTimeout = setTimeout(() => {
+        this.isMentionToastVisible = false;
+      }, this.remainingToastTime);
+    }
+  }
+
+  closeMentionToast() {
+    this.isMentionToastVisible = false;
+    if (this.mentionToastTimeout) {
+      clearTimeout(this.mentionToastTimeout);
+    }
+  }
+
+  navigateToMentionedTask() {
+    if (this.mentionedTaskId) {
+      this.closeMentionToast();
+      this.router.navigate(
+        [`/task-management/teamtask/detail/${this.mentionedTaskId}`],
+        { queryParams: { tab: 'comments' } }
+      );
     }
   }
 
@@ -271,7 +381,6 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   onTeamTaskCreationModalClose(): void {
     this.isTeamTaskCreationModalOpen = false;
-    console.log('Team task creation modal closed');
     this.currentModalData = {};
   }
 
@@ -282,24 +391,20 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   // chandan - Handle when team member is added successfully
   onTeamMemberAdded(memberData: any): void {
-    console.log('chandan - Team member added successfully:', memberData);
     this.onAddTeamMemberModalClose();
   }
 
   private openTaskClockModal(aiData: any): void {
     this.taskClockModalData = aiData;
     this.isTaskClockModalOpen = true;
-    console.log('chandan - Opening TaskClock modal with data:', aiData);
   }
 
   onTaskClockModalClose(): void {
     this.isTaskClockModalOpen = false;
     this.taskClockModalData = {};
-    console.log('chandan - TaskClock modal closed');
   }
 
   onTaskAdded(): void {
-    console.log('chandan - Personal task added successfully via AI');
     this.onTaskClockModalClose();
   }
 }

@@ -440,6 +440,8 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
               );
 
           this.isLoading = false;
+
+          this.scrollToBottom();
         }, 1000);
       } else {
         this.isLoading = false;
@@ -993,7 +995,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     this.task.comments.push(newComment);
 
     this.socketService.sendCommentUpdate(
-      'team_task',
+      'task_management',
       this.task._id,
       this.task.board,
       'add',
@@ -1111,7 +1113,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
             comment.isDeleted = true;
 
             this.socketService.sendCommentUpdate(
-              'team_task',
+              'task_management',
               this.task._id,
               this.task.board,
               'remove',
