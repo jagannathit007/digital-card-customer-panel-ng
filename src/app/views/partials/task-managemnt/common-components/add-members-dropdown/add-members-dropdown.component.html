@@ -340,7 +340,7 @@
 
     <!-- Add Button Footer - Shows when ANY members are selected -->
     <div
-      *ngIf="selectedMembers && selectedMembers.length > 0"
+      *ngIf="selectedMembers && (selectedMembers.length > 0 || addedMembers.length > 0)"
       class="tw-p-4 tw-border-t tw-border-gray-100 tw-bg-gray-50"
     >
       <!-- Selected members count -->
@@ -366,6 +366,7 @@
         (click)="addSelectedMembers()"
         class="tw-w-full tw-bg-gray-700 hover:tw-bg-gray-800 focus:tw-bg-gray-800 tw-text-white tw-font-medium tw-py-2.5 tw-px-4 tw-rounded-md tw-transition-all tw-duration-200 tw-flex tw-items-center tw-justify-center tw-shadow-sm hover:tw-shadow-md focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-gray-500 focus:tw-ring-offset-2"
       >
+      <span class="tw-flex items-center tq-gap-2" *ngIf="addedMembers.length == 0">
         <svg
           class="tw-w-4 tw-h-4 tw-mr-2"
           fill="none"
@@ -382,7 +383,9 @@
 
         Add {{ selectedMembers.length }} Member{{
           selectedMembers.length > 1 ? "s" : ""
-        }}
+        }}</span>
+        
+        <span class="tw-flex items-center tq-gap-2" *ngIf="addedMembers.length > 0">Update Members</span>
       </button>
     </div>
   </div>

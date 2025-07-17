@@ -294,12 +294,11 @@ setProfileTooltipPosition(event: MouseEvent): void {
   }
 
   addSelectedMembers(): void {
-    if (this.selectedMembers.length === 0) {
-      swalHelper.showToast('Please select at least one member', 'warning');
-      return;
-    }
+    // if (this.selectedMembers.length === 0) {
+    //   swalHelper.showToast('Please select at least one member', 'warning');
+    //   return;
+    // }
 
-    this.closeDropdown();
     // swalHelper.showToast(
     //   `Added ${this.selectedMembers.length} member${
     //     this.selectedMembers.length > 1 ? 's' : ''
@@ -313,6 +312,7 @@ setProfileTooltipPosition(event: MouseEvent): void {
     // Emit the added members
     this.addedMembers = [...this.selectedMembers];
     this.onMemberAdded.emit([...this.selectedMembers]);
+    this.closeDropdown();
 
     // Optional: Clear selection after adding
     // this.selectedMembers = [];
@@ -355,6 +355,7 @@ setProfileTooltipPosition(event: MouseEvent): void {
 
   closeDropdown(): void {
     this.isDropdownOpen = false;
+    this.selectedMembers = [...this.addedMembers];
   }
 
   clearSelectionAndClose(): void {
