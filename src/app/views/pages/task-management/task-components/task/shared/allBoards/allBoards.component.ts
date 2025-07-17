@@ -138,6 +138,76 @@ export class AllBoardsComponent implements OnInit {
     this.currentUser = this.taskPermissionsService.getCurrentUser();
     // this.loadDummyData();
     this.loadData();
+
+    this.listenBoardMembersUpdateSocket();
+    this.listenAllBoardsUpdateSocket();
+  }
+
+  listenBoardMembersUpdateSocket() {
+    this.socketService.onBoardMembersUpdate().subscribe((data) => {
+      console.log('members updated in board from sockets : ', data);
+      let isStillMember = false;
+
+      const isBoardExists = this.boards().some(
+        (board) => board._id === data.boardId
+      );
+
+      data.updates.members.forEach((member: any) => {
+        if (member._id === this.taskPermissionsService.getCurrentUser()._id) {
+          isStillMember = true;
+        }
+      });
+
+      if (isBoardExists && !isStillMember) {
+        if (
+          data.boardId === this.storage.get(teamMemberCommon.BOARD_DATA)._id
+        ) {
+          this.storage.set(teamMemberCommon.BOARD_DATA, '');
+        }
+
+        // remove the board from the local state
+        this.boards.update((boards) =>
+          boards.filter((b) => b._id !== data.boardId)
+        );
+      }
+
+      if (!isBoardExists && isStillMember) {
+        this.boards.update((boards) => [...boards, data.updates]);
+      }
+    });
+  }
+
+  listenAllBoardsUpdateSocket() {
+    this.socketService.onAllBoardsUpdate().subscribe((data) => {
+      console.log('data from sockets : ', data);
+
+      // check if the teamtask route is open or not
+      const currentUrl = window.location.href;
+      const isTeamTaskRouteOpen = currentUrl.includes(
+        '/task-management/teamtask'
+      );
+      const isPersonalTaskRouteOpen = currentUrl.includes(
+        '/task-management/personal-task'
+      );
+      const isBoardRouteOpen = currentUrl.includes('/task-management/boards');
+
+      let isMember = false;
+
+      isMember = data.updates.members.includes(
+        this.taskPermissionsService.getCurrentUser()._id
+      );
+
+      console.log('data.type', data.type);
+      console.log('isMember', isMember);
+
+      if (data.type === 'board_delete' && isMember) {
+      console.log('data delete', data);
+        const boardId = data.updates._id;
+
+        // Remove the board from the local state
+        this.boards.update((boards) => boards.filter((b) => b._id !== boardId));
+      }
+    });
   }
 
   private async loadData() {
@@ -204,6 +274,12 @@ export class AllBoardsComponent implements OnInit {
     this.loadData();
     this.showCreateBoardModal.set(false);
     this.editingBoard.set(null);
+
+    this.socketService.sendAllBoardsUpdate(
+      'task_management',
+      'board_create',
+      board
+    );
   }
 
   async availableTeamMembersToAdd(board: Board | null) {
@@ -325,7 +401,18 @@ export class AllBoardsComponent implements OnInit {
             this.boards.update((boards) =>
               boards.filter((b) => b._id !== board._id)
             );
-          } 
+
+            // board members array of ids
+            const memberIds = board.members
+              .filter((m) => !m.isDeleted)
+              .map((m) => m._id);
+
+            this.socketService.sendAllBoardsUpdate(
+              'task_management',
+              'board_delete',
+              {...board, members: memberIds}
+            );
+          }
         }
       });
 
@@ -475,6 +562,12 @@ export class AllBoardsComponent implements OnInit {
 
             this.showCategoriesModal.set(false);
             this.resetCategoryModal();
+
+            this.socketService.sendAllBoardsUpdate(
+              'task_management',
+              'category_update',
+              board
+            );
           }
         }
       });
@@ -564,11 +657,13 @@ export class AllBoardsComponent implements OnInit {
               )
             );
 
+            const updatedBoard = this.boards().find((b) => b._id === board._id);
+
             this.socketService.sendBoardMemberUpdate(
-              'team_task',
+              'task_management',
               board._id,
               'update',
-              updatedMembers
+              updatedBoard
             );
 
             // Update original selection to reflect saved state

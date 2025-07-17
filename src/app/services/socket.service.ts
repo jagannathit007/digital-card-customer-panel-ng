@@ -118,4 +118,18 @@ export class SocketService {
       });
     });
   }
+
+  // send all boards updates
+  sendAllBoardsUpdate(room: string, type: string, updates: any): void {
+    this.socket.emit('all_boards_update', room, { type, updates });
+  }
+
+  // on all boards update
+  onAllBoardsUpdate(): Observable<any> {
+    return new Observable(observer => {
+      this.socket.on('all_boards_update', (data) => {
+        observer.next(data);
+      });
+    });
+  }
 }
