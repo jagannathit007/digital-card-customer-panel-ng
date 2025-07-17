@@ -220,22 +220,31 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
 
   listenBoardMembersUpdateSocket() {
     this.socketService.onBoardMembersUpdate().subscribe((data) => {
+      if (!this.boardId() || this.boardId() !== data.boardId) return;
+
       console.log('members updated in board from sockets : ', data);
       let isStillMember = false;
 
-      data.updates.forEach((member: any) => {
+      data.updates.members.forEach((member: any) => {
         if (member._id === this.taskPermissionsService.getCurrentUser()._id) {
           isStillMember = true;
         }
       });
-      console.log('member still member : ', isStillMember);
 
       if (!isStillMember) {
         this.boardId.set('');
         this.storage.set(teamMemberCommon.BOARD_DATA, '');
+
+        swalHelper.showToast(
+          'You have been removed from the board',
+          'warning',
+        );
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       }
     });
-
   }
   
 

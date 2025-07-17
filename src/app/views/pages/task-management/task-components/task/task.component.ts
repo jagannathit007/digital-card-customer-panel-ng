@@ -1,7 +1,6 @@
 // import { Component, OnInit } from '@angular/core';
 // import { TaskPermissionsService } from 'src/app/services/task-permissions.service';
 
-
 // @Component({
 //   selector: 'app-task',
 //   templateUrl: './task.component.html',
@@ -19,71 +18,218 @@
 //   ngOnInit(): void{
 //     this.isAdmin = this.TaskPermissionsService.isAdminLevelPermission();
 //   }
-   
+
 // }
-
-
 
 // task.component.ts
 // chandan - Updated to handle modal communication
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { TaskPermissionsService } from 'src/app/services/task-permissions.service';
 import { ModalCommunicationService } from 'src/app/services/modal-communication.service';
 import { Subscription } from 'rxjs';
+import { SocketService } from 'src/app/services/socket.service';
+import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
+import { AppStorage } from 'src/app/core/utilities/app-storage';
+import { interval } from 'rxjs';
+import { takeWhile } from 'rxjs/operators';
+import { TaskService } from 'src/app/services/task.service';
 
 @Component({
   selector: 'app-task',
   templateUrl: './task.component.html',
-  styleUrl: './task.component.scss'
+  styleUrl: './task.component.scss',
 })
 export class TaskComponent implements OnInit, OnDestroy {
-  
   constructor(
     public TaskPermissionsService: TaskPermissionsService,
-    private modalCommunicationService: ModalCommunicationService
+    private modalCommunicationService: ModalCommunicationService,
+    private socketService: SocketService,
+    private storage: AppStorage,
+    private taskService: TaskService
   ) {}
 
   isAdmin = false;
-  
+
+  boards = signal<any[]>([]);
+
   isAddTeamMemberModalOpen = false;
   isReportGenerationModalOpen = false;
   isTeamTaskCreationModalOpen = false;
   isPersonalTaskCreationModalOpen = false;
 
+  isRefreshWarningToastOpened = false;
+  countdown = 30; // 30 seconds countdown
+  private countdownSubscription: Subscription | null = null;
+
   // ! This Properites for Personal task Creation modal
   isTaskClockModalOpen = false;
   taskClockModalData: any = {};
-  
+
   currentModalData: any = {};
-  
+
   private modalSubscription: Subscription = new Subscription();
 
   ngOnInit(): void {
     this.isAdmin = this.TaskPermissionsService.isAdminLevelPermission();
-    
-    this.modalSubscription = this.modalCommunicationService.modalTrigger$.subscribe(
-      (data) => {
+
+    this.loadData();
+    this.modalSubscription =
+      this.modalCommunicationService.modalTrigger$.subscribe((data) => {
         this.handleModalTrigger(data);
-      }
-    );
+      });
+    // join in task management room
+    this.socketService.joinRoom('task_management');
+    this.listenBoardMembersUpdateSocket();
+    this.listenAllBoardsUpdateSocket();
   }
 
   ngOnDestroy(): void {
+    // leave from task management room
+    this.socketService.leaveRoom('task_management');
+
     if (this.modalSubscription) {
       this.modalSubscription.unsubscribe();
     }
+
+    // Clean up the countdown
+    if (this.countdownSubscription) {
+      this.countdownSubscription.unsubscribe();
+    }
+  }
+
+  listenBoardMembersUpdateSocket() {
+    this.socketService.onBoardMembersUpdate().subscribe((data) => {
+      console.log('members updated in board from sockets : ', data);
+      let isStillMember = false;
+
+      const isBoardExists = this.boards().some(
+        (board) => board._id === data.boardId
+      );
+
+      data.updates.members.forEach((member: any) => {
+        if (member._id === this.TaskPermissionsService.getCurrentUser()._id) {
+          isStillMember = true;
+        }
+      });
+
+      if (isBoardExists && !isStillMember) {
+        if (
+          data.boardId === this.storage.get(teamMemberCommon.BOARD_DATA)._id
+        ) {
+          this.storage.set(teamMemberCommon.BOARD_DATA, '');
+        }
+        this.showRefreshWarning();
+      } else if (!isBoardExists && isStillMember) {
+        this.showRefreshWarning();
+      }
+    });
+  }
+
+  listenAllBoardsUpdateSocket() {
+    this.socketService.onAllBoardsUpdate().subscribe((data) => {
+      console.log('data from sockets : ', data);
+
+      // check if the teamtask route is open or not
+      const currentUrl = window.location.href;
+      const isTeamTaskRouteOpen = currentUrl.includes(
+        '/task-management/teamtask'
+      );
+      const isPersonalTaskRouteOpen = currentUrl.includes(
+        '/task-management/personal-task'
+      );
+      const isBoardRouteOpen = currentUrl.includes('/task-management/boards');
+
+      let isMember = false;
+
+      const isBoardExists = this.boards().some(
+        (board) => board._id === data.boardId
+      );
+
+      isMember = data.updates.members.includes(
+        this.TaskPermissionsService.getCurrentUser()._id
+      );
+
+      if (data.type === 'board_create' && ((isBoardExists && !isMember) || (!isBoardExists && isMember))) {
+        this.showRefreshWarning();
+      }
+
+      if (data.type === 'board_delete' && isMember) {
+        const boardId = data.updates._id;
+
+        if (boardId === this.storage.get(teamMemberCommon.BOARD_DATA)._id) {
+          this.storage.set(teamMemberCommon.BOARD_DATA, '');
+        }
+          this.showRefreshWarning();
+
+      }
+    });
+  }
+
+  private async loadData() {
+    // this.loading = true;
+    let result: any = null;
+    if (
+      this.TaskPermissionsService.getCurrentUser().role === 'admin' ||
+      this.TaskPermissionsService.getCurrentUser().role === 'editor'
+    ) {
+      result = await this.taskService.GetBoardByAdmin({});
+    } else {
+      result = await this.taskService.GetJoinedBoards({});
+    }
+    if (result && result) {
+      this.boards.set(result);
+      // this.loading = false;
+    } else {
+      this.boards.set([]);
+      // this.loading = false;
+    }
+  }
+
+  showRefreshWarning() {
+    this.isRefreshWarningToastOpened = true;
+    this.countdown = 30; // Reset countdown to 30 seconds
+    this.startCountdown();
+  }
+
+  startCountdown() {
+    // Clear any existing countdown
+    if (this.countdownSubscription) {
+      this.countdownSubscription.unsubscribe();
+    }
+
+    this.countdownSubscription = interval(1000)
+      .pipe(
+        takeWhile(() => this.countdown > 0 && this.isRefreshWarningToastOpened)
+      )
+      .subscribe(() => {
+        this.countdown--;
+
+        if (this.countdown <= 0) {
+          this.refreshPage();
+        }
+      });
+  }
+
+  refreshPage() {
+    // Clean up the countdown
+    if (this.countdownSubscription) {
+      this.countdownSubscription.unsubscribe();
+      this.countdownSubscription = null;
+    }
+
+    this.isRefreshWarningToastOpened = false;
+    window.location.reload();
   }
 
   // chandan - Handle modal opening based on action type
   private handleModalTrigger(data: any): void {
-    
     // chandan - Close all modals first
     this.closeAllModals();
-    
+
     // chandan - Set current modal data
     this.currentModalData = data.keywords || {};
-    
+
     // chandan - Open appropriate modal based on action type
     switch (data.actionType) {
       case 'team_member_add':
@@ -110,7 +256,6 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.isPersonalTaskCreationModalOpen = false;
 
     this.isTaskClockModalOpen = false; // NEW: Close TaskClock modal
-
   }
 
   // chandan - Modal close handlers
@@ -141,15 +286,13 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.onAddTeamMemberModalClose();
   }
 
-
- private openTaskClockModal(aiData: any): void {
+  private openTaskClockModal(aiData: any): void {
     this.taskClockModalData = aiData;
     this.isTaskClockModalOpen = true;
     console.log('chandan - Opening TaskClock modal with data:', aiData);
   }
 
-
-onTaskClockModalClose(): void {
+  onTaskClockModalClose(): void {
     this.isTaskClockModalOpen = false;
     this.taskClockModalData = {};
     console.log('chandan - TaskClock modal closed');
@@ -159,5 +302,4 @@ onTaskClockModalClose(): void {
     console.log('chandan - Personal task added successfully via AI');
     this.onTaskClockModalClose();
   }
-
 }
