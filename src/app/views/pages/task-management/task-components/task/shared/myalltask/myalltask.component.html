@@ -1,11 +1,7 @@
 <!-- Simple All Tasks Component -->
 <div class="tw-min-h-[calc(100vh-109px)] tw-bg-gray-50">
   
-  <!-- Loading -->
-  <div *ngIf="isLoading" class="tw-text-center tw-py-8">
-    <div class="tw-animate-spin tw-rounded-full tw-h-6 tw-w-6 tw-border-b-2 tw-border-blue-500 tw-mx-auto"></div>
-    <p class="tw-mt-2 tw-text-gray-600">Loading...</p>
-  </div>
+
 
   <div class="tw-container tw-px-4  tw-max-w-2xl">
     
@@ -14,6 +10,11 @@
       <h1 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-mb-2">All Tasks</h1>
       <div class="tw-w-16 tw-h-0.5 tw-bg-blue-500 tw-rounded-full"></div>
     </div>
+
+      <!-- Loading -->
+  <div *ngIf="isLoading" class="tw-text-center tw-py-8">
+    <div class="tw-animate-spin tw-rounded-full tw-h-6 tw-w-6 tw-border-b-2 tw-border-blue-500 "></div>
+  </div>
 
     <!-- Tasks Container with Scroll -->
     <div 
