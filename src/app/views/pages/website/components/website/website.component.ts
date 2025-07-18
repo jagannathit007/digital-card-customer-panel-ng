@@ -112,6 +112,11 @@ export class WebsiteComponent{
         href: "our-blogs",
         icon:'ri-article-line'
       },
+      {
+        title: "My ThemeColor",
+        href: "theme-color",
+        icon:'ri-article-line'
+      },
     ]
    
      isActive(href: string): boolean {

@@ -157,6 +157,9 @@ public WEBSITE_OUR_SERVICES_DELETE: string = `${this.PATH}/website/service/delet
   public WEBSITE_BLOGS_ADD: string = `${this.PATH}/website/blog/update`;
   public WEBSITE_BLOGS_DELETE: string = `${this.PATH}/website/blog/delete`;
 
+  // My ThemeColor
+  public WEBSITE_THEMECOLOR_UPDATE: string = `${this.PATH}/website/theme-colors/update`;
+
   //veryfy token
   public VERIFY_TOKEN: string = `${this.PATH}/verify-token`;
 

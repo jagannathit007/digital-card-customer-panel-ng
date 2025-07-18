@@ -20,6 +20,7 @@ import { OurCertificatesComponent } from './components/website/shared/our-certif
 import { OurTrustComponent } from './components/website/shared/our-trust/our-trust.component';
 import { FaqComponent } from './components/website/shared/faq/faq.component';
 import { BlogsComponent } from './components/website/shared/blogs/blogs.component';
+import { ThemeColorComponent } from './components/website/shared/theme-color/theme-color.component';
 
 import { RouterModule } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
@@ -49,7 +50,8 @@ import { NgxEditorModule } from 'ngx-editor';
     OurCertificatesComponent,
     OurTrustComponent,
     FaqComponent,
-    BlogsComponent
+    BlogsComponent,
+    ThemeColorComponent
   ],
   imports: [
     CommonModule,

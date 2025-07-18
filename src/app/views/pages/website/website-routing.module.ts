@@ -18,6 +18,7 @@ import { OurCertificatesComponent } from './components/website/shared/our-certif
 import { OurTrustComponent } from './components/website/shared/our-trust/our-trust.component';
 import { FaqComponent } from './components/website/shared/faq/faq.component';
 import { BlogsComponent } from './components/website/shared/blogs/blogs.component';
+import { ThemeColorComponent } from './components/website/shared/theme-color/theme-color.component';
 
 const routes: Routes = [
   {
@@ -42,6 +43,7 @@ const routes: Routes = [
         { path: 'our-trustcomponent', component: OurTrustComponent },
         { path: 'our-faq', component: FaqComponent },
         { path: 'our-blogs', component: BlogsComponent },
+        { path: 'theme-color', component: ThemeColorComponent },
         
 
       ],

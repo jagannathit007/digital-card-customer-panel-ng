@@ -1,0 +1,199 @@
+<div>
+    <div class="row">
+        <div class="col-md">
+            <div class="d-flex align-items-center">
+                <label class="fw-bold text-uppercase fs-3 me-2">Theme Colors</label>
+                <button class="btn btn-sm text-white bg-primary me-2" (click)="editThemeColors()" title="Edit Theme Colors">
+                    <i class="ri-palette-line"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Current Theme Colors Preview -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Current Theme Colors</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row" *ngIf="!isLoading">
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="color-preview-item">
+                                <label class="form-label fw-semibold">Background Color</label>
+                                <div class="d-flex align-items-center">
+                                    <div class="color-box me-2" [style.background-color]="currentThemeColors.backgroundColor"></div>
+                                    <span class="text-muted">{{ currentThemeColors.backgroundColor }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="color-preview-item">
+                                <label class="form-label fw-semibold">Secondary Color</label>
+                                <div class="d-flex align-items-center">
+                                    <div class="color-box me-2" [style.background-color]="currentThemeColors.otherColor"></div>
+                                    <span class="text-muted">{{ currentThemeColors.otherColor }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="color-preview-item">
+                                <label class="form-label fw-semibold">Text Color</label>
+                                <div class="d-flex align-items-center">
+                                    <div class="color-box me-2" [style.background-color]="currentThemeColors.textColor"></div>
+                                    <span class="text-muted">{{ currentThemeColors.textColor }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="color-preview-item">
+                                <label class="form-label fw-semibold">Button Color</label>
+                                <div class="d-flex align-items-center">
+                                    <div class="color-box me-2" [style.background-color]="currentThemeColors.buttonColor"></div>
+                                    <span class="text-muted">{{ currentThemeColors.buttonColor }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="color-preview-item">
+                                <label class="form-label fw-semibold">Button Text Color</label>
+                                <div class="d-flex align-items-center">
+                                    <div class="color-box me-2" [style.background-color]="currentThemeColors.buttonTextColor"></div>
+                                    <span class="text-muted">{{ currentThemeColors.buttonTextColor }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading State -->
+                    <div *ngIf="isLoading" class="text-center py-4">
+                        <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Loading theme colors...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Preview -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Preview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="theme-preview p-4 rounded" 
+                         [style.background-color]="currentThemeColors.backgroundColor"
+                         [style.color]="currentThemeColors.textColor">
+                        <div class="preview-section p-3 rounded mb-3" 
+                             [style.background-color]="currentThemeColors.otherColor">
+                            <h6>Sample Section</h6>
+                            <p class="mb-2">This is how your text will appear with the selected colors.</p>
+                            <button class="btn btn-sm me-2" 
+                                    [style.background-color]="currentThemeColors.buttonColor"
+                                    [style.color]="currentThemeColors.buttonTextColor"
+                                    [style.border-color]="currentThemeColors.buttonColor">
+                                Sample Button
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Theme Colors Modal -->
+<div class="modal fade" id="EditThemeColorsModal" tabindex="-1" aria-labelledby="EditThemeColorsModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fw-medium" id="EditThemeColorsModalLabel">Edit Theme Colors</h4>
+                <button type="button" class="btn-close" (click)="onCloseModal('EditThemeColorsModal')"></button>
+            </div>
+            <div class="modal-body">
+                <form #themeForm="ngForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="backgroundColor" class="form-label">Background Color</label>
+                            <div class="input-group">
+                                <input type="color" class="form-control form-control-color" id="backgroundColor" 
+                                       [(ngModel)]="editingThemeColors.backgroundColor" name="backgroundColor" required>
+                                <input type="text" class="form-control" placeholder="#ffffff" 
+                                       [(ngModel)]="editingThemeColors.backgroundColor" name="backgroundColorText">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="otherColor" class="form-label">Secondary Color</label>
+                            <div class="input-group">
+                                <input type="color" class="form-control form-control-color" id="otherColor" 
+                                       [(ngModel)]="editingThemeColors.otherColor" name="otherColor">
+                                <input type="text" class="form-control" placeholder="#f8f9fa" 
+                                       [(ngModel)]="editingThemeColors.otherColor" name="otherColorText">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="textColor" class="form-label">Text Color</label>
+                            <div class="input-group">
+                                <input type="color" class="form-control form-control-color" id="textColor" 
+                                       [(ngModel)]="editingThemeColors.textColor" name="textColor" required>
+                                <input type="text" class="form-control" placeholder="#212529" 
+                                       [(ngModel)]="editingThemeColors.textColor" name="textColorText">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="buttonColor" class="form-label">Button Color</label>
+                            <div class="input-group">
+                                <input type="color" class="form-control form-control-color" id="buttonColor" 
+                                       [(ngModel)]="editingThemeColors.buttonColor" name="buttonColor" required>
+                                <input type="text" class="form-control" placeholder="#0d6efd" 
+                                       [(ngModel)]="editingThemeColors.buttonColor" name="buttonColorText">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="buttonTextColor" class="form-label">Button Text Color</label>
+                            <div class="input-group">
+                                <input type="color" class="form-control form-control-color" id="buttonTextColor" 
+                                       [(ngModel)]="editingThemeColors.buttonTextColor" name="buttonTextColor" required>
+                                <input type="text" class="form-control" placeholder="#ffffff" 
+                                       [(ngModel)]="editingThemeColors.buttonTextColor" name="buttonTextColorText">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Preview in Modal -->
+                    <div class="mt-4">
+                        <h6>Live Preview</h6>
+                        <div class="theme-preview p-3 rounded border" 
+                             [style.background-color]="editingThemeColors.backgroundColor"
+                             [style.color]="editingThemeColors.textColor">
+                            <div class="preview-section p-2 rounded mb-2" 
+                                 [style.background-color]="editingThemeColors.otherColor">
+                                <p class="mb-1">Sample text with your selected colors</p>
+                                <button class="btn btn-sm" 
+                                        [style.background-color]="editingThemeColors.buttonColor"
+                                        [style.color]="editingThemeColors.buttonTextColor"
+                                        [style.border-color]="editingThemeColors.buttonColor">
+                                    Sample Button
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="resetToDefaults()">
+                    <i class="ri-refresh-line"></i> Reset to Defaults
+                </button>
+                <button type="button" class="btn btn-success" (click)="updateThemeColors()" [disabled]="themeForm.invalid || isLoading">
+                    <i class="ri-save-line"></i> 
+                    {{ isLoading ? 'Saving...' : 'Save Colors' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
