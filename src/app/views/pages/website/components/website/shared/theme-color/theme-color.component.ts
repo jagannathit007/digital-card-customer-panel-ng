@@ -20,7 +20,7 @@ export class ThemeColorComponent implements OnInit {
 
   currentThemeColors = {
     backgroundColor: '#ffffff',
-    otherColor: '#f8f9fa',
+    SecondaryColor: '#f8f9fa',
     textColor: '#212529',
     buttonColor: '#0d6efd',
     buttonTextColor: '#ffffff'
@@ -28,7 +28,7 @@ export class ThemeColorComponent implements OnInit {
 
   editingThemeColors = {
     backgroundColor: '#ffffff',
-    otherColor: '#f8f9fa',
+    SecondaryColor: '#f8f9fa',
     textColor: '#212529',
     buttonColor: '#0d6efd',
     buttonTextColor: '#ffffff'
@@ -56,7 +56,7 @@ export class ThemeColorComponent implements OnInit {
         if (results.themeColors) {
           this.currentThemeColors = {
             backgroundColor: results.themeColors.backgroundColor || '#ffffff',
-            otherColor: results.themeColors.otherColor || '#f8f9fa',
+            SecondaryColor: results.themeColors.SecondaryColor || '#f8f9fa',
             textColor: results.themeColors.textColor || '#212529',
             buttonColor: results.themeColors.buttonColor || '#0d6efd',
             buttonTextColor: results.themeColors.buttonTextColor || '#ffffff'
@@ -90,7 +90,7 @@ export class ThemeColorComponent implements OnInit {
       const data = {
         businessCardId: businessCardId,
         backgroundColor: this.editingThemeColors.backgroundColor,
-        otherColor: this.editingThemeColors.otherColor,
+        SecondaryColor: this.editingThemeColors.SecondaryColor,
         textColor: this.editingThemeColors.textColor,
         buttonColor: this.editingThemeColors.buttonColor,
         buttonTextColor: this.editingThemeColors.buttonTextColor
@@ -139,7 +139,7 @@ export class ThemeColorComponent implements OnInit {
   resetToDefaults() {
     this.editingThemeColors = {
       backgroundColor: '#ffffff',
-      otherColor: '#f8f9fa',
+      SecondaryColor: '#f8f9fa',
       textColor: '#212529',
       buttonColor: '#0d6efd',
       buttonTextColor: '#ffffff'
