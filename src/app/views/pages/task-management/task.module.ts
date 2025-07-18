@@ -22,6 +22,7 @@ import { MydaytaskComponent } from './task-components/task/shared/mydaytask/myda
 import { MyweektaskComponent } from './task-components/task/shared/myweektask/myweektask.component';
 import { MyalltaskComponent } from './task-components/task/shared/myalltask/myalltask.component';
 import { MycalendarComponent } from './task-components/task/shared/mycalendar/mycalendar.component';
+import { TeamReportComponent } from './task-components/task/shared/team-report/team-report.component';
 import { MemberprofileComponent } from './task-components/task/shared/memberprofile/memberprofile.component';
 import { AddTeamMemberComponent } from '../../partials/task-managemnt/common-components/addTeamMember/addTeamMember.component';
 import { SendingMailComponent } from '../../partials/task-managemnt/common-components/sendingMail/sendingMail.component';
@@ -50,6 +51,7 @@ import { CommonTeamTaskCreatePopupComponent } from "src/app/views/partials/task-
     MyalltaskComponent,
     MycalendarComponent,
     MemberprofileComponent,
+    TeamReportComponent
   ],
   imports: [
     CommonModule,

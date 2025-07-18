@@ -1,0 +1,270 @@
+<!-- Team Report Component Template -->
+<div class="tw-container tw-mx-auto tw-p-6 tw-bg-gray-50 tw-min-h-screen">
+
+  <!-- Filters Section -->
+  <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-mb-6">
+    <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-4">Filters</h2>
+    
+    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-4 tw-gap-4 tw-mb-6">
+      <!-- Member Selection -->
+      <div class="tw-space-y-2">
+        <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">
+          Select Member <span class="tw-text-red-500">*</span>
+        </label>
+        <select 
+          [(ngModel)]="selectedMemberId" 
+          class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent"
+        >
+          <option value="">Choose a member...</option>
+          <option *ngFor="let member of members" [value]="member._id">
+            {{ member.name }} ({{ member.role }})
+          </option>
+        </select>
+      </div>
+
+      <!-- Board Selection -->
+      <div class="tw-space-y-2">
+        <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">
+          Select Board (Optional)
+        </label>
+        <select 
+          [(ngModel)]="selectedBoardId" 
+          class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent"
+        >
+          <option value="">All Boards</option>
+          <option *ngFor="let board of boards" [value]="board._id">
+            {{ board.name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Date Selection -->
+      <div class="tw-space-y-2">
+        <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">
+          Select Date (Optional)
+        </label>
+        <input 
+          type="date" 
+          [(ngModel)]="selectedDate"
+          class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent"
+        />
+      </div>
+
+      <!-- Page Limit -->
+      <div class="tw-space-y-2">
+        <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">
+          Records per page
+        </label>
+        <select 
+          [(ngModel)]="pageLimit" 
+          class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent"
+        >
+          <option [value]="10">10</option>
+          <option [value]="25">25</option>
+          <option [value]="50">50</option>
+          <option [value]="100">100</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="tw-flex tw-gap-4">
+      <button 
+        (click)="getReport()" 
+        [disabled]="isLoading || !selectedMemberId"
+        class="tw-bg-blue-600 tw-hover:bg-blue-700 tw-disabled:bg-gray-400 tw-text-white tw-px-6 tw-py-2 tw-rounded-md tw-font-medium tw-transition-colors tw-duration-200 tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:ring-offset-2"
+      >
+        <span *ngIf="!isLoading">Generate Report</span>
+        <span *ngIf="isLoading" class="tw-flex tw-items-center tw-gap-2">
+          <span class="tw-animate-spin tw-rounded-full tw-h-4 tw-w-4 tw-border-b-2 tw-border-white"></span>
+          Loading...
+        </span>
+      </button>
+
+      <button 
+        (click)="exportReport()" 
+        [disabled]="!reportData"
+        class="tw-bg-green-600 tw-hover:bg-green-700 tw-disabled:bg-gray-400 tw-text-white tw-px-6 tw-py-2 tw-rounded-md tw-font-medium tw-transition-colors tw-duration-200 tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-green-500 tw-focus:ring-offset-2"
+      >
+        Export to CSV
+      </button>
+    </div>
+  </div>
+
+  <!-- Results Section -->
+  <div *ngIf="searchClicked" class="tw-bg-white tw-rounded-lg tw-shadow-md tw-overflow-hidden">
+    <!-- Report Header -->
+    <div *ngIf="reportData" class="tw-bg-gradient-to-r tw-from-blue-500 tw-to-blue-600 tw-text-white tw-p-6">
+      <h3 class="tw-text-2xl tw-font-bold tw-mb-2">
+        Task Report: {{ reportData.memberName }}
+      </h3>
+      <div class="tw-grid tw-grid-cols-2 md:tw-grid-cols-4 tw-gap-4 tw-text-sm">
+        <div>
+          <span class="tw-opacity-80">Total Records:</span>
+          <span class="tw-font-semibold tw-ml-1">{{ reportData.pagination.totalDocs }}</span>
+        </div>
+        <div>
+          <span class="tw-opacity-80">Current Page:</span>
+          <span class="tw-font-semibold tw-ml-1">{{ reportData.pagination.page }}</span>
+        </div>
+        <div>
+          <span class="tw-opacity-80">Total Pages:</span>
+          <span class="tw-font-semibold tw-ml-1">{{ reportData.pagination.totalPages }}</span>
+        </div>
+        <div>
+          <span class="tw-opacity-80">Records/Page:</span>
+          <span class="tw-font-semibold tw-ml-1">{{ reportData.pagination.limit }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Data Message -->
+    <div *ngIf="!reportData" class="tw-p-8 tw-text-center">
+      <div class="tw-text-gray-500 tw-text-lg">
+        <i class="tw-fas tw-fa-inbox tw-text-3xl tw-mb-4 tw-block"></i>
+        No data found for the selected criteria.
+      </div>
+    </div>
+
+    <!-- Report Data -->
+    <div *ngIf="reportData && getObjectKeys(reportData.tasks).length > 0">
+      <!-- Board-wise Tasks -->
+      <div *ngFor="let boardName of getObjectKeys(reportData.tasks)" class="tw-border-b tw-border-gray-200 tw-last:border-b-0">
+        <!-- Board Header -->
+        <div class="tw-bg-gray-50 tw-px-6 tw-py-4 tw-border-b tw-border-gray-200">
+          <h4 class="tw-text-lg tw-font-semibold tw-text-gray-800">
+            📋 {{ boardName }}
+            <span class="tw-text-sm tw-font-normal tw-text-gray-600 tw-ml-2">
+              ({{ reportData.tasks[boardName].length }} tasks)
+            </span>
+          </h4>
+        </div>
+
+        <!-- Tasks Table -->
+        <div class="tw-overflow-x-auto">
+          <table class="tw-w-full tw-text-sm">
+            <thead class="tw-bg-gray-100">
+              <tr>
+                <th class="tw-px-4 tw-py-3 tw-text-left tw-font-medium tw-text-gray-700">Task Title</th>
+                <th class="tw-px-4 tw-py-3 tw-text-left tw-font-medium tw-text-gray-700">Column</th>
+                <th class="tw-px-4 tw-py-3 tw-text-left tw-font-medium tw-text-gray-700">Status</th>
+                <th class="tw-px-4 tw-py-3 tw-text-left tw-font-medium tw-text-gray-700">Due Date</th>
+                <th class="tw-px-4 tw-py-3 tw-text-center tw-font-medium tw-text-gray-700">Completed</th>
+                <th class="tw-px-4 tw-py-3 tw-text-center tw-font-medium tw-text-gray-700">Comments</th>
+                <th class="tw-px-4 tw-py-3 tw-text-center tw-font-medium tw-text-gray-700">Attachments</th>
+                <th class="tw-px-4 tw-py-3 tw-text-left tw-font-medium tw-text-gray-700">Assigned To</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr 
+                *ngFor="let task of reportData.tasks[boardName]; trackBy: trackByTaskId; let i = index" 
+                class="tw-border-b tw-border-gray-100 tw-hover:bg-gray-50 tw-transition-colors"
+              >
+                <td class="tw-px-4 tw-py-3">
+                  <div class="tw-font-medium tw-text-gray-900">{{ task.taskTitle }}</div>
+                </td>
+                <td class="tw-px-4 tw-py-3">
+                  <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium tw-bg-blue-100 tw-text-blue-800">
+                    {{ task.columnName }}
+                  </span>
+                </td>
+                <td class="tw-px-4 tw-py-3">
+                  <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium"
+                        [ngClass]="{
+                          'tw-bg-green-100 tw-text-green-800': task.status === 'completed',
+                          'tw-bg-yellow-100 tw-text-yellow-800': task.status === 'in-progress',
+                          'tw-bg-red-100 tw-text-red-800': task.status === 'pending',
+                          'tw-bg-gray-100 tw-text-gray-800': task.status !== 'completed' && task.status !== 'in-progress' && task.status !== 'pending'
+                        }">
+                    {{ task.status }}
+                  </span>
+                </td>
+                <td class="tw-px-4 tw-py-3 tw-text-gray-600">
+                  {{ task.dueDate || 'No due date' }}
+                </td>
+                <td class="tw-px-4 tw-py-3 tw-text-center">
+                  <span *ngIf="task.isCompleted === 'true'" class="tw-text-green-600">
+                    ✓
+                  </span>
+                  <span *ngIf="task.isCompleted !== 'true'" class="tw-text-gray-400">
+                    ✗
+                  </span>
+                </td>
+                <td class="tw-px-4 tw-py-3 tw-text-center">
+                  <span class="tw-inline-flex tw-items-center tw-justify-center tw-w-6 tw-h-6 tw-bg-blue-100 tw-text-blue-800 tw-text-xs tw-font-medium tw-rounded-full">
+                    {{ task.commentCount || 0 }}
+                  </span>
+                </td>
+                <td class="tw-px-4 tw-py-3 tw-text-center">
+                  <span class="tw-inline-flex tw-items-center tw-justify-center tw-w-6 tw-h-6 tw-bg-gray-100 tw-text-gray-800 tw-text-xs tw-font-medium tw-rounded-full">
+                    {{ task.attachmentCount || 0 }}
+                  </span>
+                </td>
+                <td class="tw-px-4 tw-py-3 tw-text-gray-600">
+                  {{ task.assignedTo || 'Unassigned' }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="reportData && reportData.pagination" class="tw-bg-gray-50 tw-px-6 tw-py-4 tw-border-t tw-border-gray-200">
+      <div class="tw-flex tw-items-center tw-justify-between">
+        <div class="tw-text-sm tw-text-gray-700">
+          Showing page {{ reportData.pagination.page }} of {{ reportData.pagination.totalPages }}
+          ({{ reportData.pagination.totalDocs }} total records)
+        </div>
+        
+        <div class="tw-flex tw-gap-2">
+          <!-- Previous Button -->
+          <button 
+            (click)="changePage(reportData.pagination.prevPage)"
+            [disabled]="!reportData.pagination.hasPrevPage"
+            class="tw-px-3 tw-py-1 tw-text-sm tw-bg-white tw-border tw-border-gray-300 tw-rounded tw-hover:bg-gray-50 tw-disabled:opacity-50 tw-disabled:cursor-not-allowed tw-transition-colors"
+          >
+            Previous
+          </button>
+
+          <!-- Page Numbers -->
+          <div class="tw-flex tw-gap-1">
+            <button 
+              *ngFor="let page of [].constructor(Math.min(+reportData.pagination.totalPages, 5)); let i = index"
+              (click)="changePage(i + Math.max(1, +reportData.pagination.page - 2))"
+              [disabled]="(i + Math.max(1, +reportData.pagination.page - 2)) === +reportData.pagination.page"
+              class="tw-px-3 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-transition-colors"
+              [ngClass]="{
+                'tw-bg-blue-600 tw-text-white tw-border-blue-600': (i + Math.max(1, +reportData.pagination.page - 2)) === +reportData.pagination.page,
+                'tw-bg-white tw-hover:bg-gray-50': (i + Math.max(1, +reportData.pagination.page - 2)) !== +reportData.pagination.page
+              }"
+            >
+              {{ i + Math.max(1, +reportData.pagination.page - 2) }}
+            </button>
+          </div>
+
+          <!-- Next Button -->
+          <button 
+            (click)="changePage(reportData.pagination.nextPage)"
+            [disabled]="!reportData.pagination.hasNextPage"
+            class="tw-px-3 tw-py-1 tw-text-sm tw-bg-white tw-border tw-border-gray-300 tw-rounded tw-hover:bg-gray-50 tw-disabled:opacity-50 tw-disabled:cursor-not-allowed tw-transition-colors"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Page Loader -->
+<div
+  class="tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-bottom-0 tw-flex tw-items-center tw-justify-center tw-bg-[#0000004d] tw-z-30"
+  *ngIf="isLoading"
+>
+  <div class="tw-flex tw-items-center tw-gap-5 tw-bg-white tw-px-8 tw-py-5 tw-rounded">
+    <span class="tw-animate-spin tw-rounded-full tw-h-5 tw-w-5 tw-border-b-2 tw-border-blue-600"></span>
+    <span class="tw-text-gray-700 tw-font-medium">Generating report...</span>
+  </div>
+</div>
