@@ -215,6 +215,7 @@ public REORDER_COLUMN: string = `${this.PATH}/task/board/column/reorder`;
 
 // ! AI ASSISTETNT
 public AI_ASSISTANT: string = `${this.PATH}/task/ai/process-user-voice`;
+public GET_MEMBER_TASK_REPORT: string = `${this.PATH}/task/get-member-task-report`;
 
 //  ! Task Module Comment Mention api
 public GET_COMMENTS: string = `${this.PATH}/task/team/comment/get`;
