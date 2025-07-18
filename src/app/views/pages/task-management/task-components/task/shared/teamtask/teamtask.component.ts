@@ -124,6 +124,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   // Loading state
   isLoading = signal<boolean>(true);
 
+  adminId: string = '';
+
   // Computed properties
   editableColumns = computed(() =>
     this.boardColumns().filter((col) => col.canEdit)
@@ -193,8 +195,12 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit() {
+    this.adminId =
+      this.taskPermissionsService.getCurrentUser().role === 'admin'
+        ? this.taskPermissionsService.getCurrentUser()._id
+        : this.taskPermissionsService.getCurrentUser().adminId;
     // joining in team task room
-    this.socketService.joinRoom('team_task');
+    this.socketService.joinRoom(`team_task_${this.adminId}`);
 
     this.setupTaskUpdateSubscriptionBySocket();
 
@@ -235,10 +241,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         this.boardId.set('');
         this.storage.set(teamMemberCommon.BOARD_DATA, '');
 
-        swalHelper.showToast(
-          'You have been removed from the board',
-          'warning',
-        );
+        swalHelper.showToast('You have been removed from the board', 'warning');
 
         setTimeout(() => {
           window.location.reload();
@@ -246,7 +249,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
 
   listenTaskCreationSocket() {
     this.socketService.onTaskCreated().subscribe((data) => {
@@ -256,12 +258,12 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       const task = data.updates;
 
       this.boardColumns.update((columns) => {
-      const column = columns.find((col) => col._id === task.column);
-      if (column) {
-        column.tasks.push(task);
-      }
-      return columns;
-    });
+        const column = columns.find((col) => col._id === task.column);
+        if (column) {
+          column.tasks.push(task);
+        }
+        return columns;
+      });
     });
   }
 
@@ -269,18 +271,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.socketService.onBoardUpdate().subscribe((data) => {
       console.log('data from sockets : ', data);
 
-      if (data.type === 'comment_add') {
-        if (
-          data.updates.mentionedMembers.includes(
-            this.taskPermissionsService.getCurrentUser()._id
-          )
-        ) {
-          swalHelper.showToast(
-            `you have been mentioned in public chat`,
-            'info'
-          );
-        }
-      } else if (data.type === 'column_reorder') {
+      if (data.type === 'column_reorder') {
         this.boardColumns.set(data.updates);
         this.cdr.detectChanges();
       }
@@ -515,7 +506,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
     this.isDragActive = false;
     document.removeEventListener('mousemove', this.trackMouseDuringDrag);
 
-    this.socketService.leaveRoom('team_task');
+    this.socketService.leaveRoom(`team_task_${this.adminId}`);
   }
 
   private setupDragDropSubscription() {
@@ -815,12 +806,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       return columns;
     });
 
-    this.socketService.sendTaskCreated(
-      'team_task',
-      task._id,
-      this.boardId(),
-      task
-    );
+    this.socketService.sendTaskCreated(task._id, this.boardId(), task);
   }
 
   // Drag and drop event handlers
@@ -968,7 +954,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         });
 
         this.socketService.sendBoardUpdate(
-          'team_task',
           this.boardId(),
           'column_reorder',
           newColumnList
@@ -1084,7 +1069,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         const fromPosition = event.previousIndex;
         const toPosition = event.currentIndex;
 
-        this.socketService.sendTaskUpdate('team_task', taskId, this.boardId(), {
+        this.socketService.sendTaskUpdate(taskId, this.boardId(), {
           fromColumn,
           toColumn,
           fromPosition,
@@ -1226,7 +1211,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         });
 
         this.socketService.sendBoardUpdate(
-          'team_task',
           this.boardId(),
           'column_reorder',
           this.boardColumns()
@@ -1277,7 +1261,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
               this.boardColumns.set(columns);
 
               this.socketService.sendBoardUpdate(
-                'team_task',
                 this.boardId(),
                 'column_reorder',
                 this.boardColumns()
@@ -1364,7 +1347,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       this.boardColumns.set(columns);
 
       this.socketService.sendBoardUpdate(
-        'team_task',
         this.boardId(),
         'column_reorder',
         this.boardColumns()
@@ -1446,17 +1428,12 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         this.boardId.set('');
         this.storage.set(teamMemberCommon.BOARD_DATA, '');
       } else {
-        this.socketService.sendTaskUpdate(
-          'team_task',
-          task._id,
-          this.boardId(),
-          {
-            fromColumn: sourceColumn._id,
-            toColumn: targetColumnId,
-            fromPosition: taskIndex,
-            toPosition: 0,
-          }
-        );
+        this.socketService.sendTaskUpdate(task._id, this.boardId(), {
+          fromColumn: sourceColumn._id,
+          toColumn: targetColumnId,
+          fromPosition: taskIndex,
+          toPosition: 0,
+        });
 
         console.log('Task moved to column:', {
           taskId: task._id,
@@ -1548,7 +1525,6 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         column.tasks.push(newTask);
 
         this.socketService.sendTaskCreated(
-          'team_task',
           newTask._id,
           this.boardId(),
           newTask

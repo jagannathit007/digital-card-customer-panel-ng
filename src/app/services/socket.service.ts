@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { Observable } from 'rxjs';
 import { environment } from 'src/env/env.local';
+import { TaskPermissionsService } from './task-permissions.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,10 @@ export class SocketService {
   private socket: Socket;
   private readonly SERVER_URL = environment.baseURL; // Update to your backend URL
 
-  constructor() {
+  adminId: string;
+
+  constructor(private taskPermissionsService: TaskPermissionsService) {
+    this.adminId = this.taskPermissionsService.getCurrentUser().role === 'admin' ? this.taskPermissionsService.getCurrentUser()._id : this.taskPermissionsService.getCurrentUser().adminId;
     this.socket = io(this.SERVER_URL, {
     //   transports: ['websocket'], // Optional: enforce websocket
     });
@@ -22,19 +26,19 @@ export class SocketService {
   }
 
   // Join room
-  joinRoom(room: string = 'team_task'): void {
+  joinRoom(room: string = `team_task_${this.adminId}`): void {
     this.socket.emit('join_room', room);
     console.log('Joined room:', room);
   }
 
   // Leave room
-  leaveRoom(room: string = 'team_task'): void {
+  leaveRoom(room: string = `team_task_${this.adminId}`): void {
     this.socket.emit('leave_room', room);
     console.log('Left room:', room);
   }
 
   // Send message to room (simulate task update)
-  sendTaskUpdate(room: string, taskId: string, boardId: string, updates: any): void {
+  sendTaskUpdate(taskId: string, boardId: string, updates: any, room: string = `team_task_${this.adminId}`): void {
     console.log('Sending task update:', { taskId, boardId, updates });
     this.socket.emit('task_update', room, { taskId, boardId, updates });
   }
@@ -49,7 +53,7 @@ export class SocketService {
   }
 
   // send task details update
-  sendTaskDetailsUpdate(room: string, taskId: string, boardId: string, type: string, updates: any): void {
+  sendTaskDetailsUpdate(taskId: string, boardId: string, type: string, updates: any, room: string = `team_task_${this.adminId}`): void {
     this.socket.emit('task_details_update', room, { taskId, boardId, type, updates });
   }
 
@@ -63,7 +67,7 @@ export class SocketService {
   }
 
   // comment update
-  sendCommentUpdate(room: string, taskId: string, boardId: string, type: string, updates: any): void {
+  sendCommentUpdate(taskId: string, boardId: string, type: string, updates: any, room: string = `task_management_${this.adminId}`): void {
     console.log('Sending comment update:', { taskId, boardId, type, updates });
     this.socket.emit('comment_update', room, { taskId, boardId, type, updates });
   }
@@ -78,7 +82,7 @@ export class SocketService {
   }
 
   // send board public attchments and comments updates
-  sendBoardUpdate(room: string, boardId: string, type: string, updates: any): void {
+  sendBoardUpdate( boardId: string, type: string, updates: any, room: string = `task_management_${this.adminId}`): void {
     this.socket.emit('board_update', room, { boardId, type, updates });
   }
 
@@ -92,7 +96,7 @@ export class SocketService {
   }
 
   // send task creation
-  sendTaskCreated(room: string, taskId: string, boardId: string, updates: any): void {
+  sendTaskCreated(taskId: string, boardId: string, updates: any, room: string = `team_task_${this.adminId}`): void {
     this.socket.emit('task_created', room, { taskId, boardId, updates });
   }
 
@@ -106,7 +110,7 @@ export class SocketService {
   }
 
   // send board member updated event
-  sendBoardMemberUpdate(room: string, boardId: string, type: string, updates: any): void {
+  sendBoardMemberUpdate(boardId: string, type: string, updates: any, room: string = `task_management_${this.adminId}`): void {
     this.socket.emit('board_member_update', room, { boardId, type, updates });
   }
 
@@ -120,7 +124,7 @@ export class SocketService {
   }
 
   // send all boards updates
-  sendAllBoardsUpdate(room: string, type: string, updates: any): void {
+  sendAllBoardsUpdate(type: string, updates: any, room: string = `task_management_${this.adminId}`): void {
     this.socket.emit('all_boards_update', room, { type, updates });
   }
 

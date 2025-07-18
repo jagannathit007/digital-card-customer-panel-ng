@@ -81,7 +81,7 @@
      (mouseenter)="pauseToastTimer()" (mouseleave)="resumeToastTimer()">
   <div class="tw-flex tw-items-center tw-bg-blue-100 tw-text-blue-800 tw-px-4 tw-py-2 tw-rounded tw-shadow-md">
     <i class="fas fa-at tw-mr-2"></i>
-    <span class="tw-cursor-pointer" (click)="navigateToMentionedTask()">You've been mentioned in a comment!</span>
+    <span class="tw-cursor-pointer" (click)="navigateToMentionedTask()">{{!mentionedTaskId ? 'You have been mentioned in a Bord!' : 'You have been mentioned in a Task!'}}</span>
     <button class="tw-ml-2 tw-text-blue-500 hover:tw-text-blue-700 tw-bg-transparent tw-border-none tw-cursor-pointer"
             (click)="closeMentionToast()">
       <i class="fas fa-times"></i>

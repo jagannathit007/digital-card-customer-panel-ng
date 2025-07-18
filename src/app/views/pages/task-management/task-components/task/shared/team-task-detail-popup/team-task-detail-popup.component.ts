@@ -172,7 +172,6 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     }
 
     this.socketService.sendTaskDetailsUpdate(
-      'team_task',
       this.taskId,
       this.task.board,
       'dueDate',
@@ -527,7 +526,6 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     });
 
     this.socketService.sendTaskDetailsUpdate(
-      'team_task',
       this.taskId,
       this.task.board,
       'assignedTo',
@@ -576,7 +574,6 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     });
 
     this.socketService.sendTaskDetailsUpdate(
-      'team_task',
       this.taskId,
       this.task.board,
       'title',
@@ -627,7 +624,6 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       }
 
       this.socketService.sendTaskDetailsUpdate(
-        'team_task',
         this.taskId,
         this.task.board,
         'status',
@@ -732,7 +728,6 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     this.task.dueDate = day.fullDate.toISOString();
 
     this.socketService.sendTaskDetailsUpdate(
-      'team_task',
       this.taskId,
       this.task.board,
       'dueDate',
@@ -772,7 +767,6 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     this.task.dueDate = null;
 
     this.socketService.sendTaskDetailsUpdate(
-      'team_task',
       this.taskId,
       this.task.board,
       'dueDate',
@@ -794,7 +788,6 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     this.task.dueDate = today.toISOString();
 
     this.socketService.sendTaskDetailsUpdate(
-      'team_task',
       this.taskId,
       this.task.board,
       'dueDate',
@@ -932,7 +925,6 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       this.isEditingDescription = false;
 
       this.socketService.sendTaskDetailsUpdate(
-        'team_task',
         this.taskId,
         this.task.board,
         'description',
@@ -995,7 +987,6 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     this.task.comments.push(newComment);
 
     this.socketService.sendCommentUpdate(
-      'task_management',
       this.task._id,
       this.task.board,
       'add',
@@ -1003,7 +994,6 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     );
 
     this.socketService.sendTaskDetailsUpdate(
-      'team_task',
       this.taskId,
       this.task.board,
       'comments',
@@ -1113,7 +1103,6 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
             comment.isDeleted = true;
 
             this.socketService.sendCommentUpdate(
-              'task_management',
               this.task._id,
               this.task.board,
               'remove',
@@ -1121,7 +1110,6 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
             );
 
             this.socketService.sendTaskDetailsUpdate(
-              'team_task',
               this.taskId,
               this.task.board,
               'comments',
@@ -1171,7 +1159,6 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
         this.task.attachments.push(response);
 
         this.socketService.sendTaskDetailsUpdate(
-          'team_task',
           this.taskId,
           this.task.board,
           'attachments',
@@ -1220,7 +1207,6 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
           }
 
           this.socketService.sendTaskDetailsUpdate(
-            'team_task',
             this.taskId,
             this.task.board,
             'attachments',

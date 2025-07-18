@@ -193,7 +193,6 @@ export class PublicChatPopupComponent implements OnInit, OnDestroy {
     this.comments.push(newComment);
 
     this.socketService.sendBoardUpdate(
-      'team_task',
       this.boardId,
       'comment_add',
       newComment
@@ -296,7 +295,6 @@ export class PublicChatPopupComponent implements OnInit, OnDestroy {
               comment.isDeleted = true;
 
               this.socketService.sendBoardUpdate(
-                'team_task',
                 this.boardId,
                 'comment_remove',
                 comment

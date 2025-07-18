@@ -90,10 +90,13 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   currentModalData: any = {};
 
+  adminId: string = '';
+
   private modalSubscription: Subscription = new Subscription();
 
   isMentionToastVisible = false;
   mentionedTaskId: string = '';
+  mentionedBoardId: string = '';
   private mentionToastTimeout: any;
   private toastTimerPaused = false;
   private remainingToastTime = 0;
@@ -102,13 +105,17 @@ export class TaskComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.isAdmin = this.TaskPermissionsService.isAdminLevelPermission();
 
+    this.adminId = this.isAdmin
+      ? this.TaskPermissionsService.getCurrentUser()._id
+      : this.TaskPermissionsService.getCurrentUser().adminId;
+
     this.loadData();
     this.modalSubscription =
       this.modalCommunicationService.modalTrigger$.subscribe((data) => {
         this.handleModalTrigger(data);
       });
     // join in task management room
-    this.socketService.joinRoom('task_management');
+    this.socketService.joinRoom(`task_management_${this.adminId}`);
     this.listenBoardMembersUpdateSocket();
     this.listenAllBoardsUpdateSocket();
     this.setupCommentsUpdateBySocket();
@@ -122,15 +129,47 @@ export class TaskComponent implements OnInit, OnDestroy {
         this.TaskPermissionsService.getCurrentUser()._id
       );
 
-      if (isMemberMentioned) {
-        this.showMentionToast(data.taskId);
+      const currentOpenedRoute = this.router.url;
+
+      const isSameRoute = currentOpenedRoute.includes(
+        `/task-management/teamtask/detail/${data.taskId}`
+      );
+
+      const isSameTab = currentOpenedRoute.includes('tab=comments');
+
+      // i want to create an constant whcih returns true when both are true
+      const isShowMentionTost = isSameRoute ? !isSameTab : true;
+
+      if (isMemberMentioned && isShowMentionTost) {
+        this.showMentionToast(data.boardId, data.taskId);
+      }
+    });
+
+    this.socketService.onBoardUpdate().subscribe((data) => {
+      console.log('data from sockets : ', data);
+
+      const isMember = data.updates.mentionedMembers.includes(
+        this.TaskPermissionsService.getCurrentUser()._id
+      );
+
+      const currentOpenedRoute = this.router.url;
+
+      const isSameRoute = currentOpenedRoute.includes(
+        `/task-management/teamtask/public-announcements?boardId=${data.boardId}`
+      );
+
+      console.log('isSameRoute', isSameRoute);
+      console.log('isMember', isMember);
+
+      if (data.type === 'comment_add' && isMember && !isSameRoute) {
+        this.showMentionToast(data.boardId);
       }
     });
   }
 
   ngOnDestroy(): void {
     // leave from task management room
-    this.socketService.leaveRoom('task_management');
+    this.socketService.leaveRoom(`task_management_${this.adminId}`);
 
     if (this.modalSubscription) {
       this.modalSubscription.unsubscribe();
@@ -241,8 +280,10 @@ export class TaskComponent implements OnInit, OnDestroy {
     }
   }
 
-  showMentionToast(taskId: string) {
+  showMentionToast(boardId: string, taskId: string = '') {
     this.mentionedTaskId = taskId;
+    this.mentionedBoardId = boardId;
+
     this.isMentionToastVisible = true;
     this.toastStartTime = Date.now();
 
@@ -281,18 +322,31 @@ export class TaskComponent implements OnInit, OnDestroy {
 
   closeMentionToast() {
     this.isMentionToastVisible = false;
+
     if (this.mentionToastTimeout) {
       clearTimeout(this.mentionToastTimeout);
     }
   }
 
   navigateToMentionedTask() {
-    if (this.mentionedTaskId) {
+    if (this.mentionedTaskId || this.mentionedBoardId) {
       this.closeMentionToast();
-      this.router.navigate(
-        [`/task-management/teamtask/detail/${this.mentionedTaskId}`],
-        { queryParams: { tab: 'comments' } }
-      );
+      if (this.mentionedBoardId && !this.mentionedTaskId) {
+        this.router.navigate([`/task-management/teamtask`]);
+        setTimeout(() => {
+          this.router.navigate(
+            [`/task-management/teamtask/public-announcements`],
+            { queryParams: { boardId: this.mentionedBoardId } }
+          );
+        }, 200);
+        return;
+      } else if (this.mentionedBoardId && this.mentionedTaskId) {
+        this.router.navigate(
+          [`/task-management/teamtask/detail/${this.mentionedTaskId}`],
+          { queryParams: { boardId: this.mentionedBoardId, tab: 'comments' } }
+        );
+        return;
+      }
     }
   }
 

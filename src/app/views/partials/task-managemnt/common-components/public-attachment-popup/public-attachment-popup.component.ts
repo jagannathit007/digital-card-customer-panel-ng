@@ -213,7 +213,6 @@ export class PublicAttachmentPopupComponent implements OnInit, OnDestroy {
       if (response) {
         this.attachments.push(response);
         this.socketService.sendBoardUpdate(
-          'team_task',
           this.boardId,
           'attachment_add',
           response
@@ -259,7 +258,6 @@ export class PublicAttachmentPopupComponent implements OnInit, OnDestroy {
           }
 
           this.socketService.sendBoardUpdate(
-            'team_task',
             this.boardId,
             'attachment_remove',
             this.attachments

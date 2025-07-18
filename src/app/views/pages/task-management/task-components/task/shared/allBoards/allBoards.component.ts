@@ -276,7 +276,6 @@ export class AllBoardsComponent implements OnInit {
     this.editingBoard.set(null);
 
     this.socketService.sendAllBoardsUpdate(
-      'task_management',
       'board_create',
       board
     );
@@ -408,7 +407,6 @@ export class AllBoardsComponent implements OnInit {
               .map((m) => m._id);
 
             this.socketService.sendAllBoardsUpdate(
-              'task_management',
               'board_delete',
               {...board, members: memberIds}
             );
@@ -564,7 +562,6 @@ export class AllBoardsComponent implements OnInit {
             this.resetCategoryModal();
 
             this.socketService.sendAllBoardsUpdate(
-              'task_management',
               'category_update',
               board
             );
@@ -660,7 +657,6 @@ export class AllBoardsComponent implements OnInit {
             const updatedBoard = this.boards().find((b) => b._id === board._id);
 
             this.socketService.sendBoardMemberUpdate(
-              'task_management',
               board._id,
               'update',
               updatedBoard
