@@ -5,6 +5,7 @@ import {
   EventEmitter,
   computed,
   signal,
+  OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TaskPermissionsService } from 'src/app/services/task-permissions.service';
@@ -29,7 +30,8 @@ export interface Task {
   _id: string;
   title: string;
   status: string;
-  categories: TaskCategory[];
+  category: string | null;
+  // categories: TaskCategory[];
   assignedTo: TeamMember[];
   comments: number;
   attachments: number;
@@ -41,6 +43,12 @@ export interface Task {
   deletedAt?: Date | null;
 }
 
+export interface Category {
+  _id: string;
+  name: string;
+  isDeleted: boolean;
+}
+
 @Component({
   selector: 'app-team-task-card',
   standalone: true,
@@ -48,13 +56,15 @@ export interface Task {
   templateUrl: './team-task-card.component.html',
   styleUrl: './team-task-card.component.scss',
 })
-export class TeamTaskCardComponent {
+export class TeamTaskCardComponent implements OnInit {
   @Input() task!: Task;
   @Input() isSelected = false;
   @Input() isDragging = false;
   @Input() completedColumnId: string = '';
   @Input() deleetdColumnId: string = '';
   @Input() assignedToMe: boolean = false;
+  @Input() categories: Category[] = [];
+  @Input() boardId: string = '';
 
   @Output() taskClick = new EventEmitter<Event>();
   @Output() taskDoubleClick = new EventEmitter<void>();
@@ -70,20 +80,27 @@ export class TeamTaskCardComponent {
   showTooltipForMember = signal<string | null>(null);
   imageBaseUrl = environment.imageURL;
 
-  @Input() boardId: string = '';
+    category = signal<any>(null);
+
 
   constructor(public taskPermissionsService: TaskPermissionsService) {}
 
-  // Computed properties for displaying limited items
-  displayCategories = computed(() => {
-    const categories = this.task?.categories || [];
-    return categories.slice(0, 2);
-  });
+  ngOnInit(): void {
+  const categoryDetails = this.categories.find((cat:any) => cat._id === this.task.category);
+  this.category.set(categoryDetails);
+}
 
-  additionalCategoriesCount = computed(() => {
-    const categories = this.task?.categories || [];
-    return Math.max(0, categories.length - 2);
-  });
+
+  // Computed properties for displaying limited items
+  // displayCategories = computed(() => {
+  //   const categories = this.task?.categories || [];
+  //   return categories.slice(0, 2);
+  // });
+
+  // additionalCategoriesCount = computed(() => {
+  //   const categories = this.task?.categories || [];
+  //   return Math.max(0, categories.length - 2);
+  // });
 
   displayMembers = computed(() => {
     const members = this.task?.assignedTo || [];

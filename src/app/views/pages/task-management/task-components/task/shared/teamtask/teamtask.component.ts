@@ -49,12 +49,19 @@ export interface TaskCategory {
   color: string;
 }
 
+export interface Category {
+  _id: string;
+  name: string;
+  isDeleted: boolean;
+}
+
 export interface Task {
   _id: string;
   title: string;
   description?: string;
   status: string;
-  categories: TaskCategory[];
+  category: string | null;
+  // categories: TaskCategory[];
   assignedTo: TeamMember[];
   comments: number;
   attachments: number;
@@ -114,6 +121,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   isAssignmentFilterActive = signal<boolean>(
     !!this.storage.get(teamMemberCommon.ASSIGNMENT_FILTER) || false
   );
+
+  categories = signal<Category[]>([]);
 
   // available user for selected board
   availableUsersForSelectedBoard = signal<TeamMember[]>([]);
@@ -405,6 +414,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
 
   private handleTaskUpdate(taskUpdate: TaskUpdate) {
     const { taskId, field, value } = taskUpdate;
+
+    console.log('taskUpdate', taskUpdate);
 
     const columns = [...this.boardColumns()];
     let updatedTask: Task | undefined;
@@ -718,6 +729,12 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
       boardId: this.boardId(),
       type: 'board',
     });
+
+    const filteredCategories = boardDetails?.board.categories.filter((cat: any) => !cat.isDeleted);
+
+    console.log('filteredCategories', filteredCategories);
+
+    this.categories.set(filteredCategories);
 
     if (boardDetails) {
       this.boardColumns.set(boardDetails.columns);
@@ -1512,7 +1529,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
           title: response.title,
           description: '',
           status: response.status,
-          categories: [],
+          category: null,
+          // categories: [],
           assignedTo: [],
           comments: 0,
           attachments: 0,

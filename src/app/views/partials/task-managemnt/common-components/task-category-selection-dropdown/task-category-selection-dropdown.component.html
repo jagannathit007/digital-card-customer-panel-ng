@@ -1,0 +1,21 @@
+<div class="tw-relative tw-max-w-[150px]" *ngIf="categories.length > 0">
+  <select
+    [disabled]="!taskPermissions"
+    [(ngModel)]="selectedCategory"
+    (change)="updateCategories(selectedCategory)"
+    class="tw-appearance-none tw-bg-white tw-border tw-border-gray-300 tw-rounded-lg tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-700 focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500 tw-transition-all tw-duration-200 tw-w-full"
+    [ngClass]="{
+      'tw-cursor-pointer tw-pr-8 hover:tw-border-gray-400': taskPermissions,
+      'tw-cursor-not-allowed': !taskPermissions
+    }"
+  >
+    <option value="null" selected>Category</option>
+    <option *ngFor="let option of categories" [value]="option._id">
+      {{ option.name }}
+    </option>
+  </select>
+  <i
+    *ngIf="taskPermissions"
+    class="fas fa-chevron-down tw-absolute tw-right-2 tw-top-1/2 tw-transform tw--translate-y-1/2 tw-text-gray-400 tw-text-xs tw-pointer-events-none"
+  ></i>
+</div>

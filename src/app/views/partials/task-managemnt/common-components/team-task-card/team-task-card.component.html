@@ -1,5 +1,5 @@
 <div
-  class="tw-border-blue-500 task-card tw-relative tw-border  tw-rounded-lg tw-p-4 tw-cursor-pointer tw-transition-all tw-duration-200 hover:tw-shadow-md hover:tw-border-gray-300 tw-group tw-select-none"
+  class="tw-border-blue-500 task-card tw-relative tw-border tw-rounded-lg tw-p-4 tw-cursor-pointer tw-transition-all tw-duration-200 hover:tw-shadow-md hover:tw-border-gray-300 tw-group tw-select-none"
   [ngClass]="{
     'tw-bg-[#f0f0f0]': !taskPermissionsService.isTeamTaskCardAccessible(task),
     'tw-bg-[#f0f0f06c]': taskPermissionsService.isTeamTaskCardAccessible(task),
@@ -41,30 +41,39 @@
       {{ task.status }}
     </span>
 
-    <!-- Visibility Icon -->
-    <div class="tw-ml-2 tw-flex-shrink-0">
-      <svg
-        *ngIf="task.visibility === 'private'"
-        class="tw-w-4 tw-h-4 tw-text-gray-400"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          [attr.d]="getVisibilityIcon()"
-        ></path>
-      </svg>
-    </div>
-  </div>
+    <!-- category badge -->
+    <span
+    class="tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium tw-flex-shrink-0 tw-max-w-[150px] tw-truncate tw-bg-gray-200 tw-text-gray-600"
+      title="{{ category()?.name }}"
+      *ngIf="categories.length > 0 && category()"
+    >
+      {{ category()?.name }}
+    </span>
 
-  <!-- Task Title -->
-  <h4
-    class="tw-font-medium tw-text-gray-900 tw-text-sm tw-mb-2 tw-leading-tight tw-line-clamp-1 tw-truncate"
-    title="{{ task.title }}"
-  >
+    <!-- Visibility Icon -->
+    <!-- <div class="tw-ml-2 tw-flex-shrink-0">
+      <svg
+      *ngIf="task.visibility === 'private'"
+      class="tw-w-4 tw-h-4 tw-text-gray-400"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      >
+      <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      [attr.d]="getVisibilityIcon()"
+      ></path>
+    </svg>
+  </div> -->
+</div>
+
+<!-- Task Title -->
+<h4
+class="tw-font-medium tw-text-gray-900 tw-text-sm tw-mb-2 tw-leading-tight tw-line-clamp-1 tw-truncate"
+title="{{ task.title }}"
+>
     {{ task.title }}
   </h4>
 
@@ -75,11 +84,10 @@
   </p> -->
 
   <!-- Categories -->
-  <div
+  <!-- <div
     *ngIf="task.categories && task.categories.length > 0"
     class="tw-flex tw-flex-wrap tw-gap-1 tw-mb-3"
   >
-    <!-- Display up to 2 categories -->
     <span
       *ngFor="let category of displayCategories()"
       class="tw-inline-flex tw-items-center tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium"
@@ -88,21 +96,19 @@
       {{ category.name }}
     </span>
 
-    <!-- Show +X if more than 2 categories -->
     <span
       *ngIf="additionalCategoriesCount() > 0"
       class="tw-inline-flex tw-items-center tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium tw-bg-gray-100 tw-text-gray-600"
     >
       +{{ additionalCategoriesCount() }}
     </span>
-  </div>
+  </div> -->
 
   <!-- Due Date Indicator -->
   <div
     *ngIf="getDueDateIndicator().show"
     class="tw-flex tw-items-center tw-gap-1 tw-mb-3"
   >
-    
     <svg
       *ngIf="task?.status !== 'deleted' && task?.status !== 'completed'"
       class="tw-w-3 tw-h-3"
@@ -176,7 +182,10 @@
     <div class="tw-flex tw-items-center tw-gap-1">
       <!-- Display up to 2 members -->
       <div class="tw-flex tw--space-x-2">
-        <div *ngFor="let member of (this.task?.assignedTo || []).slice(0, 2)" class="tw-relative hover:tw-scale-102 hover:tw-z-10 tw-transition-all tw-duration-200">
+        <div
+          *ngFor="let member of (this.task?.assignedTo || []).slice(0, 2)"
+          class="tw-relative hover:tw-scale-102 hover:tw-z-10 tw-transition-all tw-duration-200"
+        >
           <div
             (mouseenter)="onMouseEnterMember(member._id)"
             (mouseleave)="onMouseLeaveMember()"
@@ -186,7 +195,12 @@
             >
               <img
                 *ngIf="member.profileImage; else memberInitials"
-                [src]="member.isDeleted ? imageBaseUrl + '/task_management/profiles/default-deleted-profile-image.png' : imageBaseUrl + member.profileImage"
+                [src]="
+                  member.isDeleted
+                    ? imageBaseUrl +
+                      '/task_management/profiles/default-deleted-profile-image.png'
+                    : imageBaseUrl + member.profileImage
+                "
                 [alt]="member.name"
                 class="tw-w-full tw-h-full tw-object-cover"
                 (error)="onImageError($event)"
@@ -214,7 +228,12 @@
 
               <div class="tw-flex tw-items-center tw-space-x-3">
                 <img
-                  [src]="member.isDeleted ? imageBaseUrl + '/task_management/profiles/default-deleted-profile-image.png' : imageBaseUrl + member.profileImage"
+                  [src]="
+                    member.isDeleted
+                      ? imageBaseUrl +
+                        '/task_management/profiles/default-deleted-profile-image.png'
+                      : imageBaseUrl + member.profileImage
+                  "
                   [alt]="member.name"
                   class="tw-w-10 tw-h-10 tw-rounded-full tw-object-cover tw-border-2 tw-border-gray-600 tw-bg-gray-100"
                 />
@@ -250,11 +269,11 @@
       </div> -->
 
       <span
-            *ngIf="this.task.assignedTo.length-2 > 0"
-            class="tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-font-medium tw-px-2 tw-py-1 tw-rounded-full tw-cursor-pointer tw-h-8 tw-w-8 tw-flex tw-items-center tw-justify-center"
-          >
-            +{{ (this.task.assignedTo || []).length - 2 }}
-          </span>
+        *ngIf="this.task.assignedTo.length - 2 > 0"
+        class="tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-font-medium tw-px-2 tw-py-1 tw-rounded-full tw-cursor-pointer tw-h-8 tw-w-8 tw-flex tw-items-center tw-justify-center"
+      >
+        +{{ (this.task.assignedTo || []).length - 2 }}
+      </span>
 
       <!-- No members indicator -->
       <div

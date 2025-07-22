@@ -25,6 +25,7 @@ import { TeamTaskEventService } from 'src/app/services/teamTaskEvent.service';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 import { SocketService } from 'src/app/services/socket.service';
+import { TaskCategorySelectionDropdownComponent } from "src/app/views/partials/task-managemnt/common-components/task-category-selection-dropdown/task-category-selection-dropdown.component";
 
 interface TaskMember {
   _id: string;
@@ -95,7 +96,8 @@ interface TaskUpdate {
     NgxEditorModule,
     AddCommentsComponent,
     MemberDetailDropdownComponent,
-  ],
+    TaskCategorySelectionDropdownComponent
+],
   templateUrl: './team-task-detail-popup.component.html',
   styleUrl: './team-task-detail-popup.component.scss',
 })
@@ -152,6 +154,8 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   isSavingDescription = false;
   isLoading = true;
   isMemberLoad = false;
+
+  boardId: string = '';
 
   BoardMembers: any = [];
   imageBaseUrl = '';
@@ -409,19 +413,18 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   }
 
   private async loadTaskData() {
-    let boardId = '';
     this.route.queryParamMap.subscribe((params) => {
-      boardId = params.get('boardId') || '';
+      this.boardId = params.get('boardId') || '';
       // Handle the boardId (e.g., fetch data based on boardId)
     });
-    if (!boardId) {
-      boardId = this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '';
+    if (!this.boardId) {
+      this.boardId = this.storage.get(teamMemberCommon.BOARD_DATA)?._id || '';
     }
     // Simulate API call with dummy data
     const response = await this.taskService.getTeamTaskDetailsById({
       taskId: this.taskId,
       type: 'board',
-      boardId: boardId,
+      boardId: this.boardId,
     });
 
     if (response) {
@@ -542,6 +545,11 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       // failed to update assigned members
     }
     this.emitTaskUpdate('assignedTo', this.task.assignedTo);
+  }
+  
+  onCategoryUpdated(category : any): void {
+    this.task.category = category;
+    this.emitTaskUpdate('category', this.task.category);
   }
 
   // Title editing methods
