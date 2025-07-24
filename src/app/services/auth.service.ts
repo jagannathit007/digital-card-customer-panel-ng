@@ -572,12 +572,12 @@ export class AuthService {
       if (Array.isArray(businessCards)) {
         const targetCard = businessCards.find(card => card._id === businessCardId);
 
-        if (targetCard?.subscription && Array.isArray(targetCard.subscription)) {
-          return targetCard.subscription.map((sub: any) => ({
+        if (targetCard.subscription && Array.isArray(targetCard.subscription)) {
+          const subscriptionData = targetCard.subscription.filter((p:any) => p.isActive === true);
+          return subscriptionData.map((sub: any) => ({
             _id: sub._id,
             product: sub.product
           }));
-
         }
       }
       return [];

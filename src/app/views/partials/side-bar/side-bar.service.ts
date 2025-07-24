@@ -102,9 +102,12 @@ export class SideBarService {
 
     if (hasWebsiteDetails && currentBcardId) {
       const websiteDetails = await this.authService.getWebsiteDetails(currentBcardId);
-      if (websiteDetails.websiteVisible === true) {
+      // if (websiteDetails?.websiteVisible === true) {
         menus.splice(menus.length - 1, 0, websiteDetailsMenu);
-      }
+      // }
+    }
+    if (hasTaskManagement) {
+      menus.splice(menus.length - 1, 0, taskManagementMenu);
     }
 
     if (this.isAdminLogin) {
@@ -116,10 +119,10 @@ export class SideBarService {
       }
       
       //has task management
-      let hasTask = menus.filter((e)=> e.title == taskManagementMenu.title);
-      if(hasTask.length == 0){
-        menus.splice(menus.length - 1, 0, taskManagementMenu);
-      }
+      // let hasTask = menus.filter((e)=> e.title == taskManagementMenu.title);
+      // if(hasTask.length == 0){
+      //   menus.splice(menus.length - 1, 0, taskManagementMenu);
+      // }
 
       //has google review
       let hasGoogleReview = menus.filter((e)=> e.title == googleReviewMenu.title);
