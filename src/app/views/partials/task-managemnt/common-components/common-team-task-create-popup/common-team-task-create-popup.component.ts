@@ -15,6 +15,7 @@ import { MemberDetailDropdownComponent } from '../add-members-dropdown/add-membe
 import { TaskService } from 'src/app/services/task.service';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
+import { TaskCategorySelectionDropdownComponent } from '../task-category-selection-dropdown/task-category-selection-dropdown.component';
 
 interface TaskMember {
   _id: string;
@@ -52,6 +53,7 @@ interface Column {
     FormsModule,
     NgxEditorModule,
     MemberDetailDropdownComponent,
+    TaskCategorySelectionDropdownComponent,
   ],
   templateUrl: './common-team-task-create-popup.component.html',
   styleUrl: './common-team-task-create-popup.component.scss',
@@ -301,6 +303,10 @@ export class CommonTeamTaskCreatePopupComponent implements OnInit, OnDestroy {
   // Member assignment
   onMembersUpdated(selectedMembers: TaskMember[] | any): void {
     this.taskData.assignedTo = selectedMembers;
+  }
+
+  onCategoryUpdated(category: any): void {
+    this.taskData.category = category;
   }
 
   // Date picker functionality

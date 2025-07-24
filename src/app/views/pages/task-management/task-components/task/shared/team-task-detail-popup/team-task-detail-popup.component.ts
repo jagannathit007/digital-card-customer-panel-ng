@@ -355,6 +355,8 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
         }, 10);
       } else if (updateType === 'attachments' && Array.isArray(updateData)) {
         this.task.attachments = updateData;
+      } else if (updateType === 'category' && typeof updateData === 'string') {
+        this.task.category = updateData;
       }
     });
   }
@@ -550,6 +552,13 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   onCategoryUpdated(category : any): void {
     this.task.category = category;
     this.emitTaskUpdate('category', this.task.category);
+
+    this.socketService.sendTaskDetailsUpdate(
+      this.taskId,
+      this.task.board,
+      'category',
+      { data: this.task.category }
+    );
   }
 
   // Title editing methods

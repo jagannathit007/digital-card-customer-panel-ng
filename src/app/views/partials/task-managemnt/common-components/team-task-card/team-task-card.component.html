@@ -44,10 +44,10 @@
     <!-- category badge -->
     <span
     class="tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium tw-flex-shrink-0 tw-max-w-[150px] tw-truncate tw-bg-gray-200 tw-text-gray-600"
-      title="{{ category()?.name }}"
+      title="{{ getCategpryName(task.category || '') }}"
       *ngIf="categories.length > 0 && category()"
     >
-      {{ category()?.name }}
+      {{ getCategpryName(task.category || '') }}
     </span>
 
     <!-- Visibility Icon -->

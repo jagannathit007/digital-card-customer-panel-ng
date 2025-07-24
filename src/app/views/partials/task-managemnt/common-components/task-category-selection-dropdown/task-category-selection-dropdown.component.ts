@@ -46,8 +46,14 @@ export class TaskCategorySelectionDropdownComponent {
     });
     console.log('boardDetails', boardDetails);
     if (boardDetails) {
-      const filteredCategories = boardDetails.board.categories.filter((cat:any) => !cat.isDeleted);
-      if (!filteredCategories.some((cat:any) => cat._id === this.selectedCategory)) {
+      const filteredCategories = boardDetails.board.categories.filter(
+        (cat: any) => !cat.isDeleted
+      );
+      if (
+        !filteredCategories.some(
+          (cat: any) => cat._id === this.selectedCategory
+        )
+      ) {
         this.selectedCategory = null;
       }
       this.categories = filteredCategories;
@@ -56,13 +62,16 @@ export class TaskCategorySelectionDropdownComponent {
   }
 
   async updateCategories(categoryId: string | null): Promise<void> {
-    const categories = await this.TaskService.updateTeamTaskCategory({
-      boardId: this.boardId,
-      taskId: this.taskId,
-      category:categoryId,
-    });
-
-    if (categories) {
+    if (this.taskId) {
+      const categories = await this.TaskService.updateTeamTaskCategory({
+        boardId: this.boardId,
+        taskId: this.taskId,
+        category: categoryId,
+      });
+      if (categories) {
+        this.onCategoryUpdated.emit(categoryId);
+      }
+    } else {
       this.onCategoryUpdated.emit(categoryId);
     }
   }

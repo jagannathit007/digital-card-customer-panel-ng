@@ -90,6 +90,11 @@ export class TeamTaskCardComponent implements OnInit {
   this.category.set(categoryDetails);
 }
 
+getCategpryName(categoryId: string): string {
+  const category = this.categories.find((cat) => cat._id === categoryId);
+  return category ? category.name : '';
+}
+
 
   // Computed properties for displaying limited items
   // displayCategories = computed(() => {
