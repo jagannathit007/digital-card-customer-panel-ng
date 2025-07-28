@@ -7,6 +7,8 @@ import { TokenVerificationComponent } from './views/standalone/token-verificatio
 import { DemoTaskManagementComponent } from './views/pages/demo/demo-task-management/demo-task-management.component';
 import { DemoGoogleReviewComponent } from './views/pages/demo/demo-google-review/demo-google-review.component';
 import { DemoAttendanceComponent } from './views/pages/demo/demo-attendance/demo-attendance.component';
+import { OfficesComponent } from './views/pages/offices/offices.component';
+import { EmployeesComponent } from './views/pages/employees/employees.component';
 
 
 export const routes: Routes = [
@@ -51,6 +53,14 @@ export const routes: Routes = [
       {
         path: 'attendance',
         component: DemoAttendanceComponent,
+      },
+      {
+        path: 'offices',
+        component: OfficesComponent
+      },
+      {
+        path: 'employees',
+        component: EmployeesComponent
       },
       {
         path: 'task-management',

@@ -1,0 +1,377 @@
+<div class="container-fluid px-4 py-5">
+  <div class="row g-4">
+    <!-- Form Section -->
+    <div class="col-12 col-lg-4" style="max-height: 80vh; overflow-y: auto">
+      <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4">
+          <h3 class="fw-bold mb-3 text-dark">{{ isEditMode ? 'Edit Employee' : 'Add Employee' }}</h3>
+          <p class="text-danger small mb-4">Please fill in the details carefully</p>
+
+          <form ngNativeValidate (ngSubmit)="onSaveEmployee()" class="d-flex flex-column gap-3">
+            <!-- Profile Image Upload -->
+            <div>
+              <label class="form-label fw-medium text-dark">Profile Image</label>
+              <div
+                class="profile-image-upload rounded-circle mx-auto position-relative d-flex align-items-center justify-content-center border border-2 border-dashed border-primary overflow-hidden"
+                (click)="fileInput.click()"
+                (dragover)="onDragOver($event)"
+                (dragleave)="onDragLeave($event)"
+                (drop)="onDrop($event)"
+                [ngClass]="{'bg-light': isDragging}"
+              >
+                <input
+                  #fileInput
+                  type="file"
+                  class="d-none"
+                  accept="image/*"
+                  (change)="onImageSelect($event)"
+                />
+                <img
+                  *ngIf="imagePreview"
+                  [src]="imagePreview"
+                  alt="Profile Preview"
+                  class="w-100 h-100 object-cover rounded-circle"
+                />
+                <div
+                  *ngIf="!imagePreview"
+                  class="text-center text-muted"
+                >
+                  <i class="ri-upload-cloud-2-line fs-3"></i>
+                  <p class="small mt-1 mb-0">Drag or click to upload</p>
+                </div>
+                <div
+                  *ngIf="imagePreview"
+                  class="overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50"
+                >
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-danger rounded-circle p-2"
+                    (click)="removeImage(); $event.stopPropagation()"
+                    title="Remove Image"
+                  >
+                    <i class="ri-close-line"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label fw-medium text-dark">Name</label>
+              <input
+                type="text"
+                class="form-control form-control-lg rounded-2"
+                [(ngModel)]="form.name"
+                [ngModelOptions]="{ standalone: true }"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label fw-medium text-dark">Designation</label>
+              <input
+                type="text"
+                class="form-control form-control-lg rounded-2"
+                [(ngModel)]="form.designation"
+                [ngModelOptions]="{ standalone: true }"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label fw-medium text-dark">Email ID</label>
+              <input
+                type="email"
+                class="form-control form-control-lg rounded-2"
+                [(ngModel)]="form.emailId"
+                [ngModelOptions]="{ standalone: true }"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label fw-medium text-dark">Password {{ isEditMode ? '(Leave blank to keep current)' : '' }}</label>
+              <input
+                type="password"
+                class="form-control form-control-lg rounded-2"
+                [(ngModel)]="form.password"
+                [ngModelOptions]="{ standalone: true }"
+                [required]="!isEditMode"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label fw-medium text-dark">Mobile Number</label>
+              <input
+                type="text"
+                class="form-control form-control-lg rounded-2"
+                [(ngModel)]="form.mobileNo"
+                [ngModelOptions]="{ standalone: true }"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label fw-medium text-dark">Aadhar Number</label>
+              <input
+                type="text"
+                class="form-control form-control-lg rounded-2"
+                [(ngModel)]="form.personal_details.aadharNo"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label fw-medium text-dark">PAN Number</label>
+              <input
+                type="text"
+                class="form-control form-control-lg rounded-2"
+                [(ngModel)]="form.personal_details.panNo"
+                [ngModelOptions]="{ standalone: true }"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label fw-medium text-dark">Employee Type</label>
+              <input
+                type="text"
+                class="form-control form-control-lg rounded-2"
+                [(ngModel)]="form.employeeType"
+                [ngModelOptions]="{ standalone: true }"
+                placeholder="Enter employee type eg: Full Time, Part Time"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label fw-medium text-dark">Assign to Office(s)</label>
+              <select
+                class="form-control form-control-lg rounded-2"
+                [(ngModel)]="form.officess"
+                [ngModelOptions]="{ standalone: true }"
+                multiple
+                required
+              >
+                <option *ngIf="offices.length === 0" disabled>No offices available</option>
+                <option *ngFor="let office of offices" [value]="office._id">{{ office.name }}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label fw-medium text-dark">Salary</label>
+              <input
+                type="text"
+                class="form-control form-control-lg rounded-2"
+                [(ngModel)]="form.salary"
+                [ngModelOptions]="{ standalone: true }"
+                placeholder="Enter salary amount"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label fw-medium text-dark">Status</label>
+              <select
+                class="form-control form-control-lg rounded-2"
+                [(ngModel)]="form.isActive"
+                [ngModelOptions]="{ standalone: true }"
+                required
+              >
+                <option [value]="true">Active</option>
+                <option [value]="false">Inactive</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label fw-medium text-dark">Lock Profile</label>
+              <select
+                class="form-control form-control-lg rounded-2"
+                [(ngModel)]="form.lock_profile"
+                [ngModelOptions]="{ standalone: true }"
+                required
+              >
+                <option [value]="true">Yes</option>
+                <option [value]="false">No</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label fw-medium text-dark">Allow Bypass</label>
+              <select
+                class="form-control form-control-lg rounded-2"
+                [(ngModel)]="form.allow_bypass"
+                [ngModelOptions]="{ standalone: true }"
+                required
+              >
+                <option [value]="true">Yes</option>
+                <option [value]="false">No</option>
+              </select>
+            </div>
+
+            <div class="d-flex gap-3">
+              <button
+                type="submit"
+                class="flex-grow-1 btn btn-primary btn-lg rounded-2"
+                [disabled]="isSaving"
+              >
+                {{ isSaving ? 'Saving...' : (isEditMode ? 'Update' : 'Save') }}
+              </button>
+              <button
+                type="button"
+                class="flex-grow-1 btn btn-secondary btn-lg rounded-2"
+                (click)="onReset()"
+              >
+                {{ isEditMode ? 'Cancel' : 'Reset' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Employee List Section -->
+    <div class="col-12 col-lg-8">
+      <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4">
+          <h3 class="fw-bold mb-4 text-dark">Employee List</h3>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-4">
+              <label class="form-label fw-medium text-dark">Filter by Office</label>
+              <div class="dropdown">
+                <button
+                  class="btn btn-outline-primary btn-lg w-100 text-start d-flex justify-content-between align-items-center rounded-2"
+                  type="button"
+                  (click)="toggleOfficeDropdown()"
+                  [disabled]="offices.length === 0"
+                >
+                  <span>
+                    {{ selectedOfficeId ? getOfficeName(selectedOfficeId) : (offices.length === 0 ? 'No Offices Available' : 'All Employees') }}
+                  </span>
+                  <i class="ri-arrow-down-s-line fs-5"></i>
+                </button>
+                <div
+                  *ngIf="isOfficeDropdownOpen && offices.length > 0"
+                  class="dropdown-menu w-100 mt-2 p-0 border-0 shadow-lg rounded-2 show"
+                >
+                  <button
+                    class="dropdown-item py-2 px-3"
+                    (click)="selectOffice('')"
+                  >
+                    All Employees
+                  </button>
+                  <button
+                    *ngFor="let office of offices"
+                    class="dropdown-item py-2 px-3"
+                    (click)="selectOffice(office._id)"
+                  >
+                    {{ office.name }}
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-medium text-dark">Search</label>
+              <div class="position-relative">
+                <input
+                  type="text"
+                  class="form-control form-control-lg rounded-2 ps-5"
+                  [(ngModel)]="searchText"
+                  (keyup)="onSearch()"
+                  placeholder="Search by Name, Email, Designation"
+                />
+                <i class="ri-search-line position-absolute top-50 start-0 translate-middle-y ms-3 fs-5 text-muted"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Employee Table or Empty State -->
+          <div *ngIf="isLoading" class="text-center py-5">
+            <i class="ri-loader-4-line fs-3 text-primary animate-spin"></i>
+            <p class="text-muted mt-2">Loading employees...</p>
+          </div>
+          <div *ngIf="!isLoading && employees.length === 0" class="text-center py-5 bg-light rounded-3 shadow-sm">
+            <i class="ri-user-unfollow-line fs-1 text-muted mb-3"></i>
+            <h4 class="fw-semibold text-dark">No Employees Available</h4>
+            <p class="text-muted small mt-2">Start by adding a new employee to the system.</p>
+            <!-- <button
+              type="button"
+              class="btn btn-primary mt-3 rounded-2 px-4"
+              (click)="onReset()"
+            >
+              Add Employee
+            </button> -->
+          </div>
+          <div *ngIf="!isLoading && employees.length > 0" class="table-responsive">
+            <table class="table table-hover table-bordered rounded-2 overflow-hidden">
+              <thead class="table-light text-uppercase small">
+                <tr>
+                  <th class="text-center py-3" style="width: 5%">#</th>
+                  <th class="text-center py-3" style="width: 5%">Image</th>
+                  <th class="py-3" style="width: 20%">Name</th>
+                  <th class="py-3" style="width: 20%">Email</th>
+                  <th class="py-3" style="width: 15%">Designation</th>
+                  <th class="py-3" style="width: 15%">Offices</th>
+                  <th class="text-center py-3" style="width: 10%">Status</th>
+                  <th class="text-center py-3" style="width: 10%">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let employee of employees; trackBy: trackById; let i = index" class="align-middle">
+                  <td class="text-center">{{ i + 1 }}</td>
+                  <td class="text-center">
+                    <img
+                      *ngIf="employee.profileImg"
+                      [src]="profileImageBaseUrl + employee.profileImg"
+                      alt="Profile Image"
+                      class="rounded-circle object-cover"
+                      style="width: 40px; height: 40px"
+                    />
+                    <div
+                      *ngIf="!employee.profileImg"
+                      class="default-avatar rounded-circle d-flex align-items-center justify-content-center"
+                    >
+                      {{ getInitials(employee.name) }}
+                    </div>
+                  </td>
+                  <td>
+                    <div class="fw-medium">{{ employee.name }}</div>
+                    <div class="text-muted small">{{ employee.mobileNo }}</div>
+                  </td>
+                  <td>{{ employee.emailId }}</td>
+                  <td>{{ employee.designation }}</td>
+                  <td>
+                    <div *ngFor="let officeId of employee.officess" class="small">
+                      {{ getOfficeName(officeId) }}
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <span
+                      class="badge"
+                      [ngClass]="{'bg-success': employee.isActive, 'bg-danger': !employee.isActive}"
+                    >
+                      {{ employee.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                  </td>
+                  <td class="text-center d-flex gap-2 justify-content-center">
+                    <button
+                      class="btn btn-sm btn-outline-primary rounded-circle"
+                      (click)="onEditEmployee(employee)"
+                      title="Edit Employee"
+                    >
+                      <i class="ri-edit-fill"></i>
+                    </button>
+                    <button
+                      class="btn btn-sm btn-outline-danger rounded-circle"
+                      (click)="onDeleteEmployee(employee._id)"
+                      title="Delete Employee"
+                    >
+                      <i class="ri-delete-bin-line"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

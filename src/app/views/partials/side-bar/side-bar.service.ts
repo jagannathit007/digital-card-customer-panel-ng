@@ -9,16 +9,20 @@ import { Subscription } from 'rxjs';
   providedIn: 'root',
 })
 export class SideBarService {
-  constructor(private router: Router, public authService: AuthService, private storage: AppStorage) {
+  constructor(
+    private router: Router,
+    public authService: AuthService,
+    private storage: AppStorage
+  ) {
     let userData = this.storage.get(common.USER_DATA);
     if (userData != null) {
-      this.isAdminLogin = (userData.emailId == "info@itfuturz.com");
+      this.isAdminLogin = userData.emailId == 'info@itfuturz.com';
       // this.isAdminLogin = (userData.emailId == "dgr@gmail.com");
     }
   }
 
   async getMenusByProducts(subscriptionData: any[]): Promise<any[]> {
-    const products = subscriptionData.map(item => item.product);
+    const products = subscriptionData.map((item) => item.product);
     const currentBcardId = this.storage.get(common.BUSINESS_CARD);
 
     const businessCardMenu = {
@@ -63,32 +67,48 @@ export class SideBarService {
       icon: 'user',
     };
 
-    const attendanceManagementMenu = {
-      title: 'Attendance',
-      link: 'attendance',
-      icon: 'users',
-    };
-
     const taskManagementMenu = {
       title: 'Task Management',
       link: 'task-management',
       icon: 'file-text',
     };
 
-    const hasDigitalOrNFC = products.some(product =>
-      product === "digital-card" || product === "nfc-card"
+    const attendanceManagementMenu = {
+      title: 'Attendance',
+      link: 'attendance',
+      icon: 'users',
+    };
+
+    const officeMenu = {
+      title: 'Office',
+      link: 'offices',
+      icon: 'users',
+    };
+
+    const employeeMenu = {
+      title: 'Employee',
+      link: 'employees',
+      icon: 'users',
+    };
+
+    const hasDigitalOrNFC = products.some(
+      (product) => product === 'digital-card' || product === 'nfc-card'
     );
 
-    const hasWebsiteDetails = products.some(product =>
-      product === "website-details"
+    const hasWebsiteDetails = products.some(
+      (product) => product === 'website-details'
     );
 
-    const hasGoogleReview = products.some(product =>
-      product === "google-standee"
+    const hasGoogleReview = products.some(
+      (product) => product === 'google-standee'
     );
 
-    const hasTaskManagement = products.some(product =>
-      product === "task-management"
+    const hasTaskManagement = products.some(
+      (product) => product === 'task-management'
+    );
+
+    const hasAttendance = products.some(
+      (product) => product === 'attendance-management'
     );
 
     let menus = [];
@@ -101,23 +121,32 @@ export class SideBarService {
     }
 
     if (hasWebsiteDetails && currentBcardId) {
-      const websiteDetails = await this.authService.getWebsiteDetails(currentBcardId);
+      const websiteDetails = await this.authService.getWebsiteDetails(
+        currentBcardId
+      );
       // if (websiteDetails?.websiteVisible === true) {
-        menus.splice(menus.length - 1, 0, websiteDetailsMenu);
+      menus.splice(menus.length - 1, 0, websiteDetailsMenu);
       // }
     }
     if (hasTaskManagement) {
       menus.splice(menus.length - 1, 0, taskManagementMenu);
     }
 
-    if (this.isAdminLogin) {
+    if (hasAttendance) {
+      menus.splice(menus.length - 1, 0, attendanceManagementMenu);
+      menus.splice(menus.length - 1, 0, officeMenu);
+      menus.splice(menus.length - 1, 0, employeeMenu);
+    }
 
+    if (this.isAdminLogin) {
       //has attendance review
-      let hasAttendance = menus.filter((e)=> e.title == attendanceManagementMenu.title);
-      if(hasAttendance.length == 0){
+      let hasAttendance = menus.filter(
+        (e) => e.title == attendanceManagementMenu.title
+      );
+      if (hasAttendance.length == 0) {
         menus.splice(menus.length - 1, 0, attendanceManagementMenu);
       }
-      
+
       //has task management
       // let hasTask = menus.filter((e)=> e.title == taskManagementMenu.title);
       // if(hasTask.length == 0){
@@ -125,21 +154,24 @@ export class SideBarService {
       // }
 
       //has google review
-      let hasGoogleReview = menus.filter((e)=> e.title == googleReviewMenu.title);
-      if(hasGoogleReview.length == 0){
+      let hasGoogleReview = menus.filter(
+        (e) => e.title == googleReviewMenu.title
+      );
+      if (hasGoogleReview.length == 0) {
         menus.splice(menus.length - 1, 0, googleReviewMenu);
       }
-       
     }
 
     // if (hasGoogleReview) {
     //   menus.splice(menus.length - 1, 0, googleReviewMenu);
     // }
 
-    return [{
-      moduleName: 'Member',
-      menus: menus
-    }];
+    return [
+      {
+        moduleName: 'Member',
+        menus: menus,
+      },
+    ];
   }
 
   isAdminLogin: boolean = false;

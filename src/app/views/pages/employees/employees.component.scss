@@ -1,0 +1,117 @@
+/* Profile Image Upload */
+.profile-image-upload {
+  width: 120px;
+  height: 120px;
+  transition: all 0.2s ease;
+}
+
+.profile-image-upload:hover {
+  background-color: #e9ecef;
+  transform: scale(1.05);
+}
+
+.profile-image-upload .overlay {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.profile-image-upload:hover .overlay {
+  opacity: 1;
+}
+
+.profile-image-upload .overlay button {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.profile-image-upload .overlay button:hover {
+  transform: scale(1.1);
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  max-height: 200px;
+  overflow-y: auto;
+  border-radius: 8px;
+  padding: 0;
+}
+
+.dropdown-item {
+  padding: 10px 16px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #e7f1ff;
+  color: #0d6efd;
+}
+
+/* Table Styling */
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table th,
+.table td {
+  vertical-align: middle;
+}
+
+.table thead th {
+  background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+}
+
+/* Default Avatar */
+.default-avatar {
+  width: 40px;
+  height: 40px;
+  background-color: #e9ecef;
+  font-weight: 500;
+  color: #495057;
+  font-size: 14px;
+}
+
+/* Multi-select */
+select[multiple] {
+  height: 120px;
+  padding: 8px;
+}
+
+select[multiple] option {
+  padding: 4px 8px;
+}
+
+/* No Employees View */
+.bg-light {
+  background: linear-gradient(to bottom, #f8f9fa, #e9ecef) !important;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+/* Apply to specific element or globally with * or body */
+::-webkit-scrollbar {
+  width: 6px;         /* Vertical scrollbar */
+  height: 6px;        /* Horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* or use a light grey for contrast */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #c1c1c1;  /* Scrollbar color */
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a0a0a0;
+}
