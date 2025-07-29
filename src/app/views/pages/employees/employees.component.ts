@@ -26,6 +26,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   selectedOfficeId: string = '';
   offices: any[] = [];
   employees: any[] = [];
+  filteredEmployees: any[] = [];
   isOfficeDropdownOpen = false;
   isDragging = false;
   isLoading = false;
@@ -37,14 +38,10 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   ) {}
 
   private destroy$ = new Subject<void>();
-  private searchSubject = new Subject<string>();
 
   ngOnInit(): void {
     this.getOffices();
     this.getEmployees();
-    this.searchSubject
-      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
-      .subscribe(() => this.getEmployees());
   }
 
   ngOnDestroy() {
@@ -101,6 +98,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
         // limit: 1000,
       });
       this.employees = data && data.docs ? data.docs : [];
+      this.filteredEmployees = [...this.employees];
     } catch (error) {
       await swalHelper.showToast(
         'Failed to load employees. Please try again.',
@@ -111,7 +109,19 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     }
   };
 
-  onSearch = () => this.searchSubject.next(this.searchText);
+  filterEmployees = () => {
+    const searchTerm = this.searchText.toLowerCase().trim();
+    if (!searchTerm) {
+      this.filteredEmployees = [...this.employees];
+      return;
+    }
+    this.filteredEmployees = this.employees.filter(
+      (employee) =>
+        employee.name.toLowerCase().includes(searchTerm) ||
+        employee.emailId.toLowerCase().includes(searchTerm) ||
+        employee.designation.toLowerCase().includes(searchTerm)
+    );
+  };
 
   toggleOfficeDropdown = () => {
     this.isOfficeDropdownOpen = !this.isOfficeDropdownOpen;
@@ -169,7 +179,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
         const message = this.isEditMode
           ? 'Employee updated successfully!'
           : 'Employee created successfully!';
-        await swalHelper.showToast(message, 'success');
+        swalHelper.showToast(message, 'success');
         this.onReset();
         this.getEmployees();
       }
@@ -189,7 +199,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       'This will soft delete the employee if they have attendance records, or hard delete otherwise.',
       'warning'
     );
-    if (!confirmed) return;
+    if (!confirmed.isConfirmed) return;
 
     try {
       const result = await this.attendanceService.deleteEmployee({

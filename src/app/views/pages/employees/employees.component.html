@@ -1,4 +1,4 @@
-<div class="container-fluid px-4 py-5">
+<div class="container-fluid ">
   <div class="row g-4">
     <!-- Form Section -->
     <div class="col-12 col-lg-4" style="max-height: 80vh; overflow-y: auto">
@@ -134,6 +134,7 @@
               <label class="form-label fw-medium text-dark">Employee Type</label>
               <input
                 type="text"
+                required
                 class="form-control form-control-lg rounded-2"
                 [(ngModel)]="form.employeeType"
                 [ngModelOptions]="{ standalone: true }"
@@ -274,7 +275,7 @@
                   type="text"
                   class="form-control form-control-lg rounded-2 ps-5"
                   [(ngModel)]="searchText"
-                  (keyup)="onSearch()"
+                  (ngModelChange)="filterEmployees()"
                   placeholder="Search by Name, Email, Designation"
                 />
                 <i class="ri-search-line position-absolute top-50 start-0 translate-middle-y ms-3 fs-5 text-muted"></i>
@@ -287,7 +288,7 @@
             <i class="ri-loader-4-line fs-3 text-primary animate-spin"></i>
             <p class="text-muted mt-2">Loading employees...</p>
           </div>
-          <div *ngIf="!isLoading && employees.length === 0" class="text-center py-5 bg-light rounded-3 shadow-sm">
+          <div *ngIf="!isLoading && filteredEmployees.length === 0" class="text-center py-5 bg-light rounded-3 shadow-sm">
             <i class="ri-user-unfollow-line fs-1 text-muted mb-3"></i>
             <h4 class="fw-semibold text-dark">No Employees Available</h4>
             <p class="text-muted small mt-2">Start by adding a new employee to the system.</p>
@@ -299,22 +300,22 @@
               Add Employee
             </button> -->
           </div>
-          <div *ngIf="!isLoading && employees.length > 0" class="table-responsive">
-            <table class="table table-hover table-bordered rounded-2 overflow-hidden">
-              <thead class="table-light text-uppercase small">
+          <div *ngIf="!isLoading && filteredEmployees.length > 0" class="table-responsive mt-3">
+            <table class="table table-bordered table-hover">
+              <thead class="table-light text-uppercase">
                 <tr>
-                  <th class="text-center py-3" style="width: 5%">#</th>
-                  <th class="text-center py-3" style="width: 5%">Image</th>
-                  <th class="py-3" style="width: 20%">Name</th>
-                  <th class="py-3" style="width: 20%">Email</th>
-                  <th class="py-3" style="width: 15%">Designation</th>
-                  <th class="py-3" style="width: 15%">Offices</th>
-                  <th class="text-center py-3" style="width: 10%">Status</th>
-                  <th class="text-center py-3" style="width: 10%">Action</th>
+                  <th class="text-center" [width]="'5%'">#</th>
+                  <th class="text-center" [width]="'5%'">Image</th>
+                  <th [width]="'20%'">Name</th>
+                  <th [width]="'20%'">Email</th>
+                  <th [width]="'15%'">Designation</th>
+                  <th [width]="'15%'">Offices</th>
+                  <th class="text-center" [width]="'10%'">Status</th>
+                  <th class="text-center" [width]="'10%'">Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let employee of employees; trackBy: trackById; let i = index" class="align-middle">
+                <tr *ngFor="let employee of filteredEmployees; trackBy: trackById; let i = index">
                   <td class="text-center">{{ i + 1 }}</td>
                   <td class="text-center">
                     <img
@@ -350,16 +351,16 @@
                       {{ employee.isActive ? 'Active' : 'Inactive' }}
                     </span>
                   </td>
-                  <td class="text-center d-flex gap-2 justify-content-center">
+                  <td class="text-center d-flex gap-2">
                     <button
-                      class="btn btn-sm btn-outline-primary rounded-circle"
+                      class="btn btn-sm btn-outline-primary"
                       (click)="onEditEmployee(employee)"
                       title="Edit Employee"
                     >
                       <i class="ri-edit-fill"></i>
                     </button>
                     <button
-                      class="btn btn-sm btn-outline-danger rounded-circle"
+                      class="btn btn-sm btn-outline-danger"
                       (click)="onDeleteEmployee(employee._id)"
                       title="Delete Employee"
                     >

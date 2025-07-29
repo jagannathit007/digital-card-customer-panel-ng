@@ -108,7 +108,7 @@ export class OfficesComponent implements OnInit, OnDestroy {
       const message = this.isEditMode
         ? 'Office updated successfully!'
         : 'Office created successfully!';
-      await swalHelper.showToast(message, 'success');
+      swalHelper.showToast(message, 'success');
       this.onReset();
       this.getOffices();
     }
@@ -141,6 +141,21 @@ export class OfficesComponent implements OnInit, OnDestroy {
       radius: office.radius,
       isActive: office.isActive,
     };
+  };
+
+  onDeleteOffice = async (office: any) => {
+    const confirmed = await swalHelper.confirmation(
+      'Are you sure?',
+      'You won\'t be able to revert this.',
+      'warning'
+    );
+    if (!confirmed.isConfirmed) return;
+
+    const result = await this.attendanceService.deleteOffice(office._id);
+    if (result) {
+      swalHelper.showToast('Office deleted successfully!', 'success');
+      this.getOffices();
+    }
   };
 
   onViewEmployees = async (office: any) => {
