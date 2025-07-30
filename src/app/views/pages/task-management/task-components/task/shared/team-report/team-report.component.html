@@ -10,7 +10,7 @@
       <div class="tw-flex tw-gap-3">
         <button 
           (click)="getReport()" 
-          [disabled]="isLoading"
+          [disabled]="isLoading || selectedYear === null"
           class="tw-bg-blue-600 tw-hover:bg-blue-700 tw-disabled:bg-gray-400 tw-text-white tw-px-6 tw-py-2.5 tw-rounded-lg tw-font-medium tw-transition-all tw-duration-200 tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:ring-offset-2 tw-shadow-md tw-hover:shadow-lg"
         >
           <span *ngIf="!isLoading">Generate Report</span>
@@ -30,7 +30,7 @@
       </div>
     </div>
     
-    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-4 tw-gap-6">
+    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-5 tw-gap-6">
       <!-- Member Selection -->
       <div class="tw-space-y-2">
         <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
@@ -63,6 +63,21 @@
         </select>
       </div>
 
+      <!-- Date Field Selection -->
+      <div class="tw-space-y-2">
+        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
+          Select Date Field
+        </label>
+        <select 
+          [(ngModel)]="selectedDateField"
+          class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200"
+        >
+          <option value="dueDate">Due On</option>
+          <option value="completedAt">Completed At</option>
+          <option value="createdAt">Created At</option>
+        </select>
+      </div>
+
       <!-- Month Selection -->
       <div class="tw-space-y-2">
         <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
@@ -72,7 +87,7 @@
           [(ngModel)]="selectedMonth"
           class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200"
         >
-          <option [value]="null">Select Month</option>
+          <option [value]="null">All Months</option>
           <option *ngFor="let month of months" [value]="month.value">
             {{ month.name }}
           </option>
@@ -82,13 +97,12 @@
       <!-- Year Selection -->
       <div class="tw-space-y-2">
         <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
-          Select Year (Optional)
+          Select Year
         </label>
         <select 
           [(ngModel)]="selectedYear"
           class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200"
         >
-          <option [value]="null">Select Year</option>
           <option *ngFor="let y of years" [value]="y">
             {{ y }}
           </option>
@@ -133,6 +147,8 @@
                 <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Column</th>
                 <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Status</th>
                 <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Due Date</th>
+                <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Created At</th>
+                <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Completed At</th>
                 <th class="tw-px-6 tw-py-4 tw-text-center tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Completed</th>
                 <th class="tw-px-6 tw-py-4 tw-text-center tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Comments</th>
                 <th class="tw-px-6 tw-py-4 tw-text-center tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Attachments</th>
@@ -165,6 +181,12 @@
                 </td>
                 <td class="tw-px-6 tw-py-4 tw-text-gray-600 tw-font-medium">
                   {{ task.dueDate || 'No due date' }}
+                </td>
+                <td class="tw-px-6 tw-py-4 tw-text-gray-600 tw-font-medium">
+                  {{ task.createdAt || 'No created date' }}
+                </td>
+                <td class="tw-px-6 tw-py-4 tw-text-gray-600 tw-font-medium">
+                  {{ task.completedAt }}
                 </td>
                 <td class="tw-px-6 tw-py-4 tw-text-center">
                   <span *ngIf="task.isCompleted === 'Yes'" class="tw-inline-flex tw-items-center tw-px-3 tw-py-1 tw-rounded-full tw-text-xs tw-font-semibold tw-bg-green-100 tw-text-green-800">
