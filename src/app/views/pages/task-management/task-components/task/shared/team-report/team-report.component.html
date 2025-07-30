@@ -10,7 +10,7 @@
       <div class="tw-flex tw-gap-3">
         <button 
           (click)="getReport()" 
-          [disabled]="isLoading || !selectedMemberId"
+          [disabled]="isLoading"
           class="tw-bg-blue-600 tw-hover:bg-blue-700 tw-disabled:bg-gray-400 tw-text-white tw-px-6 tw-py-2.5 tw-rounded-lg tw-font-medium tw-transition-all tw-duration-200 tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:ring-offset-2 tw-shadow-md tw-hover:shadow-lg"
         >
           <span *ngIf="!isLoading">Generate Report</span>
@@ -40,7 +40,7 @@
           [(ngModel)]="selectedMemberId" 
           class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200"
         >
-          <option value="">Choose a member...</option>
+          <option value="all">All Members</option>
           <option *ngFor="let member of members" [value]="member._id">
             {{ member.name }} ({{ member.role }})
           </option>
@@ -56,45 +56,42 @@
           [(ngModel)]="selectedBoardId" 
           class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200"
         >
-          <option value="">All Boards</option>
+          <option value="all">All Boards</option>
           <option *ngFor="let board of boards" [value]="board._id">
             {{ board.name }}
           </option>
         </select>
       </div>
 
-      <!-- Custom Date Selection -->
+      <!-- Month Selection -->
       <div class="tw-space-y-2">
         <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
-          Select Date (Optional)
-        </label>
-        <div class="tw-relative">
-          <input 
-            type="date" 
-            [(ngModel)]="selectedDate"
-            class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200 tw-text-gray-700"
-          />
-          <div class="tw-absolute tw-inset-y-0 tw-right-0 tw-flex tw-items-center tw-pr-3 tw-pointer-events-none">
-            <svg class="tw-w-5 tw-h-5 tw-text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
-          </div>
-        </div>
-      </div>
-
-      <!-- Page Limit -->
-      <div class="tw-space-y-2">
-        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
-          Records per page
+          Select Month (Optional)
         </label>
         <select 
-          [(ngModel)]="pageLimit" 
+          [(ngModel)]="selectedMonth"
           class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200"
         >
-          <option [value]="10">10</option>
-          <option [value]="25">25</option>
-          <option [value]="50">50</option>
-          <option [value]="100">100</option>
+          <option [value]="null">Select Month</option>
+          <option *ngFor="let month of months" [value]="month.value">
+            {{ month.name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Year Selection -->
+      <div class="tw-space-y-2">
+        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
+          Select Year (Optional)
+        </label>
+        <select 
+          [(ngModel)]="selectedYear"
+          class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200"
+        >
+          <option [value]="null">Select Year</option>
+          <option *ngFor="let y of years" [value]="y">
+            {{ y }}
+          </option>
         </select>
       </div>
     </div>
@@ -104,9 +101,9 @@
   <div *ngIf="searchClicked" class="tw-bg-white tw-rounded-lg tw-shadow-md tw-overflow-hidden">
     
     <!-- No Data Message -->
-    <div *ngIf="!reportData" class="tw-p-12 tw-text-center">
+    <div *ngIf="!reportData || getObjectKeys(reportData?.tasks).length === 0" class="tw-p-12 tw-text-center">
       <div class="tw-text-gray-500 tw-text-xl tw-font-medium">
-        No data found for the selected criteria.
+        👉 There are no reports for the selected filters.
       </div>
       <div class="tw-text-gray-400 tw-text-sm tw-mt-2">
         Try adjusting your filters and search again.
@@ -170,10 +167,10 @@
                   {{ task.dueDate || 'No due date' }}
                 </td>
                 <td class="tw-px-6 tw-py-4 tw-text-center">
-                  <span *ngIf="task.isCompleted === 'true'" class="tw-inline-flex tw-items-center tw-px-3 tw-py-1 tw-rounded-full tw-text-xs tw-font-semibold tw-bg-green-100 tw-text-green-800">
+                  <span *ngIf="task.isCompleted === 'Yes'" class="tw-inline-flex tw-items-center tw-px-3 tw-py-1 tw-rounded-full tw-text-xs tw-font-semibold tw-bg-green-100 tw-text-green-800">
                     Yes
                   </span>
-                  <span *ngIf="task.isCompleted !== 'true'" class="tw-inline-flex tw-items-center tw-px-3 tw-py-1 tw-rounded-full tw-text-xs tw-font-semibold tw-bg-red-100 tw-text-red-800">
+                  <span *ngIf="task.isCompleted !== 'Yes'" class="tw-inline-flex tw-items-center tw-px-3 tw-py-1 tw-rounded-full tw-text-xs tw-font-semibold tw-bg-red-100 tw-text-red-800">
                     No
                   </span>
                 </td>
@@ -188,7 +185,16 @@
                   </span>
                 </td>
                 <td class="tw-px-6 tw-py-4 tw-text-gray-600 tw-font-medium">
-                  {{ task.assignedTo || 'Unassigned' }}
+                  <ng-container *ngIf="task.assignedTo; else unassigned">
+                    <span *ngFor="let assignee of task.assignedTo.split(', '); let isLast = last">
+                      <span [class.font-bold]="isSingleMemberSelected && assignee === selectedMemberName"
+                            [class.text-blue-600]="isSingleMemberSelected && assignee === selectedMemberName">
+                        {{ assignee }}
+                      </span>
+                      <span *ngIf="!isLast">, </span>
+                    </span>
+                  </ng-container>
+                  <ng-template #unassigned>Unassigned</ng-template>
                 </td>
               </tr>
             </tbody>

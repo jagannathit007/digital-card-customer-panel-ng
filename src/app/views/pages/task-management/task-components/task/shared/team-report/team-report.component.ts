@@ -1,44 +1,3 @@
-// import {
-//   Component,
-//   OnInit,
-//   ViewChild,
-//   ElementRef,
-//   HostListener,
-// } from '@angular/core';
-// import { CommonModule } from '@angular/common';
-// import { FormsModule } from '@angular/forms';
-// import { AppStorage } from 'src/app/core/utilities/app-storage';
-// import { TaskMemberAuthService } from 'src/app/services/task-member-auth.service';
-// import { swalHelper } from 'src/app/core/constants/swal-helper';
-// import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
-// import { TaskService } from 'src/app/services/task.service';
-
-// @Component({
-//   selector: 'app-team-report',
-//   templateUrl: './team-report.component.html',
-//   styleUrl: './team-report.component.scss'
-// })
-// export class TeamReportComponent implements OnInit {
-
-//    constructor(
-//     private storage: AppStorage,
-//     private taskMemberAuthService: TaskMemberAuthService,
-//     private taskService: TaskService
-//   ) {}
-
-//   ngOnInit(): void {
-//   }
-
-//   // this is call for geeting all memebers data ok
-//   // taskService.GetAllMembers
-
-//   //this is call for  getMemberTaskReport ok
-//   // taskMemberAuthService.getMemberTaskReport
-
-//   // this is call for all boards data ok 
-// // taskService.GetBoardByAdmin
-
-// }
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -76,7 +35,6 @@ interface TaskReport {
 }
 
 interface ReportData {
-  memberName: string;
   tasks: { [boardName: string]: TaskReport[] };
   pagination: {
     totalDocs: string;
@@ -96,7 +54,6 @@ interface ReportData {
   templateUrl: './team-report.component.html',
   styleUrl: './team-report.component.scss'
 })
-
 export class TeamReportComponent implements OnInit {
 
   // Data
@@ -105,15 +62,34 @@ export class TeamReportComponent implements OnInit {
   reportData: ReportData | null = null;
 
   // Form Data
-  selectedMemberId: string = '';
-  selectedBoardId: string = '';
-  selectedDate: string = '';
+  selectedMemberId: string = 'all';
+  selectedBoardId: string = 'all';
+  selectedMonth: number | null = null;
+  selectedYear: number | null = null;
   currentPage: number = 1;
   pageLimit: number = 10;
 
   // UI State
   isLoading: boolean = false;
   searchClicked: boolean = false;
+
+  // Helper Data
+  months = [
+    { value: 1, name: 'January' },
+    { value: 2, name: 'February' },
+    { value: 3, name: 'March' },
+    { value: 4, name: 'April' },
+    { value: 5, name: 'May' },
+    { value: 6, name: 'June' },
+    { value: 7, name: 'July' },
+    { value: 8, name: 'August' },
+    { value: 9, name: 'September' },
+    { value: 10, name: 'October' },
+    { value: 11, name: 'November' },
+    { value: 12, name: 'December' }
+  ];
+  years: number[] = [];
+  selectedMemberName: string = '';
 
   // Make Math available in template
   Math = Math;
@@ -124,6 +100,13 @@ export class TeamReportComponent implements OnInit {
   ) { }
 
   async ngOnInit(): Promise<void> {
+    const currentYear = new Date().getFullYear();
+    const minYear = currentYear - 20;
+    for (let y = minYear; y <= currentYear; y++) {
+      this.years.push(y);
+    }
+    this.selectedYear = currentYear;
+
     await this.loadMembers();
     await this.loadBoards();
   }
@@ -157,20 +140,25 @@ export class TeamReportComponent implements OnInit {
 
   // Report Methods
   async getReport(): Promise<void> {
-    if (!this.selectedMemberId) {
-      alert('Please select a member');
-      return;
-    }
-
     this.isLoading = true;
     this.searchClicked = true;
     this.reportData = null;
 
+    if (this.selectedMemberId !== 'all') {
+      this.selectedMemberName = this.members.find(m => m._id === this.selectedMemberId)?.name || '';
+    } else {
+      this.selectedMemberName = '';
+    }
+
     try {
+      const memberId = this.selectedMemberId === 'all' ? this.members.map(m => m._id) : [this.selectedMemberId];
+      const boardId = this.selectedBoardId === 'all' ? this.boards.map(b => b._id) : [this.selectedBoardId];
+
       const requestData = {
-        memberId: this.selectedMemberId,
-        boardId: this.selectedBoardId || undefined,
-        date: this.selectedDate || undefined,
+        memberId,
+        boardId,
+        month: this.selectedMonth || undefined,
+        year: this.selectedYear || undefined,
         page: this.currentPage,
         limit: this.pageLimit
       };
@@ -211,6 +199,10 @@ export class TeamReportComponent implements OnInit {
     return task.boardId + task.taskTitle + index;
   }
 
+  get isSingleMemberSelected(): boolean {
+    return this.selectedMemberId !== 'all' && !!this.selectedMemberName;
+  }
+
   // Export Methods
   exportReport(): void {
     if (!this.reportData) return;
@@ -232,7 +224,7 @@ export class TeamReportComponent implements OnInit {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.setAttribute('href', url);
-    a.setAttribute('download', `task-report-${this.reportData.memberName}-${new Date().toISOString().split('T')[0]}.csv`);
+    a.setAttribute('download', `task-report-${new Date().toISOString().split('T')[0]}.csv`);
     a.click();
     window.URL.revokeObjectURL(url);
   }
