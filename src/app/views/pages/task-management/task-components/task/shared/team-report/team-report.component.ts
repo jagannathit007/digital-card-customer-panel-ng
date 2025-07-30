@@ -210,23 +210,28 @@ export class TeamReportComponent implements OnInit {
     if (!this.reportData) return;
 
 
-    let csvContent = "Board Name,Member Name,Task Title,Column,Status,Due Date,Created At,Completed At,Completed,Comments,Attachments\n";
+    let csvContent = "";
 
-    if (this.reportData && this.reportData.tasks) {
-      Object.keys(this.reportData.tasks).forEach(boardName => {
-        if (this.reportData && this.reportData.tasks[boardName]) {
-          Object.keys(this.reportData.tasks[boardName]).forEach(memberName => {
-            // Only include the selected member if single member is chosen
-            if (this.selectedMemberId !== 'all' && memberName !== this.selectedMemberName) {
-              return;
-            }
-            this.reportData!.tasks[boardName][memberName].forEach(task => {
-              csvContent += `"${task.boardName}","${task.memberName}","${task.taskTitle}","${task.columnName}","${task.status}","${task.dueDate || 'No due date'}","${task.createdAt || 'No created date'}","${task.completedAt || 'No'}","${task.isCompleted}","${task.commentCount || 0}","${task.attachmentCount || 0}"\n`;
-            });
+    Object.keys(this.reportData?.tasks ?? {}).forEach(boardName => {
+      csvContent += `Board: ${boardName}\n\n`;
+
+      if (this.reportData?.tasks[boardName]) {
+        Object.keys(this.reportData.tasks[boardName]).forEach(memberName => {
+          // Only include the selected member if single member is chosen
+          if (this.selectedMemberId !== 'all' && memberName !== this.selectedMemberName) {
+            return;
+          }
+          csvContent += `Member: ${memberName}\n`;
+          csvContent += "Task Title,Column,Status,Due Date,Created At,Completed At,Completed,Comments,Attachments\n";
+
+          this.reportData!.tasks[boardName][memberName].forEach(task => {
+            csvContent += `"${task.taskTitle}","${task.columnName}","${task.status}","${task.dueDate || 'No due date'}","${task.createdAt || 'No created date'}","${task.completedAt || 'No'}","${task.isCompleted}","${task.commentCount || 0}","${task.attachmentCount || 0}"\n`;
           });
-        }
-      });
-    }
+          csvContent += "\n"; // Blank line after member's tasks
+        });
+      }
+      csvContent += "\n"; // Blank line after board
+    });
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
