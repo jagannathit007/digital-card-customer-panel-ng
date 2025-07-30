@@ -396,9 +396,9 @@ export class SideBarService {
             { title: 'My Day', link: 'task-management/personal-task/my-day', icon: 'aperture' },
             { title: 'Next 7 Days', link: 'task-management/personal-task/next-seven-days', icon: 'calendar' },
             { title: 'My Calendar', link: 'task-management/personal-task/mycalendar', icon: 'calendar' },
-            { title: 'Team Report', link: 'task-management/team-report', icon: 'pie-chart' },
             // TODO : uncomment below line
             { title: 'All Tasks', link: 'task-management/personal-task/all', icon: 'codesandbox' },
+            { title: 'Team Report', link: 'task-management/team-report', icon: 'pie-chart' },
           ],
         });
       }

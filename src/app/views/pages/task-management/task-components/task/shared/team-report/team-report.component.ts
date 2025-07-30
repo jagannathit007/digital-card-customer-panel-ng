@@ -67,7 +67,7 @@ export class TeamReportComponent implements OnInit {
   selectedMemberName: string = '';
   selectedBoardId: string = 'all';
   selectedDateField: string = '';
-  selectedMonth: number | null = null;
+  selectedMonth: number | null | 'all' = null;
   selectedYear: number | null = null;
   currentPage: number = 1;
   pageLimit: number = 10;
@@ -106,13 +106,18 @@ export class TeamReportComponent implements OnInit {
     this.loadBoards();
   }
 
+  onYearChange(): void {
+    if (this.selectedYear !== null && !this.selectedDateField) {
+      this.selectedDateField = 'dueDate';
+    }
+  }
+
   // Data Loading Methods
   async loadMembers(): Promise<void> {
     try {
       const response = await this.taskService.GetAllMembers({});
       if (response) {
         this.members = response.docs.filter((member: Member) => member.isActive);
-        console.log('Members loaded:', this.members);
       }
     } catch (error) {
       console.error('Error loading members:', error);
@@ -124,7 +129,6 @@ export class TeamReportComponent implements OnInit {
       const response = await this.taskService.GetBoardByAdmin({});
       if (response) {
         this.boards = response;
-        console.log('Boards loaded:', this.boards);
       }
     } catch (error) {
       console.error('Error loading boards:', error);
@@ -154,8 +158,8 @@ export class TeamReportComponent implements OnInit {
         limit: this.pageLimit
       };
 
-      // Only include month, year, and dateField if they are selected
-      if (this.selectedMonth !== null) {
+      // Include month only if it's a valid number (not 'all')
+      if (this.selectedMonth !== null && this.selectedMonth !== 'all') {
         requestData.month = this.selectedMonth;
       }
       if (this.selectedYear !== null) {
@@ -165,15 +169,12 @@ export class TeamReportComponent implements OnInit {
         requestData.dateField = this.selectedDateField;
       }
 
-      console.log('Getting report with data:', requestData);
 
       const response = await this.taskMemberAuthService.getMemberTaskReport(requestData);
 
       if (response) {
         this.reportData = response;
-        console.log('Report data loaded:', this.reportData);
       } else {
-        console.log('No data received in response');
       }
     } catch (error: any) {
       console.error('Error getting report:', error);
@@ -208,7 +209,6 @@ export class TeamReportComponent implements OnInit {
   exportReport(): void {
     if (!this.reportData) return;
 
-    console.log('Exporting report data:', this.reportData);
 
     let csvContent = "Board Name,Member Name,Task Title,Column,Status,Due Date,Created At,Completed At,Completed,Comments,Attachments,Assigned To\n";
 

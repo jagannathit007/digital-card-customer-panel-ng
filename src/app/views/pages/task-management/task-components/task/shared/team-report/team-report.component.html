@@ -9,7 +9,7 @@
       <div class="tw-flex tw-gap-3">
         <button 
           (click)="getReport()" 
-          [disabled]="isLoading || selectedYear === null"
+          [disabled]="isLoading"
           class="tw-bg-blue-600 tw-hover:bg-blue-700 tw-disabled:bg-gray-400 tw-text-white tw-px-6 tw-py-2.5 tw-rounded-lg tw-font-medium tw-transition-all tw-duration-200 tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:ring-offset-2 tw-shadow-md tw-hover:shadow-lg"
         >
           <span *ngIf="!isLoading">Generate Report</span>
@@ -65,10 +65,11 @@
       <!-- Year Selection -->
       <div class="tw-space-y-2">
         <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
-          Select Year <span class="tw-text-red-500">*</span>
+          Select Year
         </label>
         <select 
           [(ngModel)]="selectedYear"
+          (ngModelChange)="onYearChange()"
           class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200"
         >
           <option [ngValue]="null" disabled selected>Select Year</option>
@@ -88,7 +89,8 @@
           [disabled]="selectedYear === null"
           class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200 tw-disabled:tw-bg-gray-100 tw-disabled:tw-text-gray-500 tw-disabled:tw-cursor-not-allowed tw-disabled:tw-shadow-sm"
         >
-          <option [value]="null">All Months</option>
+          <option [ngValue]="null" disabled selected>Select Months</option>
+          <option value="all">All Months</option>
           <option *ngFor="let month of months" [value]="month.value">
             {{ month.name }}
           </option>
@@ -105,7 +107,7 @@
           [disabled]="selectedYear === null"
           class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200 tw-disabled:tw-bg-gray-100 tw-disabled:tw-text-gray-500 tw-disabled:tw-cursor-not-allowed tw-disabled:tw-shadow-sm"
         >
-          <option value="" disabled selected>Select Date Field</option>
+          <option value="" disabled>Select Date Field</option>
           <option value="dueDate">Due On</option>
           <option value="completedAt">Completed At</option>
           <option value="createdAt">Created At</option>
