@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { TaskRoutingModule } from './task-routing.module';
+import { FullCalendarModule } from '@fullcalendar/angular';
 
 import { RouterModule } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
@@ -62,6 +63,7 @@ import { CommonTeamTaskCreatePopupComponent } from "src/app/views/partials/task-
     NgSelectModule,
     FormsModule,
     DragDropModule,
+    FullCalendarModule,
     TooltipDirective,
     ToggleComponent,
     DebounceDirective,

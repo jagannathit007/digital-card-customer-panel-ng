@@ -1,49 +1,107 @@
 <!-- Main Calendar Container -->
 <div class="tw-h-[calc(100vh-130px)] tw-w-full tw-overflow-hidden">
-  <!-- Loading State -->
-  <div
-    *ngIf="isLoadingCalendar"
-    class="tw-flex tw-items-center tw-justify-center tw-h-full tw-bg-gray-50"
-  >
-    <div class="tw-text-center">
-      <i
-        class="fas fa-spinner tw-animate-spin tw-text-4xl tw-text-blue-500 tw-mb-4"
-      ></i>
-      <p class="tw-text-gray-600 tw-text-lg">Loading your calendar...</p>
-    </div>
-  </div>
-
-  <!-- Google Calendar Iframe - Show when permission is true and calendar data exists -->
-  <div *ngIf="!isLoadingCalendar && safeIframeUrl && taskPermissionsService.isCalendarSyncsPermission()" class="tw-w-full tw-h-full">
-    <iframe
-      [src]="safeIframeUrl"
-      class="tw-w-full tw-h-full tw-border-0"
-      frameborder="0"
-      scrolling="no"
-    >
-    </iframe>
-  </div>
-
-  <!-- Connect Google Calendar Button - Show when permission is false -->
-  <div
-    *ngIf="!isLoadingCalendar && !taskPermissionsService.isCalendarSyncsPermission()"
-    class="tw-flex tw-items-center tw-justify-center tw-h-full tw-bg-gray-50"
-  >
-    <div class="tw-text-center tw-p-8">
-      <i class="fas fa-calendar-times tw-text-6xl tw-text-gray-400 tw-mb-4"></i>
-      <h3 class="tw-text-xl tw-font-semibold tw-text-gray-700 tw-mb-2">
-        No Calendar Connected
-      </h3>
-      <p class="tw-text-gray-500 tw-mb-6">
-        Connect your Google Calendar to view your schedule
-      </p>
+  <!-- Calendar Header with Toggle -->
+  <div class="tw-flex tw-justify-between tw-items-center tw-p-4 tw-bg-white tw-border-b tw-border-gray-200">
+    <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800">
+      {{ showGoogleCalendar ? 'Google Calendar' : 'My Tasks Calendar' }}
+    </h2>
+    
+    <!-- Toggle Buttons -->
+    <div class="tw-flex tw-items-center tw-space-x-2">
+      <!-- Default Calendar Button -->
       <button
-        class="tw-bg-blue-600 tw-text-white tw-px-6 tw-py-3 tw-rounded-lg tw-font-medium hover:tw-bg-blue-700 tw-transition-colors"
+        [class]="showGoogleCalendar ? 'tw-bg-gray-200 tw-text-gray-700' : 'tw-bg-blue-600 tw-text-white'"
+        class="tw-px-4 tw-py-2 tw-rounded-lg tw-font-medium tw-transition-colors tw-text-sm"
+        (click)="switchToDefaultCalendar()"
+      >
+        <i class="fas fa-calendar-alt tw-mr-2"></i>
+        Tasks Calendar
+      </button>
+      
+      <!-- Google Calendar Button -->
+      <button
+        *ngIf="taskPermissionsService.isCalendarSyncsPermission()"
+        [class]="showGoogleCalendar ? 'tw-bg-blue-600 tw-text-white' : 'tw-bg-gray-200 tw-text-gray-700'"
+        class="tw-px-4 tw-py-2 tw-rounded-lg tw-font-medium tw-transition-colors tw-text-sm"
+        (click)="switchToGoogleCalendar()"
+      >
+        <i class="fab fa-google tw-mr-2"></i>
+        Google Calendar
+      </button>
+      
+      <!-- Connect Google Calendar Button (when not synced) -->
+      <button
+        *ngIf="!taskPermissionsService.isCalendarSyncsPermission()"
+        class="tw-bg-green-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-lg tw-font-medium hover:tw-bg-green-700 tw-transition-colors tw-text-sm"
         (click)="openCalendarSyncModal()"
       >
         <i class="fab fa-google tw-mr-2"></i>
-        Connect Google Calendar
+        Connect Google
       </button>
+    </div>
+  </div>
+
+  <!-- Calendar Content Area -->
+  <div class="tw-h-[calc(100%-80px)] tw-w-full tw-overflow-hidden">
+    <!-- Loading State -->
+    <div
+      *ngIf="isLoadingCalendar"
+      class="tw-flex tw-items-center tw-justify-center tw-h-full tw-bg-gray-50"
+    >
+      <div class="tw-text-center">
+        <i
+          class="fas fa-spinner tw-animate-spin tw-text-4xl tw-text-blue-500 tw-mb-4"
+        ></i>
+        <p class="tw-text-gray-600 tw-text-lg">Loading your calendar...</p>
+      </div>
+    </div>
+
+    <!-- Default FullCalendar View -->
+    <div 
+      *ngIf="!isLoadingCalendar && !showGoogleCalendar" 
+      class="tw-w-full tw-h-full tw-p-4"
+    >
+      <full-calendar 
+        [options]="calendarOptions"
+        class="tw-h-full"
+      ></full-calendar>
+    </div>
+
+    <!-- Google Calendar Iframe -->
+    <div 
+      *ngIf="!isLoadingCalendar && showGoogleCalendar && safeIframeUrl && taskPermissionsService.isCalendarSyncsPermission()" 
+      class="tw-w-full tw-h-full"
+    >
+      <iframe
+        [src]="safeIframeUrl"
+        class="tw-w-full tw-h-full tw-border-0"
+        frameborder="0"
+        scrolling="no"
+      >
+      </iframe>
+    </div>
+
+    <!-- No Google Calendar Connected Message -->
+    <div
+      *ngIf="!isLoadingCalendar && showGoogleCalendar && !taskPermissionsService.isCalendarSyncsPermission()"
+      class="tw-flex tw-items-center tw-justify-center tw-h-full tw-bg-gray-50"
+    >
+      <div class="tw-text-center tw-p-8">
+        <i class="fas fa-calendar-times tw-text-6xl tw-text-gray-400 tw-mb-4"></i>
+        <h3 class="tw-text-xl tw-font-semibold tw-text-gray-700 tw-mb-2">
+          No Google Calendar Connected
+        </h3>
+        <p class="tw-text-gray-500 tw-mb-6">
+          Connect your Google Calendar to view your schedule
+        </p>
+        <button
+          class="tw-bg-blue-600 tw-text-white tw-px-6 tw-py-3 tw-rounded-lg tw-font-medium hover:tw-bg-blue-700 tw-transition-colors"
+          (click)="openCalendarSyncModal()"
+        >
+          <i class="fab fa-google tw-mr-2"></i>
+          Connect Google Calendar
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -112,3 +170,87 @@
     </div>
   </div>
 </div>
+
+<!-- Task Details Popup -->
+<div 
+  *ngIf="showTaskPopup && selectedTask" 
+  class="task-popup tw-fixed tw-bg-white tw-rounded-lg tw-shadow-xl tw-border tw-border-gray-200 tw-p-4 tw-min-w-80 tw-max-w-96"
+  [style.left.px]="popupPosition.x - 160"
+  [style.top.px]="popupPosition.y - 20"
+  [style.z-index]="2000"
+  (click)="$event.stopPropagation()"
+>
+  <!-- Close Button -->
+  <button 
+    class="tw-absolute tw-top-2 tw-right-2 tw-text-gray-400 hover:tw-text-gray-600 tw-text-lg"
+    (click)="closeTaskPopup()"
+  >
+    <i class="fas fa-times"></i>
+  </button>
+
+  <!-- Task Title -->
+  <div class="tw-mb-3">
+    <h3 class="tw-text-lg tw-font-semibold tw-text-gray-800 tw-pr-6">
+      {{ selectedTask.title }}
+    </h3>
+  </div>
+
+  <!-- Task Status -->
+  <div class="tw-mb-3 tw-flex tw-items-center tw-space-x-2">
+    <span class="tw-text-sm tw-font-medium tw-text-gray-600">Status:</span>
+    <span 
+      [class]="selectedTask.isCompleted ? 'tw-bg-green-100 tw-text-green-800' : 'tw-bg-blue-100 tw-text-blue-800'"
+      class="tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium"
+    >
+      {{ selectedTask.isCompleted ? 'Completed' : 'Pending' }}
+    </span>
+  </div>
+
+  <!-- Due Date -->
+  <div class="tw-mb-3" *ngIf="selectedTask.dueOn">
+    <div class="tw-flex tw-items-center tw-space-x-2">
+      <i class="fas fa-calendar-alt tw-text-gray-500 tw-text-sm"></i>
+      <span class="tw-text-sm tw-font-medium tw-text-gray-600">Due:</span>
+      <span class="tw-text-sm tw-text-gray-800">{{ formatDate(selectedTask.dueOn) }}</span>
+    </div>
+  </div>
+
+  <!-- Completed Date -->
+  <div class="tw-mb-3" *ngIf="selectedTask.isCompleted && selectedTask.completedOn">
+    <div class="tw-flex tw-items-center tw-space-x-2">
+      <i class="fas fa-check-circle tw-text-green-500 tw-text-sm"></i>
+      <span class="tw-text-sm tw-font-medium tw-text-gray-600">Completed:</span>
+      <span class="tw-text-sm tw-text-gray-800">{{ formatDate(selectedTask.completedOn) }}</span>
+    </div>
+  </div>
+
+  <!-- Created Date -->
+  <div class="tw-mb-3" *ngIf="selectedTask.createdAt">
+    <div class="tw-flex tw-items-center tw-space-x-2">
+      <i class="fas fa-plus-circle tw-text-gray-500 tw-text-sm"></i>
+      <span class="tw-text-sm tw-font-medium tw-text-gray-600">Created:</span>
+      <span class="tw-text-sm tw-text-gray-800">{{ formatDateOnly(selectedTask.createdAt) }}</span>
+    </div>
+  </div>
+
+  <!-- Calendar Event ID (if synced with Google) -->
+  <div class="tw-mb-3" *ngIf="selectedTask.calenderEventId">
+    <div class="tw-flex tw-items-center tw-space-x-2">
+      <i class="fab fa-google tw-text-blue-500 tw-text-sm"></i>
+      <span class="tw-text-sm tw-font-medium tw-text-gray-600">Synced with Google Calendar</span>
+    </div>
+  </div>
+
+  <!-- Task ID (for debugging, can be removed) -->
+  <div class="tw-text-xs tw-text-gray-400 tw-mt-3 tw-pt-2 tw-border-t tw-border-gray-100">
+    ID: {{ selectedTask._id }}
+  </div>
+</div>
+
+<!-- Backdrop to close popup -->
+<div 
+  *ngIf="showTaskPopup" 
+  class="tw-fixed tw-inset-0"
+  [style.z-index]="1999"
+  (click)="closeTaskPopup()"
+></div>
