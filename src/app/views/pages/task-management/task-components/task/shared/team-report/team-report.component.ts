@@ -37,7 +37,7 @@ interface TaskReport {
 }
 
 interface ReportData {
-  tasks: { [boardName: string]: TaskReport[] };
+  tasks: { [boardName: string]: { [memberName: string]: TaskReport[] } };
   pagination: {
     totalDocs: string;
     limit: string;
@@ -148,7 +148,7 @@ export class TeamReportComponent implements OnInit {
     }
 
     try {
-      const memberId = this.selectedMemberId === 'all' ? this.members.map(m => m._id) : [this.selectedMemberId];
+      const memberId = this.selectedMemberId === 'all' ? this.members.map(m => m._id) : this.selectedMemberId;
       const boardId = this.selectedBoardId === 'all' ? this.boards.map(b => b._id) : [this.selectedBoardId];
 
       const requestData: any = {
@@ -158,7 +158,6 @@ export class TeamReportComponent implements OnInit {
         limit: this.pageLimit
       };
 
-      // Include month only if it's a valid number (not 'all')
       if (this.selectedMonth !== null && this.selectedMonth !== 'all') {
         requestData.month = this.selectedMonth;
       }
@@ -201,8 +200,9 @@ export class TeamReportComponent implements OnInit {
     return task.boardId + task.taskTitle + index;
   }
 
-  get isSingleMemberSelected(): boolean {
-    return this.selectedMemberId !== 'all' && !!this.selectedMemberName;
+  getBoardTaskCount(boardName: string): number {
+    if (!this.reportData || !this.reportData.tasks[boardName]) return 0;
+    return Object.values(this.reportData.tasks[boardName]).reduce((total, tasks) => total + tasks.length, 0);
   }
 
   // Export Methods
@@ -210,13 +210,23 @@ export class TeamReportComponent implements OnInit {
     if (!this.reportData) return;
 
 
-    let csvContent = "Board Name,Member Name,Task Title,Column,Status,Due Date,Created At,Completed At,Completed,Comments,Attachments,Assigned To\n";
+    let csvContent = "Board Name,Member Name,Task Title,Column,Status,Due Date,Created At,Completed At,Completed,Comments,Attachments\n";
 
-    Object.keys(this.reportData.tasks).forEach(boardName => {
-      this.reportData!.tasks[boardName].forEach(task => {
-        csvContent += `"${task.boardName}","${task.memberName || 'Unassigned'}","${task.taskTitle}","${task.columnName}","${task.status}","${task.dueDate || 'No due date'}","${task.createdAt || 'No created date'}","${task.completedAt || 'No'}","${task.isCompleted}","${task.commentCount || 0}","${task.attachmentCount || 0}","${task.assignedTo || 'Unassigned'}"\n`;
+    if (this.reportData && this.reportData.tasks) {
+      Object.keys(this.reportData.tasks).forEach(boardName => {
+        if (this.reportData && this.reportData.tasks[boardName]) {
+          Object.keys(this.reportData.tasks[boardName]).forEach(memberName => {
+            // Only include the selected member if single member is chosen
+            if (this.selectedMemberId !== 'all' && memberName !== this.selectedMemberName) {
+              return;
+            }
+            this.reportData!.tasks[boardName][memberName].forEach(task => {
+              csvContent += `"${task.boardName}","${task.memberName}","${task.taskTitle}","${task.columnName}","${task.status}","${task.dueDate || 'No due date'}","${task.createdAt || 'No created date'}","${task.completedAt || 'No'}","${task.isCompleted}","${task.commentCount || 0}","${task.attachmentCount || 0}"\n`;
+            });
+          });
+        }
       });
-    });
+    }
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
