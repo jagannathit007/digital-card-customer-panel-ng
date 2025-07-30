@@ -28,6 +28,8 @@ interface TaskReport {
   columnName: string;
   status: string;
   dueDate: string;
+  createdAt: string;
+  completedAt: string;
   isCompleted: string;
   commentCount: string;
   attachmentCount: string;
@@ -52,10 +54,9 @@ interface ReportData {
 @Component({
   selector: 'app-team-report',
   templateUrl: './team-report.component.html',
-  styleUrl: './team-report.component.scss'
+  styleUrl: './team-report.component.scss',
 })
 export class TeamReportComponent implements OnInit {
-
   // Data
   members: Member[] = [];
   boards: Board[] = [];
@@ -63,9 +64,11 @@ export class TeamReportComponent implements OnInit {
 
   // Form Data
   selectedMemberId: string = 'all';
+  selectedMemberName: string = '';
   selectedBoardId: string = 'all';
+  selectedDateField: string = 'dueDate';
   selectedMonth: number | null = null;
-  selectedYear: number | null = null;
+  selectedYear: number | null = new Date().getFullYear();
   currentPage: number = 1;
   pageLimit: number = 10;
 
@@ -89,7 +92,6 @@ export class TeamReportComponent implements OnInit {
     { value: 12, name: 'December' }
   ];
   years: number[] = [];
-  selectedMemberName: string = '';
 
   // Make Math available in template
   Math = Math;
@@ -97,25 +99,23 @@ export class TeamReportComponent implements OnInit {
   constructor(
     private taskService: TaskService,
     private taskMemberAuthService: TaskMemberAuthService
-  ) { }
+  ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
+    // Populate years dynamically (e.g., from 2000 to current year + 10)
     const currentYear = new Date().getFullYear();
-    const minYear = currentYear - 20;
-    for (let y = minYear; y <= currentYear; y++) {
+    const startYear = 2000;
+    for (let y = startYear; y <= currentYear + 10; y++) {
       this.years.push(y);
     }
-    this.selectedYear = currentYear;
-
-    await this.loadMembers();
-    await this.loadBoards();
+    this.loadMembers();
+    this.loadBoards();
   }
 
   // Data Loading Methods
   async loadMembers(): Promise<void> {
     try {
       const response = await this.taskService.GetAllMembers({});
-
       if (response) {
         this.members = response.docs.filter((member: Member) => member.isActive);
         console.log('Members loaded:', this.members);
@@ -128,7 +128,6 @@ export class TeamReportComponent implements OnInit {
   async loadBoards(): Promise<void> {
     try {
       const response = await this.taskService.GetBoardByAdmin({});
-
       if (response) {
         this.boards = response;
         console.log('Boards loaded:', this.boards);
@@ -154,14 +153,24 @@ export class TeamReportComponent implements OnInit {
       const memberId = this.selectedMemberId === 'all' ? this.members.map(m => m._id) : [this.selectedMemberId];
       const boardId = this.selectedBoardId === 'all' ? this.boards.map(b => b._id) : [this.selectedBoardId];
 
-      const requestData = {
+      const requestData: any = {
         memberId,
         boardId,
-        month: this.selectedMonth || undefined,
-        year: this.selectedYear || undefined,
         page: this.currentPage,
         limit: this.pageLimit
       };
+
+      // Only include month and year if they are selected
+      if (this.selectedMonth !== null) {
+        requestData.month = this.selectedMonth;
+      }
+      if (this.selectedYear !== null) {
+        requestData.year = this.selectedYear;
+      }
+      // Only include dateField if explicitly selected
+      if (this.selectedDateField) {
+        requestData.dateField = this.selectedDateField;
+      }
 
       console.log('Getting report with data:', requestData);
 
@@ -173,10 +182,9 @@ export class TeamReportComponent implements OnInit {
       } else {
         console.log('No data received in response');
       }
-
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting report:', error);
-      alert('Failed to get report. Please try again.');
+      alert(error.message || 'Failed to get report. Please try again.');
     } finally {
       this.isLoading = false;
     }
@@ -209,17 +217,14 @@ export class TeamReportComponent implements OnInit {
 
     console.log('Exporting report data:', this.reportData);
 
-    // Here you can implement CSV/Excel export
-    // For now, just log the data
-    let csvContent = "Board Name,Task Title,Column,Status,Due Date,Completed,Comments,Attachments,Assigned To\n";
+    let csvContent = "Board Name,Task Title,Column,Status,Due Date,Created At,Completed At,Completed,Comments,Attachments,Assigned To\n";
 
     Object.keys(this.reportData.tasks).forEach(boardName => {
       this.reportData!.tasks[boardName].forEach(task => {
-        csvContent += `"${task.boardName}","${task.taskTitle}","${task.columnName}","${task.status}","${task.dueDate}","${task.isCompleted}","${task.commentCount}","${task.attachmentCount}","${task.assignedTo}"\n`;
+        csvContent += `"${task.boardName}","${task.taskTitle}","${task.columnName}","${task.status}","${task.dueDate}","${task.createdAt}","${task.completedAt}","${task.isCompleted}","${task.commentCount}","${task.attachmentCount}","${task.assignedTo}"\n`;
       });
     });
 
-    // Create and download CSV file
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -228,5 +233,4 @@ export class TeamReportComponent implements OnInit {
     a.click();
     window.URL.revokeObjectURL(url);
   }
-
 }
