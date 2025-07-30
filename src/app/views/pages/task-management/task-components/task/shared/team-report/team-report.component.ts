@@ -66,9 +66,9 @@ export class TeamReportComponent implements OnInit {
   selectedMemberId: string = 'all';
   selectedMemberName: string = '';
   selectedBoardId: string = 'all';
-  selectedDateField: string = 'dueDate';
+  selectedDateField: string = '';
   selectedMonth: number | null = null;
-  selectedYear: number | null = new Date().getFullYear();
+  selectedYear: number | null = null;
   currentPage: number = 1;
   pageLimit: number = 10;
 
@@ -91,7 +91,7 @@ export class TeamReportComponent implements OnInit {
     { value: 11, name: 'November' },
     { value: 12, name: 'December' }
   ];
-  years: number[] = [];
+  years: number[] = [2023, 2024, 2025, 2026];
 
   // Make Math available in template
   Math = Math;
@@ -102,12 +102,6 @@ export class TeamReportComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Populate years dynamically (e.g., from 2000 to current year + 10)
-    const currentYear = new Date().getFullYear();
-    const startYear = 2000;
-    for (let y = startYear; y <= currentYear + 10; y++) {
-      this.years.push(y);
-    }
     this.loadMembers();
     this.loadBoards();
   }
@@ -160,14 +154,13 @@ export class TeamReportComponent implements OnInit {
         limit: this.pageLimit
       };
 
-      // Only include month and year if they are selected
+      // Only include month, year, and dateField if they are selected
       if (this.selectedMonth !== null) {
         requestData.month = this.selectedMonth;
       }
       if (this.selectedYear !== null) {
         requestData.year = this.selectedYear;
       }
-      // Only include dateField if explicitly selected
       if (this.selectedDateField) {
         requestData.dateField = this.selectedDateField;
       }
@@ -217,11 +210,11 @@ export class TeamReportComponent implements OnInit {
 
     console.log('Exporting report data:', this.reportData);
 
-    let csvContent = "Board Name,Task Title,Column,Status,Due Date,Created At,Completed At,Completed,Comments,Attachments,Assigned To\n";
+    let csvContent = "Board Name,Member Name,Task Title,Column,Status,Due Date,Created At,Completed At,Completed,Comments,Attachments,Assigned To\n";
 
     Object.keys(this.reportData.tasks).forEach(boardName => {
       this.reportData!.tasks[boardName].forEach(task => {
-        csvContent += `"${task.boardName}","${task.taskTitle}","${task.columnName}","${task.status}","${task.dueDate}","${task.createdAt}","${task.completedAt}","${task.isCompleted}","${task.commentCount}","${task.attachmentCount}","${task.assignedTo}"\n`;
+        csvContent += `"${task.boardName}","${task.memberName || 'Unassigned'}","${task.taskTitle}","${task.columnName}","${task.status}","${task.dueDate || 'No due date'}","${task.createdAt || 'No created date'}","${task.completedAt || 'No'}","${task.isCompleted}","${task.commentCount || 0}","${task.attachmentCount || 0}","${task.assignedTo || 'Unassigned'}"\n`;
       });
     });
 

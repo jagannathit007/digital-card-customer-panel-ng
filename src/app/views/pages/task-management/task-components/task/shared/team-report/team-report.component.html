@@ -1,12 +1,11 @@
 <!-- Team Report Component Template -->
 <div class="tw-container tw-mx-auto tw-p-6 tw-bg-gray-50 tw-min-h-screen">
-
   <!-- Filters Section -->
   <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-mb-6">
     <div class="tw-flex tw-items-center tw-justify-between tw-mb-6">
       <h2 class="tw-text-2xl tw-font-bold tw-text-gray-800">Team Task Report</h2>
       
-      <!-- Action Buttons - Moved to top right -->
+      <!-- Action Buttons -->
       <div class="tw-flex tw-gap-3">
         <button 
           (click)="getReport()" 
@@ -63,18 +62,19 @@
         </select>
       </div>
 
-      <!-- Date Field Selection -->
+      <!-- Year Selection -->
       <div class="tw-space-y-2">
         <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
-          Select Date Field
+          Select Year <span class="tw-text-red-500">*</span>
         </label>
         <select 
-          [(ngModel)]="selectedDateField"
+          [(ngModel)]="selectedYear"
           class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200"
         >
-          <option value="dueDate">Due On</option>
-          <option value="completedAt">Completed At</option>
-          <option value="createdAt">Created At</option>
+          <option [ngValue]="null" disabled selected>Select Year</option>
+          <option *ngFor="let y of years" [value]="y">
+            {{ y }}
+          </option>
         </select>
       </div>
 
@@ -85,7 +85,8 @@
         </label>
         <select 
           [(ngModel)]="selectedMonth"
-          class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200"
+          [disabled]="selectedYear === null"
+          class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200 tw-disabled:tw-bg-gray-100 tw-disabled:tw-text-gray-500 tw-disabled:tw-cursor-not-allowed tw-disabled:tw-shadow-sm"
         >
           <option [value]="null">All Months</option>
           <option *ngFor="let month of months" [value]="month.value">
@@ -94,18 +95,20 @@
         </select>
       </div>
 
-      <!-- Year Selection -->
+      <!-- Date Field Selection -->
       <div class="tw-space-y-2">
         <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
-          Select Year
+          Select Date Field (Optional)
         </label>
         <select 
-          [(ngModel)]="selectedYear"
-          class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200"
+          [(ngModel)]="selectedDateField"
+          [disabled]="selectedYear === null"
+          class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200 tw-disabled:tw-bg-gray-100 tw-disabled:tw-text-gray-500 tw-disabled:tw-cursor-not-allowed tw-disabled:tw-shadow-sm"
         >
-          <option *ngFor="let y of years" [value]="y">
-            {{ y }}
-          </option>
+          <option value="" disabled selected>Select Date Field</option>
+          <option value="dueDate">Due On</option>
+          <option value="completedAt">Completed At</option>
+          <option value="createdAt">Created At</option>
         </select>
       </div>
     </div>
@@ -113,7 +116,6 @@
 
   <!-- Results Section -->
   <div *ngIf="searchClicked" class="tw-bg-white tw-rounded-lg tw-shadow-md tw-overflow-hidden">
-    
     <!-- No Data Message -->
     <div *ngIf="!reportData || getObjectKeys(reportData?.tasks).length === 0" class="tw-p-12 tw-text-center">
       <div class="tw-text-gray-500 tw-text-xl tw-font-medium">
@@ -143,6 +145,7 @@
           <table class="tw-w-full tw-text-sm">
             <thead class="tw-bg-gray-50">
               <tr>
+                <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Member Name</th>
                 <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Task Title</th>
                 <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Column</th>
                 <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Status</th>
@@ -160,6 +163,9 @@
                 *ngFor="let task of reportData.tasks[boardName]; trackBy: trackByTaskId; let i = index" 
                 class="tw-border-b tw-border-gray-100 tw-hover:bg-blue-25 tw-transition-colors tw-duration-150"
               >
+                <td class="tw-px-6 tw-py-4 tw-text-gray-600 tw-font-medium">
+                  {{ task.memberName || 'Unassigned' }}
+                </td>
                 <td class="tw-px-6 tw-py-4">
                   <div class="tw-font-semibold tw-text-gray-900 tw-text-base">{{ task.taskTitle }}</div>
                 </td>
@@ -186,7 +192,7 @@
                   {{ task.createdAt || 'No created date' }}
                 </td>
                 <td class="tw-px-6 tw-py-4 tw-text-gray-600 tw-font-medium">
-                  {{ task.completedAt }}
+                  {{ task.completedAt || 'No' }}
                 </td>
                 <td class="tw-px-6 tw-py-4 tw-text-center">
                   <span *ngIf="task.isCompleted === 'Yes'" class="tw-inline-flex tw-items-center tw-px-3 tw-py-1 tw-rounded-full tw-text-xs tw-font-semibold tw-bg-green-100 tw-text-green-800">
