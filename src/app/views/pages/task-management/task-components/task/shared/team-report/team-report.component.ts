@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TaskMemberAuthService } from 'src/app/services/task-member-auth.service';
 import { TaskService } from 'src/app/services/task.service';
+import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 interface Member {
   _id: string;
@@ -54,15 +56,12 @@ interface ReportData {
 @Component({
   selector: 'app-team-report',
   templateUrl: './team-report.component.html',
-  styleUrl: './team-report.component.scss',
+  styleUrls: ['./team-report.component.scss'],
 })
-export class TeamReportComponent implements OnInit {
-  // Data
+export class TeamReportComponent implements OnInit, OnDestroy {
   members: Member[] = [];
   boards: Board[] = [];
   reportData: ReportData | null = null;
-
-  // Form Data
   selectedMemberId: string = 'all';
   selectedMemberName: string = '';
   selectedBoardId: string = 'all';
@@ -71,12 +70,8 @@ export class TeamReportComponent implements OnInit {
   selectedYear: number | null = null;
   currentPage: number = 1;
   pageLimit: number = 10;
-
-  // UI State
   isLoading: boolean = false;
   searchClicked: boolean = false;
-
-  // Helper Data
   months = [
     { value: 1, name: 'January' },
     { value: 2, name: 'February' },
@@ -92,18 +87,78 @@ export class TeamReportComponent implements OnInit {
     { value: 12, name: 'December' }
   ];
   years: number[] = [2023, 2024, 2025, 2026];
-
-  // Make Math available in template
   Math = Math;
+
+  private queryParamsSubscription: Subscription | null = null;
 
   constructor(
     private taskService: TaskService,
-    private taskMemberAuthService: TaskMemberAuthService
+    private taskMemberAuthService: TaskMemberAuthService,
+    private activatedRoute: ActivatedRoute
   ) {}
 
-  ngOnInit(): void {
-    this.loadMembers();
-    this.loadBoards();
+  async ngOnInit(): Promise<void> {
+    await Promise.all([this.loadMembers(), this.loadBoards()]);
+
+    this.queryParamsSubscription = this.activatedRoute.queryParams.subscribe(params => {
+      if (Object.keys(params).length > 0) {
+        // Set member (match by name)
+        const memberName = params['member_name'] || 'All Members';
+        if (memberName === 'All Members') {
+          this.selectedMemberId = 'all';
+        } else {
+          const member = this.members.find(m => m.name.toLowerCase() === memberName.toLowerCase());
+          this.selectedMemberId = member ? member._id : 'all';
+        }
+
+        // Set board (match by name)
+        const boardName = params['board_name'] || 'All Boards';
+        if (boardName === 'All Boards') {
+          this.selectedBoardId = 'all';
+        } else {
+          const board = this.boards.find(b => b.name.toLowerCase() === boardName.toLowerCase());
+          this.selectedBoardId = board ? board._id : 'all';
+        }
+
+        // Set year
+        this.selectedYear = params['year'] ? Number(params['year']) : null;
+
+        // Set month (handle 'all', number, or name)
+        let monthParam = params['month'];
+        if (monthParam) {
+          if (monthParam.toLowerCase() === 'all') {
+            this.selectedMonth = 'all';
+          } else if (!isNaN(Number(monthParam))) {
+            this.selectedMonth = Number(monthParam);
+          } else {
+            const monthObj = this.months.find(m => m.name.toLowerCase() === monthParam.toLowerCase());
+            this.selectedMonth = monthObj ? monthObj.value : null;
+          }
+        } else {
+          this.selectedMonth = null;
+        }
+
+        // Set dateField based on filter
+        const filter = params['filter'];
+        if (filter) {
+          if (filter === 'dueOn') {
+            this.selectedDateField = 'dueOn';
+          } else if (filter === 'createdAt') {
+            this.selectedDateField = 'createdAt';
+          } else if (filter === 'completed') {
+            this.selectedDateField = 'completedAt';
+          } else if (filter === 'overdue') {
+            this.selectedDateField = 'dueDate';
+          }
+        }
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.queryParamsSubscription) {
+      this.queryParamsSubscription.unsubscribe();
+    }
   }
 
   onYearChange(): void {
@@ -112,7 +167,6 @@ export class TeamReportComponent implements OnInit {
     }
   }
 
-  // Data Loading Methods
   async loadMembers(): Promise<void> {
     try {
       const response = await this.taskService.GetAllMembers({});
@@ -135,7 +189,6 @@ export class TeamReportComponent implements OnInit {
     }
   }
 
-  // Report Methods
   async getReport(): Promise<void> {
     this.isLoading = true;
     this.searchClicked = true;
@@ -168,12 +221,10 @@ export class TeamReportComponent implements OnInit {
         requestData.dateField = this.selectedDateField;
       }
 
-
       const response = await this.taskMemberAuthService.getMemberTaskReport(requestData);
 
       if (response) {
         this.reportData = response;
-      } else {
       }
     } catch (error: any) {
       console.error('Error getting report:', error);
@@ -183,7 +234,6 @@ export class TeamReportComponent implements OnInit {
     }
   }
 
-  // Pagination Methods
   changePage(page: number | null): void {
     if (page && page !== this.currentPage) {
       this.currentPage = page;
@@ -191,7 +241,6 @@ export class TeamReportComponent implements OnInit {
     }
   }
 
-  // Helper Methods
   getObjectKeys(obj: any): string[] {
     return Object.keys(obj || {});
   }
@@ -205,10 +254,8 @@ export class TeamReportComponent implements OnInit {
     return Object.values(this.reportData.tasks[boardName]).reduce((total, tasks) => total + tasks.length, 0);
   }
 
-  // Export Methods
   exportReport(): void {
     if (!this.reportData) return;
-
 
     let csvContent = "";
 
@@ -217,7 +264,6 @@ export class TeamReportComponent implements OnInit {
 
       if (this.reportData?.tasks[boardName]) {
         Object.keys(this.reportData.tasks[boardName]).forEach(memberName => {
-          // Only include the selected member if single member is chosen
           if (this.selectedMemberId !== 'all' && memberName !== this.selectedMemberName) {
             return;
           }
@@ -227,10 +273,10 @@ export class TeamReportComponent implements OnInit {
           this.reportData!.tasks[boardName][memberName].forEach(task => {
             csvContent += `"${task.taskTitle}","${task.columnName}","${task.status}","${task.dueDate || 'No due date'}","${task.createdAt || 'No created date'}","${task.completedAt || 'No'}","${task.isCompleted}","${task.commentCount || 0}","${task.attachmentCount || 0}"\n`;
           });
-          csvContent += "\n"; // Blank line after member's tasks
+          csvContent += "\n";
         });
       }
-      csvContent += "\n"; // Blank line after board
+      csvContent += "\n";
     });
 
     const blob = new Blob([csvContent], { type: 'text/csv' });

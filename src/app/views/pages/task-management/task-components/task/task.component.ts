@@ -386,21 +386,43 @@ export class TaskComponent implements OnInit, OnDestroy {
     window.location.reload();
   }
 
-  // chandan - Handle modal opening based on action type
+  //!  chandan - Handle modal opening based on action type Temporry comment for testing Report Genration Modal
+  // private handleModalTrigger(data: any): void {
+  //   // chandan - Close all modals first
+  //   this.closeAllModals();
+
+  //   // chandan - Set current modal data
+  //   this.currentModalData = data.keywords || {};
+
+  //   // chandan - Open appropriate modal based on action type
+  //   switch (data.actionType) {
+  //     case 'team_member_add':
+  //       this.isAddTeamMemberModalOpen = true;
+  //       break;
+  //     case 'report_generation':
+  //       this.isReportGenerationModalOpen = true;
+  //       break;
+  //     case 'team_task_creation':
+  //       this.isTeamTaskCreationModalOpen = true;
+  //       break;
+  //     case 'personal_task_creation':
+  //       this.openTaskClockModal(data.keywords || {});
+  //       break;
+  //     default:
+  //   }
+  // }
+
   private handleModalTrigger(data: any): void {
-    // chandan - Close all modals first
-    this.closeAllModals();
+  this.closeAllModals();
+  this.currentModalData = data.keywords || {};
 
-    // chandan - Set current modal data
-    this.currentModalData = data.keywords || {};
-
-    // chandan - Open appropriate modal based on action type
+  if (data.actionType === 'report_generation') {
+    // Redirect to team-report with keywords as query params
+    this.router.navigate(['/task-management/team-report'], { queryParams: data.keywords || {} });
+  } else {
     switch (data.actionType) {
       case 'team_member_add':
         this.isAddTeamMemberModalOpen = true;
-        break;
-      case 'report_generation':
-        this.isReportGenerationModalOpen = true;
         break;
       case 'team_task_creation':
         this.isTeamTaskCreationModalOpen = true;
@@ -411,6 +433,7 @@ export class TaskComponent implements OnInit, OnDestroy {
       default:
     }
   }
+}
 
   // chandan - Close all modals
   private closeAllModals(): void {
