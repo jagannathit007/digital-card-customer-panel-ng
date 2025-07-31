@@ -5,6 +5,7 @@ import { TaskMemberAuthService } from 'src/app/services/task-member-auth.service
 import { TaskService } from 'src/app/services/task.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import * as XLSX from 'xlsx';
 
 interface Member {
   _id: string;
@@ -72,6 +73,7 @@ export class TeamReportComponent implements OnInit, OnDestroy {
   pageLimit: number = 10;
   isLoading: boolean = false;
   searchClicked: boolean = false;
+  reportError: string = '';
   months = [
     { value: 1, name: 'January' },
     { value: 2, name: 'February' },
@@ -142,7 +144,7 @@ export class TeamReportComponent implements OnInit, OnDestroy {
         const filter = params['filter'];
         if (filter) {
           if (filter === 'dueOn') {
-            this.selectedDateField = 'dueOn';
+            this.selectedDateField = 'dueDate';
           } else if (filter === 'createdAt') {
             this.selectedDateField = 'createdAt';
           } else if (filter === 'completed') {
@@ -190,9 +192,11 @@ export class TeamReportComponent implements OnInit, OnDestroy {
   }
 
   async getReport(): Promise<void> {
+    // Reset previous state
     this.isLoading = true;
     this.searchClicked = true;
     this.reportData = null;
+    this.reportError = '';
 
     if (this.selectedMemberId !== 'all') {
       this.selectedMemberName = this.members.find(m => m._id === this.selectedMemberId)?.name || '';
@@ -223,13 +227,27 @@ export class TeamReportComponent implements OnInit, OnDestroy {
 
       const response = await this.taskMemberAuthService.getMemberTaskReport(requestData);
 
+      // Immediately process the response without delay
       if (response) {
         this.reportData = response;
+        // Check if there's actually data
+        const hasData = this.reportData && 
+          this.reportData.tasks && 
+          Object.keys(this.reportData.tasks).length > 0 &&
+          Object.values(this.reportData.tasks).some(boardTasks => 
+            Object.keys(boardTasks).length > 0
+          );
+        
+        if (!hasData) {
+          this.reportError = 'No reports found for the selected filters.';
+        }
+      } else {
+        this.reportError = 'No reports found for the selected filters.';
       }
     } catch (error: any) {
-      console.error('Error getting report:', error);
-      alert(error.message || 'Failed to get report. Please try again.');
+      this.reportError = error.message || 'Failed to get report. Please try again.';
     } finally {
+      // Quick loader stop
       this.isLoading = false;
     }
   }
@@ -254,37 +272,243 @@ export class TeamReportComponent implements OnInit, OnDestroy {
     return Object.values(this.reportData.tasks[boardName]).reduce((total, tasks) => total + tasks.length, 0);
   }
 
+  formatDateForExcel(dateString: string): string {
+    if (!dateString || dateString === 'No due date' || dateString === 'No created date' || dateString === 'No') {
+      return dateString || 'N/A';
+    }
+    
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return dateString;
+      }
+      return date.toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+    } catch {
+      return dateString;
+    }
+  }
+
   exportReport(): void {
     if (!this.reportData) return;
 
-    let csvContent = "";
-
-    Object.keys(this.reportData?.tasks ?? {}).forEach(boardName => {
-      csvContent += `Board: ${boardName}\n\n`;
-
-      if (this.reportData?.tasks[boardName]) {
-        Object.keys(this.reportData.tasks[boardName]).forEach(memberName => {
+    try {
+      // Create a new workbook
+      const workbook = XLSX.utils.book_new();
+      
+      // Create worksheet data - frontend jaisa structure
+      const worksheetData: any[] = [];
+      
+      // Title row
+      worksheetData.push(['TEAM TASK REPORT']);
+      worksheetData.push([]);
+      
+      let currentRow = 3;
+      
+      // Process data board-wise (frontend jaisa)
+      Object.keys(this.reportData.tasks).forEach((boardName, boardIndex) => {
+        // Board header - frontend jaisa blue header
+        worksheetData.push([`📋 ${boardName.toUpperCase()} (${this.getBoardTaskCount(boardName)} tasks)`]);
+        worksheetData.push([]);
+        currentRow += 2;
+        
+        // Process members under this board
+        Object.keys(this.reportData!.tasks[boardName]).forEach((memberName, memberIndex) => {
           if (this.selectedMemberId !== 'all' && memberName !== this.selectedMemberName) {
             return;
           }
-          csvContent += `Member: ${memberName}\n`;
-          csvContent += "Task Title,Column,Status,Due Date,Created At,Completed At,Completed,Comments,Attachments\n";
-
+          
+          // Member header
+          worksheetData.push([`👤 ${memberName} (${this.reportData!.tasks[boardName][memberName].length} tasks)`]);
+          worksheetData.push([]);
+          
+          // Table headers for this member
+          worksheetData.push([
+            'Task Title',
+            'Column',
+            'Status',
+            'Due Date',
+            'Created At',
+            'Completed At',
+            'Completed',
+            'Comments',
+            'Attachments'
+          ]);
+          
+          currentRow += 3;
+          
+          // Add task data
           this.reportData!.tasks[boardName][memberName].forEach(task => {
-            csvContent += `"${task.taskTitle}","${task.columnName}","${task.status}","${task.dueDate || 'No due date'}","${task.createdAt || 'No created date'}","${task.completedAt || 'No'}","${task.isCompleted}","${task.commentCount || 0}","${task.attachmentCount || 0}"\n`;
+            worksheetData.push([
+              task.taskTitle,
+              task.columnName,
+              task.status,
+              this.formatDateForExcel(task.dueDate),
+              this.formatDateForExcel(task.createdAt),
+              this.formatDateForExcel(task.completedAt),
+              task.isCompleted,
+              task.commentCount || 0,
+              task.attachmentCount || 0
+            ]);
+            currentRow++;
           });
-          csvContent += "\n";
+          
+          // Add space between members
+          worksheetData.push([]);
+          currentRow++;
         });
-      }
-      csvContent += "\n";
-    });
+        
+        // Add space between boards
+        worksheetData.push([]);
+        currentRow++;
+      });
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.setAttribute('href', url);
-    a.setAttribute('download', `task-report-${new Date().toISOString().split('T')[0]}.csv`);
-    a.click();
-    window.URL.revokeObjectURL(url);
+      // Create worksheet
+      const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+
+      // Set column widths
+      const columnWidths = [
+        { wch: 35 }, // Task Title / Headers
+        { wch: 15 }, // Column
+        { wch: 15 }, // Status
+        { wch: 12 }, // Due Date
+        { wch: 12 }, // Created At
+        { wch: 12 }, // Completed At
+        { wch: 10 }, // Completed
+        { wch: 10 }, // Comments
+        { wch: 12 }  // Attachments
+      ];
+      worksheet['!cols'] = columnWidths;
+
+      // Styling - Frontend jaisa colors
+      const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
+      
+      for (let row = 0; row <= range.e.r; row++) {
+        for (let col = 0; col <= range.e.c; col++) {
+          const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
+          const cell = worksheet[cellAddress];
+          
+          if (!cell) continue;
+          
+          // Title styling (row 0)
+          if (row === 0) {
+            cell.s = {
+              font: { bold: true, sz: 16, color: { rgb: "1F2937" } },
+              fill: { fgColor: { rgb: "EBF4FF" } },
+              alignment: { horizontal: "center", vertical: "center" },
+              border: {
+                top: { style: "thick", color: { rgb: "2563EB" } },
+                bottom: { style: "thick", color: { rgb: "2563EB" } },
+                left: { style: "thick", color: { rgb: "2563EB" } },
+                right: { style: "thick", color: { rgb: "2563EB" } }
+              }
+            };
+          }
+          // Board headers - blue gradient jaisa
+          else if (cell.v && typeof cell.v === 'string' && cell.v.includes('📋')) {
+            cell.s = {
+              font: { bold: true, sz: 14, color: { rgb: "1E40AF" } },
+              fill: { fgColor: { rgb: "DBEAFE" } },
+              alignment: { horizontal: "left", vertical: "center" },
+              border: {
+                top: { style: "medium", color: { rgb: "3B82F6" } },
+                bottom: { style: "medium", color: { rgb: "3B82F6" } },
+                left: { style: "medium", color: { rgb: "3B82F6" } },
+                right: { style: "medium", color: { rgb: "3B82F6" } }
+              }
+            };
+          }
+          // Member headers
+          else if (cell.v && typeof cell.v === 'string' && cell.v.includes('👤')) {
+            cell.s = {
+              font: { bold: true, sz: 12, color: { rgb: "374151" } },
+              fill: { fgColor: { rgb: "F9FAFB" } },
+              alignment: { horizontal: "left", vertical: "center" },
+              border: {
+                top: { style: "thin", color: { rgb: "6B7280" } },
+                bottom: { style: "thin", color: { rgb: "6B7280" } },
+                left: { style: "thin", color: { rgb: "6B7280" } },
+                right: { style: "thin", color: { rgb: "6B7280" } }
+              }
+            };
+          }
+          // Table headers
+          else if (cell.v === 'Task Title' || cell.v === 'Column' || cell.v === 'Status' || 
+                   cell.v === 'Due Date' || cell.v === 'Created At' || cell.v === 'Completed At' ||
+                   cell.v === 'Completed' || cell.v === 'Comments' || cell.v === 'Attachments') {
+            cell.s = {
+              font: { bold: true, sz: 10, color: { rgb: "FFFFFF" } },
+              fill: { fgColor: { rgb: "374151" } },
+              alignment: { horizontal: "center", vertical: "center" },
+              border: {
+                top: { style: "thin", color: { rgb: "000000" } },
+                bottom: { style: "thin", color: { rgb: "000000" } },
+                left: { style: "thin", color: { rgb: "000000" } },
+                right: { style: "thin", color: { rgb: "000000" } }
+              }
+            };
+          }
+          // Data rows - alternating colors
+          else if (cell.v && cell.v !== '' && !cell.v.toString().includes('📋') && !cell.v.toString().includes('👤')) {
+            const isEvenDataRow = row % 2 === 0;
+            cell.s = {
+              font: { sz: 9 },
+              fill: { fgColor: { rgb: isEvenDataRow ? "F8FAFC" : "FFFFFF" } },
+              alignment: { horizontal: "left", vertical: "center" },
+              border: {
+                top: { style: "thin", color: { rgb: "E5E7EB" } },
+                bottom: { style: "thin", color: { rgb: "E5E7EB" } },
+                left: { style: "thin", color: { rgb: "E5E7EB" } },
+                right: { style: "thin", color: { rgb: "E5E7EB" } }
+              }
+            };
+            
+            // Special styling for status column
+            if (col === 2 && typeof cell.v === 'string') { // Status column
+              if (cell.v === 'completed') {
+                cell.s.fill = { fgColor: { rgb: "DCFCE7" } }; // Green
+                cell.s.font = { sz: 9, color: { rgb: "166534" }, bold: true };
+              } else if (cell.v === 'in-progress') {
+                cell.s.fill = { fgColor: { rgb: "FEF3C7" } }; // Yellow
+                cell.s.font = { sz: 9, color: { rgb: "92400E" }, bold: true };
+              } else if (cell.v === 'pending') {
+                cell.s.fill = { fgColor: { rgb: "FEE2E2" } }; // Red
+                cell.s.font = { sz: 9, color: { rgb: "991B1B" }, bold: true };
+              }
+            }
+            
+            // Special styling for completed column
+            if (col === 6) { // Completed column
+              if (cell.v === 'Yes') {
+                cell.s.fill = { fgColor: { rgb: "DCFCE7" } }; // Green
+                cell.s.font = { sz: 9, color: { rgb: "166534" }, bold: true };
+              } else if (cell.v === 'No') {
+                cell.s.fill = { fgColor: { rgb: "FEE2E2" } }; // Red
+                cell.s.font = { sz: 9, color: { rgb: "991B1B" }, bold: true };
+              }
+            }
+          }
+        }
+      }
+
+      // Merge title cell across all columns
+      worksheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 8 } }];
+
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Task Report');
+
+      // Generate filename with current date
+      const currentDate = new Date().toISOString().split('T')[0];
+      const filename = `Task-Report-${currentDate}.xlsx`;
+
+      // Save the file
+      XLSX.writeFile(workbook, filename);
+
+    } catch (error) {
+      console.error('Error exporting report:', error);
+    }
   }
 }

@@ -21,10 +21,10 @@
 
         <button 
           (click)="exportReport()" 
-          [disabled]="!reportData"
+          [disabled]="!reportData || isLoading"
           class="tw-bg-green-600 tw-hover:bg-green-700 tw-disabled:bg-gray-400 tw-text-white tw-px-6 tw-py-2.5 tw-rounded-lg tw-font-medium tw-transition-all tw-duration-200 tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-green-500 tw-focus:ring-offset-2 tw-shadow-md tw-hover:shadow-lg"
         >
-          Export Report
+          Export Excel
         </button>
       </div>
     </div>
@@ -117,9 +117,19 @@
   </div>
 
   <!-- Results Section -->
-  <div *ngIf="searchClicked" class="tw-bg-white tw-rounded-lg tw-shadow-md tw-overflow-hidden">
+  <div *ngIf="searchClicked && !isLoading" class="tw-bg-white tw-rounded-lg tw-shadow-md tw-overflow-hidden">
+    <!-- Error Message -->
+    <div *ngIf="reportError" class="tw-p-12 tw-text-center">
+      <div class="tw-text-gray-500 tw-text-xl tw-font-medium">
+        👉 {{ reportError }}
+      </div>
+      <div class="tw-text-gray-400 tw-text-sm tw-mt-2">
+        Try adjusting your filters and search again.
+      </div>
+    </div>
+
     <!-- No Data Message -->
-    <div *ngIf="!reportData || getObjectKeys(reportData?.tasks).length === 0" class="tw-p-12 tw-text-center">
+    <div *ngIf="!reportError && (!reportData || getObjectKeys(reportData?.tasks).length === 0)" class="tw-p-12 tw-text-center">
       <div class="tw-text-gray-500 tw-text-xl tw-font-medium">
         👉 There are no reports for the selected filters.
       </div>
@@ -129,7 +139,7 @@
     </div>
 
     <!-- Report Data -->
-    <div *ngIf="reportData && getObjectKeys(reportData.tasks).length > 0">
+    <div *ngIf="!reportError && reportData && getObjectKeys(reportData.tasks).length > 0">
       <!-- Board-wise Tasks -->
       <div *ngFor="let boardName of getObjectKeys(reportData.tasks)" class="tw-border-b tw-border-gray-200 tw-last:border-b-0">
         <!-- Board Header with Blue Gradient -->
