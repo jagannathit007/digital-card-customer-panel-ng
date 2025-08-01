@@ -94,6 +94,54 @@ export class BusinessCardService {
     }
   }
 
+  async saveScannedCard(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.SAVE_SCANNED_BUSINESS_CARD,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data !== null) {
+        swalHelper.showToast(response.message, 'success');
+        return true;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
+  async extractTextFromImage(data: { imageData: string, side: string }) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.EXTRACT_TEXT_FROM_IMAGE,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data !== null) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      console.log(err);
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
   async getProducts(data: any) {
     try {
       this.getHeaders();

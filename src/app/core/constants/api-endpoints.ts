@@ -106,6 +106,10 @@ class ApiEndpoints {
   public CREATE_BUSINESS_CARD_SERVICES: string = `${this.PATH}/businessCard/createServices`;
   public DELETE_BUSINESS_CARD_SERVICES: string = `${this.PATH}/businessCard/deleteServices`;
 
+  // scanned card
+  public SAVE_SCANNED_BUSINESS_CARD: string = `${this.PATH}/scanned-cards/save`;
+  public EXTRACT_TEXT_FROM_IMAGE: string = `${this.PATH}/scanned-cards/extract-text`;
+
   // PRODUCT
   public GET_BUSINESS_CARD_PRODUCTS: string = `${this.PATH}/businessCard/getProducts`;
   public CREATE_BUSINESS_CARD_PRODUCTS: string = `${this.PATH}/businessCard/createProducts`;

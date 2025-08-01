@@ -268,3 +268,36 @@
   border-top-color: rgba(0,0,0,0.8);
   z-index: 1000;
 }
+
+
+
+.modal-content {
+  .modal-body {
+    padding: 1rem;
+    
+    video, img {
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    form {
+      .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+      }
+
+      .form-control {
+        border-radius: 6px;
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
+
+  .modal-footer {
+    justify-content: space-between;
+    
+    .btn {
+      min-width: 100px;
+    }
+  }
+}
