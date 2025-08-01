@@ -381,8 +381,7 @@
               <button
                 *ngIf="isEditing"
                 type="submit"
-                class="tw-px-6 tw-py-2.5 tw-bg-green-600 hover:tw-bg-green-700 tw-text-white tw-rounded-lg tw-font-medium tw-transition-all tw-duration-200 tw-flex tw-items-center tw-gap-2 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
-                [disabled]="isSaving || !isFormValid"
+                class="tw-px-6 tw-py-2.5 tw-bg-green-600 hover:tw-bg-green-700 tw-text-white tw-rounded-lg tw-font-medium tw-transition-all tw-duration-200 tw-flex tw-items-center tw-gap-2"
               >
                 <i class="fas fa-spinner tw-animate-spin" *ngIf="isSaving"></i>
                 <i class="fas fa-save" *ngIf="!isSaving"></i>

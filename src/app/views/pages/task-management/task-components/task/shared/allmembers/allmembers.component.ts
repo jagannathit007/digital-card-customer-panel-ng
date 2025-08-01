@@ -40,7 +40,7 @@ export class AllmembersComponent implements OnInit {
   activeTab: string = 'details';
   modalTabs = [
     { id: 'details', label: 'Details', icon: 'fas fa-user' },
-    { id: 'boards', label: 'Boards', icon: 'fas fa-clipboard-list' },
+    // { id: 'boards', label: 'Boards', icon: 'fas fa-clipboard-list' },
     { id: 'actions', label: 'Actions', icon: 'fas fa-cog' },
   ];
 
