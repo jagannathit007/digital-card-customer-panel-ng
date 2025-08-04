@@ -89,6 +89,10 @@ class ApiEndpoints {
   //webiste product enquiry
   public DELETE_PRODUCT_ENQUIRY: string = `${this.PATH}/website/product-enquiry/delete`;
   public DELETE_CONTACT_ENQUIRY: string = `${this.PATH}/website/contact-enquiry/delete`;
+
+//  website service enquiry
+  public DELETE_SERVICE_ENQUIRY: string = `${this.PATH}/website/service-enquiry/delete`;
+
   // website_ABOUT-SECTION_apis
   public WEBSITE_HOME_UPDATE: string = `${this.PATH}/website/home/update`;
 
