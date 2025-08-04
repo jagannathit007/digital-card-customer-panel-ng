@@ -676,8 +676,8 @@ export class AuthService {
       if (response.status === 200 && response.data != null) {
         return response.data;
       } else {
-        swalHelper.showToast(response.message || 'Failed to fetch website details!', 'warning');
-        console.log(response.message);
+        // swalHelper.showToast(response.message || 'Failed to fetch website details!', 'warning');
+        // console.log(response.message);
         return null;
       }
     } catch (err) {
