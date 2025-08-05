@@ -40,7 +40,7 @@
     @for (item of personalDetails.personalSocialMedia; track $index) {
     <div class="col-md-4 col-12">
       <div class="d-flex justify-content-between align-items-center">
-        <label for="{{ item.name }}" class="form-label">
+        <label for="{{ item.name }}" class="form-label d-flex">
           <img
             src="{{ baseURL }}{{ item.image }}"
             alt=""
