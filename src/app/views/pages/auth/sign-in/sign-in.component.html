@@ -8,14 +8,11 @@
 
     <div class="main-container">
         <div class="login-card">
-            <div class="card-body px-4 pt-4">
+            <div class="card-body p-4 pb-1">
                 <!-- Logo -->
-                <div class="logo-container text-center mb-3">
-                    <img src="../../../../../assets/images/ibusniesspng.png" alt="Logo" class="logo-image tw-mx-auto">
-                </div>
 
                 <!-- Title -->
-                <!-- <h2 class="title text-center"><b>{{whileLabelName}}</b></h2> -->
+                <h2 class="title text-center"><b>{{whileLabelName}}</b></h2>
                 
                 <!-- Subtitle -->
                 <div class="subtitle text-center mb-4">
@@ -29,18 +26,17 @@
                     <form novalidate [formGroup]="loginForm" (ngSubmit)="onSubmit()">
                         <!-- Email Field -->
                         <div class="form-group">
-                            <label class="form-label">Email ID</label>
+                            <label class="form-label">Email ID/ Mobile Number</label>
                             <input 
-                                type="email" 
+                                type="text" 
                                 class="form-control" 
                                 formControlName="emailId"
-                                inputmode="email"
                                 autocomplete="off"
                                 required
-                                placeholder="Enter your email"
+                                placeholder="Enter your email / mobile number"
                             />
                             <div class="error-message" *ngIf="!loginForm.controls.emailId?.valid && (loginForm.controls.emailId?.dirty || loginForm.controls.emailId?.touched)">
-                                Email ID must be valid.
+                                Email ID or Mobile Number must be valid.
                             </div>
                         </div>
 
@@ -81,9 +77,9 @@
             </div>
 
             <!-- Footer -->
-            <div class="footer text-center pb-3">
+            <div class="footer text-center text-muted pb-3">
                 <i class="ri-mail-line"></i>
-                <a href="mailto:info@itfuturz.com" class="ms-1 text-black">{{emailId}}</a>
+                <a href="mailto:{{emailId}}" class="ms-1 text-muted">{{emailId}}</a>
             </div>
         </div>
     </div>

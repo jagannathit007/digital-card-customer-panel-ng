@@ -170,6 +170,29 @@
  
    </div>
  </div>
+
+  <!-- Cover Image Upload -->
+ <div class="col-md-6 col-12">
+   <label for="coverImage" class="form-label fw-bold">Logo Image</label>
+   <input
+     type="file"
+     id="logoImage"
+     class="form-control"
+     (change)="onSelectlogoImage($event)"
+     [disabled]="!isEditMode"
+     accept="image/*"
+   />
+   <!-- Cover Image Preview -->
+   <div *ngIf="logoImagePreview || (businessProfile?.image?.logoImage)" class="image-preview mt-2">
+    <img
+   [src]="logoImagePreview || baseURL + businessProfile.image.logoImage"
+   alt="Cover Image Preview"
+   class="preview-image"
+ />
+ 
+   </div>
+ </div>
+
 </div>
 
           <div class="col-md-12 mt-5">

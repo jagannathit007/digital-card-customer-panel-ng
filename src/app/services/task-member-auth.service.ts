@@ -36,7 +36,9 @@ export class TaskMemberAuthService {
         this.headers
       );
       if (response.status === 200 && response.data != null) {
+        const app = this.storage.get("apps");
         this.storage.clearAll();
+        this.storage.set("apps", app);
         this.storage.set(teamMemberCommon.TEAM_MEMBER_TOKEN, response.data.token); 
         this.storage.set(teamMemberCommon.TEAM_MEMBER_DATA, response.data.user);
         if (response.data.taskUserToken){

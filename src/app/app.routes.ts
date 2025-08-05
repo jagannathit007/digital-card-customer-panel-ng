@@ -3,6 +3,11 @@ import { SignInComponent } from './views/pages/auth/sign-in/sign-in.component';
 import { HomeLayoutComponent } from './views/partials/home-layout/home-layout.component';
 import { AuthGuard } from './guards/auth.guard';
 import { TokenVerificationComponent } from './views/standalone/token-verification/token-verification.component';
+import { DemoTaskManagementComponent } from './views/pages/demo/demo-task-management/demo-task-management.component';
+import { DemoGoogleReviewComponent } from './views/pages/demo/demo-google-review/demo-google-review.component';
+import { DemoAttendanceComponent } from './views/pages/demo/demo-attendance/demo-attendance.component';
+import { OfficesComponent } from './views/pages/offices/offices.component';
+import { EmployeesComponent } from './views/pages/employees/employees.component';
 
 // Task managemnt members routes
 import { LoginComponent } from './views/pages/task-management/task-components/task/shared/teammembers-auth/login/login.component';
@@ -37,6 +42,30 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
         data: { requiredProduct: 'website-details' }
       },
+      // {
+      //   path: 'task-management',
+      //   loadChildren:()=>import('./views/pages/task-management/task.module').then(m=>m.TaskModule),
+      //   canActivate: [AuthGuard],
+      //   data: { requiredProduct: 'task-management' }
+      // },
+      // {
+      //   path: 'google-standee',
+      //   loadComponent:()=>import('./views/pages/google-standee/google-standee.component').then(m=>m.GoogleStandeeComponent),
+      //   canActivate: [AuthGuard],
+      //   data: { requiredProduct: 'google-standee' }
+      // },
+      {
+        path: 'attendance',
+        component: DemoAttendanceComponent,
+      },
+      {
+        path: 'offices',
+        component: OfficesComponent
+      },
+      {
+        path: 'employees',
+        component: EmployeesComponent
+      },
       {
         path: 'task-management',
         loadChildren: () => import('./views/pages/task-management/task.module').then(m => m.TaskModule),
@@ -44,10 +73,8 @@ export const routes: Routes = [
         data: { requiredProduct: 'task-management' }
       },
       {
-        path: 'google-standee',
-        loadComponent: () => import('./views/pages/google-standee/google-standee.component').then(m => m.GoogleStandeeComponent),
-        canActivate: [AuthGuard],
-        data: { requiredProduct: 'google-standee' }
+        path: 'google-reviews',
+        component: DemoGoogleReviewComponent,
       },
       {
         path: 'profile',

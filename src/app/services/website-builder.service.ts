@@ -17,6 +17,7 @@ export class WebsiteBuilderService {
       this.headers = [];
       let token = this.storage.get(common.TOKEN);
       if (token != null) {
+        this.headers.push({ "origin-domain": window.location.origin });
         this.headers.push({ Authorization: `Bearer ${token}` });
       }
     };
@@ -164,6 +165,152 @@ export class WebsiteBuilderService {
         return false;
       }
     }
+
+    // Website Services
+     async createService(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_OUR_SERVICES_UPDATE,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.showToast(response.message, 'success');
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+
+      async deleteService(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_OUR_SERVICES_DELETE,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+
+     async addOrUpdateServiceCategory(data: any) {
+      try {
+        this.getHeaders();
+        // console.log("catogrey craete",data);
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.ADD_OR_UPDATE_SERVICE_CATEGORY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+
+     async addOrUpdateServiceInCategory(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.ADD_OR_UPDATE_SERVICE_IN_CATEGORY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+
+    async deleteServiceInCategory(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.DELETE_SERVICE_IN_CATEGORY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+    
+        async deleteServiceCategory(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.DELETE_SERVICE_CATEGORY,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.success(response.message);
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
     
 
     async updateVisibility(data:any){
@@ -187,6 +334,54 @@ export class WebsiteBuilderService {
       } catch (error) {
         swalHelper.showToast('Something went wrong!', 'error');
         return false;
+      }
+    }
+
+    async updateSectionsTitles(data:any){
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.UPDATE_SECTIONS_TITLES,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.showToast(response.message, 'success');
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (error) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+
+    async addAboutSection(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_ABOUT_ADD,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        
+        if (response.status == 200 && response.data != null) {
+          return response.data;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return null;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return null;
       }
     }
 
@@ -214,6 +409,7 @@ export class WebsiteBuilderService {
       }
     }
 
+
     async deleteAboutData(data:any){
       try {
         this.getHeaders();
@@ -235,31 +431,6 @@ export class WebsiteBuilderService {
       } catch (error) {
         swalHelper.showToast('Something went wrong!', 'error');
         return false;
-      }
-    }
-
-    // WebsiteBuilder Our Certificate Services
-    async updateOurCertificates(data: any) {
-      try {
-        this.getHeaders();
-        let response = await this.apiManager.request(
-          {
-            url: apiEndpoints.WEBSITE_CERTIFICATES_ADD,
-            method: 'POST',
-          },
-          data,
-          this.headers
-        );
-        
-        if (response.status == 200 && response.data != null) {
-          return response.data;
-        } else {
-          swalHelper.showToast(response.message, 'warning');
-          return null;
-        }
-      } catch (err) {
-        swalHelper.showToast('Something went wrong!', 'error');
-        return null;
       }
     }
 
@@ -398,6 +569,126 @@ export class WebsiteBuilderService {
         console.log(err);
         swalHelper.showToast('Something went wrong!', 'error');
         return null;
+      }
+    }
+
+    async updateFaq(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_FAQ_ADD,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        
+        if (response.status == 200 && response.data != null) {
+          return response.data;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return null;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return null;
+      }
+    }
+
+    async deleteFaq(data:any){
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_FAQ_DELETE,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.showToast(response.message, 'success');
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (error) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+
+    async updateBlogs(data: any) {
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_BLOGS_ADD,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        
+        if (response.status == 200 && response.data != null) {
+          return response.data;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return null;
+        }
+      } catch (err) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return null;
+      }
+    }
+
+    async deleteBlogs(data:any){
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_BLOGS_DELETE,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.showToast(response.message, 'success');
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (error) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
+      }
+    }
+
+    async updateThemeColor(data:any){
+      try {
+        this.getHeaders();
+        let response = await this.apiManager.request(
+          {
+            url: apiEndpoints.WEBSITE_THEMECOLOR_UPDATE,
+            method: 'POST',
+          },
+          data,
+          this.headers
+        );
+        if (response.status == 200 && response.data != 0) {
+          swalHelper.showToast(response.message, 'success');
+          return true;
+        } else {
+          swalHelper.showToast(response.message, 'warning');
+          return false;
+        }
+      } catch (error) {
+        swalHelper.showToast('Something went wrong!', 'error');
+        return false;
       }
     }
 

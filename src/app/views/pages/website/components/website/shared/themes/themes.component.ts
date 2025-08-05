@@ -6,6 +6,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { environment } from 'src/env/env.local';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { common } from 'src/app/core/constants/common';
+import { ConfigService } from 'src/app/services/config.service';
 
 @Component({
   selector: 'app-themes',
@@ -22,7 +23,8 @@ export class ThemesComponent implements OnInit {
     private websiteBuilderService: WebsiteBuilderService,
     private authService: AuthService,
     private storage: AppStorage,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private config:ConfigService
   ) {}
 
   async ngOnInit() {
@@ -78,7 +80,7 @@ export class ThemesComponent implements OnInit {
 
   previewTheme(themeCode: string): void {
     const business_card = this.storage.get(common.BUSINESS_CARD);
-    const url = `${environment.baseURL}/website/${business_card}?theme=${themeCode}`;
+    const url = `${this.config.backendURL}/website/${business_card}?theme=${themeCode}`;
     window.open(url, '_blank');
   }
 

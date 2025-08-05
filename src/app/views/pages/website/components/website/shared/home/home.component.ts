@@ -10,6 +10,7 @@ import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { environment } from 'src/env/env.local';
 import { WebsiteBuilderService } from 'src/app/services/website-builder.service';
 import { ModalService } from 'src/app/core/utilities/modal';
+import { ConfigService } from 'src/app/services/config.service';
 
 @Component({
   selector: 'app-home',
@@ -19,7 +20,7 @@ import { ModalService } from 'src/app/core/utilities/modal';
 export class HomeComponent implements OnInit, OnDestroy {
   @ViewChild('fileInput') fileInput!: ElementRef;
   private objectURLCache = new Map<File, string>();
-  baseURL = environment.baseURL;
+  baseURL = this.config.backendURL;
   isLoading: boolean = false;
 
   // Rich text editors
@@ -44,12 +45,18 @@ export class HomeComponent implements OnInit, OnDestroy {
   };
   logoImagePreview: string | ArrayBuffer | null = null;
 
+  sectionTitles: any = {
+    home: 'home'
+  };
+
+
   constructor(
     private storage: AppStorage,
     public modal: ModalService,
     public authService: AuthService,
-    private websiteService: WebsiteBuilderService
-  ) {}
+    private websiteService: WebsiteBuilderService,
+    private config: ConfigService
+  ) { }
 
   businessCardId: any;
   websiteName: any;
@@ -91,7 +98,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.home = {
           heading: results.home.heading || '',
           slogan: results.home.slogan || '',
-          logoImage: results.home.logoImage ? this.imageBaseURL  + results.home.logoImage : null,
+          logoImage: results.home.logoImage ? this.imageBaseURL + results.home.logoImage : null,
         };
         if (results.home.bannerImages && results.home.bannerImages.length > 0) {
           this.bannerImages = [];
@@ -104,6 +111,11 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.websiteName = results.websiteName;
           this.isEditingWebsiteName = false;
         }
+
+        if (results.sectionTitles) {
+        this.sectionTitles = results.sectionTitles;
+       }
+
         this.sloganVisible = results.home.sloganVisible;
         this.bannerImageVisible = results.home.bannerImageVisible;
         this.logoImageVisible = results.home.logoImageVisible;
@@ -304,7 +316,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   copyToClipboard() {
-    const fullUrl = `${environment.baseURL}/website/${this.websiteName}`;
+    const fullUrl = `${this.config.backendURL}/website/${this.websiteName}`;
     navigator.clipboard
       .writeText(fullUrl)
       .then(() => {
@@ -317,7 +329,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   getWebsiteMessage() {
-    const websiteUrl = `${environment.baseURL}/website/${this.websiteName}`;
+    const websiteUrl = `${this.config.backendURL}/website/${this.websiteName}`;
     this.message = `Checkout my website: ${websiteUrl}`;
   }
 
@@ -335,4 +347,40 @@ export class HomeComponent implements OnInit, OnDestroy {
     )}`;
     window.open(whatsappURL, '_blank');
   }
+
+    // Add this method to handle title edit
+  editSectionTitle() {
+    this.modal.open('EditTitleModal');
+  }
+
+  // Add this method to update section title
+  async updateSectionTitle() {
+    if (!this.sectionTitles.home.trim()) {
+      swalHelper.showToast('Section title is required!', 'warning');
+      return;
+    }
+
+    this.isLoading = true;
+    try {
+      let businessCardId = this.storage.get(common.BUSINESS_CARD);
+      const data = {
+        businessCardId: businessCardId,
+        sectionTitles: {
+          home: this.sectionTitles.home
+        }
+      };
+
+      const result = await this.websiteService.updateSectionsTitles(data);
+      if (result) {
+        this.modal.close('EditTitleModal');
+        swalHelper.showToast('Section title updated successfully!', 'success');
+      }
+    } catch (error) {
+      console.error('Error updating section title: ', error);
+      swalHelper.showToast('Error updating section title!', 'error');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
 }

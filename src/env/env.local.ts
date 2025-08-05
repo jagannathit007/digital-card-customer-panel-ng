@@ -1,8 +1,8 @@
 export const environment = {
   production: false,
-  baseURL: 'http://localhost:3100',
+  parentDomain: 'https://digitalcard.co.in',
   whiteLabelName: 'Digital Card',
-  // baseURL: 'https://digitalcard.co.in',
+  baseURL: 'http://localhost:3100',
   imageURL: 'https://flinta.s3.ap-south-1.amazonaws.com/',
   route: 'web',
 };

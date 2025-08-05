@@ -36,14 +36,25 @@ export class SignInComponent implements OnInit {
     document.body.style.backgroundColor = '#0e273c';
   }
 
-  async ngOnInit() {}
+  async ngOnInit(){
+    let data = await this.authService.getRawInformation();
+    console.log(data)
+    if(data!=null){
+      this.storage.set("apps", data);
+      this.whileLabelName = data.name;
+      this.emailId = data.emailId;
+    }
+  }
 
-  whileLabelName = environment.whiteLabelName;
-  isPassword: boolean = false;
-  emailId = 'info@itfuturz.com';
+  whileLabelName = "";
+  isPassword: boolean = false; 
+  emailId = '';
 
+  
   loginForm = new FormGroup({
-    emailId: new FormControl('', [Validators.required, Validators.email]),
+    emailId: new FormControl('', [
+      Validators.required,
+    ]),
     password: new FormControl('', [
       Validators.required,
       Validators.minLength(6),

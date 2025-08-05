@@ -20,6 +20,11 @@
       </select>
     </div> -->
     <div class="d-none d-md-flex flex-wrap justify-content-end align-items-center gap-3 p-2 ms-auto business-select">
+
+      <div class="icon-container shadow p-2 rounded bg-light" (click)="openCameraModal()" data-tooltip="Scan or Capture Photo">
+        <i class="ri-qr-scan-2-line text-primary"></i>
+      </div>
+
       <!-- Play Store Icon with Animation -->
       <div class="icon-container shadow p-2 rounded bg-light playstore-icon" 
            (click)="openPlayStoreModal()" 
@@ -58,6 +63,9 @@
           </div>
           <div class="icon-container p-2 rounded bg-light" (click)="modal.open('shareModal')">
             <i class="ri-whatsapp-fill text-success"></i>
+          </div>
+          <div class="icon-container p-2 rounded bg-light" (click)="openCameraModal()">
+             <i class="ri-qr-scan-2-line text-primary"></i>
           </div>
         </div>
         <select class="form-select custom-select flex-grow-1" [(ngModel)]="authService.selectedBusinessCard"
@@ -856,6 +864,178 @@
       
       <div class="modal-footer border-0 text-center">
         <small class="text-muted">Get the full experience with our mobile app!</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="cameraModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="cameraModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cameraModalLabel">
+          @if (currentStep === 1) { Capture Front Image }
+          @else if (currentStep === 2) { Capture Back Image }
+          @else { Enter Business Card Details }
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" (click)="stopCamera()"></button>
+      </div>
+      <div class="modal-body text-center">
+        @if (currentStep === 1 || currentStep === 2) {
+          <video id="cameraStream" autoplay playsinline style="width: 100%; max-height: 400px; object-fit: cover;"></video>
+          <canvas id="cameraCanvas" style="display: none;"></canvas>
+          <img id="capturedImage" style="width: 100%; max-height: 400px; object-fit: cover; display: none;" />
+        } @else {
+          <form>
+            <div class="mb-3">
+              <label for="name" class="form-label d-flex text-start">
+                Name <span class="text-danger">*</span>
+              </label>
+              <input 
+                type="text" 
+                class="form-control" 
+                [class.is-invalid]="formErrors.name"
+                id="name" 
+                [(ngModel)]="businessCardDetails.name" 
+                name="name" 
+                (input)="clearFieldError('name')"
+                required>
+              <div *ngIf="formErrors.name" class="invalid-feedback d-block text-start">
+                {{ formErrors.name }}
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="mobile" class="form-label d-flex text-start">
+                Mobile <span class="text-danger">*</span>
+              </label>
+              <input 
+                type="text" 
+                class="form-control" 
+                [class.is-invalid]="formErrors.mobile"
+                id="mobile" 
+                [(ngModel)]="businessCardDetails.mobile" 
+                name="mobile" 
+                (input)="clearFieldError('mobile')"
+                required>
+              <div *ngIf="formErrors.mobile" class="invalid-feedback d-block text-start">
+                {{ formErrors.mobile }}
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="companyEmailId" class="form-label d-flex text-start">Company Email</label>
+              <input 
+                type="email" 
+                class="form-control" 
+                [class.is-invalid]="formErrors.companyEmailId"
+                id="companyEmailId" 
+                [(ngModel)]="businessCardDetails.companyEmailId" 
+                name="companyEmailId"
+                (input)="clearFieldError('companyEmailId')">
+              <div *ngIf="formErrors.companyEmailId" class="invalid-feedback d-block">
+                {{ formErrors.companyEmailId }}
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="companyName" class="form-label d-flex text-start">Company Name</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                [class.is-invalid]="formErrors.companyName"
+                id="companyName" 
+                [(ngModel)]="businessCardDetails.companyName" 
+                name="companyName"
+                (input)="clearFieldError('companyName')">
+              <div *ngIf="formErrors.companyName" class="invalid-feedback d-block">
+                {{ formErrors.companyName }}
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="businessMobile" class="form-label d-flex text-start">Business Mobile</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                [class.is-invalid]="formErrors.businessMobile"
+                id="businessMobile" 
+                [(ngModel)]="businessCardDetails.businessMobile" 
+                name="businessMobile"
+                (input)="clearFieldError('businessMobile')">
+              <div *ngIf="formErrors.businessMobile" class="invalid-feedback d-block">
+                {{ formErrors.businessMobile }}
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="address" class="form-label d-flex text-start">Address</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                [class.is-invalid]="formErrors.address"
+                id="address" 
+                [(ngModel)]="businessCardDetails.address" 
+                name="address"
+                (input)="clearFieldError('address')">
+              <div *ngIf="formErrors.address" class="invalid-feedback d-block">
+                {{ formErrors.address }}
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="keywords" class="form-label d-flex text-start">Keywords</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                [class.is-invalid]="formErrors.keywords"
+                id="keywords" 
+                [(ngModel)]="businessCardDetails.keywords" 
+                name="keywords"
+                (input)="clearFieldError('keywords')">
+              <div *ngIf="formErrors.keywords" class="invalid-feedback d-block">
+                {{ formErrors.keywords }}
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="notes" class="form-label d-flex text-start">Notes</label>
+              <textarea 
+                class="form-control" 
+                [class.is-invalid]="formErrors.notes"
+                id="notes" 
+                [(ngModel)]="businessCardDetails.notes" 
+                name="notes" 
+                rows="3"
+                (input)="clearFieldError('notes')"></textarea>
+              <div *ngIf="formErrors.notes" class="invalid-feedback d-block">
+                {{ formErrors.notes }}
+              </div>
+            </div>
+          </form>
+        }
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="stopCamera()">Cancel</button>
+        @if (currentStep === 1 || currentStep === 2) {
+          <button type="button" class="btn btn-primary" (click)="capturePhoto()">Capture</button>
+          @if (capturedImage) {
+            
+            <button [disabled]="isExtractingData" type="button" class="btn btn-success" (click)="nextStep()" >
+               <span *ngIf="isExtractingData" class="px-3 bg-gray"><span class="spinner-border spinner-border-sm me-2"></span>extracting...</span>
+               <span *ngIf="!isExtractingData">Next</span>
+            </button>
+          }
+        } @else {
+          <button 
+            type="button" 
+            class="btn btn-success" 
+            (click)="submitBusinessCard()"
+            [disabled]="isSavingCard">
+            <span *ngIf="isSavingCard" class="spinner-border spinner-border-sm me-2" role="status"></span>
+            {{ isSavingCard ? 'Saving...' : 'Submit' }}
+          </button>
+        }
       </div>
     </div>
   </div>

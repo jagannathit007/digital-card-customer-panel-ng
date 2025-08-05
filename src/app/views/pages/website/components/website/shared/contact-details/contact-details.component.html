@@ -46,8 +46,11 @@
 
     <div class="row">
         <div class="col-md">
-            <div class="d-flex">
-                <label class="fw-bold text-uppercase fs-3">Contact List</label>
+          <div class="d-flex align-items-center">
+            <label class="fw-bold text-uppercase fs-3 me-2">{{ sectionTitles.contact || 'contact List' }}</label>
+            <button class="btn btn-sm text-white bg-primary me-2" (click)="editSectionTitle()" title="Edit Section Title">
+                <i class="ri-edit-line"></i>
+            </button>  
                 <app-toggle [isActive]="contactVisible" [onText]="'Visible'" [offText]="'Hidden'" class="ms-2 mt-2"
                     (changed)="this.contactVisible=!this.contactVisible;_updateVisibility()">
                 </app-toggle>
@@ -106,9 +109,9 @@
                     <td>{{ contact.phone }}</td>
                     <td>{{ contact.address }}</td>
                     <td class="text-center">
-                        <!-- <button class="btn btn-sm btn-info me-1" data-bs-toggle="modal" data-bs-target="#EditContactModal" (click)="editContact(contact)">
+                        <button class="btn btn-sm btn-info me-1" (click)="editContact(contact)">
                           <i class="ri-edit-box-line"></i>
-                        </button> -->
+                        </button>
                         <button class="btn btn-sm btn-danger" (click)="setSelectedContact(contact)">
                             <i class="ri-delete-bin-line"></i>
                           </button>
@@ -130,7 +133,7 @@
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="AddContactModalLabel">Add Contact</h5>
+                <h5 class="modal-title" id="AddContactModalLabel">{{ selectedContactId ? 'Edit Contact' : 'Add Contact' }}</h5>
                 <button type="button" class="btn-close" (click)="onCloseModal('AddContactModal')"></button>
             </div>
             <div class="modal-body">
@@ -162,10 +165,10 @@
                             [(ngModel)]="newContact.phone" 
                             #phone="ngModel" 
                             required 
-                            [pattern]="RegularRegex.phoneNo">
-                        <div *ngIf="phone.invalid && phone.touched" class="text-danger">
+                            >
+                        <!-- <div *ngIf="phone.invalid && phone.touched" class="text-danger">
                             Please enter a valid 10-digit phone number.
-                        </div>
+                        </div> -->
                     </div>
                     <div class="mb-3">
                         <label for="contactAddress" class="form-label">Address</label>
@@ -202,6 +205,34 @@
                     [disabled]="contactForm.invalid" 
                     (click)="updateContact()">
                     <i class="ri-edit-box-line"></i> Save Contact
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Section Title Modal -->
+<div class="modal fade" id="EditTitleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="EditTitleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fw-medium" id="EditTitleModalLabel">Edit Section Title</h4>
+                <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('EditTitleModal')"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="sectionTitle" class="form-label">Section Title</label>
+                        <input type="text" class="form-control" id="sectionTitle" 
+                               placeholder="Enter section title" 
+                               [(ngModel)]="sectionTitles.contact" 
+                               name="sectionTitle" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" (click)="updateSectionTitle()" [disabled]="isLoading">
+                    <i class="ri-save-line"></i> {{ isLoading ? 'Saving...' : 'Save' }}
                 </button>
             </div>
         </div>

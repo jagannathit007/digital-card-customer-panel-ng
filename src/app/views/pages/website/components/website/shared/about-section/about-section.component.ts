@@ -10,6 +10,7 @@ import { AuthService } from 'src/app/services/auth.service';
 import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { WebsiteBuilderService } from 'src/app/services/website-builder.service';
 import { ModalService } from 'src/app/core/utilities/modal';
+import { environment } from 'src/env/env.local';
 
 @Component({
   selector: 'app-about-section',
@@ -17,17 +18,24 @@ import { ModalService } from 'src/app/core/utilities/modal';
   styleUrl: './about-section.component.scss',
 })
 export class AboutSectionComponent implements OnInit, OnDestroy {
+  imageURL = environment.imageURL;
+  searchTerm: string = '';
+  itemsPerPage: number = 10;
+  totalItems: number = 0;
+  p: number = 1;
   isLoading: boolean = false;
+
   aboutCompanyList: any[] = [];
   filteredAboutCompanyList: any[] = [];
-  searchTerm: string = '';
+  aboutItemId: string = '';
+  selectedImage: string = '';
   businessCardId: any;
 
   // ngx-editor instances
-  addEditor!: Editor; // For description in add/edit modal
-  addTitleEditor!: Editor; // For title in add/edit modal
-
-  // Editor toolbar configuration
+  addEditor!: Editor;
+  editEditor!: Editor;
+  addTitleEditor!: Editor;
+  editTitleEditor!: Editor;
   toolbar: Toolbar = [
     ['bold', 'italic'],
     ['underline', 'strike'],
@@ -39,188 +47,275 @@ export class AboutSectionComponent implements OnInit, OnDestroy {
     ['align_left', 'align_center', 'align_right', 'align_justify'],
   ];
 
+  newAboutItem: any = {
+    title: '',
+    description: '',
+    image: null as File | null,
+    visible: true
+  };
+
+  editingAboutItem = {
+    _id: '',
+    title: '',
+    description: '',
+    image: null as File | null,
+    currentImage: '',
+    visible: true
+  };
+
+  aboutCompanyVisible: boolean = true;
+
+  sectionTitles: any = {
+    aboutCompany: 'About Us'
+  };
+
   constructor(
     private storage: AppStorage,
     public authService: AuthService,
-    private websiteService: WebsiteBuilderService,
-    public modal: ModalService,
     private cdr: ChangeDetectorRef,
-    private sanitizer: DomSanitizer
-  ) {}
+    public modal: ModalService,
+    private websiteService: WebsiteBuilderService,
+    private sanitizer: DomSanitizer,
+  ) { }
 
-  ngOnInit() {
-    this.businessCardId = this.storage.get(common.BUSINESS_CARD);
-    // Initialize editors
+  async ngOnInit() {
     this.addEditor = new Editor();
+    this.editEditor = new Editor();
     this.addTitleEditor = new Editor();
-    this.fetchWebsiteDetails();
+    this.editTitleEditor = new Editor();
+
+    this.businessCardId = this.storage.get(common.BUSINESS_CARD);
+    await this.fetchAboutItems();
   }
 
   ngOnDestroy(): void {
-    // Destroy editors to prevent memory leaks
     this.addEditor.destroy();
+    this.editEditor.destroy();
     this.addTitleEditor.destroy();
+    this.editTitleEditor.destroy();
   }
 
-  async fetchWebsiteDetails() {
+  async fetchAboutItems() {
     this.isLoading = true;
     try {
-      let businessCardId = this.storage.get(common.BUSINESS_CARD);
-      let results = await this.authService.getWebsiteDetails(businessCardId);
-
-      if (results && results.aboutCompany) {
-        this.aboutCompanyList = results.aboutCompany;
+      let results = await this.authService.getWebsiteDetails(this.businessCardId);
+      if (results) {
+        this.aboutCompanyList = results.aboutCompany ? [...results.aboutCompany] : [];
         this.filteredAboutCompanyList = [...this.aboutCompanyList];
+        this.totalItems = this.aboutCompanyList.length;
         this.aboutCompanyVisible = results.aboutCompanyVisible;
+        if (results.sectionTitles) {
+          this.sectionTitles = results.sectionTitles;
+        }
+        this.cdr.markForCheck();
       } else {
-        this.aboutCompanyList = [];
-        this.filteredAboutCompanyList = [];
+        swalHelper.showToast('Failed to fetch about items!', 'warning');
       }
-      this.cdr.markForCheck();
     } catch (error) {
-      console.error('Error fetching company information: ', error);
-      swalHelper.showToast('Error fetching company information!', 'error');
+      swalHelper.showToast('Error fetching about items!', 'error');
     } finally {
       this.isLoading = false;
       this.cdr.markForCheck();
     }
   }
 
-  aboutCompanyVisible: boolean = false;
+  async addAboutItem() {
+    if (!this.validateAboutItem(this.newAboutItem)) return;
 
-  _updateVisibility = async () => {
-    await this.websiteService.updateVisibility({
-      aboutCompanyVisible: this.aboutCompanyVisible,
-      businessCardId: this.businessCardId,
-    });
-  };
+    this.isLoading = true;
+    try {
+      const formData = new FormData();
+      formData.append('businessCardId', this.businessCardId);
+      formData.append('title', this.newAboutItem.title);
+      formData.append('description', this.newAboutItem.description || '');
+      if (this.newAboutItem.image) {
+        formData.append('file', this.newAboutItem.image);
+      }
+      formData.append('visible', this.newAboutItem.visible.toString());
 
-  payload: any = {
-    businessCardId: '',
-    addAboutData: [],
-    _id: null,
-  };
-
-  onOpenaddAboutDetails() {
-    this.payload.addAboutData.push({ title: '', description: '', visible: true });
-    this.payload.businessCardId = this.businessCardId;
-    this.modal.open('add-about');
+      const result = await this.websiteService.addAboutSection(formData);
+      if (result) {
+        await this.fetchAboutItems();
+        this.resetForm();
+        this.modal.close('AddAboutModal');
+        swalHelper.showToast('About item added successfully!', 'success');
+      }
+    } catch (error) {
+      swalHelper.showToast('Error adding about item!', 'error');
+    } finally {
+      this.isLoading = false;
+      this.cdr.markForCheck();
+    }
   }
 
-  onAddAboutData() {
-    this.payload.addAboutData.push({ title: '', description: '', visible: true });
+  onFileChange(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      this.newAboutItem.image = event.target.files[0];
+    }
   }
 
-  onDelete(index: number) {
-    this.payload.addAboutData.splice(index, 1);
+  onEditFileChange(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      this.editingAboutItem.image = event.target.files[0];
+    }
+  }
+
+  editAboutItem(item: any) {
+    this.editingAboutItem = {
+      _id: item._id,
+      title: item.title,
+      description: item.description || '',
+      image: null,
+      currentImage: item.image || '',
+      visible: item.visible
+    };
+    this.modal.open('EditAboutModal');
     this.cdr.markForCheck();
   }
 
-  reset() {
-    this.payload = {
-      businessCardId: this.businessCardId,
-      addAboutData: [],
-      _id: null,
-    };
-    this.fetchWebsiteDetails();
-  }
+  async updateAboutItem() {
+    if (!this.validateAboutItem(this.editingAboutItem)) return;
 
-  validateAboutData(data: any[]): boolean {
-    for (let item of data) {
-      const strippedTitle = this.stripHtml(item.title).trim();
-      const strippedDescription = this.stripHtml(item.description).trim();
-      if (!strippedTitle) {
-        swalHelper.showToast('About title is required!', 'warning');
-        return false;
-      }
-      if (!strippedDescription) {
-        swalHelper.showToast('About description is required!', 'warning');
-        return false;
-      }
-    }
-    return true;
-  }
-
-  _saveAboutData = async () => {
-    if (!this.validateAboutData(this.payload.addAboutData)) {
-      return;
-    }
+    this.isLoading = true;
     try {
-      this.isLoading = true;
-      await this.websiteService.updateAboutSectionData(this.payload);
-      this.reset();
-      this.modal.close('add-about');
-      swalHelper.showToast('Data saved successfully!', 'success');
+      const formData = new FormData();
+      formData.append('businessCardId', this.businessCardId);
+      formData.append('aboutId', this.editingAboutItem._id);
+      formData.append('title', this.editingAboutItem.title);
+      formData.append('description', this.editingAboutItem.description || '');
+      if (this.editingAboutItem.image) {
+        formData.append('file', this.editingAboutItem.image);
+      }
+      formData.append('visible', this.editingAboutItem.visible.toString());
+
+      const result = await this.websiteService.updateAboutSectionData(formData);
+      if (result) {
+        await this.fetchAboutItems();
+        this.modal.close('EditAboutModal');
+        swalHelper.showToast('About item updated successfully!', 'success');
+      }
     } catch (error) {
-      console.error('Error saving about data: ', error);
-      swalHelper.showToast('Error saving about data!', 'error');
+      swalHelper.showToast('Error updating about item!', 'error');
     } finally {
       this.isLoading = false;
       this.cdr.markForCheck();
     }
-  };
-
-  onOpenUpdateModal(data: any) {
-    this.payload.addAboutData.push({
-      title: data.title,
-      description: data.description,
-      visible: data.visible,
-    });
-    this.payload._id = data._id;
-    this.payload.businessCardId = this.businessCardId;
-    this.modal.open('add-about');
   }
 
-  _deleteAboutData = async (id: string) => {
+  prepareDeleteAboutItem = async (aboutId: string) => {
+    this.aboutItemId = aboutId;
     const confirm = await swalHelper.delete();
     if (confirm.isConfirmed) {
-      try {
-        this.isLoading = true;
-        let response = await this.websiteService.deleteAboutData({
-          _id: id,
-          businessCardId: this.businessCardId,
-        });
-        if (response) {
-          swalHelper.success('Data Deleted Successfully');
-          this.reset();
-        }
-      } catch (error) {
-        console.error('Error deleting about data: ', error);
-        swalHelper.showToast('Error deleting about data!', 'error');
-      } finally {
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      }
+      this.confirmDeleteAboutItem();
     }
-  };
+    this.cdr.markForCheck();
+  }
+
+  async confirmDeleteAboutItem() {
+    this.isLoading = true;
+    try {
+      const data = {
+        businessCardId: this.businessCardId,
+        aboutId: this.aboutItemId
+      };
+      const result = await this.websiteService.deleteAboutData(data);
+      if (result) {
+        await this.fetchAboutItems();
+        swalHelper.success('About item deleted successfully!');
+      }
+    } catch (error) {
+      swalHelper.showToast('Error deleting about item!', 'error');
+    } finally {
+      this.isLoading = false;
+      this.cdr.markForCheck();
+    }
+  }
+
+  validateAboutItem(item: any): boolean {
+    if (!item.title.trim()) {
+      swalHelper.showToast('About title is required!', 'warning');
+      return false;
+    }
+    return true;
+  }
 
   onSearch() {
     if (!this.searchTerm.trim()) {
       this.filteredAboutCompanyList = [...this.aboutCompanyList];
     } else {
-      this.filteredAboutCompanyList = this.aboutCompanyList.filter(
-        (item) =>
-          this.stripHtml(item.title)
-            .toLowerCase()
-            .includes(this.searchTerm.toLowerCase()) ||
-          (item.description &&
-            this.stripHtml(item.description)
-              .toLowerCase()
-              .includes(this.searchTerm.toLowerCase()))
+      this.filteredAboutCompanyList = this.aboutCompanyList.filter(item =>
+        item.title.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        (item.description && item.description.toLowerCase().includes(this.searchTerm.toLowerCase()))
       );
     }
+    this.totalItems = this.filteredAboutCompanyList.length;
     this.cdr.markForCheck();
   }
 
- sanitizeHtml(content: any): any {
+  onItemsPerPageChange() {
+    this.p = 1;
+    this.cdr.markForCheck();
+  }
+
+  pageChangeEvent(event: number) {
+    this.p = event;
+    this.cdr.markForCheck();
+  }
+
+  resetForm() {
+    this.newAboutItem = { title: '', description: '', image: null, visible: true };
+    this.cdr.markForCheck();
+  }
+
+  onCloseModal(modal: string) {
+    this.modal.close(modal);
+  }
+
+  _updateVisibility = async () => {
+    await this.websiteService.updateVisibility({
+      aboutCompanyVisible: this.aboutCompanyVisible,
+      businessCardId: this.businessCardId
+    });
+  }
+
+  sanitizeHtml(content: any): any {
     if (!content) return '';
     return content.replace(/<[^>]*>/g, '');
   }
 
-  // Helper method to strip HTML tags for validation and search
-  stripHtml(html: string): string {
-    const tmp = document.createElement('DIV');
-    tmp.innerHTML = html;
-    return tmp.textContent || tmp.innerText || '';
+  // Add this method to handle title edit
+  editSectionTitle() {
+    this.modal.open('EditTitleModal');
   }
+
+  // Add this method to update section title
+  async updateSectionTitle() {
+    if (!this.sectionTitles.aboutCompany.trim()) {
+      swalHelper.showToast('Section title is required!', 'warning');
+      return;
+    }
+
+    this.isLoading = true;
+    try {
+      let businessCardId = this.storage.get(common.BUSINESS_CARD);
+      const data = {
+        businessCardId: businessCardId,
+        sectionTitles: {
+          aboutCompany: this.sectionTitles.aboutCompany
+        }
+      };
+
+      const result = await this.websiteService.updateSectionsTitles(data);
+      if (result) {
+        this.modal.close('EditTitleModal');
+        swalHelper.showToast('Section title updated successfully!', 'success');
+      }
+    } catch (error) {
+      console.error('Error updating section title: ', error);
+      swalHelper.showToast('Error updating section title!', 'error');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
 }

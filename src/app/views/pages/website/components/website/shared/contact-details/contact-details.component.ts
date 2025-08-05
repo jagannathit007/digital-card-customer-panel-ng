@@ -35,27 +35,33 @@ export class ContactDetailsComponent implements OnInit {
   selectedContact: any = null;
 
 
-  RegularRegex = RegularRegex; 
+  RegularRegex = RegularRegex;
   newContact = {
     email: '',
     phone: '',
     address: ''
   };
 
-  reset(){
+  reset() {
     this.newContact = {
       email: '',
       phone: '',
       address: ''
     };
+    this.selectedContactId = ""; // Reset selected contact ID
     this.fetchContacts()
   }
 
-  constructor(private storage: AppStorage, public authService: AuthService,public modal:ModalService,private websiteService:WebsiteBuilderService) { }
+  sectionTitles: any = {
+    contact: 'contact'
+  };
 
-  businessCardId:any
+
+  constructor(private storage: AppStorage, public authService: AuthService, public modal: ModalService, private websiteService: WebsiteBuilderService) { }
+
+  businessCardId: any
   async ngOnInit() {
-    this.businessCardId=this.storage.get(common.BUSINESS_CARD)
+    this.businessCardId = this.storage.get(common.BUSINESS_CARD)
     await this.fetchContacts();
   }
 
@@ -74,7 +80,12 @@ export class ContactDetailsComponent implements OnInit {
         };
 
         this.contacts = results.contact ? [...results.contact] : [];
-        this.contactVisible=results.contactVisible
+        this.contactVisible = results.contactVisible
+
+        if (results.sectionTitles) {
+          this.sectionTitles = results.sectionTitles;
+        }
+
       }
       this.filteredContacts = [...this.contacts];
       this.totalItems = this.contacts.length;
@@ -123,9 +134,9 @@ export class ContactDetailsComponent implements OnInit {
     const businessCardId = this.storage.get(common.BUSINESS_CARD);
 
     if (!businessCardId) {
-        console.error("Business Card ID not found!");
-        swalHelper.showToast("Business Card ID is missing!", "error");
-        return;
+      console.error("Business Card ID not found!");
+      swalHelper.showToast("Business Card ID is missing!", "error");
+      return;
     }
 
     let email = (document.getElementById('contactEmail') as HTMLInputElement).value.trim();
@@ -133,44 +144,49 @@ export class ContactDetailsComponent implements OnInit {
     let address = (document.getElementById('contactAddress') as HTMLTextAreaElement).value.trim();
 
     if (!email || !RegularRegex.email.test(email)) {
-        swalHelper.showToast("Please enter a valid email address!", "warning");
-        return;
-    }
-
-    if (!phone || !RegularRegex.phoneNo.test(phone)) {
-        swalHelper.showToast("Please enter a valid 10-digit phone number!", "warning");
-        return;
+      swalHelper.showToast("Please enter a valid email address!", "warning");
+      return;
     }
 
     if (!address || address.length < 5) {
-        swalHelper.showToast("Address must be at least 5 characters long!", "warning");
-        return;
+      swalHelper.showToast("Address must be at least 5 characters long!", "warning");
+      return;
     }
 
     const newContact = { email, phone, address };
 
     try {
-        let response = await this.authService.AddContactData(businessCardId, newContact);
+      let response = await this.authService.AddContactData(businessCardId, newContact);
 
-        if (response) {
-            swalHelper.showToast("Contact Added Successfully!", "success");
-            await this.fetchContacts();
-            this.modal.close('AddContactModal');
-            this.reset();
-        } else {
-            swalHelper.showToast("Failed to add contact!", "warning");
-        }
+      if (response) {
+        swalHelper.showToast("Contact Added Successfully!", "success");
+        await this.fetchContacts();
+        this.modal.close('AddContactModal');
+        this.reset();
+      } else {
+        swalHelper.showToast("Failed to add contact!", "warning");
+      }
     } catch (err) {
-        swalHelper.showToast("Error adding contact!", "error");
-        console.error("Error:", err);
+      swalHelper.showToast("Error adding contact!", "error");
+      console.error("Error:", err);
     }
-}
+  }
 
   async editContact(contact: any) {
     this.selectedContactId = contact._id;
+
+    // Populate the form with contact data
+    this.newContact = {
+      email: contact.email,
+      phone: contact.phone,
+      address: contact.address
+    };
+
+    // Open the modal
+    this.modal.open('AddContactModal');
   }
 
-  async updateContact() { 
+  async updateContact() {
     if (!this.selectedContactId) {
       swalHelper.showToast('No contact selected for update!', 'warning');
       return;
@@ -188,6 +204,16 @@ export class ContactDetailsComponent implements OnInit {
       phone: (document.getElementById('contactPhone') as HTMLInputElement).value.trim(),
       address: (document.getElementById('contactAddress') as HTMLTextAreaElement).value.trim()
     };
+
+    if (!updatedContact.email || !RegularRegex.email.test(updatedContact.email)) {
+      swalHelper.showToast("Please enter a valid email address!", "warning");
+      return;
+    }
+
+    if (!updatedContact.address || updatedContact.address.length < 5) {
+      swalHelper.showToast("Address must be at least 5 characters long!", "warning");
+      return;
+    }
 
     try {
       let response = await this.authService.updateContactData(businessCardId, this.selectedContactId, updatedContact);
@@ -208,28 +234,28 @@ export class ContactDetailsComponent implements OnInit {
   }
 
 
-  setSelectedContact=async(contact: any) =>{
+  setSelectedContact = async (contact: any) => {
     this.selectedContact = contact;
-    const confirm=await swalHelper.delete();
-      if(confirm.isConfirmed){
-        this.confirmDelete()
-      }
+    const confirm = await swalHelper.delete();
+    if (confirm.isConfirmed) {
+      this.confirmDelete()
+    }
   }
-  
+
   async confirmDelete() {
     if (!this.selectedContact) return;
-  
+
     const businessCardId = this.storage.get(common.BUSINESS_CARD);
     const contactId = this.selectedContact._id;
-  
+
     if (!businessCardId) {
       swalHelper.showToast('Business Card ID is missing!', 'error');
       return;
     }
-  
+
     try {
       let response = await this.authService.deleteContactData(businessCardId, contactId);
-  
+
       if (response) {
         swalHelper.success('Contact Deleted Successfully!');
         await this.fetchContacts();
@@ -240,20 +266,20 @@ export class ContactDetailsComponent implements OnInit {
       swalHelper.showToast('Error deleting contact!', 'error');
       console.error(err);
     }
-  
-  this.selectedContact = null;
 
-  let modalElement = document.getElementById('deleteContactModal');
-  if (modalElement) {
-    (modalElement as any).classList.remove('show');
-    (modalElement as any).setAttribute('aria-hidden', 'true');
-    (modalElement as any).setAttribute('style', 'display: none;');
+    this.selectedContact = null;
 
-    let backdrop = document.querySelector('.modal-backdrop');
-    if (backdrop) {
-      backdrop.remove();
+    let modalElement = document.getElementById('deleteContactModal');
+    if (modalElement) {
+      (modalElement as any).classList.remove('show');
+      (modalElement as any).setAttribute('aria-hidden', 'true');
+      (modalElement as any).setAttribute('style', 'display: none;');
+
+      let backdrop = document.querySelector('.modal-backdrop');
+      if (backdrop) {
+        backdrop.remove();
+      }
     }
-  }
 
   }
 
@@ -265,12 +291,52 @@ export class ContactDetailsComponent implements OnInit {
     this.p = event;
   }
 
-  onCloseModal(modal:string){
-    this.modal.close(modal)
+  onCloseModal(modal: string) {
+    this.modal.close(modal);
+    // Reset form when modal is closed
+    if (modal === 'AddContactModal') {
+      this.reset();
+    }
   }
 
-  contactVisible:boolean=false
-  _updateVisibility=async()=>{
-    await this.websiteService.updateVisibility({contactVisible:this.contactVisible,businessCardId:this.businessCardId})
+  contactVisible: boolean = false
+  _updateVisibility = async () => {
+    await this.websiteService.updateVisibility({ contactVisible: this.contactVisible, businessCardId: this.businessCardId })
   }
+
+    // Add this method to handle title edit
+  editSectionTitle() {
+    this.modal.open('EditTitleModal');
+  }
+
+  // Add this method to update section title
+  async updateSectionTitle() {
+    if (!this.sectionTitles.contact.trim()) {
+      swalHelper.showToast('Section title is required!', 'warning');
+      return;
+    }
+
+    this.isLoading = true;
+    try {
+      let businessCardId = this.storage.get(common.BUSINESS_CARD);
+      const data = {
+        businessCardId: businessCardId,
+        sectionTitles: {
+          contact: this.sectionTitles.contact
+        }
+      };
+
+      const result = await this.websiteService.updateSectionsTitles(data);
+      if (result) {
+        this.modal.close('EditTitleModal');
+        swalHelper.showToast('Section title updated successfully!', 'success');
+      }
+    } catch (error) {
+      console.error('Error updating section title: ', error);
+      swalHelper.showToast('Error updating section title!', 'error');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
 }

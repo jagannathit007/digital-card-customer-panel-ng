@@ -8,6 +8,7 @@ import { ModalService } from 'src/app/core/utilities/modal';
 import { BusinessCardService } from 'src/app/services/business-card.service';
 import { SharedService } from 'src/app/services/shared.service';
 import { SOCIAL_MEDIA_LINKS } from 'src/app/core/utilities/socialMedia';
+import { ConfigService } from 'src/app/services/config.service';
 
 @Component({
   selector: 'app-business-details',
@@ -16,7 +17,7 @@ import { SOCIAL_MEDIA_LINKS } from 'src/app/core/utilities/socialMedia';
 })
 export class BusinessDetailsComponent implements OnInit {
   baseURL = environment.imageURL;
-  homeURL = environment.baseURL;
+  homeURL = this.config.backendURL;
   newSocialMedia = { name: '', link: '', image: '' };
   socialMediaImage: File | undefined;
   socialMediaOptions = SOCIAL_MEDIA_LINKS;
@@ -24,8 +25,10 @@ export class BusinessDetailsComponent implements OnInit {
   businessCardID: any;
   profileImage: File | undefined;
   coverImage: File | undefined;
+  logoImage: File | undefined;
   profileImagePreview: string | undefined;
   coverImagePreview: string | undefined;
+  logoImagePreview: string | undefined;
   businessProfile: any;
   isEditMode: boolean = false;
   response: any;
@@ -36,7 +39,8 @@ export class BusinessDetailsComponent implements OnInit {
     public authService: AuthService,
     private modal: ModalService,
     private businessService: BusinessCardService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private config:ConfigService
   ) {
     this.getCards();
   }
@@ -80,6 +84,9 @@ export class BusinessDetailsComponent implements OnInit {
           }
           if (!this.coverImagePreview && this.businessProfile.image.coverImage) {
             this.coverImagePreview = this.baseURL + this.businessProfile.image.coverImage;
+          }
+          if (!this.logoImagePreview && this.businessProfile.image.logoImage) {
+            this.logoImagePreview = this.baseURL + this.businessProfile.image.logoImage;
           }
         } else {
           console.error('No card found with the given businessCardId:', businessCardId);
@@ -224,6 +231,18 @@ export class BusinessDetailsComponent implements OnInit {
     }
   }
 
+  onSelectlogoImage(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.logoImage = input.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.logoImagePreview = reader.result as string;
+      };
+      reader.readAsDataURL(this.logoImage);
+    }
+  }
+
   deleteSocial(index: number) {
     this.businessProfile.companySocialMedia.splice(index, 1);
   }
@@ -250,6 +269,10 @@ export class BusinessDetailsComponent implements OnInit {
         formData.append('coverImage', this.coverImage, this.coverImage.name);
       }
 
+      if (this.logoImage) {
+        formData.append('logoImage', this.logoImage, this.logoImage.name);
+      }
+
       let result = await this.authService.updateBusinessDetails(formData);
       if (result) {
         swalHelper.showToast('Business Details Updated Successfully!', 'success');
@@ -257,8 +280,10 @@ export class BusinessDetailsComponent implements OnInit {
         this.isEditMode = false;
         this.profileImage = undefined;
         this.coverImage = undefined;
+        this.logoImage = undefined;
         this.profileImagePreview = undefined; // Clear preview after successful submit
         this.coverImagePreview = undefined;   // Clear preview after successful submit
+        this.logoImagePreview = undefined;   // Clear preview after successful submit
         this.getCards(); // Refresh data to get updated images
       } else {
         swalHelper.showToast('Failed to update business details', 'error');

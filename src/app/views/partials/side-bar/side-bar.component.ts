@@ -28,7 +28,7 @@ export class SideBarComponent implements OnInit, AfterViewInit {
 
   teamMemberData: any;
 
-  whiteLabelName: string = environment.whiteLabelName;
+  whiteLabelName: string = '';
 
   constructor(
     public router: Router,
@@ -40,6 +40,10 @@ export class SideBarComponent implements OnInit, AfterViewInit {
     public appWorker: AppWorker
   ) {
     this.currentBcardId = this.storage.get(common.BUSINESS_CARD);
+    let result = this.storage.get("apps");
+    if (result != null) {
+      this.whiteLabelName = result.name;
+    }
   }
 
   async ngOnInit() {
@@ -100,6 +104,9 @@ export class SideBarComponent implements OnInit, AfterViewInit {
     if (confirm.isConfirmed) {
       // Preserve app_update_acknowledged before clearing
       const acknowledged = this.storage.get('app_update_acknowledged');
+      const apps = this.storage.get("apps");
+      this.storage.set('apps', apps);
+
       const businessCardId = this.storage.get(common.BUSINESS_CARD);
       if (!businessCardId) {
         window.location.href = '/teammember/login';

@@ -1,237 +1,316 @@
 <div>
-  <div class="row">
-    <div class="col-md">
-      <div class="d-flex">
-        <label class="fw-bold text-uppercase fs-3">About Company</label>
-        <app-toggle
-          [isActive]="aboutCompanyVisible"
-          [onText]="'Visible'"
-          [offText]="'Hidden'"
-          class="ms-2 mt-2"
-          (changed)="this.aboutCompanyVisible = !this.aboutCompanyVisible; _updateVisibility()"
-        ></app-toggle>
-      </div>
-    </div>
-    <div class="col-md-auto">
-      <button class="btn btn-info" (click)="onOpenaddAboutDetails()">
-        <i class="ri-add-circle-line"></i> Add
-      </button>
-    </div>
-  </div>
-
-  <div class="row mt-3">
-    <div class="col">
-      <span class="fw-semibold">Search</span>
-      <input
-        type="text"
-        class="form-control"
-        placeholder="Search..."
-        [(ngModel)]="searchTerm"
-        (input)="onSearch()"
-      />
-    </div>
-  </div>
-
-  <div class="table-responsive mt-4">
-    <table class="table table-bordered table-hover">
-      <thead class="bg-light text-uppercase">
-        <tr>
-          <th class="text-center" width="5%">#</th>
-          <th>Title</th>
-          <th>Description</th>
-          <th class="text-center">Status</th>
-          <th class="text-center" width="10%"><i class="ri-tools-fill"></i></th>
-        </tr>
-      </thead>
-      <tbody *ngIf="!isLoading && (filteredAboutCompanyList?.length ?? 0) > 0">
-        <tr *ngFor="let item of filteredAboutCompanyList; let i = index">
-          <td class="text-center">{{ i + 1 }}</td>
-          <td>
-            <div [innerHTML]="sanitizeHtml(item.title)" class="title-preview"></div>
-          </td>
-          <td>
-            <div
-              [innerHTML]="sanitizeHtml(item.description)"
-              class="description-preview"
-            ></div>
-          </td>
-          <td class="text-center">
-            <span
-              class="badge bg-{{ item.visible ? 'success' : 'warning' }}"
-            >
-              {{ (item.visible ? 'visible' : 'invisible') | titlecase }}
-            </span>
-          </td>
-          <td class="text-center">
-            <button
-              class="btn btn-info btn-sm"
-              (click)="onOpenUpdateModal(item)"
-            >
-              <i class="ri-edit-line"></i>
-            </button>
-            <button
-              class="btn btn-danger btn-sm ms-1"
-              (click)="_deleteAboutData(item._id)"
-            >
-              <i class="ri-delete-bin-line"></i>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-      <tbody *ngIf="isLoading">
-        <tr>
-          <td class="text-center" colspan="5">
-            <div
-              class="spinner-border spinner-border-sm text-secondary"
-              role="status"
-            >
-              <span class="visually-hidden">Loading...</span>
+    <div class="row">
+        <div class="col-md">
+            <div class="d-flex align-items-center">
+            <label class="fw-bold text-uppercase fs-3 me-2">{{ sectionTitles.aboutCompany || 'About Us' }}</label>
+            <button class="btn btn-sm text-white bg-primary me-2" (click)="editSectionTitle()" title="Edit Section Title">
+                <i class="ri-edit-line"></i>
+            </button>  
+                <app-toggle [isActive]="aboutCompanyVisible" [onText]="'Visible'" [offText]="'Hidden'" class="ms-2 mt-2"
+                    (changed)="this.aboutCompanyVisible=!this.aboutCompanyVisible;_updateVisibility()">
+                </app-toggle>
             </div>
-          </td>
-        </tr>
-      </tbody>
-      <tbody *ngIf="!isLoading && filteredAboutCompanyList?.length == 0">
-        <tr>
-          <td class="text-center" colspan="5">
-            <img
-              src="../../../../assets/images/NoRecordFound.png"
-              alt=""
-              style="width: 90px;"
-              class="tw-mx-auto"
-            />
-            <div class="fw-bold">No Records Found</div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+        </div>
+        <div class="col-md-auto">
+            <button class="btn btn-info" (click)="modal.open('AddAboutModal')">
+                <i class="ri-add-circle-line"></i> Add
+            </button>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col">
+            <span class="fw-semibold">Search</span>
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm"
+                (input)="onSearch()">
+        </div>
+        <div class="col-auto">
+            <span class="fw-semibold">Page</span>
+            <select class="form-select" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- About Items Table -->
+    <div class="table-responsive mt-4">
+        <table class="table table-bordered table-hover">
+            <thead class="table-light text-uppercase">
+                <tr>
+                    <th class="text-center" style="width: 5%;">No.</th>
+                    <th class="text-center" style="width: 10%;">Image</th>
+                    <th style="width: 20%;">Title</th>
+                    <th style="width: 45%;">Description</th>
+                    <th class="text-center">Visible</th>
+                    <th width="10%" class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Loading Spinner -->
+                <tr *ngIf="isLoading">
+                    <td class="text-center" colspan="6">
+                        <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- No About Items Found -->
+                <tr *ngIf="!isLoading && filteredAboutCompanyList.length === 0">
+                    <td class="text-center" colspan="6">No About Items Found</td>
+                </tr>
+
+                <!-- About Item Rows -->
+                <tr
+                    *ngFor="let item of filteredAboutCompanyList | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems }; let i = index">
+                    <td class="text-center">{{ (p - 1) * itemsPerPage + i + 1 }}</td>
+                    <td class="text-center">
+                        <img [src]="imageURL + item.image" class="img-fluid cursor-pointer"
+                            style="width: 40px; height: 40px; object-fit: cover; cursor: pointer;"
+                            *ngIf="item.image && item.image.length" data-bs-toggle="modal"
+                            data-bs-target="#imageModal" (click)="selectedImage = imageURL + item.image">
+                        <span *ngIf="!item.image || item.image.length === 0">No Image</span>
+                    </td>
+                    <td>
+                        <div [innerHTML]="sanitizeHtml(item.title)" class="description-preview"></div>
+                    </td>
+                    <td>
+                        <div [innerHTML]="sanitizeHtml(item.description)" class="description-preview"></div>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-{{item.visible?'success':'warning'}}">
+                            {{(item.visible?'visible':'invisible') | uppercase}}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-info me-1" (click)="editAboutItem(item)">
+                            <i class="ri-edit-box-line"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" (click)="prepareDeleteAboutItem(item._id)">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="text-end">
+        <pagination-controls (pageChange)="pageChangeEvent($event)" id="pager"></pagination-controls>
+    </div>
 </div>
 
-<div
-  class="modal fade"
-  id="add-about"
-  tabindex="-1"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  role="dialog"
-  aria-labelledby="modalTitleId"
-  aria-hidden="true"
->
-  <div
-    class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg"
-    role="document"
-  >
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title fw-bold" id="modalTitleId">
-          {{ payload._id == null ? 'Add' : 'Edit' }} About Details
-        </h4>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-          (click)="modal.close('add-about'); reset()"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <form #aboutForm="ngForm">
-          <div class="ms-2" *ngFor="let item of payload.addAboutData; let i = index">
-            <div class="row mb-4">
-              <div class="col-12">
-                <label for="aboutTitle{{ i }}" class="fw-semibold">Title</label>
-                <div class="form-control p-0 " style="height: auto;">
-                  <ngx-editor-menu
-                    [editor]="addTitleEditor"
-                    [toolbar]="toolbar"
-                  ></ngx-editor-menu>
-                  <ngx-editor
-                    [editor]="addTitleEditor"
-                    [(ngModel)]="item.title"
-                    name="aboutTitle{{ i }}"
-                    #aboutTitle="ngModel"
-                    placeholder="Enter the title..."
-                    [disabled]="false"
-                    required
-                  ></ngx-editor>
-                </div>
-                <div
-                  *ngIf="aboutTitle.invalid && aboutTitle.touched"
-                  class="text-danger"
-                >
-                  Title is required!
-                </div>
-              </div>
-
-              <div class="col-12 mt-3">
-                <label for="aboutDescription{{ i }}" class="fw-semibold"
-                  >Description</label
-                >
-                <div class="form-control p-0" style="height: auto;">
-                  <ngx-editor-menu
-                    [editor]="addEditor"
-                    [toolbar]="toolbar"
-                  ></ngx-editor-menu>
-                  <ngx-editor
-                    [editor]="addEditor"
-                    [(ngModel)]="item.description"
-                    name="aboutDescription{{ i }}"
-                    #aboutDescription="ngModel"
-                    placeholder="Enter the description..."
-                    [disabled]="false"
-                    required
-                  ></ngx-editor>
-                </div>
-                <div
-                  *ngIf="aboutDescription.invalid && aboutDescription.touched"
-                  class="text-danger"
-                >
-                  Description is required!
-                </div>
-              </div>
-
-              <div class="col-12 mt-3">
-                <label class="fw-semibold">Visibility</label>
-                <div>
-                  <app-toggle
-                    [isActive]="item.visible"
-                    [onText]="'Visible'"
-                    [offText]="'Hidden'"
-                    class="ms-3 mt-2"
-                    (changed)="item.visible = !item.visible"
-                  ></app-toggle>
-                </div>
-              </div>
-
-              <div class="col-1 mt-4" *ngIf="!payload._id">
-                <!-- <i
-                  *ngIf="i === 0"
-                  class="ri-add-circle-line fs-2 text-success"
-                  style="cursor: pointer;"
-                  (click)="onAddAboutData()"
-                ></i> -->
-                <i
-                  *ngIf="i !== 0"
-                  class="ri-delete-bin-line fs-2 text-danger"
-                  style="cursor: pointer;"
-                  (click)="onDelete(i)"
-                ></i>
-              </div>
+<!-- Add About Item Modal -->
+<div class="modal fade" id="AddAboutModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="AddAboutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fw-medium" id="AddAboutModalLabel">Add About Item</h4>
+                <button type="button" class="btn-close" aria-label="Close"
+                    (click)="onCloseModal('AddAboutModal')"></button>
             </div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-success"
-          (click)="_saveAboutData()"
-          [disabled]="aboutForm.invalid || isLoading"
-        >
-          <i class="ri-save-line"></i>
-          {{ isLoading ? 'Saving...' : 'Save' }}
-        </button>
-      </div>
+            <div class="modal-body">
+                <form #aboutForm="ngForm">
+                    <!-- About Title -->
+                    <div class="mb-3">
+                        <label for="aboutTitle" class="form-label">About Title</label>
+                        <div class="form-control p-0" style="height: auto;">
+                            <ngx-editor-menu [editor]="addTitleEditor" [toolbar]="toolbar"></ngx-editor-menu>
+                            <ngx-editor 
+                                [editor]="addTitleEditor" 
+                                [(ngModel)]="newAboutItem.title" 
+                                name="aboutTitle"
+                                #aboutTitle="ngModel"
+                                placeholder="Enter about title..."
+                                [disabled]="false"
+                                required>
+                            </ngx-editor>
+                        </div>
+                        <div *ngIf="aboutTitle.invalid && aboutTitle.touched" class="text-danger">
+                            About title is required!
+                        </div>
+                    </div>
+
+                    <!-- Visibility Toggle -->
+                    <div class="mb-3">
+                        <label class="form-label">Visibility</label>
+                        <div>
+                            <app-toggle 
+                                [isActive]="newAboutItem.visible" 
+                                [onText]="'Visible'" 
+                                [offText]="'Hidden'" 
+                                class="ms-3 mt-2"
+                                (changed)="newAboutItem.visible=!newAboutItem.visible">
+                            </app-toggle>
+                        </div>
+                    </div>
+
+                    <!-- Rich Text Description -->
+                    <div class="mb-3">
+                        <label for="aboutDescription" class="form-label">Description</label>
+                        <div class="form-control p-0" style="height: auto;">
+                            <ngx-editor-menu [editor]="addEditor" [toolbar]="toolbar"></ngx-editor-menu>
+                            <ngx-editor 
+                                [editor]="addEditor" 
+                                [(ngModel)]="newAboutItem.description" 
+                                name="aboutDescription"
+                                #aboutDescription="ngModel"
+                                placeholder="Enter about description..."
+                                [disabled]="false"
+                                >
+                            </ngx-editor>
+                        </div>
+                    </div>
+
+                    <!-- Image Upload -->
+                    <div class="mb-3">
+                        <label for="aboutImage" class="form-label">Upload Image</label>
+                        <input type="file" class="form-control" id="aboutImage" (change)="onFileChange($event)"
+                            accept="image/*">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" (click)="addAboutItem()"
+                    [disabled]="aboutForm.invalid || isLoading">
+                    <i class="ri-add-circle-line"></i> {{ isLoading ? 'Adding...' : 'Add About Item' }}
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
+</div>
+
+<!-- Edit About Item Modal -->
+<div class="modal fade" id="EditAboutModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog"
+    aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fw-medium" id="EditAboutModalLabel">Edit About Item</h4>
+                <button type="button" class="btn-close" aria-label="Close" (click)="onCloseModal('EditAboutModal')"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <!-- About Title -->
+                    <div class="mb-3">
+                        <label for="editAboutTitle" class="form-label">About Title</label>
+                        <div class="form-control p-0" style="height: auto;">
+                            <ngx-editor-menu [editor]="editTitleEditor" [toolbar]="toolbar"></ngx-editor-menu>
+                            <ngx-editor 
+                                [editor]="editTitleEditor" 
+                                [(ngModel)]="editingAboutItem.title" 
+                                name="editAboutTitle"
+                                placeholder="Enter about title..."
+                                [disabled]="false"
+                                required>
+                            </ngx-editor>
+                        </div>
+                    </div>
+
+                    <!-- Visibility Toggle -->
+                    <div class="mb-3">
+                        <label class="form-label">Visibility</label>
+                        <div>
+                            <app-toggle 
+                                [isActive]="editingAboutItem.visible" 
+                                [onText]="'Visible'" 
+                                [offText]="'Hidden'" 
+                                class="ms-3"
+                                (changed)="editingAboutItem.visible=!editingAboutItem.visible">
+                            </app-toggle>
+                        </div>
+                    </div>
+
+                    <!-- Rich Text Description -->
+                    <div class="mb-3">
+                        <label for="editAboutDescription" class="form-label">Description</label>
+                        <div class="form-control p-0" style="height: auto;">
+                            <ngx-editor-menu [editor]="editEditor" [toolbar]="toolbar"></ngx-editor-menu>
+                            <ngx-editor 
+                                [editor]="editEditor" 
+                                [(ngModel)]="editingAboutItem.description" 
+                                name="editAboutDescription"
+                                placeholder="Enter about description..."
+                                [disabled]="false"
+                                required>
+                            </ngx-editor>
+                        </div>
+                    </div>
+
+                    <!-- Current Image Display -->
+                    <div class="mb-3">
+                        <label for="editAboutImage" class="form-label">Current Image</label>
+                        <div *ngIf="editingAboutItem.currentImage && editingAboutItem.currentImage.length" class="mb-2">
+                            <img [src]="imageURL + editingAboutItem.currentImage" class="img-thumbnail"
+                                style="max-height: 100px; max-width: 100px;">
+                        </div>
+                        <div *ngIf="!editingAboutItem.currentImage || editingAboutItem.currentImage.length === 0"
+                            class="mb-2">
+                            <span class="text-muted">No current image</span>
+                        </div>
+                    </div>
+
+                    <!-- New Image Upload -->
+                    <div class="mb-3">
+                        <label for="editAboutImage" class="form-label">Upload New Image</label>
+                        <input type="file" class="form-control" id="editAboutImage"
+                            (change)="onEditFileChange($event)" accept="image/*">
+                        <small class="text-muted">Leave empty to keep the current image</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" (click)="updateAboutItem()" [disabled]="isLoading">
+                    <i class="ri-save-line"></i> {{ isLoading ? 'Saving...' : 'Save' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Preview Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img [src]="selectedImage" class="img-fluid rounded" style="max-width: 100%; max-height: 80vh;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Section Title Modal -->
+<div class="modal fade" id="EditTitleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="EditTitleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fw-medium" id="EditTitleModalLabel">Edit Section Title</h4>
+                <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('EditTitleModal')"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="sectionTitle" class="form-label">Section Title</label>
+                        <input type="text" class="form-control" id="sectionTitle" 
+                               placeholder="Enter section title" 
+                               [(ngModel)]="sectionTitles.aboutCompany" 
+                               name="sectionTitle" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" (click)="updateSectionTitle()" [disabled]="isLoading">
+                    <i class="ri-save-line"></i> {{ isLoading ? 'Saving...' : 'Save' }}
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

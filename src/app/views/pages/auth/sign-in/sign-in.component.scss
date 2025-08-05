@@ -1,439 +1,428 @@
-// .cleanWhite {
-//   background: white !important;
-// }
+.background-lines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
 
-// .card-style-left {
-//   min-width: 120px;
-//   padding-left: 10px;
-//   padding-right: 10px;
-//   padding-top: 8px;
-//   padding-bottom: 8px;
-//   margin-right: 3px;
-//   border-radius: 5px;
-//   cursor: pointer;
-//   border: 1px solid grey;
-// }
+.line {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
 
-// .card-style-right {
-//   min-width: 120px;
-//   padding-left: 10px;
-//   padding-right: 10px;
-//   padding-top: 8px;
-//   padding-bottom: 8px;
-//   margin-left: 3px;
-//   border-radius: 5px;
-//   cursor: pointer;
-//   border: 1px solid grey;
-// }
+.line-1 {
+    width: 200px;
+    height: 2px;
+    top: 20%;
+    left: 10%;
+    animation: rotateLine1 20s linear infinite;
+    transform-origin: center;
+}
 
-// .selected {
-//   color: white;
-//   background-color: #37506b;
-//   border: 1px solid #37506b;
-//   transition: all 0.3s;
-// }
+.line-2 {
+    width: 150px;
+    height: 2px;
+    top: 60%;
+    right: 15%;
+    animation: rotateLine2 15s linear infinite reverse;
+    transform-origin: center;
+}
 
-// .disable-focus:focus {
-//   box-shadow: none;
-// }
+.line-3 {
+    width: 100px;
+    height: 2px;
+    top: 80%;
+    left: 20%;
+    animation: rotateLine3 25s linear infinite;
+    transform-origin: center;
+}
 
+.line-4 {
+    width: 180px;
+    height: 2px;
+    top: 30%;
+    right: 30%;
+    animation: rotateLine4 18s linear infinite reverse;
+    transform-origin: center;
+}
 
-// input.ng-invalid.ng-touched {
-//   border: 1px solid #dd3444 !important;
-// }
+@keyframes rotateLine1 {
+    0% {
+        transform: rotate(0deg) translateX(20px);
+    }
 
-// select.ng-invalid.ng-touched {
-//   border: 1px solid #dd3444 !important;
-// }
+    100% {
+        transform: rotate(360deg) translateX(20px);
+    }
+}
 
-// .has-error {
-//   color: #dd3444 !important;
-//   font-size: 11px;
-// }
+@keyframes rotateLine2 {
+    0% {
+        transform: rotate(0deg) translateY(30px);
+    }
 
-// .resend{ cursor: pointer;}
+    100% {
+        transform: rotate(360deg) translateY(30px);
+    }
+}
 
+@keyframes rotateLine3 {
+    0% {
+        transform: rotate(0deg) translateX(-15px);
+    }
 
-        /* Animated Background Lines */
-        .background-lines {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
+    100% {
+        transform: rotate(360deg) translateX(-15px);
+    }
+}
 
-        .line {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-        }
+@keyframes rotateLine4 {
+    0% {
+        transform: rotate(0deg) translateY(-25px);
+    }
 
-        .line-1 {
-            width: 200px;
-            height: 2px;
-            top: 20%;
-            left: 10%;
-            animation: rotateLine1 20s linear infinite;
-            transform-origin: center;
-        }
+    100% {
+        transform: rotate(360deg) translateY(-25px);
+    }
+}
 
-        .line-2 {
-            width: 150px;
-            height: 2px;
-            top: 60%;
-            right: 15%;
-            animation: rotateLine2 15s linear infinite reverse;
-            transform-origin: center;
-        }
+/* Main Container */
+.main-container {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 
-        .line-3 {
-            width: 100px;
-            height: 2px;
-            top: 80%;
-            left: 20%;
-            animation: rotateLine3 25s linear infinite;
-            transform-origin: center;
-        }
+}
 
-        .line-4 {
-            width: 180px;
-            height: 2px;
-            top: 30%;
-            right: 30%;
-            animation: rotateLine4 18s linear infinite reverse;
-            transform-origin: center;
-        }
+/* Card Animations */
+.login-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: slideInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform-origin: center;
+    transition: all 0.3s ease;
+    max-width: 400px;
+    width: 100%;
+    z-index: 2;
+}
 
-        @keyframes rotateLine1 {
-            0% { transform: rotate(0deg) translateX(20px); }
-            100% { transform: rotate(360deg) translateX(20px); }
-        }
+.login-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
 
-        @keyframes rotateLine2 {
-            0% { transform: rotate(0deg) translateY(30px); }
-            100% { transform: rotate(360deg) translateY(30px); }
-        }
+@keyframes slideInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
 
-        @keyframes rotateLine3 {
-            0% { transform: rotate(0deg) translateX(-15px); }
-            100% { transform: rotate(360deg) translateX(-15px); }
-        }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
 
-        @keyframes rotateLine4 {
-            0% { transform: rotate(0deg) translateY(-25px); }
-            100% { transform: rotate(360deg) translateY(-25px); }
-        }
+/* Logo Animation */
+.logo-container {
+    animation: bounceIn 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.3s both;
+}
 
-        /* Main Container */
-        .main-container {
-            position: relative;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3) rotate(-45deg);
+    }
 
-        }
+    50% {
+        opacity: 1;
+        transform: scale(1.05) rotate(5deg);
+    }
 
-        /* Card Animations */
-        .login-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            animation: slideInUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            transform-origin: center;
-            transition: all 0.3s ease;
-            max-width: 400px;
-            width: 100%;
-            z-index: 2;
-        }
+    70% {
+        transform: scale(0.9) rotate(-2deg);
+    }
 
-        .login-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-        }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
 
-        @keyframes slideInUp {
-            0% {
-                opacity: 0;
-                transform: translateY(30px) scale(0.95);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
+.logo-image {
+    width: 110px;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
 
-        /* Logo Animation */
-        .logo-container {
-            animation: bounceIn 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.3s both;
-        }
+.logo-image:hover {
+    transform: rotate(5deg) scale(1.05);
+}
 
-        @keyframes bounceIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.3) rotate(-45deg);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.05) rotate(5deg);
-            }
-            70% {
-                transform: scale(0.9) rotate(-2deg);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) rotate(0deg);
-            }
-        }
+/* Title Animation */
+.title {
+    animation: fadeInDown 0.8s ease 0.5s both;
+    color: #2c3e50;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
 
-        .logo-image {
-            width: 110px;
-            height: 110px;
-            object-fit: cover;
-            border-radius: 15px;
-            transition: all 0.3s ease;
-        }
+@keyframes fadeInDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
 
-        .logo-image:hover {
-            transform: rotate(5deg) scale(1.05);
-        }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-        /* Title Animation */
-        .title {
-            animation: fadeInDown 0.8s ease 0.5s both;
-            color: #2c3e50;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
+/* Subtitle Animation */
+.subtitle {
+    animation: fadeInDown 0.8s ease 0.7s both;
+    color: #7f8c8d;
+}
 
-        @keyframes fadeInDown {
-            0% {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+/* Form Animation */
+.form-container {
+    animation: fadeInUp 0.8s ease 0.6s both;
+}
 
-        /* Subtitle Animation */
-        .subtitle {
-            animation: fadeInDown 0.8s ease 0.7s both;
-            color: #7f8c8d;
-        }
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
 
-        /* Form Animation */
-        .form-container {
-            animation: fadeInUp 0.8s ease 0.6s both;
-        }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-        @keyframes fadeInUp {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+/* Input Field Styling */
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
 
-        /* Input Field Styling */
-        .form-group {
-            margin-bottom: 20px;
-            position: relative;
-        }
+.form-label {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    display: block;
+    font-size: 0.9rem;
+}
 
-        .form-label {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 8px;
-            display: block;
-            font-size: 0.9rem;
-        }
+.form-control {
+    border: 2px solid #e0e6ed;
+    border-radius: 10px;
+    padding: 10px 15px;
+    font-size: .8rem;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+}
 
-        .form-control {
-            border: 2px solid #e0e6ed;
-            border-radius: 12px;
-            padding: 15px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.9);
-        }
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    background: white;
+    transform: translateY(-2px);
+}
 
-        .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-            background: white;
-            transform: translateY(-2px);
-        }
+.form-control:hover {
+    border-color: #667eea;
+    transform: translateY(-1px);
+}
 
-        .form-control:hover {
-            border-color: #667eea;
-            transform: translateY(-1px);
-        }
+/* Password Toggle */
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #7f8c8d;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
 
-        /* Password Toggle */
-        .password-toggle {
-            position: absolute;
-            top: 50%;
-            right: 15px;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #7f8c8d;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-        }
+.password-toggle:hover {
+    color: #667eea;
+    transform: translateY(-50%) scale(1.1);
+}
 
-        .password-toggle:hover {
-            color: #667eea;
-            transform: translateY(-50%) scale(1.1);
-        }
+/* Button Styling */
+.btn-login {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
 
-        /* Button Styling */
-        .btn-login {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 12px;
-            padding: 15px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: white;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
+.btn-login::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
 
-        .btn-login::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
+.btn-login:hover::before {
+    left: 100%;
+}
 
-        .btn-login:hover::before {
-            left: 100%;
-        }
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
 
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
+.btn-login:active {
+    transform: translateY(0);
+}
 
-        .btn-login:active {
-            transform: translateY(0);
-        }
+.btn-login:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
 
-        .btn-login:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
+/* Error Styling */
+.error-message {
+    color: #e74c3c;
+    font-size: 0.75rem;
+    margin-top: 5px;
+    animation: shake 0.5s ease-in-out;
+}
 
-        /* Error Styling */
-        .error-message {
-            color: #e74c3c;
-            font-size: 0.75rem;
-            margin-top: 5px;
-            animation: shake 0.5s ease-in-out;
-        }
+@keyframes shake {
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
+    0%,
+    100% {
+        transform: translateX(0);
+    }
 
-        .form-control.error {
-            border-color: #e74c3c;
-            animation: shake 0.5s ease-in-out;
-        }
+    25% {
+        transform: translateX(-5px);
+    }
 
-        /* Footer */
-        .footer {
-            animation: fadeIn 1s ease 1s both;
-            margin-top: 30px;
-        }
+    75% {
+        transform: translateX(5px);
+    }
+}
 
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
+.form-control.error {
+    border-color: #e74c3c;
+    animation: shake 0.5s ease-in-out;
+}
 
-        .footer a {
-            color: rgba(255, 255, 255, 0.9);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
+/* Footer */
+.footer {
+    animation: fadeIn 1s ease 1s both;
+    margin-top: 30px;
+}
 
-        .footer a:hover {
-            color: white;
-            transform: translateY(-1px);
-        }
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .main-container {
-                padding: 15px;
-            }
-            
-            .login-card {
-                margin: 0 10px;
-                border-radius: 15px;
-            }
-            
-            .logo-image {
-                width: 80px;
-                height: 80px;
-            }
-            
-            .title {
-                font-size: 1.5rem;
-            }
-            
-            .form-control {
-                padding: 12px;
-            }
-            
-            .btn-login {
-                padding: 12px;
-                font-size: 1rem;
-            }
-            
-            .line-1, .line-2, .line-3, .line-4 {
-                width: 100px;
-            }
-        }
+    100% {
+        opacity: 1;
+    }
+}
 
-        @media (max-width: 480px) {
-            .login-card {
-                margin: 0 5px;
-                border-radius: 12px;
-            }
-            
-            .logo-image {
-                width: 70px;
-                height: 70px;
-            }
-            
-            .title {
-                font-size: 1.3rem;
-            }
-            
-            .line-1, .line-2, .line-3, .line-4 {
-                width: 80px;
-            }
-        }
+.footer a {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
 
+.footer a:hover {
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 15px;
+    }
+
+    .login-card {
+        margin: 0 10px;
+        border-radius: 15px;
+    }
+
+    .logo-image {
+        width: 80px;
+        height: 80px;
+    }
+
+    .title {
+        font-size: 1.5rem;
+    }
+
+    .form-control {
+        padding: 8px;
+    }
+
+    .btn-login {
+        padding: 12px;
+        font-size: 1rem;
+    }
+
+    .line-1,
+    .line-2,
+    .line-3,
+    .line-4 {
+        width: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-card {
+        margin: 0 5px;
+        border-radius: 12px;
+    }
+
+    .logo-image {
+        width: 70px;
+        height: 70px;
+    }
+
+    .title {
+        font-size: 1.3rem;
+    }
+
+    .line-1,
+    .line-2,
+    .line-3,
+    .line-4 {
+        width: 80px;
+    }
+}

@@ -1,0 +1,265 @@
+<div class="container-fluid">
+  <div class="row mb-4">
+    <div class="col-4">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="fw-bold m-0 p-0" style="color: #222e3c">
+            {{ isEditMode ? 'Edit Office' : 'Add Office' }}
+          </h3>
+          <div style="font-size: 12px" class="text-danger mb-4">
+            Add the details carefully
+          </div>
+
+          <!-- Office Form -->
+          <form ngNativeValidate (ngSubmit)="onSaveOffice()">
+            <div class="form-group mb-3">
+              <label>Name</label>
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                [(ngModel)]="form.office.name"
+                [ngModelOptions]="{ standalone: true }"
+                required
+              />
+            </div>
+
+            <div class="form-group mb-3">
+              <label>Address</label>
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                [(ngModel)]="form.office.address"
+                [ngModelOptions]="{ standalone: true }"
+                required
+              />
+            </div>
+
+            <div class="form-group mb-3">
+              <label>Latitude</label>
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                [(ngModel)]="form.office.lat"
+                [ngModelOptions]="{ standalone: true }"
+                required
+              />
+            </div>
+
+            <div class="form-group mb-3">
+              <label>Longitude</label>
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                [(ngModel)]="form.office.long"
+                [ngModelOptions]="{ standalone: true }"
+                required
+              />
+            </div>
+
+            <div class="form-group mb-3">
+              <label>Radius</label>
+              <input
+                type="text"
+                class="form-control form-control-lg"
+                [(ngModel)]="form.office.radius"
+                [ngModelOptions]="{ standalone: true }"
+                required
+              />
+            </div>
+
+            <div class="form-group mb-3">
+              <label>Status</label>
+              <select
+                class="form-control form-control-lg"
+                [(ngModel)]="form.office.isActive"
+                [ngModelOptions]="{ standalone: true }"
+                required
+              >
+                <option [value]="true">Active</option>
+                <option [value]="false">Inactive</option>
+              </select>
+            </div>
+
+            <div>
+              <button class="btn btn-success" type="submit">
+                {{ isEditMode ? 'Update' : 'Save' }}
+              </button>
+              <button
+                class="btn btn-dark ms-3"
+                type="button"
+                (click)="onReset()"
+              >
+                {{ isEditMode ? 'Cancel' : 'Reset' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="col-8">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <h3 class="fw-bold" style="color: #222e3c">
+                Office List
+              </h3>
+            </div>
+          </div>
+
+          <div class="row mt-3">
+            <div class="col-md">
+              <span class="fw-semibold">Search</span>
+              <input
+                type="text"
+                class="form-control"
+                [(ngModel)]="searchText"
+                (ngModelChange)="onSearch()"
+                placeholder="Search by Name, Address"
+              />
+            </div>
+          </div>
+
+          <div class="table-responsive mt-3">
+            <div *ngIf="!isLoading && filteredOffices.length === 0" class="text-center py-5 bg-light rounded-3 shadow-sm">
+            <i class="ri-user-unfollow-line fs-1 text-muted mb-3"></i>
+            <h4 class="fw-semibold text-dark">No Offices Available</h4>
+            <p class="text-muted small mt-2">Start by adding a new office to the system.</p>
+          </div>
+            <table class="table table-bordered table-hover" *ngIf="filteredOffices.length > 0">
+              <thead class="table-light text-uppercase">
+                <tr>
+                  <th class="text-center" [width]="'5%'">#</th>
+                  <th [width]="'20%'">Name</th>
+                  <th [width]="'25%'">Address</th>
+                  <th [width]="'15%'">Latitude</th>
+                  <th [width]="'15%'">Longitude</th>
+                  <th [width]="'10%'">Radius</th>
+                  <th class="text-center" [width]="'10%'">Status</th>
+                  <th class="text-center" [width]="'15%'">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for(office of filteredOffices; track office; let i = $index){
+                <tr>
+                  <td class="text-center">{{ i + 1 }}</td>
+                  <td>{{ office.name }}</td>
+                  <td>{{ office.address }}</td>
+                  <td>{{ office.lat }}</td>
+                  <td>{{ office.long }}</td>
+                  <td>{{ office.radius }}</td>
+                  <td class="text-center">
+                    <span class="badge" [class.bg-success]="office.isActive" [class.bg-danger]="!office.isActive">
+                      {{ office.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                  </td>
+                  <td class="text-center d-flex gap-2">
+                    <button
+                      class="btn btn-sm btn-outline-success"
+                      (click)="onViewEmployees(office)"
+                      title="View Employees"
+                    >
+                      <i class="ri-group-line"></i>
+                    </button>
+                    <button
+                      class="btn btn-sm btn-outline-primary"
+                      (click)="onEditOffice(office)"
+                      title="Edit Office"
+                    >
+                      <i class="ri-edit-fill"></i>
+                    </button>
+                    <button
+                      class="btn btn-sm btn-outline-danger"
+                      (click)="onDeleteOffice(office._id)"
+                      title="Delete Office"
+                    >
+                      <i class="ri-delete-bin-line"></i>
+                    </button>
+                  </td>
+                </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Employees Modal -->
+  <div class="modal fade" id="employeesModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl" role="document">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-light border-bottom">
+          <div class="d-flex align-items-center">
+            <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+              <i class="ri-group-line text-primary fs-4"></i>
+            </div>
+            <div>
+              <h4 class="modal-title mb-1 fw-semibold text-dark">Employees in {{ selectedOffice?.name }}</h4>
+              <small class="text-muted">View employees for this office</small>
+            </div>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div *ngIf="!isLoading && employees.length === 0" class="text-center py-5 bg-light rounded-3 shadow-sm">
+            <i class="ri-user-unfollow-line fs-1 text-muted mb-3"></i>
+            <h4 class="fw-semibold text-dark">No Employees Available</h4>
+            <p class="text-muted small mt-2">Start by adding a new employee to the system.</p>
+            <!-- <button
+              type="button"
+              class="btn btn-primary mt-3 rounded-2 px-4"
+              (click)="onReset()"
+            >
+              Add Employee
+            </button> -->
+          </div>
+        <div class="modal-body p-0" *ngIf="employees.length > 0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="border-0 py-3 px-4 fw-semibold text-dark">Name</th>
+                  <th class="border-0 py-3 px-4 fw-semibold text-dark">Email</th>
+                  <th class="border-0 py-3 px-4 fw-semibold text-dark">Designation</th>
+                  <th class="border-0 py-3 px-4 fw-semibold text-dark text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let employee of employees" class="border-bottom">
+                  <td class="py-3 px-4">
+                    <div class="d-flex align-items-center">
+                      <img
+                        *ngIf="employee.profileImg"
+                        [src]="profileImageBaseUrl + employee.profileImg"
+                        alt="Profile Image"
+                        class="img-thumbnail rounded-circle me-2"
+                        style="width: 40px; height: 40px; object-fit: cover"
+                      />
+                      <div *ngIf="!employee.profileImg" class="default-avatar me-2">
+                        {{ getInitials(employee.name) }}
+                      </div>
+                      <div>{{ employee.name }}</div>
+                    </div>
+                  </td>
+                  <td class="py-3 px-4">{{ employee.emailId }}</td>
+                  <td class="py-3 px-4">{{ employee.designation }}</td>
+                  <td class="py-3 px-4 text-center">
+                    <span class="badge" [class.bg-success]="employee.isActive" [class.bg-danger]="!employee.isActive">
+                      {{ employee.isActive ? 'Active' : 'Inactive' }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer bg-light border-top">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            <i class="ri-close-line me-2"></i>Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

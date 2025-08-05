@@ -16,7 +16,11 @@ import { ContactDetailsComponent } from './components/website/shared/contact-det
 
 import { ProductsEnquiryComponent } from './components/website/shared/products-enquiry/products-enquiry.component';
 import { GetinTouchEnquiryComponent } from './components/website/shared/getin-touch-enquiry/getin-touch-enquiry.component';
-import { OurCertificateComponent } from './components/website/shared/our-certificate/our-certificate.component';
+import { OurCertificatesComponent } from './components/website/shared/our-certificate/our-certificate.component';
+import { OurTrustComponent } from './components/website/shared/our-trust/our-trust.component';
+import { FaqComponent } from './components/website/shared/faq/faq.component';
+import { BlogsComponent } from './components/website/shared/blogs/blogs.component';
+import { ThemeColorComponent } from './components/website/shared/theme-color/theme-color.component';
 
 import { RouterModule } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
@@ -43,7 +47,11 @@ import { NgxEditorModule } from 'ngx-editor';
     ContactDetailsComponent,
     ProductsEnquiryComponent,
     GetinTouchEnquiryComponent,
-    OurCertificateComponent,
+    OurCertificatesComponent,
+    OurTrustComponent,
+    FaqComponent,
+    BlogsComponent,
+    ThemeColorComponent
   ],
   imports: [
     CommonModule,

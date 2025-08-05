@@ -348,7 +348,13 @@ export class SideBarService {
     public authService: AuthService,
     public taskMemberAuthService: TaskMemberAuthService,
     private storage: AppStorage
-  ) {}
+  ) {
+    let userData = this.storage.get(common.USER_DATA);
+    if (userData != null) {
+      this.isAdminLogin = userData.emailId == 'info@itfuturz.com';
+      // this.isAdminLogin = (userData.emailId == "dgr@gmail.com");
+    }
+  }
 
   autoExpandTaskManagement(menus: any[]): void {
   // Find Task Management menu index and auto-expand it
@@ -396,7 +402,6 @@ export class SideBarService {
             { title: 'My Day', link: 'task-management/personal-task/my-day', icon: 'aperture' },
             { title: 'Next 7 Days', link: 'task-management/personal-task/next-seven-days', icon: 'calendar' },
             { title: 'My Calendar', link: 'task-management/personal-task/mycalendar', icon: 'calendar' },
-            // TODO : uncomment below line
             { title: 'All Tasks', link: 'task-management/personal-task/all', icon: 'codesandbox' },
             { title: 'Team Report', link: 'task-management/team-report', icon: 'pie-chart' },
           ],
@@ -438,7 +443,7 @@ export class SideBarService {
 
     const googleReviewMenu = {
       title: 'Google Review',
-      link: 'google-standee',
+      link: 'google-reviews',
       icon: 'star',
     };
 
@@ -460,6 +465,30 @@ export class SideBarService {
       icon: 'user',
     };
 
+    // const taskManagementMenu = {
+    //   title: 'Task Management',
+    //   link: 'task-management',
+    //   icon: 'file-text',
+    // };
+
+    const attendanceManagementMenu = {
+      title: 'Attendance',
+      link: 'attendance',
+      icon: 'users',
+    };
+
+    const officeMenu = {
+      title: 'Office',
+      link: 'offices',
+      icon: 'users',
+    };
+
+    const employeeMenu = {
+      title: 'Employee',
+      link: 'employees',
+      icon: 'users',
+    };
+
     const hasDigitalOrNFC = products.some(
       (product) => product === 'digital-card' || product === 'nfc-card'
     );
@@ -476,6 +505,10 @@ export class SideBarService {
       (product) => product === 'task-management'
     );
 
+    const hasAttendance = products.some(
+      (product) => product === 'attendance-management'
+    );
+
     let menus = [];
 
     menus.push(customerMenu);
@@ -486,9 +519,44 @@ export class SideBarService {
     }
 
     if (hasWebsiteDetails && currentBcardId) {
-      const websiteDetails = await this.authService.getWebsiteDetails(currentBcardId);
-      if (websiteDetails.websiteVisible === true) {
-        menus.splice(menus.length - 1, 0, websiteDetailsMenu);
+      const websiteDetails = await this.authService.getWebsiteDetails(
+        currentBcardId
+      );
+      // if (websiteDetails?.websiteVisible === true) {
+      menus.splice(menus.length - 1, 0, websiteDetailsMenu);
+      // }
+    }
+    if (hasTaskManagement) {
+      menus.splice(menus.length - 1, 0, taskManagementMenu);
+    }
+
+    if (hasAttendance) {
+      menus.splice(menus.length - 1, 0, attendanceManagementMenu);
+      menus.splice(menus.length - 1, 0, officeMenu);
+      menus.splice(menus.length - 1, 0, employeeMenu);
+    }
+
+    if (this.isAdminLogin) {
+      //has attendance review
+      let hasAttendance = menus.filter(
+        (e) => e.title == attendanceManagementMenu.title
+      );
+      if (hasAttendance.length == 0) {
+        menus.splice(menus.length - 1, 0, attendanceManagementMenu);
+      }
+
+      //has task management
+      // let hasTask = menus.filter((e)=> e.title == taskManagementMenu.title);
+      // if(hasTask.length == 0){
+      //   menus.splice(menus.length - 1, 0, taskManagementMenu);
+      // }
+
+      //has google review
+      let hasGoogleReview = menus.filter(
+        (e) => e.title == googleReviewMenu.title
+      );
+      if (hasGoogleReview.length == 0) {
+        menus.splice(menus.length - 1, 0, googleReviewMenu);
       }
     }
 
@@ -496,9 +564,9 @@ export class SideBarService {
       menus.splice(menus.length - 1, 0, googleReviewMenu);
     }
 
-    if (hasTaskManagement) {
-      menus.splice(menus.length - 1, 0, taskManagementMenu);
-    }
+    // if (hasTaskManagement) {
+    //   menus.splice(menus.length - 1, 0, taskManagementMenu);
+    // }
 
     return [
       {
@@ -507,6 +575,8 @@ export class SideBarService {
       },
     ];
   }
+
+  isAdminLogin: boolean = false;
 
   isMobile: boolean = false;
   activeSubMenuIndex: number | null = null;

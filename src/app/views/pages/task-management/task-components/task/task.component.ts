@@ -148,7 +148,7 @@ export class TaskComponent implements OnInit, OnDestroy {
     this.socketService.onBoardUpdate().subscribe((data) => {
       console.log('data from sockets : ', data);
 
-      const isMember = data.updates.mentionedMembers.includes(
+      const isMember = data.updates?.mentionedMembers?.includes(
         this.TaskPermissionsService.getCurrentUser()._id
       );
 

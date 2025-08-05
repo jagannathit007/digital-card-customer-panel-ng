@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit {
   showError: boolean = false;
   showLoginForm: boolean = false;
   errorMessage: string = '';
-  whiteLabelName = environment.whiteLabelName;
+  whiteLabelName = "";
   emailId = 'info@itfuturz.com';
   isPassword: boolean = false;
   token: string | null = null;
@@ -60,6 +60,14 @@ export class LoginComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
+    let data = await this.authService.getRawInformation();
+    console.log('data : ', data);
+    if(data!=null){
+      this.storage.set("apps", data);
+      this.whiteLabelName = data.name;
+      this.emailId = data.emailId;
+    }
+
     this.token = this.route.snapshot.paramMap.get('token');
 
     if (this.token) {

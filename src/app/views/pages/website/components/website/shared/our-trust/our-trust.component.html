@@ -1,0 +1,269 @@
+<div>
+    <div class="row">
+        <div class="col-md">
+            <div class="d-flex align-items-center">
+            <label class="fw-bold text-uppercase fs-3 me-2">{{ sectionTitles.ourlinks || 'ourlinks List' }}</label>
+            <button class="btn btn-sm text-white bg-primary me-2" (click)="editSectionTitle()" title="Edit Section Title">
+                <i class="ri-edit-line"></i>
+            </button>  
+                <app-toggle [isActive]="ourlinksVisible" [onText]="'Visible'" [offText]="'Hidden'" class="ms-2 mt-2"
+                    (changed)="this.ourlinksVisible=!this.ourlinksVisible;_updateVisibility()">
+                </app-toggle>
+            </div>
+        </div>
+        <div class="col-md-auto">
+            <button class="btn btn-info" (click)="modal.open('AddTrustModal')">
+                <i class="ri-add-circle-line"></i> Add Link
+            </button>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col">
+            <span class="fw-semibold">Search</span>
+            <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchTerm"
+                (input)="onSearch()">
+        </div>
+        <div class="col-auto">
+            <span class="fw-semibold">Page</span>
+            <select class="form-select" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Trust Links Table -->
+    <div class="table-responsive mt-4">
+        <table class="table table-bordered table-hover">
+            <thead class="table-light text-uppercase">
+                <tr>
+                    <th class="text-center" style="width: 5%;">No.</th>
+                    <th class="text-center" style="width: 15%;">Image</th>
+                    <th style="width: 65%;">Link</th>
+                    <th class="text-center">Visible</th>
+                    <th width="10%" class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Loading Spinner -->
+                <tr *ngIf="isLoading">
+                    <td class="text-center" colspan="5">
+                        <div class="spinner-border spinner-border-sm text-secondary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- No Trust Links Found -->
+                <tr *ngIf="!isLoading && filteredTrustLinks.length === 0">
+                    <td class="text-center" colspan="5">No Trust Links Found</td>
+                </tr>
+
+                <!-- Trust Link Rows -->
+                <tr
+                    *ngFor="let trust of filteredTrustLinks | paginate: { id: 'pager', itemsPerPage: itemsPerPage, currentPage: p, totalItems: totalItems }; let i = index">
+                    <td class="text-center">{{ (p - 1) * itemsPerPage + i + 1 }}</td>
+                    <td class="text-center">
+                        <img [src]="imageURL + trust.image" class="img-fluid cursor-pointer"
+                            style="width: 60px; height: 60px; object-fit: cover; cursor: pointer;"
+                            *ngIf="trust.image && trust.image.length" data-bs-toggle="modal"
+                            data-bs-target="#imageModal" (click)="selectedImage = imageURL + trust.image">
+                        <span *ngIf="!trust.image || trust.image.length === 0">No Image</span>
+                    </td>
+                    <td>
+                        <a [href]="trust.link" target="_blank" class="text-decoration-none">
+                            {{ trust.link }}
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-{{trust.visible?'success':'warning'}}">
+                            {{(trust.visible?'visible':'invisible') | uppercase}}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-info me-1" (click)="editTrustLink(trust)">
+                            <i class="ri-edit-box-line"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" (click)="prepareDeleteTrustLink(trust._id)">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="text-end">
+        <pagination-controls (pageChange)="pageChangeEvent($event)" id="pager"></pagination-controls>
+    </div>
+</div>
+
+<!-- Add Trust Link Modal -->
+<div class="modal fade" id="AddTrustModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="AddTrustModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fw-medium" id="AddTrustModalLabel">Add Trust Link</h4>
+                <button type="button" class="btn-close" aria-label="Close"
+                    (click)="onCloseModal('AddTrustModal')"></button>
+            </div>
+            <div class="modal-body">
+                <form #trustForm="ngForm">
+                    <!-- Trust Link -->
+                    <div class="mb-3">
+                        <label for="trustLink" class="form-label">Trust Link URL</label>
+                        <input type="url" class="form-control" id="trustLink" 
+                            [(ngModel)]="newTrustLink.link" 
+                            name="trustLink"
+                            #trustLinkInput="ngModel"
+                            placeholder="https://example.com"
+                            required>
+                        <div *ngIf="trustLinkInput.invalid && trustLinkInput.touched" class="text-danger">
+                            Trust link is required!
+                        </div>
+                    </div>
+
+                    <!-- Visibility Toggle -->
+                    <div class="mb-3">
+                        <label class="form-label">Visibility</label>
+                        <div>
+                            <app-toggle 
+                                [isActive]="newTrustLink.visible" 
+                                [onText]="'Visible'" 
+                                [offText]="'Hidden'" 
+                                class="ms-3 mt-2"
+                                (changed)="newTrustLink.visible=!newTrustLink.visible">
+                            </app-toggle>
+                        </div>
+                    </div>
+
+                    <!-- Image Upload -->
+                    <div class="mb-3">
+                        <label for="trustImage" class="form-label">Upload Image</label>
+                        <input type="file" class="form-control" id="trustImage" (change)="onFileChange($event)"
+                            accept="image/*">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" (click)="addTrustLink()"
+                    [disabled]="trustForm.invalid || isLoading">
+                    <i class="ri-add-circle-line"></i> {{ isLoading ? 'Adding...' : 'Add Trust Link' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Trust Link Modal -->
+<div class="modal fade" id="EditTrustModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" role="dialog"
+    aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fw-medium" id="EditTrustModalLabel">Edit Trust Link</h4>
+                <button type="button" class="btn-close" aria-label="Close" (click)="onCloseModal('EditTrustModal')"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <!-- Trust Link -->
+                    <div class="mb-3">
+                        <label for="editTrustLink" class="form-label">Trust Link URL</label>
+                        <input type="url" class="form-control" id="editTrustLink" 
+                            [(ngModel)]="editingTrustLink.link" 
+                            name="editTrustLink"
+                            placeholder="https://example.com"
+                            required>
+                    </div>
+
+                    <!-- Visibility Toggle -->
+                    <div class="mb-3">
+                        <label class="form-label">Visibility</label>
+                        <div>
+                            <app-toggle 
+                                [isActive]="editingTrustLink.visible" 
+                                [onText]="'Visible'" 
+                                [offText]="'Hidden'" 
+                                class="ms-3"
+                                (changed)="editingTrustLink.visible=!editingTrustLink.visible">
+                            </app-toggle>
+                        </div>
+                    </div>
+
+                    <!-- Current Image Display -->
+                    <div class="mb-3">
+                        <label for="editTrustImage" class="form-label">Current Image</label>
+                        <div *ngIf="editingTrustLink.currentImage && editingTrustLink.currentImage.length" class="mb-2">
+                            <img [src]="imageURL + editingTrustLink.currentImage" class="img-thumbnail"
+                                style="max-height: 100px; max-width: 100px;">
+                        </div>
+                        <div *ngIf="!editingTrustLink.currentImage || editingTrustLink.currentImage.length === 0"
+                            class="mb-2">
+                            <span class="text-muted">No current image</span>
+                        </div>
+                    </div>
+
+                    <!-- New Image Upload -->
+                    <div class="mb-3">
+                        <label for="editTrustImage" class="form-label">Upload New Image</label>
+                        <input type="file" class="form-control" id="editTrustImage"
+                            (change)="onEditFileChange($event)" accept="image/*">
+                        <small class="text-muted">Leave empty to keep the current image</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" (click)="updateTrustLink()" [disabled]="isLoading">
+                    <i class="ri-save-line"></i> {{ isLoading ? 'Saving...' : 'Save' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Preview Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img [src]="selectedImage" class="img-fluid rounded" style="max-width: 100%; max-height: 80vh;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Section Title Modal -->
+<div class="modal fade" id="EditTitleModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="EditTitleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title fw-medium" id="EditTitleModalLabel">Edit Section Title</h4>
+                <button type="button" class="btn-close" aria-label="Close" (click)="modal.close('EditTitleModal')"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="sectionTitle" class="form-label">Section Title</label>
+                        <input type="text" class="form-control" id="sectionTitle" 
+                               placeholder="Enter section title" 
+                               [(ngModel)]="sectionTitles.ourlinks" 
+                               name="sectionTitle" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" (click)="updateSectionTitle()" [disabled]="isLoading">
+                    <i class="ri-save-line"></i> {{ isLoading ? 'Saving...' : 'Save' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

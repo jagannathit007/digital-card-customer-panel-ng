@@ -3,17 +3,21 @@ import { io, Socket } from 'socket.io-client';
 import { Observable } from 'rxjs';
 import { environment } from 'src/env/env.local';
 import { TaskPermissionsService } from './task-permissions.service';
+import { AppStorage } from '../core/utilities/app-storage';
+import { common } from '../core/constants/common';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SocketService {
   private socket: Socket;
-  private readonly SERVER_URL = environment.baseURL; // Update to your backend URL
+    private app = this.storage.get(common.APP);
+  
+  private readonly SERVER_URL = `${this.app?.domain?.backendLink || ''}`;
 
   adminId: string;
 
-  constructor(private taskPermissionsService: TaskPermissionsService) {
+  constructor(private taskPermissionsService: TaskPermissionsService, private storage: AppStorage) {
     this.adminId = this.taskPermissionsService.getCurrentUser().role === 'admin' ? this.taskPermissionsService.getCurrentUser()._id : this.taskPermissionsService.getCurrentUser().adminId;
     this.socket = io(this.SERVER_URL, {
     //   transports: ['websocket'], // Optional: enforce websocket

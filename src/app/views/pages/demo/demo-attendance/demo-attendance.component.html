@@ -1,0 +1,138 @@
+<div class="card">
+  <div class="card-body rounded-3">
+    <div class="row mb-4">
+      <div class="col">
+        <h2 class="fw-bold text-uppercase">Attendance Dashboard</h2>
+        <p class="text-muted mb-0">Today's attendance overview</p>
+      </div>
+      <div class="col-md-auto">
+        <div class="input-group">
+          <input type="date" class="form-control" [(ngModel)]="selectedDate" (change)="onDateChange()">
+          <button class="btn btn-primary" (click)="refreshData()">
+            <i class="ri-search-line"></i> Search
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <div class="card stat-card bg-success bg-opacity-10 border-success">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="text-uppercase text-muted mb-2">Present</h6>
+                <h3 class="mb-0">{{stats.present}}</h3>
+              </div>
+              <div class="bg-success bg-opacity-25 p-3 rounded">
+                <i class="ri-check-double-line fs-2 text-success"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <div class="card stat-card bg-danger bg-opacity-10 border-danger">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="text-uppercase text-muted mb-2">Absent</h6>
+                <h3 class="mb-0">{{stats.absent}}</h3>
+              </div>
+              <div class="bg-danger bg-opacity-25 p-3 rounded">
+                <i class="ri-user-unfollow-fill fs-2 text-danger"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <div class="card stat-card bg-warning bg-opacity-10 border-warning">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="text-uppercase text-muted mb-2">On Leave</h6>
+                <h3 class="mb-0">{{stats.leave}}</h3>
+              </div>
+              <div class="bg-warning bg-opacity-25 p-3 rounded">
+                <i class="ri-calendar-todo-fill fs-2 text-warning"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attendance Records -->
+    <div class="row mt-4">
+      <div class="col">
+        <div class="card">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">Attendance Records</h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover table-bordered mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Employee</th>
+                    <th class="text-center">Department</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center">Punch In</th>
+                    <th class="text-center">Punch Out</th>
+                    <th class="text-center">Working Hours</th>
+                    <th class="text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let record of attendanceRecords">
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <img [src]="record.avatar" class="rounded-circle me-2" width="36" height="36" alt="Employee">
+                        <div>
+                          <h6 class="mb-0">{{record.name}}</h6>
+                          <small class="text-muted">{{record.empId}}</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-center">{{record.department}}</td>
+                    <td class="text-center">
+                      <span class="badge" [ngClass]="{
+                        'bg-success': record.status === 'Present',
+                        'bg-danger': record.status === 'Absent',
+                        'bg-warning': record.status === 'Leave'
+                      }">{{record.status}}</span>
+                    </td>
+                    <td class="text-center">
+                      <span *ngIf="record.punchIn">{{record.punchIn | date:'shortTime'}}</span>
+                      <span *ngIf="!record.punchIn" class="text-muted">--:--</span>
+                    </td>
+                    <td class="text-center">
+                      <span *ngIf="record.punchOut">{{record.punchOut | date:'shortTime'}}</span>
+                      <span *ngIf="!record.punchOut" class="text-muted">--:--</span>
+                    </td>
+                    <td class="text-center">
+                      <span *ngIf="record.workingHours">{{record.workingHours}} hrs</span>
+                      <span *ngIf="!record.workingHours" class="text-muted">--</span>
+                    </td>
+                    <td class="text-center">
+                      <button *ngIf="record.status == 'Present'" class="btn btn-sm btn-outline-primary me-1">
+                        <i class="ri-edit-line"></i>
+                      </button>
+                      <!-- <button class="btn btn-sm btn-outline-danger">
+                        <i class="ri-delete-bin-line"></i>
+                      </button> -->
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

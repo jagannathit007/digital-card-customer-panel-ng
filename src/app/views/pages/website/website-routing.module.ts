@@ -14,7 +14,11 @@ import { ContactDetailsComponent } from './components/website/shared/contact-det
 
 import { ProductsEnquiryComponent } from './components/website/shared/products-enquiry/products-enquiry.component';
 import { GetinTouchEnquiryComponent } from './components/website/shared/getin-touch-enquiry/getin-touch-enquiry.component';
-import { OurCertificateComponent } from './components/website/shared/our-certificate/our-certificate.component';
+import { OurCertificatesComponent } from './components/website/shared/our-certificate/our-certificate.component';
+import { OurTrustComponent } from './components/website/shared/our-trust/our-trust.component';
+import { FaqComponent } from './components/website/shared/faq/faq.component';
+import { BlogsComponent } from './components/website/shared/blogs/blogs.component';
+import { ThemeColorComponent } from './components/website/shared/theme-color/theme-color.component';
 
 const routes: Routes = [
   {
@@ -35,7 +39,11 @@ const routes: Routes = [
         
         { path: 'products-enquiry', component: ProductsEnquiryComponent },
         { path: 'getintouch-enquiry', component: GetinTouchEnquiryComponent },
-        { path: 'our-certificate', component: OurCertificateComponent },
+        { path: 'our-certificate', component: OurCertificatesComponent },
+        { path: 'our-trustcomponent', component: OurTrustComponent },
+        { path: 'our-faq', component: FaqComponent },
+        { path: 'our-blogs', component: BlogsComponent },
+        { path: 'theme-color', component: ThemeColorComponent },
         
 
       ],
