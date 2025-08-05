@@ -88,6 +88,11 @@ export class WebsiteComponent{
         icon:'ri-instance-fill'
       },
       {
+        title: "Services Enquiry",
+        href: "services-enquiry",
+        icon:'ri-service-fill'
+      },
+      {
         title: "GetInTouch Enquiry",
         href: "getintouch-enquiry",
         icon:'ri-chat-3-line'

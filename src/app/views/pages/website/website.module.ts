@@ -15,6 +15,7 @@ import { SeoDetailsComponent } from './components/website/shared/seo-details/seo
 import { ContactDetailsComponent } from './components/website/shared/contact-details/contact-details.component';
 
 import { ProductsEnquiryComponent } from './components/website/shared/products-enquiry/products-enquiry.component';
+import {ServiesEnquiryComponent} from './components/website/shared/servies-enquiry/servies-enquiry.component'
 import { GetinTouchEnquiryComponent } from './components/website/shared/getin-touch-enquiry/getin-touch-enquiry.component';
 import { OurCertificatesComponent } from './components/website/shared/our-certificate/our-certificate.component';
 import { OurTrustComponent } from './components/website/shared/our-trust/our-trust.component';
@@ -46,6 +47,7 @@ import { NgxEditorModule } from 'ngx-editor';
     SeoDetailsComponent,
     ContactDetailsComponent,
     ProductsEnquiryComponent,
+    ServiesEnquiryComponent,
     GetinTouchEnquiryComponent,
     OurCertificatesComponent,
     OurTrustComponent,
