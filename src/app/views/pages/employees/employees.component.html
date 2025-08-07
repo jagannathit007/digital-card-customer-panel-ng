@@ -275,7 +275,7 @@
                   type="text"
                   class="form-control form-control-lg rounded-2 ps-5"
                   [(ngModel)]="searchText"
-                  (ngModelChange)="filterEmployees()"
+                  (ngModelChange)="onSearch()"
                   placeholder="Search by Name, Email, Designation"
                 />
                 <i class="ri-search-line position-absolute top-50 start-0 translate-middle-y ms-3 fs-5 text-muted"></i>
@@ -316,7 +316,7 @@
               </thead>
               <tbody>
                 <tr *ngFor="let employee of filteredEmployees; trackBy: trackById; let i = index">
-                  <td class="text-center">{{ i + 1 }}</td>
+                  <td class="text-center">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
                   <td class="text-center">
                     <img
                       *ngIf="employee.profileImg"
@@ -370,6 +370,20 @@
                 </tr>
               </tbody>
             </table>
+            <nav *ngIf="totalPages > 1" class="mt-3">
+              <ul class="pagination justify-content-center">
+                <li class="page-item" [ngClass]="{'disabled': currentPage === 1}">
+                  <button class="page-link" (click)="changePage(currentPage - 1)">Previous</button>
+                </li>
+                <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+                    [ngClass]="{'active': currentPage === i + 1}">
+                  <button class="page-link" (click)="changePage(i + 1)">{{ i + 1 }}</button>
+                </li>
+                <li class="page-item" [ngClass]="{'disabled': currentPage === totalPages}">
+                  <button class="page-link" (click)="changePage(currentPage + 1)">Next</button>
+                </li>
+              </ul>
+            </nav>
           </div>
         </div>
       </div>

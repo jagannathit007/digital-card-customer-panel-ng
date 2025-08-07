@@ -31,6 +31,10 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   isDragging = false;
   isLoading = false;
   isSaving = false;
+  currentPage = 1;
+  pageSize = 10;
+  totalItems = 0;
+  totalPages = 0;
 
   constructor(
     private attendanceService: AttendanceService,
@@ -38,10 +42,12 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   ) {}
 
   private destroy$ = new Subject<void>();
+  private searchSubject = new Subject<string>();
 
   ngOnInit(): void {
     this.getOffices();
     this.getEmployees();
+    this.setupSearch();
   }
 
   ngOnDestroy() {
@@ -72,9 +78,6 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     try {
       const data = await this.attendanceService.getOffices({
         businessCardId: this.storage.get(common.BUSINESS_CARD),
-        // search: '',
-        // page: 1,
-        // limit: 1000,
       });
       this.offices = data && data.docs ? data.docs : [];
     } catch (error) {
@@ -93,11 +96,13 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       const data = await this.attendanceService.getEmployees({
         businessCardId: this.storage.get(common.BUSINESS_CARD),
         officeId: this.selectedOfficeId || undefined,
-        // search: this.searchText,
-        // page: 1,
-        // limit: 1000,
+        search: this.searchText,
+        page: this.currentPage,
+        limit: this.pageSize,
       });
       this.employees = data && data.docs ? data.docs : [];
+      this.totalItems = data.totalDocs || 0;
+      this.totalPages = data.totalPages || 0;
       this.filteredEmployees = [...this.employees];
     } catch (error) {
       await swalHelper.showToast(
@@ -109,19 +114,26 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     }
   };
 
-  filterEmployees = () => {
-    const searchTerm = this.searchText.toLowerCase().trim();
-    if (!searchTerm) {
-      this.filteredEmployees = [...this.employees];
-      return;
-    }
-    this.filteredEmployees = this.employees.filter(
-      (employee) =>
-        employee.name.toLowerCase().includes(searchTerm) ||
-        employee.emailId.toLowerCase().includes(searchTerm) ||
-        employee.designation.toLowerCase().includes(searchTerm)
-    );
+  setupSearch = () => {
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.currentPage = 1;
+      this.getEmployees();
+    });
   };
+
+  onSearch = () => {
+    this.searchSubject.next(this.searchText);
+  };
+
+  changePage(page: number) {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.getEmployees();
+  }
 
   toggleOfficeDropdown = () => {
     this.isOfficeDropdownOpen = !this.isOfficeDropdownOpen;
@@ -130,6 +142,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   selectOffice = (officeId: string) => {
     this.selectedOfficeId = officeId;
     this.isOfficeDropdownOpen = false;
+    this.currentPage = 1;
     this.getEmployees();
   };
 
