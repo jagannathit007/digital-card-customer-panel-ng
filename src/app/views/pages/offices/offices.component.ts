@@ -151,7 +151,7 @@ export class OfficesComponent implements OnInit, OnDestroy {
     );
     if (!confirmed.isConfirmed) return;
 
-    const result = await this.attendanceService.deleteOffice(office._id);
+    const result = await this.attendanceService.deleteOffice({_id: office});
     if (result) {
       swalHelper.showToast('Office deleted successfully!', 'success');
       this.getOffices();
