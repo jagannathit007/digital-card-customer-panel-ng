@@ -136,7 +136,7 @@ export class TaskMemberAuthService {
         data,
         this.headers
       );
-      if (response.status == 200 && response.data != 0) {
+      if (response.status == 200 && response.data != null) {
         swalHelper.success(response.message);
         return true;
       } else {
