@@ -112,16 +112,16 @@ export class WebsiteComponent{
         href: "our-faq",
         icon:'ri-question-answer-line'
       },
-      {
-        title: "Our Blogs",
-        href: "our-blogs",
-        icon:'ri-article-line'
-      },
-      {
-        title: "My ThemeColor",
-        href: "theme-color",
-        icon:'ri-article-line'
-      },
+      // {
+      //   title: "Our Blogs",
+      //   href: "our-blogs",
+      //   icon:'ri-article-line'
+      // },
+      // {
+      //   title: "My ThemeColor",
+      //   href: "theme-color",
+      //   icon:'ri-article-line'
+      // },
     ]
    
      isActive(href: string): boolean {
