@@ -704,7 +704,6 @@ export class MemberprofileComponent implements OnInit {
         passwordData
       );
       if (result) {
-        swalHelper.showToast('Password changed successfully!', 'success');
         this.handlePasswordChangeSuccess();
       }
     } catch (error) {
