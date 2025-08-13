@@ -225,7 +225,7 @@ async processAICommand(data: any) {
       if (response.status == 200 && response.data != null) {
         return response.data;
       } else {
-        swalHelper.showToast(response.message, 'warning');
+        swalHelper.showToast('NO Bords found', 'warning');
         return null;
       }
     } catch (err) {

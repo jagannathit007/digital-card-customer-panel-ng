@@ -330,7 +330,6 @@
 //   }
 // }
 
-
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
@@ -357,18 +356,18 @@ export class SideBarService {
   }
 
   autoExpandTaskManagement(menus: any[]): void {
-  // Find Task Management menu index and auto-expand it
-  for (let moduleIndex = 0; moduleIndex < menus.length; moduleIndex++) {
-    const module = menus[moduleIndex];
-    for (let menuIndex = 0; menuIndex < module.menus.length; menuIndex++) {
-      const menu = module.menus[menuIndex];
-      if (menu.title === 'Task Management' && menu.menu) {
-        this.activeSubMenuIndex = menuIndex;
-        return;
+    // Find Task Management menu index and auto-expand it
+    for (let moduleIndex = 0; moduleIndex < menus.length; moduleIndex++) {
+      const module = menus[moduleIndex];
+      for (let menuIndex = 0; menuIndex < module.menus.length; menuIndex++) {
+        const menu = module.menus[menuIndex];
+        if (menu.title === 'Task Management' && menu.menu) {
+          this.activeSubMenuIndex = menuIndex;
+          return;
+        }
       }
     }
   }
-}
 
   async getMenusByProducts(subscriptionData: any[]): Promise<any[]> {
     const teamMemberData = this.storage.get(teamMemberCommon.TEAM_MEMBER_DATA);
@@ -380,7 +379,11 @@ export class SideBarService {
       link: 'task-management',
       icon: 'file-text',
       menu: [
-        { title: 'Dashboard', link: 'task-management/dashboard', icon: 'table' },
+        {
+          title: 'Dashboard',
+          link: 'task-management/dashboard',
+          icon: 'table',
+        },
         { title: 'Boards', link: 'task-management/boards', icon: 'pie-chart' },
         { title: 'Team Task', link: 'task-management/teamtask', icon: 'grid' },
       ],
@@ -394,16 +397,38 @@ export class SideBarService {
           icon: 'users',
         });
       }
+      if (userDetails.role === 'admin' || userDetails.role === 'editor') {
+        taskManagementMenu.menu.splice(taskManagementMenu.menu.length , 0, {
+          title: 'Team Report',
+          link: 'task-management/team-report',
+          icon: 'pie-chart',
+        });
+      }
       if (userDetails.role === 'admin') {
         taskManagementMenu.menu.splice(0, 0, {
           title: 'Personal Tasks',
           icon: 'file-text',
           menu: [
-            { title: 'My Day', link: 'task-management/personal-task/my-day', icon: 'aperture' },
-            { title: 'Next 7 Days', link: 'task-management/personal-task/next-seven-days', icon: 'calendar' },
-            { title: 'My Calendar', link: 'task-management/personal-task/mycalendar', icon: 'calendar' },
-            { title: 'All Tasks', link: 'task-management/personal-task/all', icon: 'codesandbox' },
-            { title: 'Team Report', link: 'task-management/team-report', icon: 'pie-chart' },
+            {
+              title: 'My Day',
+              link: 'task-management/personal-task/my-day',
+              icon: 'aperture',
+            },
+            {
+              title: 'Next 7 Days',
+              link: 'task-management/personal-task/next-seven-days',
+              icon: 'calendar',
+            },
+            {
+              title: 'My Calendar',
+              link: 'task-management/personal-task/mycalendar',
+              icon: 'calendar',
+            },
+            {
+              title: 'All Tasks',
+              link: 'task-management/personal-task/all',
+              icon: 'codesandbox',
+            },
           ],
         });
       }
@@ -600,7 +625,9 @@ export class SideBarService {
   }
 
   navigateWithQueryParams(submenu: any) {
-    this.router.navigate([submenu.link], { queryParams: submenu.queryParams || {} });
+    this.router.navigate([submenu.link], {
+      queryParams: submenu.queryParams || {},
+    });
   }
 
   onNavSwitch(item: string) {
