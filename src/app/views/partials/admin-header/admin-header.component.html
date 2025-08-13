@@ -24,7 +24,7 @@
             data-boards-button
           >
             <i class="fa-solid fa-th-large tw-text-gray-600 tw-text-sm"></i>
-            <span class="tw-text-gray-700 tw-font-medium">Boards</span>
+          <span class="tw-text-gray-700 tw-font-medium tw-max-w-[100px] tw-truncate">{{ getCurrentBoardDetails().name || "Boards" }}</span>
             <i
               class="fa-solid fa-chevron-down tw-text-gray-500 tw-text-xs tw-transition-transform tw-duration-200"
               [class.tw-rotate-180]="isBoardsDropdownOpen"

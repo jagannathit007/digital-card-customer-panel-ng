@@ -294,8 +294,8 @@
         </div>
 
         <!-- Open Button (appears when board is selected) -->
+        <!-- *ngIf="selectedBoard()?._id === board._id" -->
         <div
-          *ngIf="selectedBoard()?._id === board._id"
           class="tw-absolute tw-bottom-6 tw-left-6 tw-animate-fade-in"
         >
           <button

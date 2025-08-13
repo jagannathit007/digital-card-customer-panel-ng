@@ -352,6 +352,11 @@ export class AdminHeaderComponent implements OnInit {
     return this.currentBoardId() === boardId && this.currentBoardId() !== '';
   }
 
+  getCurrentBoardDetails() {
+    const boardId = this.currentBoardId();
+    return this.boardsList.find((board) => board._id === boardId) || null;
+  }
+
   onBoardSelect(board: any) {
     // Store board data
     this.storage.set(teamMemberCommon.BOARD_DATA, board);
