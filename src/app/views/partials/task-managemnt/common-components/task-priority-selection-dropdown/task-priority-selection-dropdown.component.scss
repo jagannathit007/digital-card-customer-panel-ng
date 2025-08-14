@@ -1,0 +1,35 @@
+:host {
+  display: block;
+}
+
+select {
+  option {
+    padding: 8px 12px;
+    
+    &:first-child {
+      font-weight: 500;
+      color: #6b7280;
+    }
+  }
+}
+
+.priority-icon {
+  margin-right: 6px;
+}
+
+// Custom styling for priority colors
+.priority-low {
+  color: #059669;
+}
+
+.priority-medium {
+  color: #d97706;
+}
+
+.priority-high {
+  color: #ea580c;
+}
+
+.priority-urgent {
+  color: #dc2626;
+}

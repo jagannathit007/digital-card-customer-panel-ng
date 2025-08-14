@@ -39,6 +39,7 @@ export interface Task {
   dueDate?: Date;
   visibility: 'public' | 'private';
   column: string;
+  priority: string | null; // 'high', 'medium', 'low', or null
   completedAt?: Date | null;
   deletedAt?: Date | null;
 }
@@ -93,6 +94,19 @@ export class TeamTaskCardComponent implements OnInit {
 getCategpryName(categoryId: string): string {
   const category = this.categories.find((cat) => cat._id === categoryId);
   return category ? category.name : '';
+}
+
+getPriorityOption(priority: string | null): { label: string; icon: string; color: string } {
+  switch (priority) {
+    case 'high':
+      return { label: 'High', icon: 'ri-arrow-up-double-line ', color: 'tw-text-green-600' };
+    case 'medium':
+      return { label: 'Medium', icon: 'ri-arrow-up-wide-line', color: 'tw-text-yellow-600' };
+    case 'low':
+      return { label: 'Low', icon: 'ri-arrow-down-double-line', color: 'tw-text-orange-600' };
+    default:
+      return { label: 'No Priority', icon: '', color: '' };
+  }
 }
 
 

@@ -26,6 +26,7 @@ import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 import { SocketService } from 'src/app/services/socket.service';
 import { TaskCategorySelectionDropdownComponent } from "src/app/views/partials/task-managemnt/common-components/task-category-selection-dropdown/task-category-selection-dropdown.component";
+import { TaskPrioritySelectionDropdownComponent } from "src/app/views/partials/task-managemnt/common-components/task-priority-selection-dropdown/task-priority-selection-dropdown.component";
 
 interface TaskMember {
   _id: string;
@@ -72,6 +73,7 @@ interface TeamTask {
   attachments: TaskAttachment[];
   board: string;
   category: string | null;
+  priority: string | null;
   visibility: 'public' | 'private';
   position: number;
   createdBy: TaskMember;
@@ -96,7 +98,8 @@ interface TaskUpdate {
     NgxEditorModule,
     AddCommentsComponent,
     MemberDetailDropdownComponent,
-    TaskCategorySelectionDropdownComponent
+    TaskCategorySelectionDropdownComponent,
+    TaskPrioritySelectionDropdownComponent
 ],
   templateUrl: './team-task-detail-popup.component.html',
   styleUrl: './team-task-detail-popup.component.scss',
@@ -130,6 +133,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
     attachments: [],
     board: '',
     category: null,
+    priority: 'medium',
     visibility: 'public',
     position: 0,
     createdBy: {
@@ -357,6 +361,8 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
         this.task.attachments = updateData;
       } else if (updateType === 'category' && typeof updateData === 'string') {
         this.task.category = updateData;
+      } else if (updateType === 'priority' && typeof updateData === 'string') {
+        this.task.priority = updateData;
       }
     });
   }
@@ -558,6 +564,18 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
       this.task.board,
       'category',
       { data: this.task.category }
+    );
+  }
+
+  onPriorityUpdated(priority: string | null): void {
+    this.task.priority = priority;
+    this.emitTaskUpdate('priority', this.task.priority);
+
+    this.socketService.sendTaskDetailsUpdate(
+      this.taskId,
+      this.task.board,
+      'priority',
+      { data: this.task.priority }
     );
   }
 

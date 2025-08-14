@@ -887,6 +887,29 @@ export class TaskService {
     }
   }
 
+  async updateTeamTaskPriority(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.UPDATE_TEAM_TASK_PRIORITY,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
   async updateTeamTaskDescription(data: any) {
     try {
       this.getHeaders();

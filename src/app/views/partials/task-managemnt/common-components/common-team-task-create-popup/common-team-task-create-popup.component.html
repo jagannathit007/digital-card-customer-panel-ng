@@ -114,6 +114,23 @@
             (onCategoryUpdated)="onCategoryUpdated($event)"
           ></app-task-category-selection-dropdown>
         </div>
+        
+        <!-- Task Priority -->
+        <div class="tw-space-y-2">
+          <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700 tw-mb-2">
+            Priority
+          </label>
+          <div
+            *ngIf="isFetching"
+            class="tw-w-full tw-h-[39px] tw-bg-gradient-to-r tw-from-gray-200 tw-to-gray-300 tw-rounded-lg tw-animate-pulse tw-min-w-[180px] tw-max-w-[180px]"
+          ></div>
+
+          <app-task-priority-selection-dropdown
+              [boardId]="taskData.board"
+              [selectedPriority]="taskData.priority"
+              (onPriorityUpdated)="onPriorityUpdated($event)"
+            ></app-task-priority-selection-dropdown>
+        </div>
       </div>
 
       <!-- Task Properties Row -->

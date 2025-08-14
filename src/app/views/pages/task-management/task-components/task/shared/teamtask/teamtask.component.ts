@@ -61,6 +61,7 @@ export interface Task {
   description?: string;
   status: string;
   category: string | null;
+  priority: string | null;
   // categories: TaskCategory[];
   assignedTo: TeamMember[];
   comments: number;
@@ -1530,6 +1531,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
           description: '',
           status: response.status,
           category: null,
+          priority: response.priority,
           // categories: [],
           assignedTo: [],
           comments: 0,

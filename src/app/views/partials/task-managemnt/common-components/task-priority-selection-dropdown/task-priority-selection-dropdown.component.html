@@ -1,0 +1,97 @@
+<div class="tw-relative tw-max-w-[150px]">
+  <!-- Priority Label -->
+  <!-- <div class="tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1">Priority</div> -->
+  
+  <!-- Custom Dropdown Button -->
+  <div
+    class="tw-relative tw-bg-white tw-border tw-border-gray-300 tw-rounded-xl tw-px-3 tw-py-2.5 tw-text-sm tw-font-medium tw-text-gray-700 tw-transition-all tw-duration-300 tw-w-full tw-cursor-pointer tw-shadow-sm hover:tw-shadow-md tw-min-w-[150px]"
+    [ngClass]="{
+      'hover:tw-border-blue-400 hover:tw-bg-gray-50': taskPermissions && !isDropdownOpen,
+      'tw-border-blue-500 tw-ring-2 tw-ring-blue-100 tw-shadow-md': isDropdownOpen && taskPermissions,
+      'tw-cursor-not-allowed tw-bg-gray-50 tw-opacity-70': !taskPermissions
+    }"
+    (click)="taskPermissions && toggleDropdown()"
+  >
+    <!-- Selected Priority Display -->
+    <div class="tw-flex tw-items-center tw-justify-between">
+      <div class="tw-flex tw-items-center tw-space-x-2">
+        <!-- Priority Icon -->
+        <div class="tw-flex tw-items-center tw-justify-center tw-w-5 tw-h-5">
+          <i 
+            *ngIf="selectedPriority && getPriorityOption(selectedPriority); else defaultIcon"
+            [class]="getPriorityOption(selectedPriority)?.icon + ' ' + getPriorityOption(selectedPriority)?.color + ' tw-text-sm'"
+          ></i>
+          <ng-template #defaultIcon>
+            <i class="fas fa-flag tw-text-gray-400 tw-text-sm"></i>
+          </ng-template>
+        </div>
+        
+        <!-- Priority Label -->
+        <span class="tw-text-sm tw-font-medium tw-text-gray-700">
+          {{ selectedPriority ? getPriorityOption(selectedPriority)?.label : 'Select Priority' }}
+        </span>
+      </div>
+      
+      <!-- Chevron Icon -->
+      <i
+        *ngIf="taskPermissions"
+        class="fas fa-chevron-down tw-text-gray-400 tw-text-xs tw-transition-transform tw-duration-200"
+        [ngClass]="{ 'tw-rotate-180': isDropdownOpen }"
+      ></i>
+    </div>
+  </div>
+  
+  <!-- Dropdown Menu -->
+  <div
+    *ngIf="isDropdownOpen && taskPermissions"
+    class="tw-absolute tw-top-full tw-left-0 tw-right-0 tw-mt-1 tw-bg-white tw-border tw-border-gray-200 tw-rounded-xl tw-shadow-lg tw-z-50 tw-overflow-hidden tw-animate-in tw-fade-in tw-slide-in-from-top-1"
+    [@slideDown]
+  >
+    <!-- Clear Selection Option -->
+    <!-- <div
+      class="tw-px-3 tw-py-2.5 tw-text-sm tw-text-gray-500 tw-cursor-pointer tw-transition-colors tw-duration-200 hover:tw-bg-gray-50 tw-flex tw-items-center tw-space-x-2"
+      (click)="selectPriority(null)"
+    >
+      <div class="tw-flex tw-items-center tw-justify-center tw-w-5 tw-h-5">
+        <i class="fas fa-times tw-text-gray-400 tw-text-xs"></i>
+      </div>
+      <span>Clear Priority</span>
+    </div> -->
+    
+    <div class="tw-border-t tw-border-gray-100"></div>
+    
+    <!-- Priority Options -->
+    <div
+      *ngFor="let option of priorities"
+      class="tw-px-3 tw-py-2.5 tw-text-sm tw-cursor-pointer tw-transition-all tw-duration-200 tw-flex tw-items-center tw-space-x-2"
+      [ngClass]="{
+        'tw-bg-blue-50 tw-text-blue-700': selectedPriority === option.value,
+        'hover:tw-bg-gray-50': selectedPriority !== option.value
+      }"
+      (click)="selectPriority(option.value)"
+    >
+      <!-- Priority Icon -->
+      <div class="tw-flex tw-items-center tw-justify-center tw-w-5 tw-h-5">
+        <i [class]="option.icon + ' ' + option.color + ' tw-text-sm'"></i>
+      </div>
+      
+      <!-- Priority Label -->
+      <span class="tw-font-medium">{{ option.label }}</span>
+      
+      <!-- Selected Indicator -->
+      <div class="tw-ml-auto">
+        <i
+          *ngIf="selectedPriority === option.value"
+          class="fas fa-check tw-text-blue-600 tw-text-xs"
+        ></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop to close dropdown when clicking outside -->
+<div
+  *ngIf="isDropdownOpen"
+  class="tw-fixed tw-inset-0 tw-z-40"
+  (click)="closeDropdown()"
+></div>

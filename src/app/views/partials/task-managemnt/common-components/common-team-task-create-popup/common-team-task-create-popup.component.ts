@@ -16,6 +16,7 @@ import { TaskService } from 'src/app/services/task.service';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 import { TaskCategorySelectionDropdownComponent } from '../task-category-selection-dropdown/task-category-selection-dropdown.component';
+import { TaskPrioritySelectionDropdownComponent } from "../task-priority-selection-dropdown/task-priority-selection-dropdown.component";
 
 interface TaskMember {
   _id: string;
@@ -34,6 +35,7 @@ interface CreateTaskData {
   assignedTo: TaskMember[];
   board: string;
   category: string | null;
+  priority: string | 'medium' | 'high' | 'low';
   visibility: 'public' | 'private';
 }
 
@@ -54,7 +56,8 @@ interface Column {
     NgxEditorModule,
     MemberDetailDropdownComponent,
     TaskCategorySelectionDropdownComponent,
-  ],
+    TaskPrioritySelectionDropdownComponent
+],
   templateUrl: './common-team-task-create-popup.component.html',
   styleUrl: './common-team-task-create-popup.component.scss',
   encapsulation: ViewEncapsulation.None,
@@ -76,6 +79,7 @@ export class CommonTeamTaskCreatePopupComponent implements OnInit, OnDestroy {
     assignedTo: [],
     board: '',
     category: null,
+    priority: 'medium',
     visibility: 'public',
   };
 
@@ -250,6 +254,7 @@ export class CommonTeamTaskCreatePopupComponent implements OnInit, OnDestroy {
         assignedTo: assignedTo,
         board: this.taskData.board,
         category: this.taskData.category,
+        priority: this.taskData.priority,
         visibility: this.taskData.visibility,
       };
 
@@ -284,6 +289,7 @@ export class CommonTeamTaskCreatePopupComponent implements OnInit, OnDestroy {
       assignedTo: [],
       board: this.taskData.board,
       category: null,
+      priority: 'medium', 
       visibility: 'public',
     };
   }
@@ -307,6 +313,10 @@ export class CommonTeamTaskCreatePopupComponent implements OnInit, OnDestroy {
 
   onCategoryUpdated(category: any): void {
     this.taskData.category = category;
+  }
+
+  onPriorityUpdated(priority: string | null): void {
+    this.taskData.priority = priority || 'medium';
   }
 
   // Date picker functionality

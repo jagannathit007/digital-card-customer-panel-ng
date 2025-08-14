@@ -41,13 +41,28 @@
       {{ task.status }}
     </span>
 
-    <!-- category badge -->
-    <span
-    class="tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium tw-flex-shrink-0 tw-max-w-[150px] tw-truncate tw-bg-gray-200 tw-text-gray-600"
-      title="{{ getCategpryName(task.category || '') }}"
-      *ngIf="categories.length > 0 && category()"
-    >
-      {{ getCategpryName(task.category || '') }}
+    <span>
+      <!-- category badge -->
+      <span
+        class="tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium tw-flex-shrink-0 tw-max-w-[150px] tw-truncate tw-bg-gray-200 tw-text-gray-600"
+        title="{{ getCategpryName(task.category || '') }}"
+        *ngIf="categories.length > 0 && category()"
+      >
+        {{ getCategpryName(task.category || "") }}
+      </span>
+
+      <!-- Priority  -->
+      <span
+        class="tw-px-2 tw-py-1 tw-rounded-full tw-text-xs tw-font-medium tw-flex-shrink-0"
+        [ngClass]="getPriorityOption(task.priority).color"
+        title="{{ getPriorityOption(task.priority).label || 'No Priority' }}"
+      >
+        <i
+          *ngIf="getPriorityOption(task.priority)"
+          [class]="getPriorityOption(task.priority).icon + ' tw-text-sm'"
+        ></i>
+        <!-- {{ getPriorityOption(task.priority).label || 'No Priority' }} -->
+      </span>
     </span>
 
     <!-- Visibility Icon -->
@@ -67,13 +82,13 @@
       ></path>
     </svg>
   </div> -->
-</div>
+  </div>
 
-<!-- Task Title -->
-<h4
-class="tw-font-medium tw-text-gray-900 tw-text-sm tw-mb-2 tw-leading-tight tw-line-clamp-1 tw-truncate"
-title="{{ task.title }}"
->
+  <!-- Task Title -->
+  <h4
+    class="tw-font-medium tw-text-gray-900 tw-text-sm tw-mb-2 tw-leading-tight tw-line-clamp-1 tw-truncate"
+    title="{{ task.title }}"
+  >
     {{ task.title }}
   </h4>
 
