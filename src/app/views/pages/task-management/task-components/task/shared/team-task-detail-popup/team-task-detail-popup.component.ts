@@ -157,6 +157,7 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   isSavingTitle = false;
   isSavingDescription = false;
   isLoading = true;
+  isUploading = false;
   isMemberLoad = false;
 
   boardId: string = '';
@@ -1177,30 +1178,55 @@ export class TeamTaskDetailPopupComponent implements OnInit, OnDestroy {
   async onFileUpload(event: any): Promise<void> {
     const files = event.target.files;
     if (files && files.length > 0) {
-      var formData = new FormData();
-
+      // Check each file size
       for (let file of files) {
-        formData.append('files', file);
+        if (file.size > 10 * 1024 * 1024) { // 10MB in bytes
+          await swalHelper.showToast(
+            'File size exceeded the 10MB limit',
+            'error'
+          );
+          event.target.value = ''; // Clear the file input
+          return;
+        }
       }
-      formData.append('taskId', this.taskId);
-      formData.append('boardId', this.task.board);
-      formData.append('type', 'task');
 
-      const response = await this.taskService.addAttachment(formData);
+      this.isUploading = true;
+      
+      try {
+        var formData = new FormData();
 
-      if (response) {
-        // Simulate file upload
+        for (let file of files) {
+          formData.append('files', file);
+        }
+        formData.append('taskId', this.taskId);
+        formData.append('boardId', this.task.board);
+        formData.append('type', 'task');
 
-        this.task.attachments.push(response);
+        const response = await this.taskService.addAttachment(formData);
 
-        this.socketService.sendTaskDetailsUpdate(
-          this.taskId,
-          this.task.board,
-          'attachments',
-          { data: this.task.attachments }
+        if (response) {
+          // Simulate file upload
+
+          this.task.attachments.push(response);
+
+          this.socketService.sendTaskDetailsUpdate(
+            this.taskId,
+            this.task.board,
+            'attachments',
+            { data: this.task.attachments }
+          );
+
+          this.emitTaskUpdate('attachments', this.task.attachments.length);
+        }
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        await swalHelper.showToast(
+          'Error uploading file. Please try again.',
+          'error'
         );
-
-        this.emitTaskUpdate('attachments', this.task.attachments.length);
+      } finally {
+        this.isUploading = false;
+        event.target.value = ''; // Clear the file input
       }
     }
   }

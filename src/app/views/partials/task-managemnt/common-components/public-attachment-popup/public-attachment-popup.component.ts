@@ -62,6 +62,7 @@ export class PublicAttachmentPopupComponent implements OnInit, OnDestroy {
 
   // UI State
   isLoading = true;
+  isUploading = false;
 
   // Attachment permissions
   attachmentPermissions = true; // Assuming board attachments are generally accessible
@@ -198,25 +199,38 @@ export class PublicAttachmentPopupComponent implements OnInit, OnDestroy {
         }
       }
 
-      var formData = new FormData();
+      this.isUploading = true;
+      
+      try {
+        var formData = new FormData();
 
-      for (let file of files) {
-        formData.append('files', file);
-      }
-      formData.append('boardId', this.boardId);
-      formData.append('type', 'board');
+        for (let file of files) {
+          formData.append('files', file);
+        }
+        formData.append('boardId', this.boardId);
+        formData.append('type', 'board');
 
-      const response = await this.taskService.addAttachment(formData);
+        const response = await this.taskService.addAttachment(formData);
 
-      console.log('Attachment response:', response);
+        console.log('Attachment response:', response);
 
-      if (response) {
-        this.attachments.push(response);
-        this.socketService.sendBoardUpdate(
-          this.boardId,
-          'attachment_add',
-          response
+        if (response) {
+          this.attachments.push(response);
+          this.socketService.sendBoardUpdate(
+            this.boardId,
+            'attachment_add',
+            response
+          );
+        }
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        await swalHelper.showToast(
+          'Error uploading file. Please try again.',
+          'error'
         );
+      } finally {
+        this.isUploading = false;
+        event.target.value = ''; // Clear the file input
       }
     }
   }
