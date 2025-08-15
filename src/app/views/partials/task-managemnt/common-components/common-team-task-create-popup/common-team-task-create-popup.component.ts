@@ -225,6 +225,8 @@ export class CommonTeamTaskCreatePopupComponent implements OnInit, OnDestroy {
       this.taskData.description = this.createBoardData?.description || '';
       this.taskData.dueDate = this.createBoardData?.dueDate || null;
       this.taskData.status = this.createBoardData?.status || 'normal';
+      this.taskData.category = this.createBoardData?.category || null;
+      this.taskData.priority = this.createBoardData?.priority || 'medium';
     }
   }
 

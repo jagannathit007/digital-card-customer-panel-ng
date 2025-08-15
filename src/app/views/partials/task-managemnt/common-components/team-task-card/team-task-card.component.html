@@ -23,6 +23,56 @@
   <!-- (mouseenter)="onMouseEnter()"
      (mouseleave)="onMouseLeave()" -->
 
+     <!-- Menu Icon (appears on hover) -->
+  <!-- <div
+    class="tw-absolute tw-top-2 tw-right-2 tw-opacity-0 tw-group-hover:tw-opacity-100 tw-transition-opacity tw-duration-200 tw-z-20"
+    *ngIf="!isDragging && taskPermissionsService.isTeamTaskCardAccessible(task)"
+  >
+    <button
+      (click)="toggleMenu($event)"
+      class="tw-p-1 tw-rounded tw-text-gray-400 hover:tw-text-gray-600 hover:tw-bg-gray-100 tw-transition-colors tw-duration-200"
+    >
+      <svg
+        class="tw-w-4 tw-h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 5v.01M12 12v.01M12 19v.01"
+        ></path>
+      </svg>
+    </button>
+
+    <div
+      *ngIf="showMenu"
+      class="tw-absolute tw-right-0 tw-top-8 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-z-30 tw-min-w-48 tw-py-1"
+    >
+      <button
+        (click)="duplicateTask($event)"
+        class="tw-w-full tw-px-4 tw-py-2 tw-text-left tw-text-sm tw-text-gray-700 hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
+      >
+        <svg
+          class="tw-w-4 tw-h-4 tw-inline tw-mr-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M8 7v8a2 2 0 002 2h6a2 2 0 002-2V9m-4-4H6a2 2 0 00-2 2v8"
+          ></path>
+        </svg>
+        Duplicate Task
+      </button>
+    </div>
+  </div> -->
+
   <!-- Drag Preview (shown when dragging) -->
   <div
     *ngIf="isDragging"
@@ -327,7 +377,7 @@
       <!-- Action Buttons -->
       <div class="tw-flex tw-items-center tw-gap-1">
         <!-- Complete/Restore Button -->
-        <button
+        <!-- <button
           *ngIf="canShowCompleteAction(task)"
           (click)="onCompleteClick($event)"
           class="tw-p-1.5 tw-bg-green-100 tw-text-green-700 tw-rounded-md tw-text-xs tw-font-medium hover:tw-bg-green-200 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-1"
@@ -347,6 +397,28 @@
             ></path>
           </svg>
           <span class="tw-hidden sm:tw-inline">Complete</span>
+        </button> -->
+
+        <button
+          *ngIf="canShowCompleteAction(task)"
+          (click)="duplicateTask($event)"
+          class="tw-p-1.5 tw-bg-gray-100 tw-text-gray-700 tw-rounded-md tw-text-xs tw-font-medium hover:tw-bg-gray-200 tw-transition-colors tw-duration-200 tw-flex tw-items-center tw-gap-1"
+          title="Mark as Complete"
+        >
+          <svg
+          class="tw-w-4 tw-h-4 tw-inline tw-mr-2"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M8 7v8a2 2 0 002 2h6a2 2 0 002-2V9m-4-4H6a2 2 0 00-2 2v8"
+          ></path>
+        </svg>
+          <span class="tw-hidden sm:tw-inline">Duplicate</span>
         </button>
 
         <button

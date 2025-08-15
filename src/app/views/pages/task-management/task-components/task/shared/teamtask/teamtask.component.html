@@ -313,6 +313,7 @@
                     (taskOpen)="openTask(task)"
                     (dragStarted)="onDragStarted(task)"
                     (dragEnded)="onDragEnded()"
+                    (duplicateTaskEvent)="onDuplicateTask($event)"
                   >
                   </app-team-task-card>
                 </div>
@@ -597,6 +598,7 @@
 <app-common-team-task-create-popup
   *ngIf="showCreatePopup()"
   [isVisible]="showCreatePopup()"
+  [createBoardData]="createBoardData()"
   (taskCreated)="onTaskCreated($event)"
   (popupClosed)="onPopupClosed()"
 ></app-common-team-task-create-popup>

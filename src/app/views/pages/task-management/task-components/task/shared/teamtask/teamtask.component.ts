@@ -128,6 +128,8 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
   // available user for selected board
   availableUsersForSelectedBoard = signal<TeamMember[]>([]);
 
+  createBoardData = signal<any>(null);
+
   columnForm!: FormGroup;
   showCreatePopup = signal<boolean>(false);
 
@@ -258,6 +260,23 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
         }, 2000);
       }
     });
+  }
+
+  
+  onDuplicateTask(task: any): void {
+    this.createBoardData.set({
+      title: task.title,
+      description: task.description || '',
+      status: task.status,
+      category: task.category,
+      priority: task.priority,
+      assignedTo: task.assignedTo,
+      dueDate: task.dueDate ? new Date(task.dueDate).toISOString() : null,
+      board: this.boardId(),
+      column: task.column,
+      visibility: task.visibility,
+    });
+    this.showCreatePopup.set(true);
   }
 
   listenTaskCreationSocket() {
@@ -811,6 +830,7 @@ export class TeamtaskComponent implements OnInit, OnDestroy {
 
   onPopupClosed() {
     this.showCreatePopup.set(false);
+    this.createBoardData.set(null); // Reset after closing
   }
 
   onTaskCreated(task: any) {
