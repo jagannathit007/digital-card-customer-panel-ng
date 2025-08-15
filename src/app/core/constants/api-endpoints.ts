@@ -5,11 +5,15 @@ import { common } from './common';
 class ApiEndpoints {
   constructor(private storage: AppStorage) {}
 
-  private app = this.storage.get(common.APP);
-  // private PATH = this.app.domain?.backendLink+"/web"
-  // private PATH = this.app?.domain?.backendLink ? `${this.app.domain.backendLink}/web` : ""
-  private baseURL = `${this.app?.domain?.backendLink || ''}`;
-  private PATH: string = `${this.baseURL}/${environment.route}`;
+  // private app = this.storage.get(common.APP);
+  // private baseURL = `${this.app?.domain?.backendLink || ''}`;
+  // private PATH: string = `${this.baseURL}/${environment.route}`;
+
+  private get PATH(): string { 
+    const app = this.storage.get(common.APP);
+    const baseURL = `${app?.domain?.backendLink || ''}`;
+    return `${baseURL}/${environment.route}`;
+  }
 
   public GET_RAW: string = `${environment.parentDomain}/web/get-raw`;
   public SIGN_IN: string = `${this.PATH}/sign-in`;
