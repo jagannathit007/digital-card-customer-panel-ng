@@ -192,4 +192,65 @@ export class AttendanceService {
       return null;
     }
   }
+
+  getAttendanceList = async (data: any) => {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        { url: apiEndpoints.GET_ATTENDANCE_LIST, method: 'POST' },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.warning(response.message);
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  getAttendanceStats = async (data: any) => {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        { url: apiEndpoints.GET_ATTENDANCE_STATS, method: 'POST' },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.warning(response.message);
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  sendNotification = async (data: any) => {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        { url: apiEndpoints.SEND_NOTIFICATION, method: 'POST' },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        swalHelper.showToast(response.message, 'success');
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
 }

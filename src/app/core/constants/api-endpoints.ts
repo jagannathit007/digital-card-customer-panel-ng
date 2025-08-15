@@ -293,6 +293,11 @@ public GET_GOOGLE_CALENDAR_ID: string = `${this.PATH}/task/google/calendar-id`;
   public ADD_EMPLOYEE: string = `${this.PATH}/employee/create`;
   public UPDATE_EMPLOYEE: string = `${this.PATH}/employee/update`;
   public DELETE_EMPLOYEE: string = `${this.PATH}/employee/delete`;
+
+  public GET_ATTENDANCE_LIST: string = `${this.PATH}/attendance/list`;
+  public GET_ATTENDANCE_STATS: string = `${this.PATH}/attendance/stats`;
+  public SEND_NOTIFICATION: string = `${this.PATH}/attendance/send-notification`;
+
 }
 
 const storage = new AppStorage();

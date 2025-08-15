@@ -12,6 +12,7 @@ import { EmployeesComponent } from './views/pages/employees/employees.component'
 // Task managemnt members routes
 import { LoginComponent } from './views/pages/task-management/task-components/task/shared/teammembers-auth/login/login.component';
 import { MemberprofileComponent } from './views/pages/task-management/task-components/task/shared/memberprofile/memberprofile.component';
+import { AttendanceDashboardComponent } from './views/pages/attendance-dashboard/attendance-dashboard.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'auth/login' },
@@ -56,7 +57,7 @@ export const routes: Routes = [
       // },
       {
         path: 'attendance',
-        component: DemoAttendanceComponent,
+        component: AttendanceDashboardComponent,
       },
       {
         path: 'offices',
