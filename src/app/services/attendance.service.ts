@@ -4,13 +4,14 @@ import { swalHelper } from '../core/constants/swal-helper';
 import { common } from '../core/constants/common';
 import { ApiManager } from '../core/utilities/api-manager';
 import { AppStorage } from '../core/utilities/app-storage';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AttendanceService {
   private headers: any = [];
-  constructor(private apiManager: ApiManager, private storage: AppStorage) {}
+  constructor(private apiManager: ApiManager, private storage: AppStorage, private http: HttpClient) {}
 
   private getHeaders = () => {
     this.headers = [];
@@ -269,6 +270,40 @@ export class AttendanceService {
         return null;
       }
     } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async generateAttendanceReport(
+    data: { officeId: string; month: string; employeeId?: string }
+  ): Promise<Blob | null> {
+    try {
+      this.getHeaders();
+
+      // Convert your headers array to HttpHeaders
+      let headerObj: any = {};
+      this.headers.forEach((h: any) => {
+        Object.keys(h).forEach((key) => (headerObj[key] = h[key]));
+      });
+      const httpHeaders = new HttpHeaders(headerObj);
+
+      // 👇 Direct API call with responseType: 'blob'
+      const response = await this.http
+        .post(apiEndpoints.GENERATE_ATTENDANCE_REPORT, data, {
+          headers: httpHeaders,
+          responseType: 'blob',
+        })
+        .toPromise();
+
+      if (response) {
+        return response;
+      } else {
+        swalHelper.warning('Failed to generate report');
+        return null;
+      }
+    } catch (err) {
+      console.error('Error in generateAttendanceReport:', err);
       swalHelper.showToast('Something went wrong!', 'error');
       return null;
     }

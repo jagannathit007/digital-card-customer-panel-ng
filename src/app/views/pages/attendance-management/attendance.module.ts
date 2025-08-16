@@ -13,12 +13,14 @@ import { AttendanceDashboardComponent } from './attendance-dashboard/attendance-
 import { EmployeesComponent } from './employees/employees.component';
 import { OfficesComponent } from './offices/offices.component';
 import { AttendanceRoutingModule } from './attendance-routing.module';
+import { AtendanceReportComponent } from './atendance-report/atendance-report.component';
+import { LeaveRequestsComponent } from './leave-requests/leave-requests.component';
 
 @NgModule({
   declarations: [
     AttendanceDashboardComponent,
     EmployeesComponent,
-    OfficesComponent
+    OfficesComponent,
   ],
   imports: [
     CommonModule,
@@ -28,6 +30,8 @@ import { AttendanceRoutingModule } from './attendance-routing.module';
     NgxPaginationModule,
     NgSelectModule,
     FormsModule,
+    AtendanceReportComponent,
+    LeaveRequestsComponent,
 ]
 })
 export class AttendanceModule {}

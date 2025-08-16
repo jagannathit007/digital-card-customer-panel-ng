@@ -1,0 +1,139 @@
+<div class="tw-min-h-screen tw-bg-gray-50 tw-p-6">
+  <!-- Header -->
+  <div class="tw-flex tw-justify-between tw-items-center tw-mb-6">
+    <h1 class="tw-text-2xl tw-font-bold tw-text-gray-800">
+      Attendance Reports
+    </h1>
+  </div>
+
+  <!-- Report Generation Card -->
+  <div class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-p-6">
+    <h2 class="tw-text-xl tw-font-semibold tw-text-gray-800 tw-mb-6">
+      Generate Attendance Report
+    </h2>
+
+    <!-- Filters -->
+    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-4 tw-mb-6">
+      <!-- Office Filter -->
+      <div>
+        <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">Select Office *</label>
+        <div class="tw-relative">
+          <button
+            class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg tw-text-left tw-bg-white hover:tw-bg-gray-50 tw-flex tw-items-center tw-justify-between"
+            type="button"
+            (click)="toggleOfficeDropdown()"
+            [disabled]="offices.length === 0"
+          >
+            <span class="tw-truncate">
+              {{ selectedOfficeId ? getOfficeName(selectedOfficeId) : offices.length === 0 ? 'No Offices Available' : 'Select Office' }}
+            </span>
+            <i class="ri-arrow-down-s-line tw-text-gray-400"></i>
+          </button>
+          <div
+            *ngIf="isOfficeDropdownOpen && offices.length > 0"
+            class="tw-absolute tw-z-10 tw-w-full tw-mt-1 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-overflow-hidden tw-max-h-60 tw-overflow-y-auto"
+          >
+            <div *ngFor="let office of offices">
+              <button
+                class="tw-w-full tw-px-3 tw-py-2 tw-text-left hover:tw-bg-gray-100 tw-flex tw-items-center"
+                (click)="onOfficeSelect(office._id)"
+              >
+                <i class="ri-building-line tw-mr-2 tw-text-gray-400"></i>
+                {{ office.name }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Month Filter -->
+      <div>
+        <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">Select Month *</label>
+        <input
+          type="month"
+          class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500"
+          [(ngModel)]="selectedMonth"
+          required
+        />
+      </div>
+
+      <!-- Employee Filter (Optional) -->
+      <div>
+        <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">Select Employee (Optional)</label>
+        <div class="tw-relative">
+          <button
+            class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg tw-text-left tw-bg-white hover:tw-bg-gray-50 tw-flex tw-items-center tw-justify-between"
+            type="button"
+            (click)="toggleEmployeeDropdown()"
+            [disabled]="!selectedOfficeId || employees.length === 0"
+          >
+            <span class="tw-truncate">
+              {{ selectedEmployeeId ? getEmployeeName(selectedEmployeeId) : employees.length === 0 ? 'No Employees Available' : 'All Employees' }}
+            </span>
+            <i class="ri-arrow-down-s-line tw-text-gray-400"></i>
+          </button>
+          <div
+            *ngIf="isEmployeeDropdownOpen && employees.length > 0"
+            class="tw-absolute tw-z-10 tw-w-full tw-mt-1 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-overflow-hidden tw-max-h-60 tw-overflow-y-auto"
+          >
+            <button
+              class="tw-w-full tw-px-3 tw-py-2 tw-text-left hover:tw-bg-gray-100 tw-flex tw-items-center"
+              (click)="onEmployeeSelect('')"
+            >
+              <i class="ri-group-line tw-mr-2 tw-text-gray-400"></i>
+              All Employees
+            </button>
+            <div class="tw-px-3 tw-py-2 tw-border-b tw-border-gray-200">
+              <input
+                type="text"
+                class="tw-w-full tw-px-3 tw-py-1 tw-border tw-border-gray-300 tw-rounded-lg tw-text-sm"
+                [(ngModel)]="employeeSearchText"
+                (ngModelChange)="onEmployeeSearch()"
+                placeholder="Search employees..."
+              />
+            </div>
+            <div *ngFor="let employee of filteredEmployees">
+              <button
+                class="tw-w-full tw-px-3 tw-py-2 tw-text-left hover:tw-bg-gray-100 tw-flex tw-items-center"
+                (click)="onEmployeeSelect(employee._id)"
+              >
+                <i class="ri-user-line tw-mr-2 tw-text-gray-400"></i>
+                {{ employee.name }} ({{ employee.designation }})
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generate Button -->
+    <div class="tw-flex tw-justify-end">
+      <button
+        (click)="generateReport()"
+        class="tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-px-6 tw-py-2.5 tw-rounded-lg tw-flex tw-items-center tw-gap-2 tw-font-medium tw-transition-colors"
+        [disabled]="isGenerating || !selectedOfficeId || !selectedMonth"
+      >
+        <i *ngIf="isGenerating" class="ri-loader-4-line tw-animate-spin"></i>
+        {{ isGenerating ? 'Generating...' : 'Generate & Download Report' }}
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="tw-mt-8 tw-text-center">
+      <div class="tw-inline-flex tw-items-center tw-justify-center tw-w-12 tw-h-12 tw-rounded-full tw-bg-blue-100 tw-mb-4">
+        <i class="ri-loader-4-line tw-text-2xl tw-text-blue-600 tw-animate-spin"></i>
+      </div>
+      <h4 class="tw-text-lg tw-font-medium tw-text-gray-800 tw-mb-1">Loading Data</h4>
+      <p class="tw-text-sm tw-text-gray-500">Please wait while we prepare the report options</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && offices.length === 0" class="tw-mt-8 tw-text-center tw-bg-gray-50 tw-rounded-lg tw-py-8">
+      <div class="tw-inline-flex tw-items-center tw-justify-center tw-w-12 tw-h-12 tw-rounded-full tw-bg-gray-200 tw-text-gray-500 tw-mb-4">
+        <i class="ri-building-line tw-text-2xl"></i>
+      </div>
+      <h4 class="tw-text-lg tw-font-medium tw-text-gray-800 tw-mb-1">No Offices Found</h4>
+      <p class="tw-text-sm tw-text-gray-500">Please add offices to generate reports.</p>
+    </div>
+  </div>
+</div>

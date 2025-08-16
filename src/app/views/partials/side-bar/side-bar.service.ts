@@ -390,27 +390,38 @@ export class SideBarService {
     };
 
     let attendanceManagementMenu: any = {
-      title: 'Attendance',
-      link: 'task-management',
-      icon: 'file-text',
-      menu: [
-        {
-          title: 'Dashboard',
-          link: 'attendance/dashboard',
-          icon: 'table',
-        },
-        {
-          title: 'Offices',
-          link: 'attendance/offices',
-          icon: 'table',
-        },
-        {
-          title: 'Employees',
-          link: 'attendance/employees',
-          icon: 'table',
-        },
-      ],
-    };
+  title: 'Attendance',
+  link: 'task-management',
+  icon: 'clipboard', // main section icon
+  menu: [
+    {
+      title: 'Dashboard',
+      link: 'attendance/dashboard',
+      icon: 'grid', // Dashboard
+    },
+    {
+      title: 'Offices',
+      link: 'attendance/offices',
+      icon: 'map-pin', // Offices
+    },
+    {
+      title: 'Employees',
+      link: 'attendance/employees',
+      icon: 'users', // Employees
+    },
+    {
+      title: 'Reports',
+      link: 'attendance/reports',
+      icon: 'bar-chart-2', // Reports
+    },
+    {
+      title: 'Leave Requests',
+      link: 'attendance/leave-requests',
+      icon: 'calendar', // Leave requests
+    },
+  ],
+};
+
 
     if (userDetails) {
       if (userDetails.role !== 'member' && userDetails.role !== 'leader') {
