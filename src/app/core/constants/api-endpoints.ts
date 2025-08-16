@@ -293,6 +293,19 @@ public GET_GOOGLE_CALENDAR_ID: string = `${this.PATH}/task/google/calendar-id`;
   public ADD_EMPLOYEE: string = `${this.PATH}/employee/create`;
   public UPDATE_EMPLOYEE: string = `${this.PATH}/employee/update`;
   public DELETE_EMPLOYEE: string = `${this.PATH}/employee/delete`;
+
+  public GET_ATTENDANCE_LIST: string = `${this.PATH}/attendance/list`;
+  public GET_ATTENDANCE_STATS: string = `${this.PATH}/attendance/stats`;
+  public SEND_NOTIFICATION: string = `${this.PATH}/attendance/send-notification`;
+
+
+  public GET_CUSTOM_FIELDS: string = `${this.PATH}/employee/custom-fields`;
+
+  public GENERATE_ATTENDANCE_REPORT: string = `${this.PATH}/attendance/report`;
+
+  public GET_LEAVES: string = `${this.PATH}/leave/list`;
+  public MANAGE_LEAVE: string = `${this.PATH}/leave/manage`;
+  public APPLY_LEAVE: string = `${this.PATH}/leave/apply`;
 }
 
 const storage = new AppStorage();
