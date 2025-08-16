@@ -12,8 +12,6 @@ import { environment } from 'src/env/env.prod';
 
 @Component({
   selector: 'app-offices',
-  standalone: true,
-  imports: [FormsModule, CommonModule],
   templateUrl: './offices.component.html',
   styleUrl: './offices.component.scss',
 })

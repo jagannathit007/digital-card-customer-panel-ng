@@ -1,0 +1,382 @@
+<div class="tw-min-h-screen tw-bg-gray-50 tw-p-6">
+  <!-- Header and Add Employee Button -->
+  <div class="tw-flex tw-justify-between tw-items-center tw-mb-6">
+    <h1 class="tw-text-2xl tw-font-bold tw-text-gray-800">Employee Management</h1>
+    <button (click)="onNewEmployee()"
+      class="tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-px-4 tw-py-2 tw-rounded-lg tw-flex tw-items-center tw-gap-2">
+      <i class="ri-user-add-line"></i>
+      Add Employee
+    </button>
+  </div>
+
+  <!-- Employee Table Section -->
+  <div class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-overflow-hidden">
+    <div class="tw-p-6">
+      <!-- Filters -->
+      <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-4 tw-mb-6">
+        <div>
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">Filter by Office</label>
+          <div class="tw-relative">
+            <button
+              class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg tw-text-left tw-bg-white hover:tw-bg-gray-50 tw-flex tw-items-center tw-justify-between"
+              type="button" (click)="toggleOfficeDropdown()" [disabled]="offices.length === 0">
+              <span class="tw-truncate">
+                {{ selectedOfficeId ? getOfficeName(selectedOfficeId) : (offices.length === 0 ? 'No Offices Available' :
+                'All Employees') }}
+              </span>
+              <i class="ri-arrow-down-s-line tw-text-gray-400"></i>
+            </button>
+            <div *ngIf="isOfficeDropdownOpen && offices.length > 0"
+              class="tw-absolute tw-z-10 tw-w-full tw-mt-1 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-overflow-hidden tw-max-h-60 tw-overflow-y-auto">
+              <button class="tw-w-full tw-px-3 tw-py-2 tw-text-left hover:tw-bg-gray-100 tw-flex tw-items-center"
+                (click)="selectOffice('')">
+                <i class="ri-group-line tw-mr-2 tw-text-gray-400"></i>
+                All Employees
+              </button>
+              <div *ngFor="let office of offices">
+                <button class="tw-w-full tw-px-3 tw-py-2 tw-text-left hover:tw-bg-gray-100 tw-flex tw-items-center"
+                  (click)="selectOffice(office._id)">
+                  <i class="ri-building-line tw-mr-2 tw-text-gray-400"></i>
+                  {{ office.name }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">Search Employees</label>
+          <div class="tw-relative">
+            <input type="text"
+              class="tw-w-full tw-pl-10 tw-pr-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500"
+              [(ngModel)]="searchText" (ngModelChange)="onSearch()" placeholder="Name, Email, Designation..." />
+            <i class="ri-search-line tw-absolute tw-left-3 tw-top-2.5 tw-text-gray-400"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="tw-py-8 tw-text-center">
+        <div
+          class="tw-inline-flex tw-items-center tw-justify-center tw-w-12 tw-h-12 tw-rounded-full tw-bg-blue-100 tw-mb-4">
+          <i class="ri-loader-4-line tw-text-2xl tw-text-blue-600 tw-animate-spin"></i>
+        </div>
+        <h4 class="tw-text-lg tw-font-medium tw-text-gray-800 tw-mb-1">Loading Employees</h4>
+        <p class="tw-text-sm tw-text-gray-500">Please wait while we fetch the employee data</p>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoading && filteredEmployees.length === 0"
+        class="tw-py-8 tw-text-center tw-bg-gray-50 tw-rounded-lg">
+        <div
+          class="tw-inline-flex tw-items-center tw-justify-center tw-w-12 tw-h-12 tw-rounded-full tw-bg-gray-200 tw-text-gray-500 tw-mb-4">
+          <i class="ri-user-search-line tw-text-2xl"></i>
+        </div>
+        <h4 class="tw-text-lg tw-font-medium tw-text-gray-800 tw-mb-1">No Employees Found</h4>
+        <p class="tw-text-sm tw-text-gray-500 tw-mb-4">Try adjusting your search or filter criteria</p>
+      </div>
+
+      <!-- Employee Table -->
+      <div *ngIf="!isLoading && filteredEmployees.length > 0"
+        class="tw-overflow-hidden tw-border tw-border-gray-200 tw-rounded-lg">
+        <div class="tw-overflow-x-auto">
+          <table class="tw-min-w-full tw-divide-y tw-divide-gray-200">
+            <thead class="tw-bg-gray-50">
+              <tr>
+                <th scope="col"
+                  class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                  Employee</th>
+                <th scope="col"
+                  class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                  Contact</th>
+                <th scope="col"
+                  class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                  Office</th>
+                <th scope="col"
+                  class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                  Status</th>
+                <th scope="col"
+                  class="tw-px-6 tw-py-3 tw-text-right tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                  Actions</th>
+              </tr>
+            </thead>
+            <tbody class="tw-bg-white tw-divide-y tw-divide-gray-200">
+              <tr
+                *ngFor="let employee of filteredEmployees | paginate: {itemsPerPage: pageSize, currentPage: currentPage, totalItems: totalItems}; let i = index;trackBy: trackById"
+                class="hover:tw-bg-gray-50">
+                <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                  <div class="tw-flex tw-items-center">
+                    <div class="tw-flex-shrink-0 tw-h-10 tw-w-10">
+                      <img *ngIf="employee.profileImg" [src]="profileImageBaseUrl + employee.profileImg"
+                        alt="Profile Image" class="tw-h-10 tw-w-10 tw-rounded-full" style="object-fit: cover;" />
+                      <div *ngIf="!employee.profileImg"
+                        class="tw-h-10 tw-w-10 tw-rounded-full tw-bg-gray-200 tw-flex tw-items-center tw-justify-center">
+                        <span class="tw-text-sm tw-font-medium tw-text-gray-700">{{ getInitials(employee.name) }}</span>
+                      </div>
+                    </div>
+                    <div class="tw-ml-4">
+                      <div class="tw-text-sm tw-font-medium tw-text-gray-900">{{ employee.name }}</div>
+                      <div class="tw-text-sm tw-text-gray-500">{{ employee.designation }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                  <div class="tw-text-sm tw-text-gray-900">{{ employee.emailId }}</div>
+                  <div class="tw-text-sm tw-text-gray-500">{{ employee.mobileNo }}</div>
+                </td>
+                <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                  <div class="tw-flex tw-flex-col tw-gap-1">
+                    <span *ngFor="let officeId of employee.officess" class="tw-text-xs tw-font-medium tw-text-gray-700">
+                      {{ getOfficeName(officeId) }}
+                    </span>
+                  </div>
+                </td>
+                <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                  <span class="tw-px-2 tw-py-1 tw-inline-flex tw-text-xs tw-leading-5 tw-font-semibold tw-rounded-full"
+                    [class.tw-bg-green-100]="employee.isActive" [class.tw-text-green-800]="employee.isActive"
+                    [class.tw-bg-red-100]="!employee.isActive" [class.tw-text-red-800]="!employee.isActive">
+                    {{ employee.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap tw-text-right tw-text-sm tw-font-medium">
+                  <div class="tw-flex tw-justify-end tw-space-x-2">
+                    <button (click)="onEditEmployee(employee)"
+                      class="tw-text-blue-600 hover:tw-text-blue-900 tw-p-1 tw-rounded hover:tw-bg-blue-50"
+                      title="Edit">
+                      <i class="ri-pencil-line"></i>
+                    </button>
+                    <button (click)="onDeleteEmployee(employee._id)"
+                      class="tw-text-red-600 hover:tw-text-red-900 tw-p-1 tw-rounded hover:tw-bg-red-50" title="Delete">
+                      <i class="ri-delete-bin-line"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+
+
+        <!-- Pagination -->
+        <div class="tw-px-4 tw-py-3 tw-bg-gray-50 tw-border-t tw-border-gray-200 sm:tw-px-6">
+          <pagination-controls class="pagination" (pageChange)="changePage($event)" style="justify-content: center;">
+          </pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Employee Form Modal -->
+  <div *ngIf="isEditMode || isNewMode" class="tw-fixed tw-inset-0 tw-z-50 tw-overflow-y-auto"
+    aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div
+      class="tw-flex tw-items-end tw-justify-center tw-min-h-screen tw-pt-4 tw-px-4 tw-pb-20 tw-text-center sm:tw-block sm:tw-p-0">
+      <!-- Background overlay -->
+      <div class="tw-fixed tw-inset-0 tw-bg-gray-500 tw-bg-opacity-75 tw-transition-opacity" aria-hidden="true"
+        (click)="onReset()"></div>
+
+      <!-- Modal container -->
+      <div
+        class="tw-inline-block tw-align-bottom tw-bg-white tw-rounded-lg tw-text-left tw-overflow-hidden tw-shadow-xl tw-transform tw-transition-all sm:tw-my-8 sm:tw-align-middle sm:tw-max-w-2xl sm:tw-w-full">
+        <div class="tw-bg-white tw-px-4 tw-pt-5 tw-pb-4 sm:tw-p-6 sm:tw-pb-4">
+          <div class="sm:tw-flex sm:tw-items-start">
+            <div class="tw-mt-3 tw-text-center sm:tw-mt-0 sm:tw-text-left tw-w-full">
+              <h3 class="tw-text-lg tw-leading-6 tw-font-medium tw-text-gray-900 tw-mb-4" id="modal-title">
+                {{ isEditMode ? 'Edit Employee' : 'Add New Employee' }}
+              </h3>
+
+              <form (ngSubmit)="onSaveEmployee()" class="tw-space-y-4">
+                <!-- Profile Image Upload -->
+                <div class="tw-space-y-2">
+                  <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">Profile Image</label>
+                  <div class="tw-w-32 tw-h-32 tw-mx-auto tw-relative tw-group tw-cursor-pointer"
+                    (click)="fileInput.click()" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)"
+                    (drop)="onDrop($event)">
+                    <div
+                      class="tw-w-full tw-h-full tw-rounded-full tw-border-2 tw-border-dashed tw-flex tw-flex-col tw-items-center tw-justify-center tw-overflow-hidden tw-transition-all"
+                      [class.tw-border-blue-500]="isDragging" [class.tw-border-gray-300]="!isDragging"
+                      [class.tw-bg-blue-50]="isDragging">
+                      <input #fileInput type="file" class="tw-hidden" accept="image/*"
+                        (change)="onImageSelect($event)" />
+                      <img *ngIf="imagePreview" [src]="imagePreview" alt="Profile Preview"
+                        class="tw-w-full tw-h-full tw-object-cover tw-rounded-full" />
+                      <div *ngIf="!imagePreview" class="tw-text-center tw-text-gray-400 tw-p-4">
+                        <i class="ri-user-line tw-text-3xl tw-mb-2"></i>
+                        <p class="tw-text-xs">Click to upload or drag & drop</p>
+                      </div>
+                    </div>
+                    <div *ngIf="imagePreview"
+                      class="tw-absolute tw-inset-0 tw-w-full tw-h-full tw-flex tw-items-center tw-justify-center tw-bg-black tw-bg-opacity-0 group-hover:tw-bg-opacity-30 tw-transition-all tw-rounded-full">
+                      <button type="button"
+                        class="tw-opacity-0 group-hover:tw-opacity-100 tw-bg-red-500 hover:tw-bg-red-600 tw-text-white tw-rounded-full tw-p-2 tw-transition-all"
+                        (click)="removeImage(); $event.stopPropagation()" title="Remove Image">
+                        <i class="ri-close-line"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Form Fields Grid -->
+                <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4">
+                  <!-- Name -->
+                  <div>
+                    <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">Full Name *</label>
+                    <input type="text"
+                      class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500"
+                      [(ngModel)]="form.name" [ngModelOptions]="{ standalone: true }" required placeholder="John Doe" />
+                  </div>
+
+                  <!-- Designation -->
+                  <div>
+                    <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">Designation *</label>
+                    <input type="text"
+                      class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500"
+                      [(ngModel)]="form.designation" [ngModelOptions]="{ standalone: true }" required
+                      placeholder="Software Engineer" />
+                  </div>
+
+                  <!-- Email -->
+                  <div>
+                    <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">Email ID *</label>
+                    <input type="email"
+                      class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500"
+                      [(ngModel)]="form.emailId" [ngModelOptions]="{ standalone: true }" required
+                      placeholder="john@example.com" />
+                  </div>
+
+                  <!-- Password -->
+                  <div>
+                    <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">
+                      Password {{ isEditMode ? '(Leave blank to keep current)' : '*' }}
+                    </label>
+                    <div class="tw-relative">
+                      <input type="password"
+                        class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500 tw-pr-10"
+                        [(ngModel)]="form.password" [ngModelOptions]="{ standalone: true }" [required]="!isEditMode"
+                        placeholder="••••••••" />
+                      <i
+                        class="ri-eye-line tw-absolute tw-right-3 tw-top-2.5 tw-text-gray-400 hover:tw-text-gray-600 tw-cursor-pointer"></i>
+                    </div>
+                  </div>
+
+                  <!-- Mobile -->
+                  <div>
+                    <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">Mobile Number *</label>
+                    <input type="tel"
+                      class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500"
+                      [(ngModel)]="form.mobileNo" [ngModelOptions]="{ standalone: true }" required
+                      placeholder="+91 9876543210" />
+                  </div>
+
+                  <!-- Employee Type -->
+                  <div>
+                    <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">Employee Type *</label>
+                    <select
+                      class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500"
+                      [(ngModel)]="form.employeeType" [ngModelOptions]="{ standalone: true }" required>
+                      <option value="" disabled selected>Select employee type</option>
+                      <option value="Full Time">Full Time</option>
+                      <option value="Part Time">Part Time</option>
+                      <option value="Contract">Contract</option>
+                      <option value="Intern">Intern</option>
+                    </select>
+                  </div>
+
+                  <!-- Aadhar -->
+                  <div>
+                    <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">Aadhar Number</label>
+                    <input type="text"
+                      class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500"
+                      [(ngModel)]="form.personal_details.aadharNo" [ngModelOptions]="{ standalone: true }"
+                      placeholder="XXXX-XXXX-XXXX" />
+                  </div>
+
+                  <!-- PAN -->
+                  <div>
+                    <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">PAN Number</label>
+                    <input type="text"
+                      class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500"
+                      [(ngModel)]="form.personal_details.panNo" [ngModelOptions]="{ standalone: true }"
+                      placeholder="ABCDE1234F" />
+                  </div>
+
+                  <!-- Salary -->
+                  <div>
+                    <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">Salary</label>
+                    <div class="tw-relative">
+                      <span class="tw-absolute tw-left-3 tw-top-2.5 tw-text-gray-500">₹</span>
+                      <input type="number"
+                        class="tw-w-full tw-pl-8 tw-pr-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500"
+                        [(ngModel)]="form.salary" [ngModelOptions]="{ standalone: true }" placeholder="50000" />
+                    </div>
+                  </div>
+
+                  <!-- Offices -->
+                  <div>
+                    <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">Assign to Office(s)
+                      *</label>
+                    <select
+                      class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500"
+                      [(ngModel)]="form.officess" [ngModelOptions]="{ standalone: true }" multiple required>
+                      <option *ngIf="offices.length === 0" disabled>No offices available</option>
+                      <option *ngFor="let office of offices" [value]="office._id">{{ office.name }}</option>
+                    </select>
+                    <p class="tw-text-xs tw-text-gray-500 tw-mt-1">Hold Ctrl/Cmd to select multiple offices</p>
+                  </div>
+
+                  <!-- Status -->
+                  <div>
+                    <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">Status *</label>
+                    <select
+                      class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500"
+                      [(ngModel)]="form.isActive" [ngModelOptions]="{ standalone: true }" required>
+                      <option [value]="true">Active</option>
+                      <option [value]="false">Inactive</option>
+                    </select>
+                  </div>
+
+                  <!-- Lock Profile -->
+                  <div>
+                    <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">Lock Profile *</label>
+                    <select
+                      class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500"
+                      [(ngModel)]="form.lock_profile" [ngModelOptions]="{ standalone: true }" required>
+                      <option [value]="true">Yes</option>
+                      <option [value]="false">No</option>
+                    </select>
+                  </div>
+
+                  <!-- Allow Bypass -->
+                  <div>
+                    <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">Allow Bypass *</label>
+                    <select
+                      class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500"
+                      [(ngModel)]="form.allow_bypass" [ngModelOptions]="{ standalone: true }" required>
+                      <option [value]="true">Yes</option>
+                      <option [value]="false">No</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="tw-flex tw-gap-3 tw-pt-6">
+                  <button type="submit"
+                    class="tw-flex-1 tw-bg-blue-600 hover:tw-bg-blue-700 tw-text-white tw-py-2.5 tw-rounded-lg tw-font-medium tw-flex tw-items-center tw-justify-center tw-transition-colors"
+                    [disabled]="isSaving">
+                    <i *ngIf="isSaving" class="ri-loader-4-line tw-animate-spin tw-mr-2"></i>
+                    {{ isSaving ? 'Processing...' : (isEditMode ? 'Update Employee' : 'Add Employee') }}
+                  </button>
+                  <button type="button"
+                    class="tw-flex-1 tw-bg-white hover:tw-bg-gray-50 tw-text-gray-700 tw-py-2.5 tw-rounded-lg tw-font-medium tw-border tw-border-gray-300 tw-transition-colors"
+                    (click)="onReset()">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

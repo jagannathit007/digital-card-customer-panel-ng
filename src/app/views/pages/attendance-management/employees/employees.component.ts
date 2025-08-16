@@ -11,8 +11,6 @@ import { environment } from 'src/env/env.prod';
 
 @Component({
   selector: 'app-employees',
-  standalone: true,
-  imports: [FormsModule, CommonModule],
   templateUrl: './employees.component.html',
   styleUrl: './employees.component.scss',
 })
@@ -251,6 +249,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     this.imagePreview = null;
     this.selectedImageFile = null;
     this.isEditMode = false;
+    this.isNewMode = false;
     this.editingId = null;
     const fileInput = document.querySelector(
       'input[type="file"]'
@@ -259,6 +258,15 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       fileInput.value = '';
     }
   };
+
+  isNewMode = false;
+  onNewEmployee = () => {
+    this.onReset();
+    this.isNewMode = true;
+    this.editingId = null;
+    this.imagePreview = null;
+    this.selectedImageFile = null;
+  }
 
   onEditEmployee = (employee: any) => {
     this.isEditMode = true;

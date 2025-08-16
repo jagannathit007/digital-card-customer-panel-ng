@@ -3,17 +3,17 @@
     <app-side-bar></app-side-bar>
   </div>
   <div class="main flex-grow-1 position-relative" style="overflow-x: hidden; overflow-y: auto;">
-    @if  (businessId && !currentRoute.includes('/task-management')) {
-      <app-header ></app-header>
+    @if (businessId && !currentRoute.includes('/task-management')) {
+    <app-header></app-header>
     }
     @if(!businessId || (isAdmin && currentRoute.includes('/task-management'))) {
-      <app-admin-header></app-admin-header>
+    <app-admin-header></app-admin-header>
     }
 
     <!-- @if(isAdmin && currentRoute.includes('/task-management')){
       <app-admin-header></app-admin-header>
     } -->
-    
+
     <main class="content p-3">
       <router-outlet></router-outlet>
     </main>

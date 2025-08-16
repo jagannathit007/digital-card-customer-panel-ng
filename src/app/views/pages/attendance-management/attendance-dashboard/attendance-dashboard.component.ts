@@ -33,8 +33,6 @@ interface AttendanceStats {
 
 @Component({
   selector: 'app-attendance',
-  standalone: true,
-  imports: [FormsModule, CommonModule],
   templateUrl: './attendance-dashboard.component.html',
   styleUrl: './attendance-dashboard.component.scss',
 })
