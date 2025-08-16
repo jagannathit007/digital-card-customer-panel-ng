@@ -308,4 +308,45 @@ export class AttendanceService {
       return null;
     }
   }
+
+  async getLeaves(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        { url: apiEndpoints.GET_LEAVES, method: 'POST' },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.warning(response.message);
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async manageLeave(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        { url: apiEndpoints.MANAGE_LEAVE, method: 'POST' },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        swalHelper.showToast(response.message, 'success');
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
 }

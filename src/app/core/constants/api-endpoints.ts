@@ -302,6 +302,10 @@ public GET_GOOGLE_CALENDAR_ID: string = `${this.PATH}/task/google/calendar-id`;
   public GET_CUSTOM_FIELDS: string = `${this.PATH}/employee/custom-fields`;
 
   public GENERATE_ATTENDANCE_REPORT: string = `${this.PATH}/attendance/report`;
+
+  public GET_LEAVES: string = `${this.PATH}/leave/list`;
+  public MANAGE_LEAVE: string = `${this.PATH}/leave/manage`;
+  public APPLY_LEAVE: string = `${this.PATH}/leave/apply`;
 }
 
 const storage = new AppStorage();

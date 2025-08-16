@@ -1,1 +1,492 @@
-<p>leave-requests works!</p>
+<div class="tw-min-h-screen tw-bg-gray-50/50 tw-p-6">
+  <!-- Header -->
+  <div class="tw-flex tw-justify-between tw-items-center tw-mb-8">
+    <div>
+      <h1 class="tw-text-2xl tw-font-bold tw-text-gray-900">
+        Leave Requests
+      </h1>
+      <p class="tw-text-sm tw-text-gray-500">
+        Review and manage employee leave requests
+      </p>
+    </div>
+  </div>
+
+  <!-- Filters Card -->
+  <div class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-p-4 tw-mb-6">
+    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-4">
+      <!-- Office Filter -->
+      <div>
+        <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">
+          Office
+        </label>
+        <div class="tw-relative">
+          <button
+            class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-200 tw-rounded-lg tw-text-left tw-bg-white hover:tw-bg-gray-50 tw-flex tw-items-center tw-justify-between tw-transition-colors"
+            (click)="toggleOfficeDropdown()"
+            [disabled]="offices.length === 0"
+          >
+            <span class="tw-truncate">
+              {{ selectedOfficeId ? getOfficeName(selectedOfficeId) : 'Select Office' }}
+            </span>
+            <i class="ri-arrow-down-s-line tw-text-gray-400"></i>
+          </button>
+          <div
+            *ngIf="isOfficeDropdownOpen && offices.length > 0"
+            class="tw-absolute tw-z-10 tw-w-full tw-mt-1 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-overflow-hidden tw-max-h-60 tw-overflow-y-auto"
+          >
+            <button
+              *ngFor="let office of offices"
+              class="tw-w-full tw-px-3 tw-py-2 tw-text-left hover:tw-bg-gray-50 tw-flex tw-items-center tw-transition-colors"
+              (click)="selectOffice(office._id)"
+            >
+              <i class="ri-building-line tw-mr-2 tw-text-gray-400"></i>
+              {{ office.name }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Filter -->
+      <div>
+        <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">
+          Status
+        </label>
+        <div class="tw-relative">
+          <button
+            class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-200 tw-rounded-lg tw-text-left tw-bg-white hover:tw-bg-gray-50 tw-flex tw-items-center tw-justify-between tw-transition-colors"
+            (click)="toggleStatusDropdown()"
+          >
+            <span class="tw-truncate">
+              {{ getStatusFilterLabel() }}
+            </span>
+            <i class="ri-arrow-down-s-line tw-text-gray-400"></i>
+          </button>
+          <div
+            *ngIf="isStatusDropdownOpen"
+            class="tw-absolute tw-z-10 tw-w-full tw-mt-1 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-overflow-hidden"
+          >
+            <button
+              class="tw-w-full tw-px-3 tw-py-2 tw-text-left hover:tw-bg-gray-50 tw-flex tw-items-center tw-transition-colors"
+              (click)="selectStatus(['Pending'])"
+            >
+              <span class="tw-w-2 tw-h-2 tw-rounded-full tw-bg-yellow-400 tw-mr-2"></span>
+              Pending
+            </button>
+            <button
+              class="tw-w-full tw-px-3 tw-py-2 tw-text-left hover:tw-bg-gray-50 tw-flex tw-items-center tw-transition-colors"
+              (click)="selectStatus(['Approved'])"
+            >
+              <span class="tw-w-2 tw-h-2 tw-rounded-full tw-bg-green-400 tw-mr-2"></span>
+              Approved
+            </button>
+            <button
+              class="tw-w-full tw-px-3 tw-py-2 tw-text-left hover:tw-bg-gray-50 tw-flex tw-items-center tw-transition-colors"
+              (click)="selectStatus(['Rejected'])"
+            >
+              <span class="tw-w-2 tw-h-2 tw-rounded-full tw-bg-red-400 tw-mr-2"></span>
+              Rejected
+            </button>
+            <div class="tw-border-t tw-border-gray-200"></div>
+            <button
+              class="tw-w-full tw-px-3 tw-py-2 tw-text-left hover:tw-bg-gray-50 tw-flex tw-items-center tw-transition-colors"
+              (click)="selectStatus(['Pending', 'Approved', 'Rejected'])"
+            >
+              <span class="tw-w-2 tw-h-2 tw-rounded-full tw-bg-gray-400 tw-mr-2"></span>
+              All Statuses
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-p-8 tw-text-center">
+    <div class="tw-inline-flex tw-items-center tw-justify-center tw-w-12 tw-h-12 tw-rounded-full tw-bg-blue-50 tw-mb-4">
+      <i class="ri-loader-4-line tw-text-xl tw-text-blue-600 tw-animate-spin"></i>
+    </div>
+    <h4 class="tw-text-lg tw-font-medium tw-text-gray-800 tw-mb-1">
+      Loading Leave Requests
+    </h4>
+    <p class="tw-text-sm tw-text-gray-500">
+      Please wait while we fetch the data
+    </p>
+  </div>
+
+  <!-- Empty State -->
+  <div
+    *ngIf="!isLoading && filteredLeaves.length === 0"
+    class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-p-8 tw-text-center"
+  >
+    <div class="tw-inline-flex tw-items-center tw-justify-center tw-w-12 tw-h-12 tw-rounded-full tw-bg-gray-100 tw-text-gray-400 tw-mb-4">
+      <i class="ri-calendar-todo-line tw-text-xl"></i>
+    </div>
+    <h4 class="tw-text-lg tw-font-medium tw-text-gray-800 tw-mb-1">
+      No Leave Requests Found
+    </h4>
+    <p class="tw-text-sm tw-text-gray-500 tw-mb-4">
+      Try adjusting your filters or check back later
+    </p>
+    <button 
+      (click)="selectStatus(['Pending', 'Approved', 'Rejected'])"
+      class="tw-text-sm tw-font-medium tw-text-blue-600 hover:tw-text-blue-700 tw-transition-colors"
+    >
+      Reset filters
+    </button>
+  </div>
+
+  <!-- Leave Requests Table -->
+  <div
+    *ngIf="!isLoading && filteredLeaves.length > 0"
+    class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-overflow-hidden"
+  >
+    <div class="tw-overflow-x-auto">
+      <table class="tw-min-w-full tw-divide-y tw-divide-gray-200">
+        <thead class="tw-bg-gray-50">
+          <tr>
+            <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+              Employee
+            </th>
+            <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+              Office
+            </th>
+            <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+              Date Range
+            </th>
+            <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+              Reason
+            </th>
+            <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+              Status
+            </th>
+            <th class="tw-px-6 tw-py-3 tw-text-right tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody class="tw-bg-white tw-divide-y tw-divide-gray-200">
+          <tr *ngFor="let leave of filteredLeaves; trackBy: trackById" class="hover:tw-bg-gray-50/50">
+            <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+              <div class="tw-flex tw-items-center">
+                <div class="tw-flex-shrink-0 tw-h-10 tw-w-10 tw-rounded-full tw-bg-gray-200 tw-flex tw-items-center tw-justify-center tw-text-gray-600 tw-font-medium">
+                  {{ getInitials(leave.employeeId.name) }}
+                </div>
+                <div class="tw-ml-4">
+                  <div class="tw-text-sm tw-font-medium tw-text-gray-900">
+                    {{ leave.employeeId.name }}
+                  </div>
+                  <div class="tw-text-sm tw-text-gray-500">
+                    {{ leave.employeeId.emailId }}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+              <div class="tw-flex tw-items-center">
+                <i class="ri-building-2-line tw-text-gray-400 tw-mr-2"></i>
+                <span class="tw-text-sm tw-text-gray-900">
+                  {{ getOfficeName(leave.officeId) }}
+                </span>
+              </div>
+            </td>
+            <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+              <div class="tw-text-sm tw-text-gray-900 tw-font-medium">
+                {{ formatDate(leave.startDate) }} - {{ formatDate(leave.endDate) }}
+              </div>
+              <div class="tw-text-xs tw-text-gray-500">
+                {{ getDuration(leave.startDate, leave.endDate) }} days
+              </div>
+            </td>
+            <td class="tw-px-6 tw-py-4">
+              <div class="tw-text-sm tw-text-gray-900 tw-max-w-xs tw-truncate">
+                {{ leave.reason }}
+              </div>
+            </td>
+            <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+              <span
+                class="tw-px-3 tw-py-1 tw-inline-flex tw-text-xs tw-leading-5 tw-font-medium tw-rounded-full tw-capitalize tw-items-center tw-justify-center"
+                [class.tw-bg-yellow-50]="leave.status === 'Pending'"
+                [class.tw-text-yellow-700]="leave.status === 'Pending'"
+                [class.tw-bg-green-50]="leave.status === 'Approved'"
+                [class.tw-text-green-700]="leave.status === 'Approved'"
+                [class.tw-bg-red-50]="leave.status === 'Rejected'"
+                [class.tw-text-red-700]="leave.status === 'Rejected'"
+              >
+                <span 
+                  class="tw-w-2 tw-h-2 tw-rounded-full tw-mr-2"
+                  [class.tw-bg-yellow-500]="leave.status === 'Pending'"
+                  [class.tw-bg-green-500]="leave.status === 'Approved'"
+                  [class.tw-bg-red-500]="leave.status === 'Rejected'"
+                ></span>
+                {{ leave.status.toLowerCase() }}
+              </span>
+            </td>
+            <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap tw-text-right tw-text-sm tw-font-medium">
+              <div class="tw-flex tw-justify-end tw-space-x-2">
+                <button
+                  *ngIf="leave.status === 'Pending'"
+                  (click)="approveLeave(leave)"
+                  class="tw-text-green-600 hover:tw-text-green-800 tw-p-1.5 tw-rounded-full hover:tw-bg-green-50 tw-transition-colors"
+                  title="Approve"
+                >
+                  <i class="ri-check-line"></i>
+                </button>
+                <button
+                  *ngIf="leave.status === 'Pending'"
+                  (click)="openRejectModal(leave)"
+                  class="tw-text-red-600 hover:tw-text-red-800 tw-p-1.5 tw-rounded-full hover:tw-bg-red-50 tw-transition-colors"
+                  title="Reject"
+                >
+                  <i class="ri-close-line"></i>
+                </button>
+                <button
+                  (click)="viewDetails(leave)"
+                  class="tw-text-gray-600 hover:tw-text-gray-800 tw-p-1.5 tw-rounded-full hover:tw-bg-gray-100 tw-transition-colors"
+                  title="View Details"
+                >
+                  <i class="ri-eye-line"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Reject Leave Modal -->
+  <div
+    *ngIf="isRejectModalOpen && selectedLeave"
+    class="tw-fixed tw-inset-0 tw-z-50 tw-overflow-y-auto"
+    aria-labelledby="modal-title"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="tw-flex tw-items-center tw-justify-center tw-min-h-screen tw-pt-4 tw-px-4 tw-pb-20 tw-text-center sm:tw-block sm:tw-p-0">
+      <div
+        class="tw-fixed tw-inset-0 tw-bg-gray-500 tw-bg-opacity-75 tw-transition-opacity"
+        aria-hidden="true"
+        (click)="closeModal()"
+      ></div>
+      <span class="tw-hidden sm:tw-inline-block sm:tw-align-middle sm:tw-h-screen" aria-hidden="true">&#8203;</span>
+      <div
+        class="tw-inline-block tw-align-bottom tw-bg-white tw-rounded-lg tw-text-left tw-overflow-hidden tw-shadow-xl tw-transform tw-transition-all sm:tw-my-8 sm:tw-align-middle sm:tw-max-w-lg sm:tw-w-full"
+      >
+        <div class="tw-bg-white tw-px-4 tw-pt-5 tw-pb-4 sm:tw-p-6 sm:tw-pb-4">
+          <div class="tw-flex tw-items-start">
+            <div class="tw-mx-auto tw-flex-shrink-0 tw-flex tw-items-center tw-justify-center tw-h-12 tw-w-12 tw-rounded-full tw-bg-red-100 sm:tw-mx-0 sm:tw-h-10 sm:tw-w-10">
+              <i class="ri-close-line tw-text-red-600"></i>
+            </div>
+            <div class="tw-mt-3 tw-text-center sm:tw-mt-0 sm:tw-ml-4 sm:tw-text-left">
+              <h3 class="tw-text-lg tw-leading-6 tw-font-medium tw-text-gray-900" id="modal-title">
+                Reject Leave Request
+              </h3>
+              <div class="tw-mt-2">
+                <div class="tw-text-sm tw-text-gray-500 tw-space-y-2">
+                  <p><strong>Employee:</strong> {{ selectedLeave.employeeId.name }}</p>
+                  <p><strong>Dates:</strong> {{ formatDate(selectedLeave.startDate) }} - {{ formatDate(selectedLeave.endDate) }}</p>
+                  <p><strong>Reason:</strong> {{ selectedLeave.reason }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <form (ngSubmit)="rejectLeave()" class="tw-mt-4 tw-space-y-4">
+            <div>
+              <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">
+                Rejection Reason *
+              </label>
+              <textarea
+                class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-red-500 focus:tw-border-red-500"
+                [(ngModel)]="rejectionReason"
+                [ngModelOptions]="{ standalone: true }"
+                placeholder="Please provide a reason for rejecting this leave request"
+                rows="3"
+                required
+              ></textarea>
+            </div>
+            <div class="tw-flex tw-gap-3 tw-pt-2">
+              <button
+                type="submit"
+                class="tw-flex-1 tw-bg-red-600 hover:tw-bg-red-700 tw-text-white tw-py-2.5 tw-rounded-lg tw-font-medium tw-flex tw-items-center tw-justify-center tw-transition-colors"
+                [disabled]="isLoading || !rejectionReason"
+                [class.tw-opacity-70]="isLoading || !rejectionReason"
+              >
+                <i *ngIf="isLoading" class="ri-loader-4-line tw-animate-spin tw-mr-2"></i>
+                {{ isLoading ? 'Processing...' : 'Confirm Rejection' }}
+              </button>
+              <button
+                type="button"
+                class="tw-flex-1 tw-bg-white hover:tw-bg-gray-50 tw-text-gray-700 tw-py-2.5 tw-rounded-lg tw-font-medium tw-border tw-border-gray-300 tw-transition-colors"
+                (click)="closeModal()"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approve Confirmation Modal -->
+  <div
+    *ngIf="isApproveModalOpen && selectedLeave"
+    class="tw-fixed tw-inset-0 tw-z-50 tw-overflow-y-auto"
+    aria-labelledby="modal-title"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="tw-flex tw-items-center tw-justify-center tw-min-h-screen tw-pt-4 tw-px-4 tw-pb-20 tw-text-center sm:tw-block sm:tw-p-0">
+      <div
+        class="tw-fixed tw-inset-0 tw-bg-gray-500 tw-bg-opacity-75 tw-transition-opacity"
+        aria-hidden="true"
+        (click)="closeModal()"
+      ></div>
+      <span class="tw-hidden sm:tw-inline-block sm:tw-align-middle sm:tw-h-screen" aria-hidden="true">&#8203;</span>
+      <div
+        class="tw-inline-block tw-align-bottom tw-bg-white tw-rounded-lg tw-text-left tw-overflow-hidden tw-shadow-xl tw-transform tw-transition-all sm:tw-my-8 sm:tw-align-middle sm:tw-max-w-lg sm:tw-w-full"
+      >
+        <div class="tw-bg-white tw-px-4 tw-pt-5 tw-pb-4 sm:tw-p-6 sm:tw-pb-4">
+          <div class="tw-flex tw-items-start">
+            <div class="tw-mx-auto tw-flex-shrink-0 tw-flex tw-items-center tw-justify-center tw-h-12 tw-w-12 tw-rounded-full tw-bg-green-100 sm:tw-mx-0 sm:tw-h-10 sm:tw-w-10">
+              <i class="ri-check-line tw-text-green-600"></i>
+            </div>
+            <div class="tw-mt-3 tw-text-center sm:tw-mt-0 sm:tw-ml-4 sm:tw-text-left">
+              <h3 class="tw-text-lg tw-leading-6 tw-font-medium tw-text-gray-900" id="modal-title">
+                Approve Leave Request
+              </h3>
+              <div class="tw-mt-2">
+                <div class="tw-text-sm tw-text-gray-500 tw-space-y-2">
+                  <p><strong>Employee:</strong> {{ selectedLeave.employeeId.name }}</p>
+                  <p><strong>Dates:</strong> {{ formatDate(selectedLeave.startDate) }} - {{ formatDate(selectedLeave.endDate) }}</p>
+                  <p><strong>Reason:</strong> {{ selectedLeave.reason }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <form (ngSubmit)="approveLeaveConfirm()" class="tw-mt-4 tw-space-y-4">
+            <div>
+              <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-1">
+                Optional Comment
+              </label>
+              <textarea
+                class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-green-500 focus:tw-border-green-500"
+                [(ngModel)]="approvalComment"
+                [ngModelOptions]="{ standalone: true }"
+                placeholder="You can add an optional comment"
+                rows="3"
+              ></textarea>
+            </div>
+            <div class="tw-flex tw-gap-3 tw-pt-2">
+              <button
+                type="submit"
+                class="tw-flex-1 tw-bg-green-600 hover:tw-bg-green-700 tw-text-white tw-py-2.5 tw-rounded-lg tw-font-medium tw-flex tw-items-center tw-justify-center tw-transition-colors"
+                [disabled]="isLoading"
+                [class.tw-opacity-70]="isLoading"
+              >
+                <i *ngIf="isLoading" class="ri-loader-4-line tw-animate-spin tw-mr-2"></i>
+                {{ isLoading ? 'Processing...' : 'Confirm Approval' }}
+              </button>
+              <button
+                type="button"
+                class="tw-flex-1 tw-bg-white hover:tw-bg-gray-50 tw-text-gray-700 tw-py-2.5 tw-rounded-lg tw-font-medium tw-border tw-border-gray-300 tw-transition-colors"
+                (click)="closeModal()"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Details Modal -->
+  <div
+    *ngIf="isViewModalOpen && selectedLeave"
+    class="tw-fixed tw-inset-0 tw-z-50 tw-overflow-y-auto"
+    aria-labelledby="modal-title"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div class="tw-flex tw-items-center tw-justify-center tw-min-h-screen tw-pt-4 tw-px-4 tw-pb-20 tw-text-center sm:tw-block sm:tw-p-0">
+      <div
+        class="tw-fixed tw-inset-0 tw-bg-gray-500 tw-bg-opacity-75 tw-transition-opacity"
+        aria-hidden="true"
+        (click)="closeModal()"
+      ></div>
+      <span class="tw-hidden sm:tw-inline-block sm:tw-align-middle sm:tw-h-screen" aria-hidden="true">&#8203;</span>
+      <div
+        class="tw-inline-block tw-align-bottom tw-bg-white tw-rounded-lg tw-text-left tw-overflow-hidden tw-shadow-xl tw-transform tw-transition-all sm:tw-my-8 sm:tw-align-middle sm:tw-max-w-lg sm:tw-w-full"
+      >
+        <div class="tw-bg-white tw-px-4 tw-pt-5 tw-pb-4 sm:tw-p-6 sm:tw-pb-4">
+          <div class="tw-flex tw-items-start">
+            <div class="tw-mx-auto tw-flex-shrink-0 tw-flex tw-items-center tw-justify-center tw-h-12 tw-w-12 tw-rounded-full tw-bg-blue-100 sm:tw-mx-0 sm:tw-h-10 sm:tw-w-10">
+              <i class="ri-information-line tw-text-blue-600"></i>
+            </div>
+            <div class="tw-mt-3 tw-text-center sm:tw-mt-0 sm:tw-ml-4 sm:tw-text-left">
+              <h3 class="tw-text-lg tw-leading-6 tw-font-medium tw-text-gray-900" id="modal-title">
+                Leave Request Details
+              </h3>
+              <div class="tw-mt-2">
+                <div class="tw-text-sm tw-text-gray-500 tw-space-y-3">
+                  <div>
+                    <p class="tw-font-medium tw-text-gray-700">Employee</p>
+                    <p>{{ selectedLeave.employeeId.name }} ({{ selectedLeave.employeeId.emailId }})</p>
+                  </div>
+                  <div>
+                    <p class="tw-font-medium tw-text-gray-700">Office</p>
+                    <p>{{ getOfficeName(selectedLeave.officeId) }}</p>
+                  </div>
+                  <div>
+                    <p class="tw-font-medium tw-text-gray-700">Date Range</p>
+                    <p>{{ formatDate(selectedLeave.startDate) }} - {{ formatDate(selectedLeave.endDate) }} ({{ getDuration(selectedLeave.startDate, selectedLeave.endDate) }} days)</p>
+                  </div>
+                  <div>
+                    <p class="tw-font-medium tw-text-gray-700">Reason</p>
+                    <p>{{ selectedLeave.reason }}</p>
+                  </div>
+                  <div>
+                    <p class="tw-font-medium tw-text-gray-700">Status</p>
+                    <span
+                      class="tw-px-3 tw-py-1 tw-inline-flex tw-text-xs tw-leading-5 tw-font-medium tw-rounded-full tw-capitalize tw-items-center tw-justify-center"
+                      [class.tw-bg-yellow-50]="selectedLeave.status === 'Pending'"
+                      [class.tw-text-yellow-700]="selectedLeave.status === 'Pending'"
+                      [class.tw-bg-green-50]="selectedLeave.status === 'Approved'"
+                      [class.tw-text-green-700]="selectedLeave.status === 'Approved'"
+                      [class.tw-bg-red-50]="selectedLeave.status === 'Rejected'"
+                      [class.tw-text-red-700]="selectedLeave.status === 'Rejected'"
+                    >
+                      <span 
+                        class="tw-w-2 tw-h-2 tw-rounded-full tw-mr-2"
+                        [class.tw-bg-yellow-500]="selectedLeave.status === 'Pending'"
+                        [class.tw-bg-green-500]="selectedLeave.status === 'Approved'"
+                        [class.tw-bg-red-500]="selectedLeave.status === 'Rejected'"
+                      ></span>
+                      {{ selectedLeave.status.toLowerCase() }}
+                    </span>
+                  </div>
+                  <div *ngIf="selectedLeave.adminComment">
+                    <p class="tw-font-medium tw-text-gray-700">Admin Comment</p>
+                    <p>{{ selectedLeave.adminComment }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tw-bg-gray-50 tw-px-4 tw-py-3 sm:tw-px-6 sm:tw-flex sm:tw-flex-row-reverse">
+          <button
+            type="button"
+            class="tw-mt-3 tw-w-full tw-inline-flex tw-justify-center tw-rounded-md tw-border tw-border-gray-300 tw-shadow-sm tw-px-4 tw-py-2 tw-bg-white tw-text-base tw-font-medium tw-text-gray-700 hover:tw-bg-gray-50 focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-blue-500 sm:tw-mt-0 sm:tw-ml-3 sm:tw-w-auto sm:tw-text-sm"
+            (click)="closeModal()"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

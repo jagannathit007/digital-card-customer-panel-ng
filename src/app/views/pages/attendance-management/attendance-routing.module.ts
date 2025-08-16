@@ -11,7 +11,7 @@ const routes: Routes = [
     { path: 'offices', component: OfficesComponent },
     { path: 'employees', component: EmployeesComponent },
     { path: 'reports', component:  AtendanceReportComponent},
-    { path: 'leave-request', component:  LeaveRequestsComponent},
+    { path: 'leave-requests', component:  LeaveRequestsComponent},
 ];
 
 @NgModule({
