@@ -298,6 +298,9 @@ public GET_GOOGLE_CALENDAR_ID: string = `${this.PATH}/task/google/calendar-id`;
   public GET_ATTENDANCE_STATS: string = `${this.PATH}/attendance/stats`;
   public SEND_NOTIFICATION: string = `${this.PATH}/attendance/send-notification`;
 
+
+  public GET_CUSTOM_FIELDS: string = `${this.PATH}/employee/custom-fields`;
+
 }
 
 const storage = new AppStorage();

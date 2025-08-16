@@ -253,4 +253,24 @@ export class AttendanceService {
       return null;
     }
   }
+
+  getCustomFields = async (data: any) => {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        { url: apiEndpoints.GET_CUSTOM_FIELDS, method: 'POST' },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.warning(response.message);
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
 }
