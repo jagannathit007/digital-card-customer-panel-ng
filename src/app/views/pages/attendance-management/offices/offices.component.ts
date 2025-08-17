@@ -29,7 +29,7 @@ interface Shift {
 @Component({
   selector: 'app-offices',
   templateUrl: './offices.component.html',
-  styleUrl: './offices.component.scss',
+  styleUrls: ['./offices.component.scss'],
 })
 export class OfficesComponent implements OnInit, OnDestroy {
   isEditMode = false;
@@ -40,6 +40,7 @@ export class OfficesComponent implements OnInit, OnDestroy {
   isSaving = false;
   isLoading = false;
   searchText = '';
+  statusFilter = 'all';
 
   constructor(
     private attendanceService: AttendanceService,
@@ -85,6 +86,12 @@ export class OfficesComponent implements OnInit, OnDestroy {
   offices: any[] = [];
   filteredOffices: any[] = [];
 
+  // Open the office form modal
+  openOfficeModal() {
+    this.onReset(); // Reset form when opening for new office
+    this.modal.open('officeFormModal');
+  }
+
   getOffices = async () => {
     this.isLoading = true;
     try {
@@ -93,8 +100,11 @@ export class OfficesComponent implements OnInit, OnDestroy {
       });
       this.isLoading = false;
       if (data && data.docs) {
-        this.offices = data.docs;
-        this.filteredOffices = [...this.offices];
+        this.offices = data.docs.map((office:any) => ({
+          ...office,
+          customFields: office.customFields || []
+        }));
+        this.applyFilters();
       } else {
         this.offices = [];
         this.filteredOffices = [];
@@ -105,18 +115,32 @@ export class OfficesComponent implements OnInit, OnDestroy {
     }
   };
 
-  onSearch = () => {
-    const searchTerm = this.searchText.toLowerCase().trim();
-    if (!searchTerm) {
-      this.filteredOffices = [...this.offices];
-      return;
+  applyFilters() {
+    let filtered = [...this.offices];
+    
+    // Apply status filter
+    if (this.statusFilter === 'active') {
+      filtered = filtered.filter(office => office.isActive);
+    } else if (this.statusFilter === 'inactive') {
+      filtered = filtered.filter(office => !office.isActive);
     }
-    this.filteredOffices = this.offices.filter(
-      (office) =>
-        office.name.toLowerCase().includes(searchTerm) ||
-        office.address.toLowerCase().includes(searchTerm)
-    );
-  };
+    
+    // Apply search filter
+    const searchTerm = this.searchText.toLowerCase().trim();
+    if (searchTerm) {
+      filtered = filtered.filter(
+        office =>
+          office.name.toLowerCase().includes(searchTerm) ||
+          office.address.toLowerCase().includes(searchTerm)
+      );
+    }
+    
+    this.filteredOffices = filtered;
+  }
+
+  onSearch() {
+    this.applyFilters();
+  }
 
   // Shift Management Methods
   addShift = () => {
@@ -166,6 +190,11 @@ export class OfficesComponent implements OnInit, OnDestroy {
   onSaveOffice = async () => {
     this.isSaving = true;
     try {
+      // Validate form
+      if (!this.validateForm()) {
+        return;
+      }
+
       // Prepare shifts data
       const shiftsData = this.form.office.shifts.map(shift => ({
         ...shift,
@@ -186,11 +215,11 @@ export class OfficesComponent implements OnInit, OnDestroy {
         }));
 
       const payload = {
-        name: this.form.office.name,
-        address: this.form.office.address,
-        lat: this.form.office.lat,
-        long: this.form.office.long,
-        radius: this.form.office.radius,
+        name: this.form.office.name.trim(),
+        address: this.form.office.address.trim(),
+        lat: this.form.office.lat.trim(),
+        long: this.form.office.long.trim(),
+        radius: this.form.office.radius.trim(),
         isActive: this.form.office.isActive,
         shifts: shiftsData,
         customFields: customFieldsData
@@ -214,6 +243,7 @@ export class OfficesComponent implements OnInit, OnDestroy {
           ? 'Office updated successfully!'
           : 'Office created successfully!';
         swalHelper.showToast(message, 'success');
+        this.modal.close('officeFormModal');
         this.onReset();
         this.getOffices();
       }
@@ -223,6 +253,42 @@ export class OfficesComponent implements OnInit, OnDestroy {
       this.isSaving = false;
     }
   };
+
+  validateForm(): boolean {
+    // Basic validation
+    if (!this.form.office.name.trim()) {
+      swalHelper.showToast('Office name is required', 'error');
+      return false;
+    }
+    
+    if (!this.form.office.address.trim()) {
+      swalHelper.showToast('Office address is required', 'error');
+      return false;
+    }
+    
+    // Validate shifts
+    for (const shift of this.form.office.shifts) {
+      if (!shift.startFrom || !shift.startTo || !shift.endFrom || !shift.endTo) {
+        swalHelper.showToast('All shift times are required', 'error');
+        return false;
+      }
+    }
+    
+    // Validate custom fields
+    for (const field of this.form.office.customFields) {
+      if (!field.label.trim()) {
+        swalHelper.showToast('All custom fields must have a label', 'error');
+        return false;
+      }
+      
+      if (field.type === 'select' && (!field.optionsText || !field.options.length)) {
+        swalHelper.showToast('Select fields must have options', 'error');
+        return false;
+      }
+    }
+    
+    return true;
+  }
 
   onReset = () => {
     this.form = {
@@ -282,6 +348,8 @@ export class OfficesComponent implements OnInit, OnDestroy {
         optionsText: field.options ? field.options.join(', ') : ''
       }))
     };
+    
+    this.modal.open('officeFormModal');
   };
 
   loadCustomFields = async (officeId: string) => {
