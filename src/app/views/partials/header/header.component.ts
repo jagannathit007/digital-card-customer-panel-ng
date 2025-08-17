@@ -24,7 +24,7 @@ declare var bootstrap: any;
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, FormsModule, AsyncPipe, AvatarComponent, RouterModule],
+  imports: [CommonModule, FormsModule, AsyncPipe, RouterModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
