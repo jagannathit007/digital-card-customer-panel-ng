@@ -31,7 +31,7 @@ export class LeaveRequestsComponent implements OnInit, OnDestroy {
   filteredLeaves: Leave[] = [];
   offices: any[] = [];
   selectedOfficeId: string = '';
-  selectedStatus: string[] = ['Pending'];
+  selectedStatus: string[] = ['Pending', 'Approved', 'Rejected'];
   isLoading = false;
   isOfficeDropdownOpen = false;
   isStatusDropdownOpen = false;
