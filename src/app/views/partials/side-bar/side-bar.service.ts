@@ -421,6 +421,34 @@ export class SideBarService {
     },
   ],
 };
+    
+let crmMenu: any = {
+  title: 'CRM',
+  link: 'crm',
+  icon: 'clipboard',
+  menu: [
+    {
+      title: 'Dashboard',
+      link: 'crm/dashboard',
+      icon: 'grid',
+    },
+    {
+      title: 'Leads',
+      link: 'crm/leads',
+      icon: 'codesandbox',
+    },
+    // {
+    //   title: 'Customers',
+    //   link: 'crm/customers',
+    //   icon: 'users',
+    // },
+    // {
+    //   title: 'Reports',
+    //   link: 'attendance/reports',
+    //   icon: 'bar-chart-2',
+    // },
+  ],
+};
 
 
     if (userDetails) {
@@ -581,6 +609,7 @@ export class SideBarService {
     }
     if (hasTaskManagement) {
       menus.splice(menus.length - 1, 0, taskManagementMenu);
+      menus.splice(menus.length - 1, 0, crmMenu);
     }
 
     if (hasAttendance) {

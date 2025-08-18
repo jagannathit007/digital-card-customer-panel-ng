@@ -56,6 +56,12 @@ export const routes: Routes = [
         data: { requiredProduct: 'task-management' }
       },
       {
+        path: 'crm',
+        loadChildren: () => import('./views/pages/crm-management/crm.module').then(m => m.CrmModule),
+        canActivate: [AuthGuard],
+        data: { requiredProduct: 'crm' }
+      },
+      {
         path: 'task-management',
         loadChildren: () => import('./views/pages/task-management/task.module').then(m => m.TaskModule),
         canActivate: [AuthGuard],
