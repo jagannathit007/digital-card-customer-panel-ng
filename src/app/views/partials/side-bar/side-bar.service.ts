@@ -389,6 +389,68 @@ export class SideBarService {
       ],
     };
 
+    let attendanceManagementMenu: any = {
+  title: 'Attendance',
+  link: 'task-management',
+  icon: 'clipboard', // main section icon
+  menu: [
+    {
+      title: 'Dashboard',
+      link: 'attendance/dashboard',
+      icon: 'grid', // Dashboard
+    },
+    {
+      title: 'Offices',
+      link: 'attendance/offices',
+      icon: 'map-pin', // Offices
+    },
+    {
+      title: 'Employees',
+      link: 'attendance/employees',
+      icon: 'users', // Employees
+    },
+    {
+      title: 'Reports',
+      link: 'attendance/reports',
+      icon: 'bar-chart-2', // Reports
+    },
+    {
+      title: 'Leave Requests',
+      link: 'attendance/leave-requests',
+      icon: 'calendar', // Leave requests
+    },
+  ],
+};
+    
+let crmMenu: any = {
+  title: 'CRM',
+  link: 'crm',
+  icon: 'clipboard',
+  menu: [
+    {
+      title: 'Dashboard',
+      link: 'crm/dashboard',
+      icon: 'grid',
+    },
+    {
+      title: 'Leads',
+      link: 'crm/leads',
+      icon: 'codesandbox',
+    },
+    // {
+    //   title: 'Customers',
+    //   link: 'crm/customers',
+    //   icon: 'users',
+    // },
+    // {
+    //   title: 'Reports',
+    //   link: 'attendance/reports',
+    //   icon: 'bar-chart-2',
+    // },
+  ],
+};
+
+
     if (userDetails) {
       if (userDetails.role !== 'member' && userDetails.role !== 'leader') {
         taskManagementMenu.menu.splice(1, 0, {
@@ -496,23 +558,17 @@ export class SideBarService {
     //   icon: 'file-text',
     // };
 
-    const attendanceManagementMenu = {
-      title: 'Attendance',
-      link: 'attendance',
-      icon: 'users',
-    };
+    // const officeMenu = {
+    //   title: 'Office',
+    //   link: 'offices',
+    //   icon: 'users',
+    // };
 
-    const officeMenu = {
-      title: 'Office',
-      link: 'offices',
-      icon: 'users',
-    };
-
-    const employeeMenu = {
-      title: 'Employee',
-      link: 'employees',
-      icon: 'users',
-    };
+    // const employeeMenu = {
+    //   title: 'Employee',
+    //   link: 'employees',
+    //   icon: 'users',
+    // };
 
     const hasDigitalOrNFC = products.some(
       (product) => product === 'digital-card' || product === 'nfc-card'
@@ -553,12 +609,13 @@ export class SideBarService {
     }
     if (hasTaskManagement) {
       menus.splice(menus.length - 1, 0, taskManagementMenu);
+      menus.splice(menus.length - 1, 0, crmMenu);
     }
 
     if (hasAttendance) {
       menus.splice(menus.length - 1, 0, attendanceManagementMenu);
-      menus.splice(menus.length - 1, 0, officeMenu);
-      menus.splice(menus.length - 1, 0, employeeMenu);
+      // menus.splice(menus.length - 1, 0, officeMenu);
+      // menus.splice(menus.length - 1, 0, employeeMenu);
     }
 
     if (this.isAdminLogin) {

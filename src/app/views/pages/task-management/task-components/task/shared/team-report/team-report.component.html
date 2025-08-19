@@ -1,278 +1,461 @@
-<!-- Team Report Component Template -->
+<!-- Modern Team Report Component Template -->
 <div class="tw-container tw-mx-auto tw-p-6 tw-bg-gray-50 tw-min-h-screen">
-  <!-- Filters Section -->
-  <div class="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-mb-6">
-    <div class="tw-flex tw-items-center tw-justify-between tw-mb-6">
-      <h2 class="tw-text-2xl tw-font-bold tw-text-gray-800">Team Task Report</h2>
+  <!-- Filters Section - Card with Glass Morphism Effect -->
+  <div class="tw-bg-white/80 tw-backdrop-blur-sm tw-rounded-xl tw-shadow-lg tw-p-6 tw-mb-8 tw-border tw-border-white/20">
+    <div class="tw-flex tw-flex-col md:tw-flex-row md:tw-items-center md:tw-justify-between tw-mb-6 tw-gap-4">
+      <div>
+        <h2 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-mb-1">Team Task Report</h2>
+        <p class="tw-text-gray-500 tw-text-sm">Generate detailed reports for team performance</p>
+      </div>
       
-      <!-- Action Buttons -->
-      <div class="tw-flex tw-gap-3">
+      <!-- Action Buttons - Floating Style -->
+      <div class="tw-flex tw-gap-3 tw-flex-wrap">
+        <button 
+        (click)="resetFilters()"
+        class="tw-inline-flex tw-items-center tw-px-5 tw-py-2.5 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-text-gray-700 tw-font-medium tw-shadow-sm hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Reset Filters
+      </button>
+      
         <button 
           (click)="getReport()" 
           [disabled]="isLoading"
-          class="tw-bg-blue-600 tw-hover:bg-blue-700 tw-disabled:bg-gray-400 tw-text-white tw-px-6 tw-py-2.5 tw-rounded-lg tw-font-medium tw-transition-all tw-duration-200 tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:ring-offset-2 tw-shadow-md tw-hover:shadow-lg"
+          class="tw-relative tw-overflow-hidden tw-bg-blue-600 tw-to-blue-500 tw-hover:from-blue-700 tw-hover:to-blue-600 tw-disabled:tw-from-gray-400 tw-disabled:tw-to-gray-500 tw-text-white tw-px-6 tw-py-3 tw-rounded-md tw-font-medium tw-transition-all tw-duration-300 tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:ring-offset-2 tw-shadow-md hover:tw-shadow-lg tw-group"
         >
-          <span *ngIf="!isLoading">Generate Report</span>
-          <span *ngIf="isLoading" class="tw-flex tw-items-center tw-gap-2">
-            <span class="tw-animate-spin tw-rounded-full tw-h-4 tw-w-4 tw-border-b-2 tw-border-white"></span>
-            Loading...
+          <span class="tw-relative tw-z-10 tw-flex tw-items-center tw-gap-2">
+            <span *ngIf="!isLoading">Generate Report</span>
+            <span *ngIf="isLoading" class="tw-flex tw-items-center tw-gap-2">
+              <span class="tw-animate-spin tw-rounded-full tw-h-4 tw-w-4 tw-border-b-2 tw-border-white"></span>
+              Loading...
+            </span>
           </span>
+          <span class="tw-absolute tw-bg-blue-600 tw-opacity-0 group-hover:tw-opacity-100 tw-transition-opacity tw-duration-300"></span>
         </button>
 
-        <button 
+        <button
           (click)="exportReport()" 
           [disabled]="!reportData || isLoading"
-          class="tw-bg-green-600 tw-hover:bg-green-700 tw-disabled:bg-gray-400 tw-text-white tw-px-6 tw-py-2.5 tw-rounded-lg tw-font-medium tw-transition-all tw-duration-200 tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-green-500 tw-focus:ring-offset-2 tw-shadow-md tw-hover:shadow-lg"
+          class="tw-relative tw-overflow-hidden tw-bg-green-600 tw-hover:from-green-700 tw-hover:to-green-600 tw-disabled:tw-from-gray-400 tw-disabled:tw-to-gray-500 tw-text-white tw-px-6 tw-py-3 tw-rounded-md tw-font-medium tw-transition-all tw-duration-300 tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-green-500 tw-focus:ring-offset-2 tw-shadow-md hover:tw-shadow-lg tw-group"
         >
-          Export Excel
+          <span class="tw-relative tw-z-10 tw-flex tw-items-center tw-gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Export Excel
+          </span>
+          <span class="tw-absolute tw-inset-0 tw-bg-green-600 tw-opacity-0 group-hover:tw-opacity-100 tw-transition-opacity tw-duration-300"></span>
         </button>
       </div>
     </div>
     
-    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-5 tw-gap-6">
+    <!-- Filter Grid - Modern Layout -->
+    <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 lg:tw-grid-cols-5 tw-gap-4">
       <!-- Member Selection -->
       <div class="tw-space-y-2">
-        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
+        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700 tw-flex tw-items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4 tw-mr-1 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
           Select Member <span class="tw-text-red-500">*</span>
         </label>
-        <select 
-          [(ngModel)]="selectedMemberId" 
-          class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200"
-        >
-          <option value="all">All Members</option>
-          <option *ngFor="let member of members" [value]="member._id">
-            {{ member.name }} ({{ member.role }})
-          </option>
-        </select>
+        <div class="tw-relative">
+          <select 
+            [(ngModel)]="selectedMemberId" 
+            class="tw-appearance-none tw-w-full tw-pl-10 tw-pr-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-xl tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200 tw-shadow-sm hover:tw-border-gray-300"
+          >
+            <option value="all">All Members</option>
+            <option *ngFor="let member of members" [value]="member._id">
+              {{ member.name }} ({{ member.role }})
+            </option>
+          </select>
+          <div class="tw-absolute tw-left-3 tw-top-3 tw-text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
       </div>
 
       <!-- Board Selection -->
       <div class="tw-space-y-2">
-        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
-          Select Board (Optional)
+        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700 tw-flex tw-items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4 tw-mr-1 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+          </svg>
+          Select Board
         </label>
-        <select 
-          [(ngModel)]="selectedBoardId" 
-          class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200"
-        >
-          <option value="all">All Boards</option>
-          <option *ngFor="let board of boards" [value]="board._id">
-            {{ board.name }}
-          </option>
-        </select>
+        <div class="tw-relative">
+          <select 
+            [(ngModel)]="selectedBoardId" 
+            class="tw-appearance-none tw-w-full tw-pl-10 tw-pr-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-xl tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200 tw-shadow-sm hover:tw-border-gray-300"
+          >
+            <option value="all">All Boards</option>
+            <option *ngFor="let board of boards" [value]="board._id">
+              {{ board.name }}
+            </option>
+          </select>
+          <div class="tw-absolute tw-left-3 tw-top-3 tw-text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
       </div>
 
       <!-- Year Selection -->
       <div class="tw-space-y-2">
-        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
+        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700 tw-flex tw-items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4 tw-mr-1 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
           Select Year
         </label>
-        <select 
-          [(ngModel)]="selectedYear"
-          (ngModelChange)="onYearChange()"
-          class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200"
-        >
-          <option [ngValue]="null" disabled selected>Select Year</option>
-          <option *ngFor="let y of years" [value]="y">
-            {{ y }}
-          </option>
-        </select>
+        <div class="tw-relative">
+          <select 
+            [(ngModel)]="selectedYear"
+            (ngModelChange)="onYearChange()"
+            class="tw-appearance-none tw-w-full tw-pl-10 tw-pr-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-xl tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200 tw-shadow-sm hover:tw-border-gray-300"
+          >
+            <option [ngValue]="null" disabled selected>Select Year</option>
+            <option *ngFor="let y of years" [value]="y">
+              {{ y }}
+            </option>
+          </select>
+          <div class="tw-absolute tw-left-3 tw-top-3 tw-text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
       </div>
 
       <!-- Month Selection -->
       <div class="tw-space-y-2">
-        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
-          Select Month (Optional)
+        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700 tw-flex tw-items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4 tw-mr-1 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          Select Month
         </label>
-        <select 
-          [(ngModel)]="selectedMonth"
-          [disabled]="selectedYear === null"
-          class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200 tw-disabled:tw-bg-gray-100 tw-disabled:tw-text-gray-500 tw-disabled:tw-cursor-not-allowed tw-disabled:tw-shadow-sm"
-        >
-          <option [ngValue]="null" disabled selected>Select Months</option>
-          <option value="all">All Months</option>
-          <option *ngFor="let month of months" [value]="month.value">
-            {{ month.name }}
-          </option>
-        </select>
+        <div class="tw-relative">
+          <select 
+            [(ngModel)]="selectedMonth"
+            [disabled]="selectedYear === null"
+            class="tw-appearance-none tw-w-full tw-pl-10 tw-pr-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-xl tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200 tw-shadow-sm hover:tw-border-gray-300 tw-disabled:tw-bg-gray-100 tw-disabled:tw-text-gray-500 tw-disabled:tw-cursor-not-allowed"
+          >
+            <option [ngValue]="null" disabled selected>Select Months</option>
+            <option value="all">All Months</option>
+            <option *ngFor="let month of months" [value]="month.value">
+              {{ month.name }}
+            </option>
+          </select>
+          <div class="tw-absolute tw-left-3 tw-top-3 tw-text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
       </div>
 
       <!-- Date Field Selection -->
       <div class="tw-space-y-2">
-        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700">
-          Select Date Field (Optional)
+        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700 tw-flex tw-items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4 tw-mr-1 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          Date Field
         </label>
-        <select 
-          [(ngModel)]="selectedDateField"
-          [disabled]="selectedYear === null"
-          class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-lg tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200 tw-disabled:tw-bg-gray-100 tw-disabled:tw-text-gray-500 tw-disabled:tw-cursor-not-allowed tw-disabled:tw-shadow-sm"
-        >
-          <option value="" disabled>Select Date Field</option>
-          <option value="dueDate">Due On</option>
-          <option value="completedAt">Completed At</option>
-          <option value="createdAt">Created At</option>
-        </select>
-      </div>
-    </div>
-  </div>
-
-  <!-- Results Section -->
-  <div *ngIf="searchClicked && !isLoading" class="tw-bg-white tw-rounded-lg tw-shadow-md tw-overflow-hidden">
-    <!-- Error Message -->
-    <div *ngIf="reportError" class="tw-p-12 tw-text-center">
-      <div class="tw-text-gray-500 tw-text-xl tw-font-medium">
-        👉 {{ reportError }}
-      </div>
-      <div class="tw-text-gray-400 tw-text-sm tw-mt-2">
-        Try adjusting your filters and search again.
-      </div>
-    </div>
-
-    <!-- No Data Message -->
-    <div *ngIf="!reportError && (!reportData || getObjectKeys(reportData?.tasks).length === 0)" class="tw-p-12 tw-text-center">
-      <div class="tw-text-gray-500 tw-text-xl tw-font-medium">
-        👉 There are no reports for the selected filters.
-      </div>
-      <div class="tw-text-gray-400 tw-text-sm tw-mt-2">
-        Try adjusting your filters and search again.
-      </div>
-    </div>
-
-    <!-- Report Data -->
-    <div *ngIf="!reportError && reportData && getObjectKeys(reportData.tasks).length > 0">
-      <!-- Board-wise Tasks -->
-      <div *ngFor="let boardName of getObjectKeys(reportData.tasks)" class="tw-border-b tw-border-gray-200 tw-last:border-b-0">
-        <!-- Board Header with Blue Gradient -->
-        <div class="tw-bg-gradient-to-r tw-from-blue-50 tw-to-blue-100 tw-px-6 tw-py-5 tw-border-b tw-border-blue-200">
-          <h4 class="tw-text-xl tw-font-bold tw-text-blue-800">
-            {{ boardName }}
-            <span class="tw-text-sm tw-font-medium tw-text-blue-600 tw-ml-3 tw-bg-white tw-px-3 tw-py-1 tw-rounded-full">
-              {{ getBoardTaskCount(boardName) }} tasks
-            </span>
-          </h4>
-        </div>
-
-        <!-- Member-wise Tasks -->
-        <div *ngFor="let memberName of getObjectKeys(reportData.tasks[boardName])" class="tw-py-4 tw-px-6 tw-border-b tw-border-gray-100">
-          <h5 class="tw-text-lg tw-font-semibold tw-text-gray-800 tw-mb-3">
-            {{ memberName }}
-            <span class="tw-text-sm tw-font-medium tw-text-gray-600 tw-ml-2">
-              ({{ reportData.tasks[boardName][memberName].length }} tasks)
-            </span>
-          </h5>
-          
-          <!-- Tasks Table -->
-          <div class="tw-overflow-x-auto">
-            <table class="tw-w-full tw-text-sm">
-              <thead class="tw-bg-gray-50">
-                <tr>
-                  <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Task Title</th>
-                  <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Column</th>
-                  <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Status</th>
-                  <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Due Date</th>
-                  <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Created At</th>
-                  <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Completed At</th>
-                  <th class="tw-px-6 tw-py-4 tw-text-center tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Completed</th>
-                  <th class="tw-px-6 tw-py-4 tw-text-center tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Comments</th>
-                  <th class="tw-px-6 tw-py-4 tw-text-center tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200">Attachments</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr 
-                  *ngFor="let task of reportData.tasks[boardName][memberName]; trackBy: trackByTaskId; let i = index" 
-                  class="tw-border-b tw-border-gray-100 tw-hover:bg-blue-25 tw-transition-colors tw-duration-150"
-                >
-                  <td class="tw-px-6 tw-py-4">
-                    <div class="tw-font-semibold tw-text-gray-900 tw-text-base">{{ task.taskTitle }}</div>
-                  </td>
-                  <td class="tw-px-6 tw-py-4">
-                    <span class="tw-inline-flex tw-items-center tw-px-3 tw-py-1.5 tw-rounded-full tw-text-xs tw-font-semibold tw-bg-blue-100 tw-text-blue-800">
-                      {{ task.columnName }}
-                    </span>
-                  </td>
-                  <td class="tw-px-6 tw-py-4">
-                    <span class="tw-inline-flex tw-items-center tw-px-3 tw-py-1.5 tw-rounded-full tw-text-xs tw-font-semibold"
-                          [ngClass]="{
-                            'tw-bg-green-100 tw-text-green-800': task.status === 'completed',
-                            'tw-bg-yellow-100 tw-text-yellow-800': task.status === 'in-progress',
-                            'tw-bg-red-100 tw-text-red-800': task.status === 'pending',
-                            'tw-bg-gray-100 tw-text-gray-800': task.status !== 'completed' && task.status !== 'in-progress' && task.status !== 'pending'
-                          }">
-                      {{ task.status }}
-                    </span>
-                  </td>
-                  <td class="tw-px-6 tw-py-4 tw-text-gray-600 tw-font-medium">
-                    {{ task.dueDate || 'No due date' }}
-                  </td>
-                  <td class="tw-px-6 tw-py-4 tw-text-gray-600 tw-font-medium">
-                    {{ task.createdAt || 'No created date' }}
-                  </td>
-                  <td class="tw-px-6 tw-py-4 tw-text-gray-600 tw-font-medium">
-                    {{ task.completedAt || 'No' }}
-                  </td>
-                  <td class="tw-px-6 tw-py-4 tw-text-center">
-                    <span *ngIf="task.isCompleted === 'Yes'" class="tw-inline-flex tw-items-center tw-px-3 tw-py-1 tw-rounded-full tw-text-xs tw-font-semibold tw-bg-green-100 tw-text-green-800">
-                      Yes
-                    </span>
-                    <span *ngIf="task.isCompleted !== 'Yes'" class="tw-inline-flex tw-items-center tw-px-3 tw-py-1 tw-rounded-full tw-text-xs tw-font-semibold tw-bg-red-100 tw-text-red-800">
-                      No
-                    </span>
-                  </td>
-                  <td class="tw-px-6 tw-py-4 tw-text-center">
-                    <span class="tw-inline-flex tw-items-center tw-justify-center tw-w-8 tw-h-8 tw-bg-blue-100 tw-text-blue-800 tw-text-sm tw-font-bold tw-rounded-full">
-                      {{ task.commentCount || 0 }}
-                    </span>
-                  </td>
-                  <td class="tw-px-6 tw-py-4 tw-text-center">
-                    <span class="tw-inline-flex tw-items-center tw-justify-center tw-w-8 tw-h-8 tw-bg-gray-100 tw-text-gray-800 tw-text-sm tw-font-bold tw-rounded-full">
-                      {{ task.attachmentCount || 0 }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+        <div class="tw-relative">
+          <select 
+            [(ngModel)]="selectedDateField"
+            [disabled]="selectedYear === null"
+            class="tw-appearance-none tw-w-full tw-pl-10 tw-pr-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-xl tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200 tw-shadow-sm hover:tw-border-gray-300 tw-disabled:tw-bg-gray-100 tw-disabled:tw-text-gray-500 tw-disabled:tw-cursor-not-allowed"
+          >
+            <option value="" disabled>Select Date Field</option>
+            <option value="dueDate">Due On</option>
+            <option value="completedAt">Completed At</option>
+            <option value="createdAt">Created At</option>
+          </select>
+          <div class="tw-absolute tw-left-3 tw-top-3 tw-text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Enhanced Pagination -->
-    <div *ngIf="reportData && reportData.pagination" class="tw-bg-gradient-to-r tw-from-gray-50 tw-to-gray-100 tw-px-6 tw-py-5 tw-border-t tw-border-gray-200">
-      <div class="tw-flex tw-items-center tw-justify-center tw-gap-4">
-        <!-- Previous Button -->
-        <button 
-          (click)="changePage(reportData.pagination.prevPage)"
-          [disabled]="!reportData.pagination.hasPrevPage"
-          class="tw-px-6 tw-py-2.5 tw-text-sm tw-font-medium tw-bg-white tw-border-2 tw-border-gray-200 tw-rounded-lg tw-hover:bg-gray-50 tw-hover:border-blue-300 tw-disabled:opacity-50 tw-disabled:cursor-not-allowed tw-transition-all tw-duration-200 tw-shadow-sm"
-        >
-          Previous
-        </button>
+  <!-- Results Section - Modern Card Design -->
+  <div *ngIf="searchClicked && !isLoading" class="tw-bg-white tw-rounded-xl tw-shadow-lg tw-overflow-hidden tw-border tw-border-gray-100">
+    <!-- Error Message - Modern Empty State -->
+    <div *ngIf="reportError" class="tw-p-12 tw-text-center tw-bg-gradient-to-br tw-from-gray-50 tw-to-gray-100">
+      <div class="tw-inline-flex tw-items-center tw-justify-center tw-w-16 tw-h-16 tw-rounded-full tw-bg-red-100 tw-text-red-600 tw-mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-8 tw-w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <h3 class="tw-text-xl tw-font-bold tw-text-gray-800 tw-mb-2">Report Error</h3>
+      <p class="tw-text-gray-600 tw-mb-6">{{ reportError }}</p>
+      <button 
+        (click)="getReport()"
+        class="tw-inline-flex tw-items-center tw-px-5 tw-py-2.5 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-text-gray-700 tw-font-medium tw-shadow-sm hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Try Again
+      </button>
+    </div>
 
-        <!-- Current Page Display -->
-        <span class="tw-px-6 tw-py-2.5 tw-text-sm tw-font-bold tw-text-gray-700 tw-bg-white tw-rounded-lg tw-border-2 tw-border-blue-200">
-          Page {{ reportData.pagination.page }} of {{ reportData.pagination.totalPages }}
+    <!-- No Data Message - Modern Empty State -->
+    <div *ngIf="!reportError && (!reportData || getObjectKeys(reportData?.tasks).length === 0)" class="tw-p-12 tw-text-center tw-bg-gradient-to-br tw-from-gray-50 tw-to-gray-100">
+      <div class="tw-inline-flex tw-items-center tw-justify-center tw-w-16 tw-h-16 tw-rounded-full tw-bg-blue-100 tw-text-blue-600 tw-mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-8 tw-w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <h3 class="tw-text-xl tw-font-bold tw-text-gray-800 tw-mb-2">No Reports Found</h3>
+      <p class="tw-text-gray-600 tw-mb-6">There are no reports matching your selected filters.</p>
+      <button 
+        (click)="resetFilters()"
+        class="tw-inline-flex tw-items-center tw-px-5 tw-py-2.5 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-text-gray-700 tw-font-medium tw-shadow-sm hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Reset Filters
+      </button>
+    </div>
+
+    <!-- Report Data - Modern Table Design -->
+    <div *ngIf="!reportError && reportData && getObjectKeys(reportData.tasks).length > 0">
+      <!-- Board-wise Tasks - Accordion Style -->
+<div *ngFor="let boardName of getObjectKeys(reportData.tasks)" class="tw-border-b tw-border-gray-200 tw-last:border-b-0">
+  <!-- Board Header with Gradient Background - Now clickable -->
+  <div 
+    class="tw-bg-gradient-to-r tw-from-blue-600 tw-to-blue-500 tw-px-6 tw-py-5 tw-cursor-pointer"
+    (click)="toggleBoardAccordion(boardName)"
+  >
+    <div class="tw-flex tw-items-center tw-justify-between">
+      <h4 class="tw-text-xl tw-font-bold tw-text-white tw-flex tw-items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+        </svg>
+        {{ boardName }}
+      </h4>
+      <div class="tw-flex tw-items-center">
+        <span class="tw-text-sm tw-font-medium tw-text-blue-100 tw-bg-white/20 tw-px-3 tw-py-1 tw-rounded-full tw-mr-3">
+          {{ getBoardTaskCount(boardName) }} tasks
         </span>
-
-        <!-- Next Button -->
-        <button 
-          (click)="changePage(reportData.pagination.nextPage)"
-          [disabled]="!reportData.pagination.hasNextPage"
-          class="tw-px-6 tw-py-2.5 tw-text-sm tw-font-medium tw-bg-white tw-border-2 tw-border-gray-200 tw-rounded-lg tw-hover:bg-gray-50 tw-hover:border-blue-300 tw-disabled:opacity-50 tw-disabled:cursor-not-allowed tw-transition-all tw-duration-200 tw-shadow-sm"
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          class="tw-h-5 tw-w-5 tw-text-white tw-transition-transform tw-duration-300" 
+          fill="none" 
+          viewBox="0 0 24 24" 
+          stroke="currentColor"
+          [class.tw-rotate-180]="isBoardOpen(boardName)"
         >
-          Next
-        </button>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Member-wise Tasks - Card Style - With Animation -->
+  <div 
+    *ngIf="isBoardOpen(boardName)"
+    [@slideInOut] 
+    class="tw-py-5 tw-px-6 tw-border-b tw-border-gray-100 tw-bg-gray-50/50"
+  >
+    <!-- Rest of your member/task content remains the same -->
+    <div *ngFor="let memberName of getObjectKeys(reportData.tasks[boardName])" class="tw-mb-6 tw-last:mb-0">
+      <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+        <h5 class="tw-text-lg tw-font-semibold tw-text-gray-800 tw-flex tw-items-center">
+          <span class="tw-inline-flex tw-items-center tw-justify-center tw-w-8 tw-h-8 tw-mr-3 tw-bg-blue-100 tw-text-blue-800 tw-rounded-full">
+            {{ memberName.charAt(0) }}
+          </span>
+          {{ memberName }}
+        </h5>
+        <span class="tw-text-sm tw-font-medium tw-text-gray-600 tw-bg-gray-100 tw-px-3 tw-py-1 tw-rounded-full">
+          {{ reportData.tasks[boardName][memberName].length }} tasks
+        </span>
+      </div>
+      
+      <!-- Tasks Table - Modern Design -->
+      <div class="tw-overflow-x-auto tw-rounded-lg tw-border tw-border-gray-200 tw-shadow-sm">
+        <table class="tw-w-full tw-text-sm tw-bg-white">
+          <!-- Table content remains the same -->
+          <thead class="tw-bg-gray-50">
+            <tr>
+              <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Task Title</th>
+              <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Column</th>
+              <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Status</th>
+              <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Due Date</th>
+              <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Created At</th>
+              <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Completed</th>
+              <!-- <th class="tw-px-6 tw-py-4 tw-text-center tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">
+                <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+              </th>
+              <th class="tw-px-6 tw-py-4 tw-text-center tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">
+                <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </th> -->
+            </tr>
+          </thead>
+          <tbody class="tw-divide-y tw-divide-gray-200">
+            <tr 
+              *ngFor="let task of reportData.tasks[boardName][memberName]; trackBy: trackByTaskId; let i = index" 
+              class="tw-hover:bg-blue-50/50 tw-transition-colors tw-duration-150"
+            >
+              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                <div class="tw-flex tw-items-center">
+                  <div class="tw-flex-shrink-0 tw-h-10 tw-w-10 tw-rounded tw-bg-gray-100 tw-flex tw-items-center tw-justify-center tw-mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                  </div>
+                  <div class="tw-min-w-0 tw-flex-1 tw-px-2 tw-py-1 tw-truncate">
+                    <div class="tw-font-semibold tw-text-gray-900 hover:tw-text-blue-600 hover:tw-underline hover:tw-cursor-pointer" (click)="redirectToTask(task)">{{ task.taskTitle }}</div>
+                    <div>
+                      <span *ngIf="task.commentCount > 0">
+                        <i class="ri-message-2-line"></i>
+                      </span>
+                      <span *ngIf="task.attachmentCount > 0">
+                        <i class="ri-attachment-2"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded tw-text-xs tw-font-medium tw-bg-blue-100 tw-text-blue-800">
+                  {{ task.columnName }}
+                </span>
+              </td>
+              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded tw-text-xs tw-font-medium tw-capitalize"
+                      [ngClass]="{
+                        'tw-bg-green-100 tw-text-green-800': task.status === 'completed',
+                        'tw-bg-yellow-100 tw-text-yellow-800': task.status === 'in-progress',
+                        'tw-bg-red-100 tw-text-red-800': task.status === 'pending',
+                        'tw-bg-gray-100 tw-text-gray-800': task.status !== 'completed' && task.status !== 'in-progress' && task.status !== 'pending'
+                      }">
+                  {{ task.status }}
+                </span>
+              </td>
+              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                <div class="tw-flex tw-items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4 tw-mr-1 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  {{ task.dueDate || '-' }}
+                </div>
+              </td>
+              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap tw-text-gray-500">
+                {{ task.createdAt || '-' }}
+              </td>
+              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                <span *ngIf="task.isCompleted === 'Yes'" class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium tw-bg-green-100 tw-text-green-800">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-3 tw-w-3 tw-mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  Yes
+                </span>
+                <span *ngIf="task.isCompleted !== 'Yes'" class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium tw-bg-red-100 tw-text-red-800">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-3 tw-w-3 tw-mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  No
+                </span>
+              </td>
+              <!-- <td class="tw-px-6 tw-py-4 tw-text-center tw-whitespace-nowrap">
+                <span class="tw-inline-flex tw-items-center tw-justify-center tw-w-8 tw-h-8 tw-bg-blue-100 tw-text-blue-800 tw-text-sm tw-font-bold tw-rounded-full tw-transition-all tw-duration-200 hover:tw-bg-blue-200">
+                  {{ task.commentCount || 0 }}
+                </span>
+              </td>
+              <td class="tw-px-6 tw-py-4 tw-text-center tw-whitespace-nowrap">
+                <span class="tw-inline-flex tw-items-center tw-justify-center tw-w-8 tw-h-8 tw-bg-gray-100 tw-text-gray-800 tw-text-sm tw-font-bold tw-rounded-full tw-transition-all tw-duration-200 hover:tw-bg-gray-200">
+                  {{ task.attachmentCount || 0 }}
+                </span>
+              </td> -->
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
 </div>
+    </div>
 
-<!-- Enhanced Page Loader -->
+    <!-- Modern Pagination -->
+    <!-- <div *ngIf="reportData && reportData.pagination" class="tw-bg-white tw-px-6 tw-py-4 tw-border-t tw-border-gray-200">
+      <div class="tw-flex tw-flex-col sm:tw-flex-row tw-items-center tw-justify-between tw-gap-4">
+        <div class="tw-text-sm tw-text-gray-600">
+          Showing <span class="tw-font-medium">{{ (reportData.pagination.page - 1) * reportData.pagination.limit + 1 }}</span> to 
+          <span class="tw-font-medium">{{ Math.min(reportData.pagination.page * reportData.pagination.limit, reportData.pagination.totalDocs) }}</span> of 
+          <span class="tw-font-medium">{{ reportData.pagination.totalDocs }}</span> results
+        </div>
+        
+        <div class="tw-flex tw-items-center tw-gap-2">
+          <button 
+            (click)="changePage(reportData.pagination.prevPage)"
+            [disabled]="!reportData.pagination.hasPrevPage"
+            class="tw-p-2 tw-text-gray-500 tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white hover:tw-bg-gray-50 tw-disabled:tw-opacity-50 tw-disabled:tw-cursor-not-allowed tw-transition-all tw-duration-200"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          <div class="tw-flex tw-items-center tw-gap-1">
+            <button 
+              *ngFor="let page of getPageNumbers(reportData.pagination)"
+              (click)="changePage(page)"
+              [class]="page === reportData.pagination.page ? 
+                'tw-px-3 tw-py-1.5 tw-rounded-lg tw-bg-blue-600 tw-text-white tw-font-medium' : 
+                'tw-px-3 tw-py-1.5 tw-rounded-lg tw-text-gray-700 tw-bg-white tw-border tw-border-gray-200 hover:tw-bg-gray-50 tw-font-medium'"
+            >
+              {{ page }}
+            </button>
+          </div>
+
+          <button 
+            (click)="changePage(reportData.pagination.nextPage)"
+            [disabled]="!reportData.pagination.hasNextPage"
+            class="tw-p-2 tw-text-gray-500 tw-rounded-lg tw-border tw-border-gray-200 tw-bg-white hover:tw-bg-gray-50 tw-disabled:tw-opacity-50 tw-disabled:tw-cursor-not-allowed tw-transition-all tw-duration-200"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div> -->
+  </div>
+</div>
+
+<!-- Modern Loading Overlay -->
 <div
-  class="tw-fixed tw-top-0 tw-left-0 tw-right-0 tw-bottom-0 tw-flex tw-items-center tw-justify-center tw-bg-[#0000004d] tw-z-30"
+  class="tw-fixed tw-inset-0 tw-flex tw-items-center tw-justify-center tw-bg-black/50 tw-z-30 tw-backdrop-blur-sm"
   *ngIf="isLoading"
 >
-  <div class="tw-flex tw-items-center tw-gap-6 tw-bg-white tw-px-10 tw-py-6 tw-rounded-lg tw-shadow-xl">
-    <span class="tw-animate-spin tw-rounded-full tw-h-6 tw-w-6 tw-border-b-2 tw-border-blue-600"></span>
-    <span class="tw-text-gray-700 tw-font-semibold tw-text-lg">Generating report...</span>
+  <div class="tw-bg-white tw-rounded-xl tw-shadow-xl tw-p-8 tw-max-w-md tw-w-full tw-mx-4 tw-text-center">
+    <div class="tw-inline-flex tw-items-center tw-justify-center tw-w-16 tw-h-16 tw-rounded-full tw-bg-blue-100 tw-text-blue-600 tw-mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-8 tw-w-8 tw-animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </div>
+    <h3 class="tw-text-xl tw-font-bold tw-text-gray-800 tw-mb-2">Generating Report</h3>
+    <p class="tw-text-gray-600">Please wait while we process your request...</p>
+    <div class="tw-mt-6 tw-w-full tw-bg-gray-200 tw-rounded-full tw-h-2">
+      <div class="tw-bg-blue-600 tw-h-2 tw-rounded-full tw-animate-pulse" style="width: 60%"></div>
+    </div>
   </div>
 </div>

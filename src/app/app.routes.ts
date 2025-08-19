@@ -6,12 +6,13 @@ import { TokenVerificationComponent } from './views/standalone/token-verificatio
 import { DemoTaskManagementComponent } from './views/pages/demo/demo-task-management/demo-task-management.component';
 import { DemoGoogleReviewComponent } from './views/pages/demo/demo-google-review/demo-google-review.component';
 import { DemoAttendanceComponent } from './views/pages/demo/demo-attendance/demo-attendance.component';
-import { OfficesComponent } from './views/pages/offices/offices.component';
-import { EmployeesComponent } from './views/pages/employees/employees.component';
+import { OfficesComponent } from './views/pages/attendance-management/offices/offices.component';
+import { EmployeesComponent } from './views/pages/attendance-management/employees/employees.component';
 
 // Task managemnt members routes
 import { LoginComponent } from './views/pages/task-management/task-components/task/shared/teammembers-auth/login/login.component';
 import { MemberprofileComponent } from './views/pages/task-management/task-components/task/shared/memberprofile/memberprofile.component';
+import { AttendanceDashboardComponent } from './views/pages/attendance-management/attendance-dashboard/attendance-dashboard.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'auth/login' },
@@ -43,12 +44,6 @@ export const routes: Routes = [
         data: { requiredProduct: 'website-details' }
       },
       // {
-      //   path: 'task-management',
-      //   loadChildren:()=>import('./views/pages/task-management/task.module').then(m=>m.TaskModule),
-      //   canActivate: [AuthGuard],
-      //   data: { requiredProduct: 'task-management' }
-      // },
-      // {
       //   path: 'google-standee',
       //   loadComponent:()=>import('./views/pages/google-standee/google-standee.component').then(m=>m.GoogleStandeeComponent),
       //   canActivate: [AuthGuard],
@@ -56,15 +51,15 @@ export const routes: Routes = [
       // },
       {
         path: 'attendance',
-        component: DemoAttendanceComponent,
+        loadChildren: () => import('./views/pages/attendance-management/attendance.module').then(m => m.AttendanceModule),
+        canActivate: [AuthGuard],
+        data: { requiredProduct: 'task-management' }
       },
       {
-        path: 'offices',
-        component: OfficesComponent
-      },
-      {
-        path: 'employees',
-        component: EmployeesComponent
+        path: 'crm',
+        loadChildren: () => import('./views/pages/crm-management/crm.module').then(m => m.CrmModule),
+        canActivate: [AuthGuard],
+        data: { requiredProduct: 'crm' }
       },
       {
         path: 'task-management',

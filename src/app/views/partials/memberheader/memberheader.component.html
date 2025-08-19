@@ -1,41 +1,35 @@
 <nav class="navbar navbar-expand navbar-light navbar-bg px-4 ">
-   <a class="sidebar-toggle js-sidebar-toggle" (click)="appWorker.toggleSlider()">
-   <i class="hamburger align-self-center"></i>
-   </a>
-    <div class="d-md-none position-sticky bottom-select-container bg-white shadow-sm py-2 px-3">
-      <div class="d-flex gap-3 align-items-center">
-      </div>
+  <a class="sidebar-toggle js-sidebar-toggle" (click)="appWorker.toggleSlider()">
+    <i class="hamburger align-self-center"></i>
+  </a>
+  <div class="d-md-none position-sticky bottom-select-container bg-white shadow-sm py-2 px-3">
+    <div class="d-flex gap-3 align-items-center">
     </div>
-    <!-- adding users profile image in header section -->
-     <div class="navbar-collapse collapse">
-  <ul class="navbar-nav navbar-align">
-    <li class="nav-item dropdown">
-      <a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown">
-        <!-- <i class="align-middle" data-feather="settings"></i> -->
-      </a>
-      <a href="#" data-bs-toggle="dropdown" style="text-decoration: none;">
-        @if (memberDetails != null && memberDetails.profileImage && memberDetails.profileImage) {
-          <img
-            class="profile-image"
-            src="{{ imageUrl }}{{ memberDetails.profileImage }}"
-            alt="Profile Image"
-            style="object-fit: cover;"
-            (error)="handleImageError($event)"
-          />
-        } @else {
-          <i class="ri-user-3-line default-profile-icon"></i>
-        }
-      </a>
-      <div class="dropdown-menu dropdown-menu-end">
-     <a class="dropdown-item" [routerLink]="['/task-management/profile']">
-  <i class="ri-user-3-line"></i>&nbsp;&nbsp;Profile
-</a>
-        <a class="dropdown-item text-danger" (click)="logout()">
-          <i class="ri-logout-circle-r-line" style="width:20px;"></i>&nbsp;&nbsp;Logout
+  </div>
+  <!-- adding users profile image in header section -->
+  <div class="navbar-collapse collapse">
+    <ul class="navbar-nav navbar-align">
+      <li class="nav-item dropdown">
+        <a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown">
+          <!-- <i class="align-middle" data-feather="settings"></i> -->
         </a>
-      </div>
-    </li>
-  </ul>
-</div>
-  </nav>
-  
+        <a href="#" data-bs-toggle="dropdown" style="text-decoration: none;">
+          @if (memberDetails != null && memberDetails.profileImage && memberDetails.profileImage) {
+          <img class="profile-image" src="{{ imageUrl }}{{ memberDetails.profileImage }}" alt="Profile Image"
+            style="object-fit: cover;" (error)="handleImageError($event)" />
+          } @else {
+          <i class="ri-user-3-line default-profile-icon"></i>
+          }
+        </a>
+        <div class="dropdown-menu dropdown-menu-end">
+          <a class="dropdown-item" [routerLink]="['/task-management/profile']">
+            <i class="ri-user-3-line"></i>&nbsp;&nbsp;Profile
+          </a>
+          <a class="dropdown-item text-danger" (click)="logout()">
+            <i class="ri-logout-circle-r-line" style="width:20px;"></i>&nbsp;&nbsp;Logout
+          </a>
+        </div>
+      </li>
+    </ul>
+  </div>
+</nav>

@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TaskMemberAuthService } from 'src/app/services/task-member-auth.service';
 import { TaskService } from 'src/app/services/task.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import * as XLSX from 'xlsx';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 interface Member {
   _id: string;
@@ -27,6 +28,7 @@ interface TaskReport {
   boardId: string;
   boardName: string;
   memberName: string;
+  taskId: string;
   taskTitle: string;
   columnName: string;
   status: string;
@@ -34,8 +36,8 @@ interface TaskReport {
   createdAt: string;
   completedAt: string;
   isCompleted: string;
-  commentCount: string;
-  attachmentCount: string;
+  commentCount: number;
+  attachmentCount: number;
   assignedTo: string;
 }
 
@@ -58,6 +60,21 @@ interface ReportData {
   selector: 'app-team-report',
   templateUrl: './team-report.component.html',
   styleUrls: ['./team-report.component.scss'],
+  animations: [
+    trigger('slideInOut', [
+      state('in', style({
+        height: '*',
+        opacity: 1,
+        overflow: 'hidden'
+      })),
+      state('out', style({
+        height: '0px',
+        opacity: 0,
+        overflow: 'hidden'
+      })),
+      transition('in <=> out', animate('300ms ease-in-out'))
+    ])
+  ]
 })
 export class TeamReportComponent implements OnInit, OnDestroy {
   members: Member[] = [];
@@ -91,13 +108,30 @@ export class TeamReportComponent implements OnInit, OnDestroy {
   years: number[] = [2023, 2024, 2025, 2026];
   Math = Math;
 
+  openBoards: { [boardName: string]: boolean } = {};
+
+
   private queryParamsSubscription: Subscription | null = null;
 
   constructor(
     private taskService: TaskService,
     private taskMemberAuthService: TaskMemberAuthService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private router: Router
   ) {}
+
+  toggleBoardAccordion(boardName: string): void {
+    this.openBoards[boardName] = !this.openBoards[boardName];
+  }
+
+isBoardOpen(boardName: string): boolean {
+    // If the board state hasn't been set yet, default to true (open)
+    if (this.openBoards[boardName] === undefined) {
+      return true;
+    }
+    return this.openBoards[boardName];
+  }
+
 
   async ngOnInit(): Promise<void> {
     await Promise.all([this.loadMembers(), this.loadBoards()]);
@@ -191,6 +225,20 @@ export class TeamReportComponent implements OnInit, OnDestroy {
     }
   }
 
+  resetFilters(): void {
+    this.selectedMemberId = 'all';
+    this.selectedBoardId = 'all';
+    this.selectedMonth = null;
+    this.selectedYear = null;
+    this.selectedDateField = '';
+    this.currentPage = 1;
+    this.searchClicked = false;
+    this.reportData = null;
+    this.reportError = '';
+
+    this.getReport();
+  }
+
   async getReport(): Promise<void> {
     // Reset previous state
     this.isLoading = true;
@@ -238,9 +286,15 @@ export class TeamReportComponent implements OnInit, OnDestroy {
             Object.keys(boardTasks).length > 0
           );
         
-        if (!hasData) {
-          this.reportError = 'No reports found for the selected filters.';
-        }
+        // if (!hasData) {
+        //   this.reportError = 'No reports found for the selected filters.';
+        // }
+
+        if (this.reportData && this.reportData.tasks) {
+        Object.keys(this.reportData.tasks).forEach(boardName => {
+          this.openBoards[boardName] = true;
+        });
+      }
       } else {
         this.reportError = 'No reports found for the selected filters.';
       }
@@ -261,6 +315,13 @@ export class TeamReportComponent implements OnInit, OnDestroy {
 
   getObjectKeys(obj: any): string[] {
     return Object.keys(obj || {});
+  }
+
+  redirectToTask(task: TaskReport): void {
+    // task-management/teamtask/detail/68a2bc65400f29a610da0eff?boardId=689dc70826b30bf9447fa567
+    this.router.navigate(['/task-management/teamtask/detail', task.taskId], {
+      queryParams: { boardId: task.boardId },
+    });
   }
 
   trackByTaskId(index: number, task: TaskReport): string {

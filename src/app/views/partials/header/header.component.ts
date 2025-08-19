@@ -17,13 +17,14 @@ import { TaskMemberAuthService } from 'src/app/services/task-member-auth.service
 import { ConfigService } from 'src/app/services/config.service';
 import { HttpClient } from '@angular/common/http';
 import { BusinessCardService } from 'src/app/services/business-card.service';
+import { RouterModule } from '@angular/router';
 
 declare var bootstrap: any;
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, FormsModule, AsyncPipe, AvatarComponent],
+  imports: [CommonModule, FormsModule, AsyncPipe, RouterModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
