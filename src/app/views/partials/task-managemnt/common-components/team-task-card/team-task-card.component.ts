@@ -42,6 +42,7 @@ export interface Task {
   priority: string | null; // 'high', 'medium', 'low', or null
   completedAt?: Date | null;
   deletedAt?: Date | null;
+  description?: string;
 }
 
 export interface Category {
@@ -74,10 +75,11 @@ export class TeamTaskCardComponent implements OnInit {
   @Output() taskOpen = new EventEmitter<void>();
   @Output() dragStarted = new EventEmitter<void>();
   @Output() dragEnded = new EventEmitter<void>();
+  @Output() duplicateTaskEvent = new EventEmitter<Task>();
 
   // Internal state
   showActions = signal<boolean>(false);
-
+  showMenu = signal<boolean>(false);
   showTooltipForMember = signal<string | null>(null);
   imageBaseUrl = environment.imageURL;
 
@@ -90,6 +92,19 @@ export class TeamTaskCardComponent implements OnInit {
   const categoryDetails = this.categories.find((cat:any) => cat._id === this.task.category);
   this.category.set(categoryDetails);
 }
+
+// Toggle menu visibility
+  toggleMenu(event: Event): void {
+    event.stopPropagation();
+    this.showMenu.set(!this.showMenu());
+  }
+
+  // Handle duplicate task action
+  duplicateTask(event: Event): void {
+    event.stopPropagation();
+    this.showMenu.set(false); // Close menu
+    this.duplicateTaskEvent.emit(this.task); // Emit task data for duplication
+  }
 
 getCategpryName(categoryId: string): string {
   const category = this.categories.find((cat) => cat._id === categoryId);
