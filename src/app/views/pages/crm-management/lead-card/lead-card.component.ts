@@ -133,6 +133,8 @@ export class LeadCardComponent implements OnInit, OnDestroy {
   };
 
   baseURL = environment.baseURL;
+  imageBaseUrl = environment.imageURL;
+
 
   constructor(
     private crmService: CrmService,

@@ -11,11 +11,10 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgxEditorModule, Editor, Toolbar } from 'ngx-editor';
-import { MemberDetailDropdownComponent } from '../../../partials/task-managemnt/common-components/add-members-dropdown/add-members-dropdown.component';
+import { CrmTeamMemberDropdownComponent } from '../../../partials/crm/crm-team-member-dropdown/crm-team-member-dropdown.component';
 import { CrmService } from 'src/app/services/crm.service';
 import { AppStorage } from 'src/app/core/utilities/app-storage';
 // import { teamMemberCommon } from 'src/app/core/utilities/app-storage';
-import { TaskCategorySelectionDropdownComponent } from '../../../partials/task-managemnt/common-components/task-category-selection-dropdown/task-category-selection-dropdown.component';
 import { PrioritySelectionDropdownComponent } from '../priority-selection-dropdown/priority-selection-dropdown.component';
 
 interface LeadMember {
@@ -64,8 +63,7 @@ interface Column {
     CommonModule,
     FormsModule,
     NgxEditorModule,
-    MemberDetailDropdownComponent,
-    TaskCategorySelectionDropdownComponent,
+    CrmTeamMemberDropdownComponent,
     PrioritySelectionDropdownComponent
   ],
   templateUrl: './common-lead-create-popup.component.html',
@@ -87,7 +85,7 @@ export class CommonLeadCreatePopupComponent implements OnInit, OnDestroy {
     column: '',
     closingDate: null,
     assignedTo: [],
-    category: null,
+    category: '',
     priority: 'warm',
     contactDetails: {
       name: '',
@@ -109,6 +107,7 @@ export class CommonLeadCreatePopupComponent implements OnInit, OnDestroy {
   columnOptions: Column[] = [];
   categories: any[] = [];
   availableMembers: any[] = [];
+  availableCategories: any[] = [];
 
   // Description editor
   editor?: Editor;
@@ -175,6 +174,12 @@ export class CommonLeadCreatePopupComponent implements OnInit, OnDestroy {
       if (members) {
         this.availableMembers = members;
       }
+
+      const categories = await this.crmService.getCrmCategories({});
+      console.log('Available categories:', categories);
+      if (categories) {
+        this.availableCategories = categories;
+      }
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -210,6 +215,10 @@ export class CommonLeadCreatePopupComponent implements OnInit, OnDestroy {
   // Member selection
   onMembersSelected(members: LeadMember[]) {
     this.leadData.assignedTo = members;
+  }
+
+  updateCategory(categoryId: string | null) {
+    this.leadData.category = categoryId;
   }
 
   // Member updated from dropdown
@@ -315,10 +324,11 @@ export class CommonLeadCreatePopupComponent implements OnInit, OnDestroy {
     try {
       // Description is already bound via ngModel
 
-      const response = await this.crmService.createCompleteLead(this.leadData);
+      const assigneMemberIdsArray = this.leadData.assignedTo.map((member: LeadMember) => member._id);
+      const response = await this.crmService.createCompleteLead({...this.leadData, assignedTo: assigneMemberIdsArray});
 
       if (response) {
-        this.leadCreated.emit(this.leadData);
+        this.leadCreated.emit(response);
         this.resetForm();
       }
     } catch (error) {
@@ -337,7 +347,7 @@ export class CommonLeadCreatePopupComponent implements OnInit, OnDestroy {
       column: '',
       closingDate: null,
       assignedTo: [],
-      category: null,
+      category: '',
       priority: 'warm',
       contactDetails: {
         name: '',

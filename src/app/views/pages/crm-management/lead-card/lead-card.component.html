@@ -34,7 +34,7 @@
       >
         <img 
           *ngIf="member.profileImage" 
-          [src]="member.profileImage" 
+          [src]="imageBaseUrl + member.profileImage" 
           [alt]="member.name"
           class="tw-w-full tw-h-full tw-rounded-full tw-object-cover"
         />

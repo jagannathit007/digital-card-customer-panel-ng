@@ -79,11 +79,30 @@
           <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
             Category
           </label>
-          <app-task-category-selection-dropdown
+          <!-- <app-task-category-selection-dropdown
             [boardId]="null"
             [selectedCategory]="leadData.category"
             (onCategoryUpdated)="onCategorySelected($event)"
-          ></app-task-category-selection-dropdown>
+          ></app-task-category-selection-dropdown> -->
+          <div class="tw-relative">
+              <select
+                [(ngModel)]="leadData.category"
+                (change)="updateCategory(leadData.category || '')"
+                name="category"
+                class="tw-appearance-none tw-bg-white tw-border tw-border-gray-300 tw-rounded-lg tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-700 focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500 tw-transition-all tw-duration-200 tw-cursor-pointer tw-pr-8 hover:tw-border-gray-400 tw-w-full"
+              >
+                <option value="">No Category</option>
+                <option
+                  *ngFor="let category of availableCategories"
+                  [value]="category._id"
+                >
+                  {{ category.name }}
+                </option>
+              </select>
+              <i
+                class="fas fa-chevron-down tw-absolute tw-right-2 tw-top-1/2 tw-transform tw--translate-y-1/2 tw-text-gray-400 tw-text-xs tw-pointer-events-none"
+              ></i>
+            </div>
         </div>
 
         <!-- Closing Date -->
@@ -130,6 +149,7 @@
         </label>
         <ngx-editor-menu [editor]="editor!" [toolbar]="toolbar"></ngx-editor-menu>
         <ngx-editor
+        name="description"
           [editor]="editor!"
           [(ngModel)]="leadData.description"
           [placeholder]="'Add lead description...'"
@@ -143,16 +163,13 @@
         <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
           Assign To *
         </label>
-        <add-members-dropdown
-          [boardId]="null"
-          [taskId]="''"
+        <crm-team-member-dropdown
+          [leadId]="''"
           [allignment]="'left'"
           [placement]="'bottom'"
-          [type]="'task_add'"
           [isModernMemberSelect]="true"
-          [taskPermissions]="true"
           (onMemberAdded)="onMembersUpdated($event)"
-        ></add-members-dropdown>
+        ></crm-team-member-dropdown>
       </div>
 
       <!-- Contact Details -->

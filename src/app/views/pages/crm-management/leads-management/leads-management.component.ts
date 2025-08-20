@@ -771,6 +771,8 @@ export class LeadsManagementComponent implements OnInit, OnDestroy {
   selectLead(lead: Lead) {
     if (!this.isDragging()) {
       this.selectedLead.set(lead);
+      console.log()
+      this.router.navigate(['details', lead._id], { relativeTo: this.route });
     }
   }
 

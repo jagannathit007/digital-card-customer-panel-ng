@@ -11,7 +11,7 @@ const routes: Routes = [
     component: LeadsManagementComponent,
     children: [
       {
-        path: ':leadId',
+        path: 'details/:leadId',
         component: LeadDetailPopupComponent,
       },
     ],

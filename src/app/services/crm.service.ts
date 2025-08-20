@@ -653,4 +653,27 @@ export class CrmService {
       return false;
     }
   }
+
+  async getCrmCategories(data: any) {
+    try {
+      this.getHeaders();
+      const response = await this.apiManager.request(
+        {
+          url: `${this.baseURL}/categories/get-all`,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status === 200 && response.data) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
 }
