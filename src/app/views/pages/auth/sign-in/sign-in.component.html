@@ -1,85 +1,157 @@
- <!-- Animated Background Lines -->
-    <div class="background-lines">
-        <div class="line line-1"></div>
-        <div class="line line-2"></div>
-        <div class="line line-3"></div>
-        <div class="line line-4"></div>
+<div class="tw-container tw-mx-auto tw-px-4 tw-flex tw-justify-center tw-items-center tw-min-h-screen ">
+  <div class="tw-card tw-w-full tw-max-w-md tw-rounded-2xl tw-shadow-xl tw-overflow-hidden tw-bg-white tw-transition-all tw-duration-300 hover:tw-shadow-2xl">
+    <!-- Gradient Header -->
+    <div class="tw-bg-gradient-to-r tw-from-blue-600 tw-to-indigo-600 tw-py-4 tw-px-6">
+      <h2 class="tw-text-2xl tw-font-bold tw-text-center tw-text-white tw-mb-1 tw-tracking-tight">
+        <b>{{whileLabelName}}</b>
+      </h2>
+      <p class="tw-text-center tw-text-blue-100 tw-text-sm">
+        Welcome back! Please login to continue
+      </p>
     </div>
-
-    <div class="main-container">
-        <div class="login-card">
-            <div class="card-body p-4 pb-1">
-                <!-- Logo -->
-
-                <!-- Title -->
-                <h2 class="title text-center"><b>{{whileLabelName}}</b></h2>
-                
-                <!-- Subtitle -->
-                <div class="subtitle text-center mb-4">
-                    <span style="font-size:13px;">
-                        Please login to start your session
-                    </span>
-                </div>
-
-                <!-- Form -->
-                <div class="form-container">
-                    <form novalidate [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-                        <!-- Email Field -->
-                        <div class="form-group">
-                            <label class="form-label">Email ID/ Mobile Number</label>
-                            <input 
-                                type="text" 
-                                class="form-control" 
-                                formControlName="emailId"
-                                autocomplete="off"
-                                required
-                                placeholder="Enter your email / mobile number"
-                            />
-                            <div class="error-message" *ngIf="!loginForm.controls.emailId?.valid && (loginForm.controls.emailId?.dirty || loginForm.controls.emailId?.touched)">
-                                Email ID or Mobile Number must be valid.
-                            </div>
-                        </div>
-
-                        <!-- Password Field -->
-                        <div class="form-group">
-                            <label class="form-label" for="password">Password</label>
-                            <div class="position-relative">
-                                <input 
-                                    class="form-control" 
-                                    [type]="isPassword ? 'text' : 'password'"
-                                    formControlName="password" 
-                                    autocomplete="off" 
-                                    id="password" 
-                                    required
-                                    placeholder="Enter your password"
-                                />
-                                <i class="ri-{{ isPassword ? 'eye-fill' : 'eye-off-fill' }} password-toggle" (click)="isPassword = !isPassword"></i>
-                            </div>
-                            <div class="error-message" *ngIf="!loginForm.controls.password?.valid && (loginForm.controls.password?.dirty || loginForm.controls.password?.touched)">
-                                Password must be at least 6 characters long.
-                            </div>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div class="text-center mt-4">
-                            <button type="submit" [disabled]="!loginForm.valid" class="btn btn-login w-100">
-                                Login
-                            </button>
-                        </div>
-                    </form>
-                </div>
+    
+    <div class="tw-card-body tw-p-6 tw-pb-2">
+      <!-- Form -->
+      <div class="tw-form-container tw-mt-2">
+        <form novalidate [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <!-- Email Field -->
+          <div class="tw-mb-5">
+            <label class="tw-block tw-text-gray-700 tw-text-sm tw-font-medium tw-mb-2 tw-ml-0.5">
+              Email ID / Mobile Number
+            </label>
+            <div class="tw-relative">
+              <div class="tw-absolute tw-inset-y-0 tw-left-0 tw-pl-3 tw-flex tw-items-center tw-pointer-events-none">
+                <i class="ri-user-3-line tw-text-gray-400"></i>
+              </div>
+              <input
+                type="text"
+                class="tw-w-full tw-pl-10 tw-pr-3 tw-py-3 tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-transition-all"
+                formControlName="emailId"
+                autocomplete="off"
+                required
+                placeholder="Enter your email / mobile number"
+              />
             </div>
-
-            <!-- Task Member Login Link -->
-            <div class="footer text-center pb-3">
-                <i class="ri-login-box-line"></i>
-                <a href="https://task.itfuturz.in//teammember/login" class="ms-1 text-black text-decoration-none ">Login as Task Member</a>
+            <div 
+              class="tw-text-red-500 tw-text-xs tw-mt-1 tw-h-4" 
+              *ngIf="!loginForm.controls.emailId?.valid && (loginForm.controls.emailId?.dirty || loginForm.controls.emailId?.touched)"
+            >
+              Email ID or Mobile Number must be valid.
             </div>
-
-            <!-- Footer -->
-            <div class="footer text-center text-muted pb-3">
-                <i class="ri-mail-line"></i>
-                <a href="mailto:{{emailId}}" class="ms-1 text-muted">{{emailId}}</a>
+          </div>
+          
+          <!-- Password Field -->
+          <div class="tw-mb-6">
+            <label class="tw-block tw-text-gray-700 tw-text-sm tw-font-medium tw-mb-2 tw-ml-0.5" for="password">
+              Password
+            </label>
+            <div class="tw-relative">
+              <div class="tw-absolute tw-inset-y-0 tw-left-0 tw-pl-3 tw-flex tw-items-center tw-pointer-events-none">
+                <i class="ri-lock-2-line tw-text-gray-400"></i>
+              </div>
+              <input
+                class="tw-w-full tw-pl-10 tw-pr-10 tw-py-3 tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent tw-transition-all"
+                [type]="isPassword ? 'text' : 'password'"
+                formControlName="password"
+                autocomplete="off"
+                id="password"
+                required
+                placeholder="Enter your password"
+              />
+              <i 
+                class="tw-absolute tw-right-3 tw-top-3 tw-text-gray-400 hover:tw-text-gray-600 tw-cursor-pointer tw-transition-colors ri-{{ isPassword ? 'eye-fill' : 'eye-off-fill' }}" 
+                (click)="isPassword = !isPassword"
+              ></i>
             </div>
+            <div 
+              class="tw-text-red-500 tw-text-xs tw-mt-1 tw-h-4" 
+              *ngIf="!loginForm.controls.password?.valid && (loginForm.controls.password?.dirty || loginForm.controls.password?.touched)"
+            >
+              Password must be at least 6 characters long.
+            </div>
+          </div>
+          
+          <!-- Remember & Forgot -->
+          <div class="tw-flex tw-justify-between tw-items-center tw-mb-6">
+            <div class="tw-flex tw-items-center">
+              <input id="remember" type="checkbox" class="tw-h-4 tw-w-4 tw-text-blue-600 focus:tw-ring-blue-500 tw-border-gray-300 tw-rounded">
+              <label for="remember" class="tw-ml-2 tw-block tw-text-sm tw-text-gray-700">
+                Remember me
+              </label>
+            </div>
+            <div>
+              <a href="#" class="tw-text-sm tw-text-blue-600 hover:tw-text-blue-500 hover:tw-underline">
+                Forgot password?
+              </a>
+            </div>
+          </div>
+          
+          <!-- Submit Button -->
+          <div class="tw-mb-4">
+            <button 
+              type="submit" 
+              [disabled]="!loginForm.valid" 
+              class="tw-w-full tw-bg-gradient-to-r tw-from-blue-600 tw-to-indigo-600 hover:tw-from-blue-700 hover:tw-to-indigo-700 tw-text-white tw-font-medium tw-py-3 tw-px-4 tw-rounded-lg tw-shadow-md hover:tw-shadow-lg focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-offset-2 focus:tw-ring-blue-500 disabled:tw-opacity-70 disabled:tw-cursor-not-allowed tw-transition-all"
+            >
+              <span *ngIf="!isLoading">Login</span>
+              <span *ngIf="isLoading" class="tw-inline-flex tw-items-center">
+                <svg class="tw-animate-spin -tw-ml-1 tw-mr-2 tw-h-4 tw-w-4 tw-text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="tw-opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="tw-opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Signing in...
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Social Login -->
+      <div class="tw-mb-6">
+        <div class="tw-relative">
+          <div class="tw-absolute tw-inset-0 tw-flex tw-items-center">
+            <div class="tw-w-full tw-border-t tw-border-gray-200"></div>
+          </div>
+          <div class="tw-relative tw-flex tw-justify-center tw-text-sm">
+            <span class="tw-px-2 tw-bg-white tw-text-gray-500">
+              Or continue with
+            </span>
+          </div>
         </div>
+        
+        <div class="tw-mt-4 tw-grid tw-grid-cols-2 tw-gap-3">
+          <a href="#" class="tw-w-full tw-inline-flex tw-justify-center tw-py-2 tw-px-4 tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-sm tw-bg-white tw-text-sm tw-font-medium tw-text-gray-700 hover:tw-bg-gray-50 tw-transition-colors">
+            <i class="ri-google-fill tw-text-red-500 tw-text-lg"></i>
+          </a>
+          <a href="#" class="tw-w-full tw-inline-flex tw-justify-center tw-py-2 tw-px-4 tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-sm tw-bg-white tw-text-sm tw-font-medium tw-text-gray-700 hover:tw-bg-gray-50 tw-transition-colors">
+            <i class="ri-microsoft-fill tw-text-blue-500 tw-text-lg"></i>
+          </a>
+        </div>
+      </div>
     </div>
+    
+    <!-- Footer Links -->
+    <div class="tw-text-center tw-p-4 tw-border-t tw-border-gray-100 tw-bg-gray-50">
+      <div class="tw-flex tw-justify-center tw-space-x-4">
+        <a 
+          href="https://task.itfuturz.in//teammember/login" 
+          class="tw-inline-flex tw-items-center tw-text-gray-600 hover:tw-text-blue-600 tw-text-sm tw-transition-colors"
+        >
+          <i class="ri-team-line tw-mr-1"></i>
+          Member Login
+        </a>
+        <span class="tw-text-gray-300">|</span>
+        <a 
+          href="mailto:{{emailId}}" 
+          class="tw-inline-flex tw-items-center tw-text-gray-600 hover:tw-text-blue-600 tw-text-sm tw-transition-colors"
+        >
+          <i class="ri-mail-line tw-mr-1"></i>
+          {{emailId}}
+        </a>
+      </div>
+      <p class="tw-mt-2 tw-text-xs tw-text-gray-500">
+        &copy; 2025 {{whileLabelName}}. All rights reserved.
+      </p>
+    </div>
+  </div>
+</div>

@@ -4,7 +4,7 @@
       <div class="col">
         <label class="fw-bold text-uppercase fs-3">Shared History</label>
       </div>
-      <div class="col-md-auto">
+      <div class="col-md-auto" *ngIf="!isLoading && historyDetails?.docs && historyDetails.docs.length > 0">
         <button class="btn btn-info" (click)="_exportExcel()">
           <i class="ri-file-excel-2-line"></i> Export to Excel
         </button>
@@ -30,40 +30,46 @@
     <div class="row mt-3">
       <div class="table-responsive">
         <table class="table table-responsive table-bordered">
-          <thead class="bg-light text-uppercase">
-            <tr>
-              <th class="text-center">#</th>
-              <th>Name</th>
-              <th class="text-center">Date</th>
-              <th class="text-center">Mobile</th>
-              <th>Notes</th>
-              <th class="text-center"><i class="ri-tools-fill"></i></th>
-            </tr>
-          </thead>
-          <tbody *ngIf="!isLoading && historyDetails?.docs && historyDetails.docs.length > 0">
-              <tr
-                  *ngFor="let item of historyDetails.docs || [] | paginate: {itemsPerPage: payload.limit, currentPage: payload.page, totalItems: historyDetails.totalDocs}; let i = index">
-                  <td [width]="'5%'" class="text-center">{{ (payload.page - 1) * payload.limit + i + 1 }}</td>
-                <td >{{item.name | titlecase}} <span class="badge bg-info ms-2" *ngIf="item.isCustomer">Customer</span></td>
-                <td class="text-center" [width]="'15%'">{{item.createdAt | date:'dd-MM-yyyy'}} {{item.createdAt | date:'hh:MM a'}}</td>
-                <td class="text-center" [width]="'15%'">{{item.mobile}}</td>
-                <td>{{item.notes || 'NA'}}</td>
-                <td class="text-center" [width]="'15%'">
-                  <button class="btn btn-sm btn-success me-1" (click)="onOpenAddToCustomerModal(item)" [disabled]="item.isCustomer">
-                    <i class="ri-add-circle-line"></i>
-                  </button>
-                  <a [href]="'tel:' + item.mobile" class="btn btn-info btn-sm">
-                    <i class="ri-phone-fill"></i>
-                  </a>
-                
-                <!-- WhatsApp button -->
-                <a href="https://api.whatsapp.com/send?phone={{item.mobile}}" target="_blank" class="btn btn-success btn-sm ms-1">
-                  <i class="ri-whatsapp-fill"></i>
-              </a>
-                </td>
-              </tr>
-            </tbody>
-        </table>
+  <thead class="bg-light text-uppercase">
+    <tr>
+      <th class="text-center">#</th>
+      <th>Name</th>
+      <th class="text-center">Date</th>
+      <th class="text-center">Mobile</th>
+      <th>Notes</th>
+      <th class="text-center"><i class="ri-tools-fill"></i></th>
+    </tr>
+  </thead>
+  <tbody *ngIf="!isLoading && historyDetails?.docs && historyDetails.docs.length > 0">
+    <tr
+      *ngFor="let item of historyDetails.docs || [] | paginate: {itemsPerPage: payload.limit, currentPage: payload.page, totalItems: historyDetails.totalDocs}; let i = index">
+      <td [width]="'5%'" class="text-center">{{ (payload.page - 1) * payload.limit + i + 1 }}</td>
+      <td>{{item.name | titlecase}} <span class="badge bg-info ms-2" *ngIf="item.isCustomer">Customer</span></td>
+      <td class="text-center" [width]="'15%'">{{item.createdAt | date:'dd-MM-yyyy'}} {{item.createdAt | date:'hh:MM a'}}</td>
+      <td class="text-center" [width]="'15%'">{{item.mobile}}</td>
+      <td>{{item.notes || 'NA'}}</td>
+      <td class="text-center" [width]="'15%'">
+        <button class="btn btn-sm btn-success me-1" (click)="onOpenAddToCustomerModal(item)" [disabled]="item.isCustomer">
+          <i class="ri-add-circle-line"></i>
+        </button>
+        <a [href]="'tel:' + item.mobile" class="btn btn-info btn-sm">
+          <i class="ri-phone-fill"></i>
+        </a>
+        <a href="https://api.whatsapp.com/send?phone={{item.mobile}}" target="_blank" class="btn btn-success btn-sm ms-1">
+          <i class="ri-whatsapp-fill"></i>
+        </a>
+      </td>
+    </tr>
+  </tbody>
+  <tbody *ngIf="!isLoading && historyDetails && historyDetails.docs && historyDetails.docs.length === 0">
+    <tr>
+      <td class="text-center" colspan="6">
+        <img src="../../../../assets/images/NoRecordFound.png" alt="" style="width: 90px;">
+        <div class="fw-bold">No Records Found</div>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
         <div class="d-flex justify-content-end" >
           <pagination-controls class="pagination" (pageChange)="onPageChange($event)">

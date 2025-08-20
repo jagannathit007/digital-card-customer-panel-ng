@@ -33,7 +33,7 @@ export class SignInComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute
   ) {
-    document.body.style.backgroundColor = '#0e273c';
+    document.body.style.backgroundColor = '#daeeffff';
   }
 
   async ngOnInit(){
