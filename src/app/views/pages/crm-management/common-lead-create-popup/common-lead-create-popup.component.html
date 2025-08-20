@@ -1,0 +1,336 @@
+<div
+  *ngIf="isVisible"
+  class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4"
+  (click)="closePopup()"
+>
+  <div
+    class="tw-bg-white tw-rounded-xl tw-shadow-xl tw-w-full tw-max-w-4xl tw-max-h-[90vh] tw-overflow-y-auto"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Header -->
+    <div class="tw-p-6 tw-border-b tw-border-gray-200">
+      <div class="tw-flex tw-items-center tw-justify-between">
+        <h2 class="tw-text-2xl tw-font-bold tw-text-gray-900">Create New Lead</h2>
+        <button
+          (click)="closePopup()"
+          class="tw-p-2 tw-text-gray-400 hover:tw-text-gray-600 hover:tw-bg-gray-100 tw-rounded-lg tw-transition-colors"
+        >
+          <i class="ri-close-line tw-text-xl"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isFetching" class="tw-p-8 tw-text-center">
+      <div class="tw-animate-spin tw-rounded-full tw-h-8 tw-w-8 tw-border-b-2 tw-border-blue-600 tw-mx-auto tw-mb-4"></div>
+      <p class="tw-text-gray-600">Loading...</p>
+    </div>
+
+    <!-- Form -->
+    <form *ngIf="!isFetching" (ngSubmit)="onSubmit()" class="tw-p-6 tw-space-y-6">
+      <!-- Basic Information -->
+      <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6">
+        <!-- Title -->
+        <div class="tw-col-span-2">
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+            Lead Title *
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="leadData.title"
+            name="title"
+            class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-blue-500"
+            placeholder="Enter lead title"
+            required
+          />
+        </div>
+
+        <!-- Column -->
+        <div>
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+            Column *
+          </label>
+          <select
+            [(ngModel)]="leadData.column"
+            name="column"
+            class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-blue-500"
+            required
+          >
+            <option value="">Select a column</option>
+            <option *ngFor="let column of columnOptions" [value]="column._id">
+              {{ column.title }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Priority -->
+        <div>
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+            Priority
+          </label>
+          <app-priority-selection-dropdown
+            [selectedPriority]="leadData.priority"
+            (prioritySelected)="onPrioritySelected($event)"
+          ></app-priority-selection-dropdown>
+        </div>
+
+        <!-- Category -->
+        <div>
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+            Category
+          </label>
+          <app-task-category-selection-dropdown
+            [boardId]="null"
+            [selectedCategory]="leadData.category"
+            (onCategoryUpdated)="onCategorySelected($event)"
+          ></app-task-category-selection-dropdown>
+        </div>
+
+        <!-- Closing Date -->
+        <div>
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+            Closing Date
+          </label>
+          <div class="tw-relative">
+            <input
+              type="date"
+              [(ngModel)]="leadData.closingDate"
+              name="closingDate"
+              class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-blue-500"
+            />
+            <button
+              type="button"
+              (click)="toggleDatePicker()"
+              class="tw-absolute tw-right-2 tw-top-2 tw-p-1 tw-text-gray-400 hover:tw-text-gray-600"
+            >
+              <i class="ri-calendar-line"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Amount -->
+        <div>
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+            Amount
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="leadData.amount"
+            name="amount"
+            class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-blue-500"
+            placeholder="Enter amount"
+          />
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div>
+        <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+          Description
+        </label>
+        <ngx-editor-menu [editor]="editor!" [toolbar]="toolbar"></ngx-editor-menu>
+        <ngx-editor
+          [editor]="editor!"
+          [(ngModel)]="leadData.description"
+          [placeholder]="'Add lead description...'"
+          class="tw-min-h-[200px] tw-max-h-[200px] tw-overflow-y-auto"
+          style="height: 200px"
+        ></ngx-editor>
+      </div>
+
+      <!-- Assigned Members -->
+      <div>
+        <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+          Assign To *
+        </label>
+        <add-members-dropdown
+          [boardId]="null"
+          [taskId]="''"
+          [allignment]="'left'"
+          [placement]="'bottom'"
+          [type]="'task_add'"
+          [isModernMemberSelect]="true"
+          [taskPermissions]="true"
+          (onMemberAdded)="onMembersUpdated($event)"
+        ></add-members-dropdown>
+      </div>
+
+      <!-- Contact Details -->
+      <div>
+        <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2">
+          Contact Details
+        </label>
+        <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4 tw-p-4 tw-bg-gray-50 tw-rounded-lg">
+          <div>
+            <label class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1">Name</label>
+            <input
+              type="text"
+              [(ngModel)]="leadData.contactDetails.name"
+              name="contactName"
+              class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
+              placeholder="Contact name"
+            />
+          </div>
+          <div>
+            <label class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1">Phone</label>
+            <input
+              type="tel"
+              [(ngModel)]="leadData.contactDetails.phone"
+              name="contactPhone"
+              class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
+              placeholder="Phone number"
+            />
+          </div>
+          <div>
+            <label class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1">Email</label>
+            <input
+              type="email"
+              [(ngModel)]="leadData.contactDetails.email"
+              name="contactEmail"
+              class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
+              placeholder="Email address"
+            />
+          </div>
+          <div>
+            <label class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1">Address</label>
+            <input
+              type="text"
+              [(ngModel)]="leadData.contactDetails.address"
+              name="contactAddress"
+              class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
+              placeholder="Address"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Products -->
+      <div>
+        <div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">
+            Products
+          </label>
+          <button
+            type="button"
+            (click)="addProduct()"
+            class="tw-px-3 tw-py-1 tw-text-sm tw-bg-blue-600 tw-text-white tw-rounded-lg hover:tw-bg-blue-700 tw-transition-colors"
+          >
+            <i class="ri-add-line tw-mr-1"></i>
+            Add Product
+          </button>
+        </div>
+        
+        <div *ngIf="leadData.product.length === 0" class="tw-text-center tw-py-4 tw-text-gray-500 tw-text-sm">
+          No products added yet
+        </div>
+        
+        <div *ngFor="let product of leadData.product; let i = index" class="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-4 tw-p-4 tw-bg-gray-50 tw-rounded-lg tw-mb-3">
+          <div>
+            <label class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1">Product Name</label>
+            <input
+              type="text"
+              [(ngModel)]="product.name"
+              [name]="'productName' + i"
+              class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
+              placeholder="Product name"
+            />
+          </div>
+          <div>
+            <label class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1">Price</label>
+            <input
+              type="text"
+              [(ngModel)]="product.prise"
+              [name]="'productPrice' + i"
+              class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
+              placeholder="Price"
+            />
+          </div>
+          <div class="tw-flex tw-items-end tw-gap-2">
+            <div class="tw-flex-1">
+              <label class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1">Quantity</label>
+              <input
+                type="text"
+                [(ngModel)]="product.quantity"
+                [name]="'productQuantity' + i"
+                class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
+                placeholder="Quantity"
+              />
+            </div>
+            <button
+              type="button"
+              (click)="removeProduct(i)"
+              class="tw-p-2 tw-text-red-600 hover:tw-bg-red-50 tw-rounded tw-transition-colors"
+            >
+              <i class="ri-delete-bin-line"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Custom Date Picker -->
+      <div *ngIf="showCustomDatePicker" class="tw-absolute tw-top-20 tw-left-1/2 tw-transform tw--translate-x-1/2 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-p-4 tw-z-10">
+        <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+          <button
+            type="button"
+            (click)="previousMonth()"
+            class="tw-p-1 tw-text-gray-400 hover:tw-text-gray-600"
+          >
+            <i class="ri-arrow-left-s-line"></i>
+          </button>
+          <span class="tw-font-medium tw-text-gray-900">
+            {{ currentCalendarDate | date:'MMMM yyyy' }}
+          </span>
+          <button
+            type="button"
+            (click)="nextMonth()"
+            class="tw-p-1 tw-text-gray-400 hover:tw-text-gray-600"
+          >
+            <i class="ri-arrow-right-s-line"></i>
+          </button>
+        </div>
+        
+        <div class="tw-grid tw-grid-cols-7 tw-gap-1 tw-mb-2">
+          <div *ngFor="let day of dayHeaders" class="tw-text-center tw-text-xs tw-font-medium tw-text-gray-500 tw-p-1">
+            {{ day }}
+          </div>
+        </div>
+        
+        <div class="tw-grid tw-grid-cols-7 tw-gap-1">
+          <button
+            *ngFor="let day of calendarDays"
+            type="button"
+            (click)="selectDate(day.date)"
+            [class]="'tw-p-2 tw-text-xs tw-rounded-lg tw-transition-colors ' + 
+              (day.isToday ? 'tw-bg-blue-600 tw-text-white' : '') +
+              (day.isSelected ? 'tw-bg-green-600 tw-text-white' : '') +
+              (!day.isCurrentMonth ? 'tw-text-gray-300' : 'tw-text-gray-700 hover:tw-bg-gray-100')"
+          >
+            {{ day.date.getDate() }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="tw-flex tw-items-center tw-justify-end tw-gap-3 tw-pt-6 tw-border-t tw-border-gray-200">
+        <button
+          type="button"
+          (click)="closePopup()"
+          class="tw-px-4 tw-py-2 tw-text-gray-700 tw-bg-gray-100 hover:tw-bg-gray-200 tw-rounded-lg tw-transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          [disabled]="!isFormValid() || isCreating"
+          class="tw-px-6 tw-py-2 tw-bg-blue-600 tw-text-white hover:tw-bg-blue-700 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed tw-rounded-lg tw-transition-colors"
+        >
+          <span *ngIf="!isCreating">Create Lead</span>
+          <span *ngIf="isCreating" class="tw-flex tw-items-center tw-gap-2">
+            <div class="tw-animate-spin tw-rounded-full tw-h-4 tw-w-4 tw-border-b-2 tw-border-white"></div>
+            Creating...
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

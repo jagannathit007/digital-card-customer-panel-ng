@@ -1,0 +1,149 @@
+<div class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4 md:tw-p-6">
+  <div *ngIf="isLoading" class="tw-text-center tw-py-8">
+    <div class="tw-animate-spin tw-rounded-full tw-h-8 tw-w-8 tw-border-b-2 tw-border-blue-600 tw-mx-auto tw-mb-4"></div>
+    <p class="tw-text-gray-600">Loading lead details...</p>
+  </div>
+
+  <div *ngIf="!isLoading && lead" class="tw-space-y-6 tw-bg-white tw-rounded-none md:tw-rounded-2xl tw-shadow-2xl tw-w-full tw-h-full md:tw-w-[900px] md:tw-h-[700px] tw-flex tw-flex-col tw-overflow-hidden tw-animate-scale-in tw-p-5">
+    <!-- Lead Header -->
+    <div class="tw-border-b tw-border-gray-200 tw-pb-4">
+      <h1 class="tw-text-2xl tw-font-bold tw-text-gray-900 tw-mb-2">{{ lead.title }}</h1>
+      <div class="tw-flex tw-items-center tw-gap-4 tw-text-sm tw-text-gray-600">
+        <span>Created: {{ lead.createdAt | date:'medium' }}</span>
+        <span *ngIf="lead.closingDate">Closing: {{ lead.closingDate | date:'medium' }}</span>
+      </div>
+    </div>
+
+    <!-- Lead Details -->
+    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6">
+      <!-- Basic Information -->
+      <div class="tw-space-y-4">
+        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900">Basic Information</h3>
+        
+        <div>
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">Status</label>
+          <span class="tw-text-sm tw-text-gray-900">{{ lead.status }}</span>
+        </div>
+
+        <div>
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">Priority</label>
+          <span class="tw-text-sm tw-text-gray-900">{{ lead.priority | titlecase }}</span>
+        </div>
+
+        <div>
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">Category</label>
+          <span class="tw-text-sm tw-text-gray-900">{{ lead.category?.name || 'No Category' }}</span>
+        </div>
+
+        <div>
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">Amount</label>
+          <span class="tw-text-sm tw-text-gray-900">{{ lead.amount || 'Not specified' }}</span>
+        </div>
+      </div>
+
+      <!-- Assigned Members -->
+      <div class="tw-space-y-4">
+        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900">Team Members</h3>
+        
+        <div *ngIf="lead.assignedTo && lead.assignedTo.length > 0" class="tw-space-y-2">
+          <div *ngFor="let member of lead.assignedTo" class="tw-flex tw-items-center tw-gap-3 tw-p-3 tw-bg-gray-50 tw-rounded-lg">
+            <img 
+              *ngIf="member.profileImage" 
+              [src]="member.profileImage" 
+              [alt]="member.name"
+              class="tw-w-8 tw-h-8 tw-rounded-full tw-object-cover"
+            />
+            <div *ngIf="!member.profileImage" class="tw-w-8 tw-h-8 tw-rounded-full tw-bg-gray-300 tw-flex tw-items-center tw-justify-center">
+              <span class="tw-text-gray-600 tw-text-sm">{{ member.name.charAt(0) }}</span>
+            </div>
+            <div>
+              <div class="tw-font-medium tw-text-gray-900">{{ member.name }}</div>
+              <div class="tw-text-sm tw-text-gray-600">{{ member.role }}</div>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="!lead.assignedTo || lead.assignedTo.length === 0" class="tw-text-gray-500 tw-text-sm">
+          No members assigned
+        </div>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div *ngIf="lead.description" class="tw-space-y-2">
+      <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900">Description</h3>
+      <div class="tw-p-4 tw-bg-gray-50 tw-rounded-lg">
+        <div [innerHTML]="lead.description" class="tw-prose tw-max-w-none"></div>
+      </div>
+    </div>
+
+    <!-- Contact Details -->
+    <div *ngIf="lead.contactDetails" class="tw-space-y-4">
+      <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900">Contact Details</h3>
+      
+      <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4 tw-p-4 tw-bg-gray-50 tw-rounded-lg">
+        <div *ngIf="lead.contactDetails.name">
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">Name</label>
+          <span class="tw-text-sm tw-text-gray-900">{{ lead.contactDetails.name }}</span>
+        </div>
+        
+        <div *ngIf="lead.contactDetails.phone">
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">Phone</label>
+          <span class="tw-text-sm tw-text-gray-900">{{ lead.contactDetails.phone }}</span>
+        </div>
+        
+        <div *ngIf="lead.contactDetails.email">
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">Email</label>
+          <span class="tw-text-sm tw-text-gray-900">{{ lead.contactDetails.email }}</span>
+        </div>
+        
+        <div *ngIf="lead.contactDetails.address">
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">Address</label>
+          <span class="tw-text-sm tw-text-gray-900">{{ lead.contactDetails.address }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Products -->
+    <div *ngIf="lead.product && lead.product.length > 0" class="tw-space-y-4">
+      <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900">Products</h3>
+      
+      <div class="tw-space-y-3">
+        <div *ngFor="let product of lead.product" class="tw-p-4 tw-bg-gray-50 tw-rounded-lg">
+          <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-4">
+            <div>
+              <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">Product Name</label>
+              <span class="tw-text-sm tw-text-gray-900">{{ product.name }}</span>
+            </div>
+            <div>
+              <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">Price</label>
+              <span class="tw-text-sm tw-text-gray-900">{{ product.prise }}</span>
+            </div>
+            <div>
+              <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">Quantity</label>
+              <span class="tw-text-sm tw-text-gray-900">{{ product.quantity }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Attachments -->
+    <div *ngIf="lead.attachments && lead.attachments.length > 0" class="tw-space-y-4">
+      <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900">Attachments</h3>
+      
+      <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-4">
+        <div *ngFor="let attachment of lead.attachments" class="tw-p-3 tw-bg-gray-50 tw-rounded-lg">
+          <div class="tw-flex tw-items-center tw-gap-2">
+            <i class="ri-attachment-2 tw-text-gray-400"></i>
+            <span class="tw-text-sm tw-text-gray-900">{{ attachment.fileName }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && !lead" class="tw-text-center tw-py-8">
+    <p class="tw-text-gray-600">Lead not found</p>
+  </div>
+</div>

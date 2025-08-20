@@ -1,0 +1,42 @@
+<div class="tw-relative">
+  <!-- Selected Priority Display -->
+  <button
+    type="button"
+    (click)="toggleDropdown()"
+    class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg tw-bg-white tw-text-left tw-shadow-sm tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-blue-500 tw-transition-colors"
+  >
+    <div class="tw-flex tw-items-center tw-gap-2">
+      <span 
+        *ngIf="getSelectedPriority()"
+        [class]="'tw-inline-flex tw-items-center tw-gap-2 tw-px-2 tw-py-1 tw-rounded-full tw-text-sm tw-font-medium ' + getSelectedPriority()?.color"
+      >
+        <i [class]="getSelectedPriority()?.icon"></i>
+        {{ getSelectedPriority()?.label }}
+      </span>
+      <span *ngIf="!getSelectedPriority()" class="tw-text-gray-500">Select Priority</span>
+    </div>
+    <i class="ri-arrow-down-s-line tw-ml-auto tw-text-gray-400"></i>
+  </button>
+
+  <!-- Dropdown Menu -->
+  <div
+    *ngIf="isOpen"
+    class="tw-absolute tw-z-10 tw-mt-1 tw-w-full tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-max-h-60 tw-overflow-auto"
+  >
+    <div class="tw-py-1">
+      <div
+        *ngFor="let priority of priorities"
+        (click)="selectPriority(priority.value)"
+        class="tw-px-3 tw-py-2 tw-text-sm tw-cursor-pointer tw-transition-colors hover:tw-bg-gray-50 tw-flex tw-items-center tw-gap-2"
+      >
+        <span [class]="'tw-inline-flex tw-items-center tw-gap-2 tw-px-2 tw-py-1 tw-rounded-full tw-text-sm tw-font-medium ' + priority.color">
+          <i [class]="priority.icon"></i>
+          {{ priority.label }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Click outside to close -->
+<div *ngIf="isOpen" class="tw-fixed tw-inset-0 tw-z-0" (click)="closeDropdown()"></div>

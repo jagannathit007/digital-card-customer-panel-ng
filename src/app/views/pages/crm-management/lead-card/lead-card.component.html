@@ -1,0 +1,137 @@
+<div class="tw-bg-white tw-rounded-lg tw-shadow-sm tw-border tw-border-gray-200 tw-p-4 tw-mb-3 tw-cursor-pointer hover:tw-shadow-md tw-transition-shadow"
+     (click)="onLeadClick()">
+  
+  <!-- Lead Header -->
+  <div class="tw-flex tw-items-start tw-justify-between tw-mb-3">
+    <h3 class="tw-text-sm tw-font-semibold tw-text-gray-900 tw-line-clamp-2 tw-flex-1 tw-mr-2">
+      {{ lead.title }}
+    </h3>
+    
+    <!-- Priority Badge -->
+    <span 
+      [class]="'tw-inline-flex tw-items-center tw-gap-1 tw-px-2 tw-py-1 tw-text-xs tw-font-medium tw-rounded-full ' + getPriorityColor(lead.priority)"
+    >
+      <i [class]="getPriorityIcon(lead.priority)"></i>
+      {{ lead.priority | titlecase }}
+    </span>
+  </div>
+
+  <!-- Category -->
+  <div *ngIf="lead.category" class="tw-mb-2">
+    <span class="tw-inline-flex tw-items-center tw-gap-1 tw-px-2 tw-py-1 tw-bg-purple-100 tw-text-purple-800 tw-text-xs tw-rounded-full">
+      <i class="ri-price-tag-3-line"></i>
+      {{ getCategoryName(lead.category) }}
+    </span>
+  </div>
+
+  <!-- Assigned Members -->
+  <div *ngIf="lead.assignedTo && lead.assignedTo.length > 0" class="tw-mb-3">
+    <div class="tw-flex tw-items-center tw-gap-1 tw-flex-wrap">
+      <div 
+        *ngFor="let member of lead.assignedTo.slice(0, 3)" 
+        class="tw-w-6 tw-h-6 tw-rounded-full tw-bg-gray-200 tw-flex tw-items-center tw-justify-center tw-text-xs tw-font-medium tw-text-gray-700"
+        [title]="member.name"
+      >
+        <img 
+          *ngIf="member.profileImage" 
+          [src]="member.profileImage" 
+          [alt]="member.name"
+          class="tw-w-full tw-h-full tw-rounded-full tw-object-cover"
+        />
+        <span *ngIf="!member.profileImage">{{ member.name.charAt(0) }}</span>
+      </div>
+      <span 
+        *ngIf="lead.assignedTo.length > 3" 
+        class="tw-text-xs tw-text-gray-500 tw-ml-1"
+      >
+        +{{ lead.assignedTo.length - 3 }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Description Preview -->
+  <div *ngIf="lead.description" class="tw-mb-3">
+    <p class="tw-text-xs tw-text-gray-600 tw-line-clamp-2" [innerHTML]="lead.description"></p>
+  </div>
+
+  <!-- Contact Details -->
+  <div *ngIf="lead.contactDetails?.name || lead.contactDetails?.phone || lead.contactDetails?.email" class="tw-mb-3">
+    <div class="tw-text-xs tw-text-gray-500 tw-space-y-1">
+      <div *ngIf="lead.contactDetails.name" class="tw-flex tw-items-center tw-gap-1">
+        <i class="ri-user-line"></i>
+        <span>{{ lead.contactDetails.name }}</span>
+      </div>
+      <div *ngIf="lead.contactDetails.phone" class="tw-flex tw-items-center tw-gap-1">
+        <i class="ri-phone-line"></i>
+        <span>{{ lead.contactDetails.phone }}</span>
+      </div>
+      <div *ngIf="lead.contactDetails.email" class="tw-flex tw-items-center tw-gap-1">
+        <i class="ri-mail-line"></i>
+        <span>{{ lead.contactDetails.email }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Amount -->
+  <div *ngIf="lead.amount" class="tw-mb-3">
+    <div class="tw-flex tw-items-center tw-gap-1 tw-text-xs tw-text-gray-600">
+      <i class="ri-money-dollar-circle-line"></i>
+      <span class="tw-font-medium">{{ lead.amount }}</span>
+    </div>
+  </div>
+
+  <!-- Products -->
+  <div *ngIf="lead.product && lead.product.length > 0" class="tw-mb-3">
+    <div class="tw-text-xs tw-text-gray-500">
+      <div class="tw-flex tw-items-center tw-gap-1 tw-mb-1">
+        <i class="ri-shopping-cart-line"></i>
+        <span>{{ lead.product.length }} product(s)</span>
+      </div>
+      <div class="tw-space-y-1">
+        <div *ngFor="let item of lead.product.slice(0, 2)" class="tw-pl-3">
+          {{ item.name }} - {{ item.quantity }} x {{ item.prise }}
+        </div>
+        <div *ngIf="lead.product.length > 2" class="tw-pl-3 tw-text-gray-400">
+          +{{ lead.product.length - 2 }} more...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Closing Date -->
+  <div *ngIf="lead.closingDate" class="tw-mb-3">
+    <div class="tw-flex tw-items-center tw-gap-1 tw-text-xs tw-text-gray-500">
+      <i class="ri-calendar-line"></i>
+      <span>Closing: {{ getFormattedClosingDate() }}</span>
+    </div>
+  </div>
+
+  <!-- Lead Actions -->
+  <div class="tw-flex tw-items-center tw-justify-between tw-pt-3 tw-border-t tw-border-gray-100">
+    <div class="tw-flex tw-items-center tw-gap-2">
+      <button
+        *ngIf="canWinLead()"
+        (click)="onLeadWin($event)"
+        class="tw-px-2 tw-py-1 tw-text-xs tw-bg-green-600 tw-text-white tw-rounded hover:tw-bg-green-700 tw-transition-colors"
+        title="Mark as Won"
+      >
+        <i class="ri-trophy-line tw-mr-1"></i>
+        Win
+      </button>
+      
+      <button
+        *ngIf="canLoseLead()"
+        (click)="onLeadLose($event)"
+        class="tw-px-2 tw-py-1 tw-text-xs tw-bg-red-600 tw-text-white tw-rounded hover:tw-bg-red-700 tw-transition-colors"
+        title="Mark as Lost"
+      >
+        <i class="ri-close-circle-line tw-mr-1"></i>
+        Lose
+      </button>
+    </div>
+    
+    <div class="tw-text-xs tw-text-gray-400">
+      {{ getFormattedCreatedDate() }}
+    </div>
+  </div>
+</div>

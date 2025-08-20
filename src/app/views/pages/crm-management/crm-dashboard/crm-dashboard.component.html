@@ -1,1 +1,209 @@
-<p>crm-dashboard works!</p>
+<div class="tw-p-6">
+  <!-- Header -->
+  <div class="tw-mb-8">
+    <h1 class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-mb-2">CRM Dashboard</h1>
+    <p class="tw-text-gray-600">Overview of your CRM performance and lead management</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="tw-text-center tw-py-12">
+    <div class="tw-animate-spin tw-rounded-full tw-h-12 tw-w-12 tw-border-b-2 tw-border-blue-600 tw-mx-auto tw-mb-4"></div>
+    <p class="tw-text-gray-600">Loading dashboard data...</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div *ngIf="!isLoading" class="tw-space-y-8">
+    <!-- Stats Cards -->
+    <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-4 tw-gap-6">
+      <!-- Total Leads -->
+      <div class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-p-6">
+        <div class="tw-flex tw-items-center tw-justify-between">
+          <div>
+            <p class="tw-text-sm tw-font-medium tw-text-gray-600">Total Leads</p>
+            <p class="tw-text-3xl tw-font-bold tw-text-gray-900">{{ getTotalLeads() }}</p>
+          </div>
+          <div class="tw-p-3 tw-bg-blue-100 tw-rounded-full">
+            <i class="ri-user-line tw-text-2xl tw-text-blue-600"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Leads -->
+      <div class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-p-6">
+        <div class="tw-flex tw-items-center tw-justify-between">
+          <div>
+            <p class="tw-text-sm tw-font-medium tw-text-gray-600">Active Leads</p>
+            <p class="tw-text-3xl tw-font-bold tw-text-gray-900">{{ getActiveLeads() }}</p>
+          </div>
+          <div class="tw-p-3 tw-bg-green-100 tw-rounded-full">
+            <i class="ri-time-line tw-text-2xl tw-text-green-600"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Won Leads -->
+      <div class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-p-6">
+        <div class="tw-flex tw-items-center tw-justify-between">
+          <div>
+            <p class="tw-text-sm tw-font-medium tw-text-gray-600">Won Leads</p>
+            <p class="tw-text-3xl tw-font-bold tw-text-green-600">{{ getWonLeads() }}</p>
+          </div>
+          <div class="tw-p-3 tw-bg-green-100 tw-rounded-full">
+            <i class="ri-trophy-line tw-text-2xl tw-text-green-600"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lost Leads -->
+      <div class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-p-6">
+        <div class="tw-flex tw-items-center tw-justify-between">
+          <div>
+            <p class="tw-text-sm tw-font-medium tw-text-gray-600">Lost Leads</p>
+            <p class="tw-text-3xl tw-font-bold tw-text-red-600">{{ getLostLeads() }}</p>
+          </div>
+          <div class="tw-p-3 tw-bg-red-100 tw-rounded-full">
+            <i class="ri-close-circle-line tw-text-2xl tw-text-red-600"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Priority Breakdown -->
+    <div class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-6">
+      <!-- Priority Chart -->
+      <div class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-p-6">
+        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4">Leads by Priority</h3>
+        <div class="tw-space-y-4">
+          <!-- Hot Priority -->
+          <div class="tw-flex tw-items-center tw-justify-between">
+            <div class="tw-flex tw-items-center tw-gap-3">
+              <div class="tw-w-4 tw-h-4 tw-bg-red-500 tw-rounded-full"></div>
+              <span class="tw-text-sm tw-font-medium tw-text-gray-700">Hot</span>
+            </div>
+            <div class="tw-flex tw-items-center tw-gap-2">
+              <div class="tw-w-32 tw-h-2 tw-bg-gray-200 tw-rounded-full tw-overflow-hidden">
+                <div 
+                  class="tw-h-full tw-bg-red-500 tw-rounded-full" 
+                  [style.width]="(getLeadsByPriority('hot') / getTotalLeads() * 100) + '%'"
+                ></div>
+              </div>
+              <span class="tw-text-sm tw-font-medium tw-text-gray-900">{{ getLeadsByPriority('hot') }}</span>
+            </div>
+          </div>
+
+          <!-- Warm Priority -->
+          <div class="tw-flex tw-items-center tw-justify-between">
+            <div class="tw-flex tw-items-center tw-gap-3">
+              <div class="tw-w-4 tw-h-4 tw-bg-yellow-500 tw-rounded-full"></div>
+              <span class="tw-text-sm tw-font-medium tw-text-gray-700">Warm</span>
+            </div>
+            <div class="tw-flex tw-items-center tw-gap-2">
+              <div class="tw-w-32 tw-h-2 tw-bg-gray-200 tw-rounded-full tw-overflow-hidden">
+                <div 
+                  class="tw-h-full tw-bg-yellow-500 tw-rounded-full" 
+                  [style.width]="(getLeadsByPriority('warm') / getTotalLeads() * 100) + '%'"
+                ></div>
+              </div>
+              <span class="tw-text-sm tw-font-medium tw-text-gray-900">{{ getLeadsByPriority('warm') }}</span>
+            </div>
+          </div>
+
+          <!-- Cold Priority -->
+          <div class="tw-flex tw-items-center tw-justify-between">
+            <div class="tw-flex tw-items-center tw-gap-3">
+              <div class="tw-w-4 tw-h-4 tw-bg-blue-500 tw-rounded-full"></div>
+              <span class="tw-text-sm tw-font-medium tw-text-gray-700">Cold</span>
+            </div>
+            <div class="tw-flex tw-items-center tw-gap-2">
+              <div class="tw-w-32 tw-h-2 tw-bg-gray-200 tw-rounded-full tw-overflow-hidden">
+                <div 
+                  class="tw-h-full tw-bg-blue-500 tw-rounded-full" 
+                  [style.width]="(getLeadsByPriority('cold') / getTotalLeads() * 100) + '%'"
+                ></div>
+              </div>
+              <span class="tw-text-sm tw-font-medium tw-text-gray-900">{{ getLeadsByPriority('cold') }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-p-6">
+        <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4">Recent Activity</h3>
+        <div class="tw-space-y-3">
+          <div *ngFor="let lead of leads.slice(0, 5)" class="tw-flex tw-items-center tw-gap-3 tw-p-3 tw-bg-gray-50 tw-rounded-lg">
+            <div class="tw-w-2 tw-h-2 tw-bg-blue-500 tw-rounded-full"></div>
+            <div class="tw-flex-1">
+              <p class="tw-text-sm tw-font-medium tw-text-gray-900">{{ lead.title }}</p>
+              <p class="tw-text-xs tw-text-gray-600">Updated {{ lead.updatedAt | date:'short' }}</p>
+            </div>
+            <span 
+              [class]="'tw-px-2 tw-py-1 tw-text-xs tw-font-medium tw-rounded-full ' + 
+                (lead.priority === 'hot' ? 'tw-bg-red-100 tw-text-red-800' : 
+                 lead.priority === 'warm' ? 'tw-bg-yellow-100 tw-text-yellow-800' : 
+                 'tw-bg-blue-100 tw-text-blue-800')"
+            >
+              {{ lead.priority | titlecase }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CRM Details -->
+    <div *ngIf="crmDetails" class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-p-6">
+      <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4">CRM Information</h3>
+      <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6">
+        <div>
+          <h4 class="tw-text-md tw-font-medium tw-text-gray-700 tw-mb-2">Categories</h4>
+          <div class="tw-flex tw-flex-wrap tw-gap-2">
+            <span 
+              *ngFor="let category of crmDetails.categories" 
+              class="tw-px-3 tw-py-1 tw-bg-purple-100 tw-text-purple-800 tw-text-sm tw-rounded-full"
+            >
+              {{ category.name }}
+            </span>
+          </div>
+        </div>
+        <div>
+          <h4 class="tw-text-md tw-font-medium tw-text-gray-700 tw-mb-2">Team Members</h4>
+          <div class="tw-text-sm tw-text-gray-600">
+            {{ crmDetails.members?.length || 0 }} members assigned
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-p-6">
+      <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4">Quick Actions</h3>
+      <div class="tw-flex tw-flex-wrap tw-gap-4">
+        <button 
+          routerLink="crm/leads"
+          class="tw-px-4 tw-py-2 tw-bg-blue-600 tw-text-white tw-rounded-lg hover:tw-bg-blue-700 tw-transition-colors tw-flex tw-items-center tw-gap-2"
+        >
+          <i class="ri-eye-line"></i>
+          View All Leads
+        </button>
+        <button 
+          routerLink="crm/leads"
+          class="tw-px-4 tw-py-2 tw-bg-green-600 tw-text-white tw-rounded-lg hover:tw-bg-green-700 tw-transition-colors tw-flex tw-items-center tw-gap-2"
+        >
+          <i class="ri-add-line"></i>
+          Create New Lead
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- No CRM Setup Message -->
+  <div *ngIf="!isLoading && !crmDetails" class="tw-text-center tw-py-12">
+    <div class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-p-8 tw-max-w-md tw-mx-auto">
+      <i class="ri-dashboard-line tw-text-5xl tw-text-gray-400 tw-mb-4"></i>
+      <h3 class="tw-text-lg tw-font-semibold tw-text-gray-700 tw-mb-2">No CRM Setup Found</h3>
+      <p class="tw-text-gray-500 tw-text-sm tw-mb-6">
+        Please contact your administrator to set up CRM for your account.
+      </p>
+    </div>
+  </div>
+</div>

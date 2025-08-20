@@ -1,0 +1,24 @@
+// Priority Selection Dropdown Component Styles
+.priority-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.priority-option {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: #f3f4f6;
+  }
+}
+
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
