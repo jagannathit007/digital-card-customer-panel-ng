@@ -72,6 +72,30 @@ export class CrmService {
     }
   }
 
+  async getAllAvailableMembersForCrm(data: any) {
+    try {
+      this.getHeaders();
+      const response = await this.apiManager.request(
+        {
+          url: `${this.baseURL}/members/available`,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      
+      if (response.status === 200 && response.data) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
   async updateCrmCategories(data: any) {
     try {
       this.getHeaders();
@@ -683,6 +707,100 @@ export class CrmService {
       const response = await this.apiManager.request(
         {
           url: `${this.baseURL}/categories/get-all`,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status === 200 && response.data) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
+  // Dashboard Statistics
+  async getCrmDashboardStats(data: any) {
+    try {
+      this.getHeaders();
+      const response = await this.apiManager.request(
+        {
+          url: `${this.baseURL}/dashboard/stats`,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status === 200 && response.data) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
+  // Category Management
+  async createCrmCategory(data: any) {
+    try {
+      this.getHeaders();
+      const response = await this.apiManager.request(
+        {
+          url: `${this.baseURL}/category/create`,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status === 200 && response.data) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
+  async updateCrmCategory(data: any) {
+    try {
+      this.getHeaders();
+      const response = await this.apiManager.request(
+        {
+          url: `${this.baseURL}/category/update`,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status === 200 && response.data) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
+  async deleteCrmCategory(data: any) {
+    try {
+      this.getHeaders();
+      const response = await this.apiManager.request(
+        {
+          url: `${this.baseURL}/category/delete`,
           method: 'POST',
         },
         data,
