@@ -14,6 +14,7 @@ interface AttendanceRecord {
   name: string;
   profileImg?: string;
   punchIn: string | null;
+  onLeave: boolean;
   punchOut: string | null;
   inouts: Array<{
     dateTime: string;

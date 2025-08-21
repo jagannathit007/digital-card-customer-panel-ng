@@ -196,8 +196,11 @@
                 [class.tw-bg-green-100]="record.punchIn"
                 [class.tw-text-green-800]="record.punchIn"
                 [class.tw-bg-red-100]="!record.punchIn"
-                [class.tw-text-red-800]="!record.punchIn">
-                {{record.punchIn ? 'Present' : 'Absent'}}
+                [class.tw-text-red-800]="!record.punchIn"
+                [class.tw-bg-yellow-100]="record.onLeave"
+                [class.tw-text-yellow-800]="record.onLeave"
+                >
+                {{record.onLeave ? 'On Leave' : (record.punchIn ? 'Present' : 'Absent')}}
               </span>
             </td>
             <td class="tw-px-6 tw-py-4 tw-text-center">
