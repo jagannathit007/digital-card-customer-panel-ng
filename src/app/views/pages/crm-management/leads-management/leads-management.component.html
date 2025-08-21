@@ -8,10 +8,57 @@
     <div class="tw-max-w-full tw-mx-auto">
       <!-- CRM Header -->
       <div class="tw-mb-6">
-        <h1 class="tw-text-3xl tw-font-bold tw-text-gray-900 tw-mb-2">
-          CRM Lead Management
-        </h1>
-        <p class="tw-text-gray-600">Manage your leads efficiently with Kanban view</p>
+        <div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
+          <h1 class="tw-text-3xl tw-font-bold tw-text-gray-900">
+            CRM Lead Management
+          </h1>
+          
+          <!-- View Toggle Button -->
+          <div class="tw-flex tw-items-center tw-gap-4" *ngIf="crmId()">
+            <!-- View Toggle -->
+            <div class="tw-flex tw-items-center tw-bg-gray-100 tw-rounded-lg tw-p-1">
+              <button
+                (click)="setViewMode('kanban')"
+                class="tw-px-4 tw-py-2 tw-rounded-md tw-text-sm tw-font-medium tw-transition-all tw-duration-200"
+                [ngClass]="{
+                  'tw-bg-white tw-text-blue-600 tw-shadow-sm': viewMode() === 'kanban',
+                  'tw-text-gray-600 hover:tw-text-gray-900': viewMode() !== 'kanban'
+                }"
+              >
+                <i class="ri-layout-grid-line tw-mr-2"></i>
+                Kanban
+              </button>
+              <button
+                (click)="setViewMode('table')"
+                class="tw-px-4 tw-py-2 tw-rounded-md tw-text-sm tw-font-medium tw-transition-all tw-duration-200"
+                [ngClass]="{
+                  'tw-bg-white tw-text-blue-600 tw-shadow-sm': viewMode() === 'table',
+                  'tw-text-gray-600 hover:tw-text-gray-900': viewMode() !== 'table'
+                }"
+              >
+                <i class="ri-table-line tw-mr-2"></i>
+                Table
+              </button>
+            </div>
+
+            <!-- Column Filter for Table View -->
+            <div *ngIf="viewMode() === 'table'" class="tw-flex tw-items-center tw-gap-2">
+              <label class="tw-text-sm tw-font-medium tw-text-gray-700">Filter by Column:</label>
+              <select
+                [(ngModel)]="selectedTableColumnValue"
+                (change)="onTableColumnChange()"
+                class="tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md tw-text-sm tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-blue-500"
+              >
+                <option value="">All Columns</option>
+                <option *ngFor="let column of crmColumns()" [value]="column._id">
+                  {{ column.title }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <p class="tw-text-gray-600" *ngIf="viewMode() === 'kanban'">Manage your leads efficiently with Kanban view</p>
+        <p class="tw-text-gray-600" *ngIf="viewMode() === 'table'">View and manage your leads in a structured table format</p>
       </div>
 
       <!-- CRM not selected design -->
@@ -45,9 +92,9 @@
 
       <!-- Kanban Board -->
       <div
+        *ngIf="crmId() && viewMode() === 'kanban'"
         #kanbanContainer
         class="tw-flex tw-gap-6 tw-overflow-x-auto tw-pb-4"
-        *ngIf="crmId()"
         cdkDropList
         cdkDropListOrientation="horizontal"
         [cdkDropListData]="editableColumns()"
@@ -71,7 +118,7 @@
           >
             <!-- Column Container -->
             <div
-              class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-h-fit tw-min-h-[calc(100vh-200px)] tw-transition-all tw-duration-200 tw-relative"
+              class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-h-fit tw-min-h-[calc(100vh-300px)] tw-transition-all tw-duration-200 tw-relative"
             >
               <!-- Column Header -->
               <div class="tw-p-4 tw-border-b tw-border-gray-100">
@@ -100,11 +147,19 @@
                       >
                         {{ column.title }}
                       </h3>
-                      <span
-                        class="tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-px-2 tw-py-1 tw-rounded-full"
-                      >
-                        {{ column?.leads?.length }}
-                      </span>
+                      <div class="tw-flex tw-items-center tw-gap-2">
+                        <span
+                          class="tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-px-2 tw-py-1 tw-rounded-full"
+                        >
+                          {{ column?.leads?.length }}
+                        </span>
+                        <span
+                          class="tw-bg-green-100 tw-text-green-700 tw-text-xs tw-px-2 tw-py-1 tw-rounded-full tw-font-medium"
+                          title="Total Amount"
+                        >
+                          {{ formatAmount(getColumnTotalAmount(column)) }}
+                        </span>
+                      </div>
                     </div>
 
                     <!-- Edit Title Input -->
@@ -256,7 +311,7 @@
 
               <!-- Leads Container -->
               <div
-                class="tw-p-4 tw-space-y-3 tw-min-h-[calc(100vh-265px)] tw-max-h-[calc(100vh-265px)] tw-overflow-y-auto task-container-scroll tw-transition-all tw-duration-200"
+                class="tw-p-4 tw-space-y-3 tw-min-h-[calc(100vh-370px)] tw-max-h-[calc(100vh-370px)] tw-overflow-y-auto task-container-scroll tw-transition-all tw-duration-200"
                 cdkDropList
                 [id]="column._id"
                 [cdkDropListData]="column.leads"
@@ -335,11 +390,19 @@
                     <h3 class="tw-font-semibold tw-text-gray-900 tw-text-sm">
                       {{ column.title }}
                     </h3>
-                    <span
-                      class="tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-px-2 tw-py-1 tw-rounded-full"
-                    >
-                      {{ column?.leads?.length }}
-                    </span>
+                    <div class="tw-flex tw-items-center tw-gap-2">
+                      <span
+                        class="tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-px-2 tw-py-1 tw-rounded-full"
+                      >
+                        {{ column?.leads?.length }}
+                      </span>
+                      <span
+                        class="tw-bg-green-100 tw-text-green-700 tw-text-xs tw-px-2 tw-py-1 tw-rounded-full tw-font-medium"
+                        title="Total Amount"
+                      >
+                        {{ formatAmount(getColumnTotalAmount(column)) }}
+                      </span>
+                    </div>
                     <svg
                       *ngIf="crmPermissionsService.isBoardLevelPermission()"
                       class="tw-w-4 tw-h-4 tw-text-gray-400 tw-ml-1"
@@ -361,7 +424,7 @@
               <!-- Leads Container -->
               <!-- For fixed columns -->
               <div
-                class="tw-p-4 tw-space-y-3 tw-min-h-[calc(100vh-300px)] tw-max-h-[calc(100vh-240px)] tw-overflow-y-auto task-container-scroll tw-transition-all tw-duration-200"
+                class="tw-p-4 tw-space-y-3 tw-min-h-[calc(100vh-370px)] tw-max-h-[calc(100vh-370px)] tw-overflow-y-auto task-container-scroll tw-transition-all tw-duration-200"
                 cdkDropList
                 [id]="column._id"
                 [cdkDropListData]="column.leads"
@@ -419,6 +482,168 @@
                 ></div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table View -->
+      <div
+        *ngIf="crmId() && viewMode() === 'table' && !isLoading()"
+        class="tw-bg-white tw-rounded-xl tw-shadow-sm tw-border tw-border-gray-200 tw-overflow-hidden"
+      >
+        <!-- Table Header -->
+        <div class="tw-px-6 tw-py-4 tw-border-b tw-border-gray-100">
+          <div class="tw-flex tw-items-center tw-justify-between">
+            <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900">
+              Leads Table View
+            </h3>
+            <div class="tw-text-sm tw-text-gray-500">
+              {{ filteredLeadsForTable().length }} leads
+            </div>
+          </div>
+        </div>
+
+        <!-- Table Content -->
+        <div class="tw-overflow-x-auto">
+          <table class="tw-w-full">
+            <thead class="tw-bg-gray-50">
+              <tr>
+                <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                  Lead
+                </th>
+                <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                  Contact
+                </th>
+                <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                  Status
+                </th>
+                <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                  Priority
+                </th>
+                <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                  Amount
+                </th>
+                <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                  Assigned To
+                </th>
+                <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                  Created
+                </th>
+              </tr>
+            </thead>
+            <tbody class="tw-bg-white tw-divide-y tw-divide-gray-200">
+              <tr
+                *ngFor="let lead of filteredLeadsForTable(); trackBy: trackByLeadId"
+                (click)="selectLead(lead)"
+                class="tw-cursor-pointer hover:tw-bg-gray-50 tw-transition-colors tw-duration-150"
+                [ngClass]="{
+                  'tw-bg-blue-50 tw-border-l-4 tw-border-l-blue-500': selectedLead()?._id === lead._id
+                }"
+              >
+                <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                  <div class="tw-flex tw-items-center">
+                    <div class="tw-flex-shrink-0 tw-w-10 tw-h-10">
+                      <div class="tw-w-10 tw-h-10 tw-rounded-full tw-bg-blue-100 tw-flex tw-items-center tw-justify-center">
+                        <span class="tw-text-sm tw-font-medium tw-text-blue-600">
+                          {{ lead?.contactDetails?.name?.charAt(0)?.toUpperCase() || 'L' }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="tw-ml-4">
+                      <div class="tw-text-sm tw-font-medium tw-text-gray-900 tw-line-clamp-1">
+                        {{ lead.title }}
+                      </div>
+                      <div class="tw-text-sm tw-text-gray-500 tw-line-clamp-1">
+                        {{ lead.description || 'No description' }}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                  <div class="tw-text-sm tw-text-gray-900">
+                    {{ lead?.contactDetails?.name || 'N/A' }}
+                  </div>
+                  <div class="tw-text-sm tw-text-gray-500">
+                    {{ lead?.contactDetails?.email || 'N/A' }}
+                  </div>
+                  <div class="tw-text-sm tw-text-gray-500">
+                    {{ lead?.contactDetails?.phone || 'N/A' }}
+                  </div>
+                </td>
+                <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                  <span
+                    class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium"
+                    [ngClass]="{
+                      'tw-bg-green-100 tw-text-green-800': getColumnTitle(lead.column).toLowerCase() === 'won',
+                      'tw-bg-red-100 tw-text-red-800': getColumnTitle(lead.column).toLowerCase() === 'lost',
+                      'tw-bg-blue-100 tw-text-blue-800': !['won', 'lost'].includes(getColumnTitle(lead.column).toLowerCase() || '')
+                    }"
+                  >
+                    {{ getColumnTitle(lead.column) || 'Unknown' }}
+                  </span>
+                </td>
+                <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                  <span
+                    class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium"
+                    [ngClass]="{
+                      'tw-bg-red-100 tw-text-red-800': lead.priority === 'hot',
+                      'tw-bg-orange-100 tw-text-orange-800': lead.priority === 'warm',
+                      'tw-bg-blue-100 tw-text-blue-800': lead.priority === 'cold'
+                    }"
+                  >
+                    {{ lead.priority ? (lead.priority.charAt(0).toUpperCase() + lead.priority.slice(1)) : 'N/A' }}
+                  </span>
+                </td>
+                <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                  <div class="tw-text-sm tw-font-medium tw-text-gray-900">
+                    {{ formatAmount(lead.amount) }}
+                  </div>
+                </td>
+                <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                  <div class="tw-flex tw-items-center tw-space-x-2">
+                    <div
+                      *ngFor="let member of lead.assignedTo?.slice(0, 3); let i = index"
+                      class="tw-relative"
+                    >
+                      <div
+                        class="tw-w-8 tw-h-8 tw-rounded-full tw-bg-gray-200 tw-flex tw-items-center tw-justify-center tw-text-xs tw-font-medium tw-text-gray-600"
+                        [title]="member?.name || 'Unknown'"
+                      >
+                        {{ getMemberInitials(member || {}) }}
+                      </div>
+                    </div>
+                    <span
+                      *ngIf="lead.assignedTo && lead.assignedTo.length > 3"
+                      class="tw-text-xs tw-text-gray-500"
+                    >
+                      +{{ (lead?.assignedTo?.length || 0) - 3 }}
+                    </span>
+                  </div>
+                </td>
+                <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                  <div class="tw-text-sm tw-text-gray-900">
+                    {{ lead.createdAt | date:'MMM dd, yyyy' }}
+                  </div>
+                  <div class="tw-text-sm tw-text-gray-500">
+                    {{ lead.createdAt | date:'HH:mm' }}
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Empty State -->
+        <div
+          *ngIf="filteredLeadsForTable().length === 0"
+          class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-py-12 tw-px-6"
+        >
+          <i class="ri-file-list-line tw-text-4xl tw-text-gray-400 tw-mb-4"></i>
+          <div class="tw-text-lg tw-font-medium tw-text-gray-700 tw-mb-2">
+            No leads found
+          </div>
+          <div class="tw-text-gray-500 tw-text-sm tw-text-center">
+            {{ selectedTableColumn() ? 'No leads in the selected column' : 'No leads available' }}
           </div>
         </div>
       </div>
@@ -490,7 +715,7 @@
 </div>
 
 <!-- filter -->
-<button
+<!-- <button
   *ngIf="crmId()"
   title="whats assigned to me"
   (click)="onToggleAssignmentFilter()"
@@ -502,7 +727,7 @@
 >
   <i *ngIf="!isAssignmentFilterActive()" class="ri-filter-fill"></i>
   <i *ngIf="isAssignmentFilterActive()" class="ri-filter-off-fill"></i>
-</button>
+</button> -->
 
 <!-- Add Lead Button (Floating) -->
 <button

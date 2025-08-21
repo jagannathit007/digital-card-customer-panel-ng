@@ -26,6 +26,8 @@ import { teamMemberCommon } from 'src/app/core/constants/team-members-common';
 import { CrmPermissionsService } from 'src/app/services/crm-permissions.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SocketService } from 'src/app/services/socket.service';
+import { FormsModule } from '@angular/forms';
+import { LeadEventService } from 'src/app/services/LeadEvent.service';
 
 interface LeadUpdate {
   field: string;
@@ -147,6 +149,38 @@ export class LeadsManagementComponent implements OnInit, OnDestroy {
 
   adminId: string = '';
 
+  // View mode state
+  viewMode = signal<'kanban' | 'table'>(
+    this.storage.get('crm_view_mode') || 'kanban'
+  );
+  selectedTableColumn = signal<string>('');
+
+  // Property for ngModel binding
+  get selectedTableColumnValue(): string {
+    return this.selectedTableColumn();
+  }
+
+  set selectedTableColumnValue(value: string) {
+    this.selectedTableColumn.set(value);
+  }
+
+  // Computed property for filtered leads in table view
+  filteredLeadsForTable = computed(() => {
+    const columns = this.crmColumns();
+    if (!columns || columns.length === 0) {
+      return [];
+    }
+    
+    const allLeads = columns.flatMap(column => column.leads || []);
+    const selectedColumn = this.selectedTableColumn();
+    
+    if (!selectedColumn) {
+      return allLeads;
+    }
+    
+    return allLeads.filter(lead => lead.column === selectedColumn);
+  });
+
   // Computed properties
   editableColumns = computed(() =>
     this.crmColumns().filter((col) => col.canEdit)
@@ -155,6 +189,24 @@ export class LeadsManagementComponent implements OnInit, OnDestroy {
   fixedColumns = computed(() =>
     this.crmColumns().filter((col) => !col.canEdit)
   );
+
+  // Helper method to calculate total amount for a column
+  getColumnTotalAmount(column: CrmColumn): string {
+    if (!column.leads || column.leads.length === 0) return '0';
+    
+    const total = column.leads.reduce((sum, lead) => {
+      const amount = parseFloat(lead.amount) || 0;
+      return sum + amount;
+    }, 0);
+    
+    return total.toFixed(2);
+  }
+
+  // Helper method to format amount for display
+  formatAmount(amount: string): string {
+    if (!amount || amount === '0') return '₹ 0';
+    return `₹ ${parseFloat(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
 
   // In your component class
   @ViewChild(CdkDrag) drag!: CdkDrag;
@@ -192,7 +244,8 @@ export class LeadsManagementComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private dragDropService: DragDropService,
     private fb: FormBuilder,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private leadEventService: LeadEventService
   ) {}
 
   async ngOnInit() {
@@ -247,31 +300,41 @@ export class LeadsManagementComponent implements OnInit, OnDestroy {
   }
 
   async loadData() {
-    const crmDetails = await this.crmService.getCrmDetails({});
-    if (crmDetails) {
-      this.crmId.set(crmDetails._id);
-      this.categories.set(crmDetails.categories || []);
+    try {
+      const crmDetails = await this.crmService.getCrmDetails({});
+      if (crmDetails) {
+        this.crmId.set(crmDetails._id);
+        this.categories.set(crmDetails.categories || []);
 
-      const columns = await this.crmService.getCrmColumns({});
-      if (columns) {
-        this.crmColumns.set(columns);
-        this.wonColumnId.set(
-          columns.find(
-            (col: any) => col.title.toLowerCase() === 'won'
-          )?._id
-        );
-        this.lostColumnId.set(
-          columns.find(
-            (col: any) => col.title.toLowerCase() === 'lost'
-          )?._id
-        );
+        const columns = await this.crmService.getCrmColumns({});
+        if (columns) {
+          this.crmColumns.set(columns);
+          this.wonColumnId.set(
+            columns.find(
+              (col: any) => col.title.toLowerCase() === 'won'
+            )?._id
+          );
+          this.lostColumnId.set(
+            columns.find(
+              (col: any) => col.title.toLowerCase() === 'lost'
+            )?._id
+          );
 
-        const availableUsers = await this.loadAvailableUsers();
-        if (availableUsers) {
-          this.loadLeads();
+          const availableUsers = await this.loadAvailableUsers();
+          if (availableUsers) {
+            this.loadLeads();
+          } else {
+            this.isLoading.set(false);
+          }
+        } else {
+          this.isLoading.set(false);
         }
+      } else {
+        this.isLoading.set(false);
+        this.crmId.set('');
       }
-    } else {
+    } catch (error) {
+      console.error('Error loading CRM data:', error);
       this.isLoading.set(false);
       this.crmId.set('');
     }
@@ -290,18 +353,23 @@ export class LeadsManagementComponent implements OnInit, OnDestroy {
   }
 
   async loadLeads() {
-    const crmId = this.crmId();
-    const leads = await this.crmService.getLeadsByCrmId({});
+    try {
+      const crmId = this.crmId();
+      const leads = await this.crmService.getLeadsByCrmId({});
 
-    if (leads) {
-      // Update crm columns with leads
-      const columns = this.crmColumns();
-      columns.forEach((column) => {
-        column.leads = leads.filter((lead: Lead) => lead.column === column._id);
-      });
-      this.crmColumns.set(columns);
+      if (leads) {
+        // Update crm columns with leads
+        const columns = this.crmColumns();
+        columns.forEach((column) => {
+          column.leads = leads.filter((lead: Lead) => lead.column === column._id);
+        });
+        this.crmColumns.set(columns);
+      }
+    } catch (error) {
+      console.error('Error loading leads:', error);
+    } finally {
+      this.isLoading.set(false);
     }
-    this.isLoading.set(false);
   }
 
   private focusElement(selector: string, selectText = false) {
@@ -684,7 +752,6 @@ export class LeadsManagementComponent implements OnInit, OnDestroy {
             (col) => col._id !== columnId
           );
           this.crmColumns.set(columns);
-          console.log('Column deleted:', columnId);
         }
       } else if (column && column.leads.length > 0) {
         swalHelper.showToast('Please move all leads from this column before deleting it.', 'warning');
@@ -761,7 +828,6 @@ export class LeadsManagementComponent implements OnInit, OnDestroy {
     if (response) {
       columns.splice(response.position, 0, response);
       this.crmColumns.set(columns);
-      console.log('Column added:', { position, referenceColumnId, response });
     }
 
     this.isLoading.set(false);
@@ -771,7 +837,6 @@ export class LeadsManagementComponent implements OnInit, OnDestroy {
   selectLead(lead: Lead) {
     if (!this.isDragging()) {
       this.selectedLead.set(lead);
-      console.log()
       this.router.navigate(['details', lead._id], { relativeTo: this.route });
     }
   }
@@ -1005,7 +1070,83 @@ export class LeadsManagementComponent implements OnInit, OnDestroy {
   }
 
   private setupLeadUpdateSubscription() {
-    // This would be implemented when you have lead update events
-    // Similar to task update subscription in team task component
+    this.leadEventService.leadUpdated$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((leadUpdate: LeadUpdate) => {
+        this.handleLeadUpdate(leadUpdate);
+      });
+  }
+
+  private handleLeadUpdate(leadUpdate: LeadUpdate) {
+    const { leadId, field, value } = leadUpdate;
+
+    const columns = [...this.crmColumns()];
+    let updatedLead: Lead | undefined;
+
+    // Find the lead in any column
+    for (const column of columns) {
+      updatedLead = column.leads.find((lead) => lead._id === leadId);
+      if (updatedLead) {
+        // Update the specific field
+        if (field === 'assignedTo') {
+          updatedLead.assignedTo = value;
+          
+          // Check if current user is still assigned
+          const currentUserId = this.crmPermissionsService.getCurrentUser()?._id;
+          const isStillAssigned = updatedLead.assignedTo.some(
+            (member: any) => member._id === currentUserId
+          );
+          updatedLead.assignedToMe = isStillAssigned;
+          break;
+        } else if (field === 'contactDetails') {
+          updatedLead.contactDetails = value;
+          break;
+        } else if (field === 'product') {
+          updatedLead.product = value;
+          break;
+        } else {
+          // For other fields, directly update
+          (updatedLead as any)[field] = value;
+          break;
+        }
+      }
+    }
+
+    if (updatedLead) {
+      // Update the signal to trigger reactivity
+      this.crmColumns.set(columns);
+      
+      // Force change detection for UI update
+      this.cdr.detectChanges();
+  
+    }
+  }
+
+  // View mode methods
+  setViewMode(mode: 'kanban' | 'table') {
+    this.viewMode.set(mode);
+    this.storage.set('crm_view_mode', mode);
+  }
+
+  onTableColumnChange() {
+    // This will trigger the computed property to update
+    this.cdr.detectChanges();
+  }
+
+  // Helper method to get column title by column ID
+  getColumnTitle(columnId: string): string {
+    const column = this.crmColumns().find(col => col._id === columnId);
+    return column?.title || 'Unknown';
+  }
+
+  // Helper method to get member initials for table view
+  getMemberInitials(member: any): string {
+    if (!member?.name) return '?';
+    return member.name
+      .split(' ')
+      .map((n: string) => n[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
   }
 }

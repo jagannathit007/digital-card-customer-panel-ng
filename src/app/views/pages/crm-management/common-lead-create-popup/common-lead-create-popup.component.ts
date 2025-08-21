@@ -325,7 +325,7 @@ export class CommonLeadCreatePopupComponent implements OnInit, OnDestroy {
       // Description is already bound via ngModel
 
       const assigneMemberIdsArray = this.leadData.assignedTo.map((member: LeadMember) => member._id);
-      const response = await this.crmService.createCompleteLead({...this.leadData, assignedTo: assigneMemberIdsArray});
+      const response = await this.crmService.createCompleteLead({...this.leadData, assignedTo: assigneMemberIdsArray, category: this.leadData.category || null});
 
       if (response) {
         this.leadCreated.emit(response);

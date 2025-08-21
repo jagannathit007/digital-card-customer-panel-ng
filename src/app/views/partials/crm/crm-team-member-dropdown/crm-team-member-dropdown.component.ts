@@ -111,10 +111,11 @@ export class CrmTeamMemberDropdownComponent implements OnInit, OnDestroy {
   async loadTeamMembers(): Promise<void> {
     try {
       this.isLoading.set(true);
-      const response = await this.crmService.getSelectableTeamMembers({});
+      const response = await this.crmService.getSelectableTeamMembers({leadId: this.leadId});
       
-      if (response && Array.isArray(response)) {
-        this.teamMembers = response;
+      if (response) {
+        this.teamMembers = response.members;
+        this.selectedMembers = response.assignedMembers || [];
         this.cdr.detectChanges();
       }
     } catch (error) {
@@ -140,7 +141,7 @@ export class CrmTeamMemberDropdownComponent implements OnInit, OnDestroy {
     } else {
       this.selectedMembers.push(member);
     }
-    
+        
     this.selectedMembersChange.emit([...this.selectedMembers]);
     this.onMemberAdded.emit([...this.selectedMembers]);
   }

@@ -491,6 +491,29 @@ export class CrmService {
     }
   }
 
+  async updateLeadQuotationDate(data: any) {
+    try {
+      this.getHeaders();
+      const response = await this.apiManager.request(
+        {
+          url: `${this.baseURL}/lead/update/quotation-date`,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status === 200 && response.data) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
   async updateLeadProduct(data: any) {
     try {
       this.getHeaders();
