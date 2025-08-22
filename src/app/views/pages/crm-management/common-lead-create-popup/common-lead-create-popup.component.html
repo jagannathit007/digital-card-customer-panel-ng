@@ -139,7 +139,89 @@
             </option>
           </select>
         </div>
+      </div>
 
+      <!-- Products -->
+      <div>
+        <div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
+          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">
+            Products
+          </label>
+          <button
+            type="button"
+            (click)="addProduct()"
+            class="tw-px-3 tw-py-1 tw-text-sm tw-bg-blue-600 tw-text-white tw-rounded-lg hover:tw-bg-blue-700 tw-transition-colors"
+          >
+            <i class="ri-add-line tw-mr-1"></i>
+            Add Product
+          </button>
+        </div>
+
+        <div
+          *ngIf="leadData.product.length === 0"
+          class="tw-text-center tw-py-4 tw-text-gray-500 tw-text-sm"
+        >
+          No products added yet
+        </div>
+
+        <div
+          *ngFor="let product of leadData.product; let i = index"
+          class="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-4 tw-p-4 tw-bg-gray-50 tw-rounded-lg tw-mb-3"
+        >
+          <div>
+            <label
+              class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1"
+              >Product Name</label
+            >
+            <input
+              type="text"
+              [(ngModel)]="product.name"
+              [name]="'productName' + i"
+              class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
+              placeholder="Product name"
+            />
+          </div>
+          <div>
+            <label
+              class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1"
+              >Price</label
+            >
+            <input
+              type="text"
+              [(ngModel)]="product.price"
+              [name]="'productPrice' + i"
+              class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
+              placeholder="Price"
+              (blur)="calculateTotalAmount()"
+            />
+          </div>
+          <div class="tw-flex tw-items-end tw-gap-2">
+            <div class="tw-flex-1">
+              <label
+                class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1"
+                >Quantity</label
+              >
+              <input
+                type="text"
+                [(ngModel)]="product.quantity"
+                [name]="'productQuantity' + i"
+                class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
+                placeholder="Quantity"
+                (blur)="calculateTotalAmount()"
+              />
+            </div>
+            <button
+              type="button"
+              (click)="removeProduct(i)"
+              class="tw-p-2 tw-text-red-600 hover:tw-bg-red-50 tw-rounded tw-transition-colors"
+            >
+              <i class="ri-delete-bin-line"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6">
         <!-- Priority -->
         <div>
           <label
@@ -262,84 +344,6 @@
           [isModernMemberSelect]="true"
           (onMemberAdded)="onMembersUpdated($event)"
         ></crm-team-member-dropdown>
-      </div>
-
-      <!-- Products -->
-      <div>
-        <div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
-          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">
-            Products
-          </label>
-          <button
-            type="button"
-            (click)="addProduct()"
-            class="tw-px-3 tw-py-1 tw-text-sm tw-bg-blue-600 tw-text-white tw-rounded-lg hover:tw-bg-blue-700 tw-transition-colors"
-          >
-            <i class="ri-add-line tw-mr-1"></i>
-            Add Product
-          </button>
-        </div>
-
-        <div
-          *ngIf="leadData.product.length === 0"
-          class="tw-text-center tw-py-4 tw-text-gray-500 tw-text-sm"
-        >
-          No products added yet
-        </div>
-
-        <div
-          *ngFor="let product of leadData.product; let i = index"
-          class="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-4 tw-p-4 tw-bg-gray-50 tw-rounded-lg tw-mb-3"
-        >
-          <div>
-            <label
-              class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1"
-              >Product Name</label
-            >
-            <input
-              type="text"
-              [(ngModel)]="product.name"
-              [name]="'productName' + i"
-              class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
-              placeholder="Product name"
-            />
-          </div>
-          <div>
-            <label
-              class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1"
-              >Price</label
-            >
-            <input
-              type="text"
-              [(ngModel)]="product.price"
-              [name]="'productPrice' + i"
-              class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
-              placeholder="Price"
-            />
-          </div>
-          <div class="tw-flex tw-items-end tw-gap-2">
-            <div class="tw-flex-1">
-              <label
-                class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1"
-                >Quantity</label
-              >
-              <input
-                type="text"
-                [(ngModel)]="product.quantity"
-                [name]="'productQuantity' + i"
-                class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
-                placeholder="Quantity"
-              />
-            </div>
-            <button
-              type="button"
-              (click)="removeProduct(i)"
-              class="tw-p-2 tw-text-red-600 hover:tw-bg-red-50 tw-rounded tw-transition-colors"
-            >
-              <i class="ri-delete-bin-line"></i>
-            </button>
-          </div>
-        </div>
       </div>
 
       <!-- Custom Date Picker -->

@@ -311,7 +311,30 @@ export class CommonLeadCreatePopupComponent implements OnInit, OnDestroy {
 
   removeProduct(index: number) {
     this.leadData.product.splice(index, 1);
+    this.calculateTotalAmount();
   }
+
+  // Auto-calculate total amount from products
+  calculateTotalAmount(): void {
+    let total = 0;
+    
+    this.leadData.product.forEach(product => {
+      const price = parseFloat(product.price) || 0;
+      const quantity = parseFloat(product.quantity) || 0;
+      total += price * quantity;
+    });
+    
+    // Only auto-update if the current amount is empty or matches the previous calculated total
+    // This allows users to manually override the amount
+    // if (!this.leadData.amount || this.leadData.amount === this.lastCalculatedAmount?.toString()) {
+      this.leadData.amount = total.toString();
+    // }
+    
+    this.lastCalculatedAmount = total;
+  }
+
+  // Track last calculated amount to prevent auto-override of manual changes
+  private lastCalculatedAmount: number = 0;
 
   // Form submission
   async onSubmit() {

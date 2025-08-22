@@ -606,6 +606,7 @@ export class LeadDetailPopupComponent implements OnInit, OnDestroy {
       if (response) {
         this.lead.product = JSON.parse(JSON.stringify(this.editProduct));
         this.isEditingProduct = false;
+        this.calculateTotalAmount();
         this.emitLeadUpdate('product', this.lead.product);
         swalHelper.showToast('Product details updated successfully', 'success');
       }
@@ -633,7 +634,30 @@ export class LeadDetailPopupComponent implements OnInit, OnDestroy {
 
   removeProductItem(index: number): void {
     this.editProduct.splice(index, 1);
+    
   }
+
+  calculateTotalAmount(): void {
+    this.isEditingAmount = true;
+    let total = 0;
+    
+    this.lead.product.forEach(product => {
+      const price = parseFloat(product.price) || 0;
+      const quantity = parseFloat(product.quantity) || 0;
+      total += price * quantity;
+    });
+    
+    // Only auto-update if the current amount is empty or matches the previous calculated total
+    // This allows users to manually override the amount
+    // if (!this.leadData.amount || this.leadData.amount === this.lastCalculatedAmount?.toString()) {
+      this.editAmount = total.toString();
+    // }
+    
+    this.lastCalculatedAmount = total;
+  }
+
+    private lastCalculatedAmount: number = 0;
+
 
   // Priority update method
   async updatePriority(priority: string): Promise<void> {
