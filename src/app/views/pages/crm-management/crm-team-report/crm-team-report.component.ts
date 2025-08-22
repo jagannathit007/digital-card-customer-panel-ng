@@ -169,6 +169,8 @@ export class CrmTeamReportComponent implements OnInit, OnDestroy {
         }
       }
     });
+
+    this.getReport();
   }
 
   ngOnDestroy(): void {

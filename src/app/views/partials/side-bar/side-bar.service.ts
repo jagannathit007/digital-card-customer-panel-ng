@@ -437,11 +437,11 @@ let crmMenu: any = {
       link: 'crm/leads',
       icon: 'codesandbox',
     },
-    {
-      title: 'Reports',
-      link: 'crm/reports',
-      icon: 'bar-chart-2',
-    },
+    // {
+    //   title: 'Reports',
+    //   link: 'crm/reports',
+    //   icon: 'bar-chart-2',
+    // },
     // {
     //   title: 'Customers',
     //   link: 'crm/customers',

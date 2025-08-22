@@ -189,6 +189,8 @@ isBoardOpen(boardName: string): boolean {
         }
       }
     });
+
+    this.getReport();
   }
 
   ngOnDestroy(): void {

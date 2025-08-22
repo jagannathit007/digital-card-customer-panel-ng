@@ -1,436 +1,444 @@
+<!-- Lead Create Popup - Redesigned to match Lead Details design -->
 <div
   *ngIf="isVisible"
-  class="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50 tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4"
+  class="tw-fixed tw-inset-0 tw-bg-black/70 tw-backdrop-blur-sm tw-flex tw-items-center tw-justify-center tw-z-50 tw-p-4 md:tw-p-6 tw-transition-all tw-duration-300"
   (click)="closePopup()"
 >
+  <!-- Modal Container -->
   <div
-    class="tw-bg-white tw-rounded-xl tw-shadow-xl tw-w-full tw-max-w-4xl tw-max-h-[90vh] tw-overflow-y-auto lead-create-popup-content"
+    class="tw-bg-white tw-rounded-2xl tw-shadow-2xl tw-w-full tw-h-full md:tw-w-[950px] md:tw-h-[750px] tw-flex tw-flex-col tw-overflow-hidden tw-animate-scale-in"
     (click)="$event.stopPropagation()"
   >
     <!-- Header -->
-    <div class="tw-p-6 tw-border-b tw-border-gray-200">
-      <div class="tw-flex tw-items-center tw-justify-between">
-        <h2 class="tw-text-2xl tw-font-bold tw-text-gray-900">
-          Create New Lead
-        </h2>
-        <button
-          (click)="closePopup()"
-          class="tw-p-2 tw-text-gray-400 hover:tw-text-gray-600 hover:tw-bg-gray-100 tw-rounded-lg tw-transition-colors"
+    <div
+      class="tw-flex tw-items-center tw-justify-between tw-p-4 md:tw-p-6 tw-border-b tw-border-gray-200 tw-bg-gray-50"
+    >
+      <div class="tw-flex tw-items-center tw-space-x-3">
+        <div
+          class="tw-w-8 tw-h-8 tw-bg-blue-500 tw-rounded-lg tw-flex tw-items-center tw-justify-center"
         >
-          <i class="ri-close-line tw-text-xl"></i>
-        </button>
+          <i class="fas fa-plus tw-text-white tw-text-sm"></i>
+        </div>
+        <span class="tw-text-lg tw-font-semibold tw-text-gray-900">
+          Create New Lead
+        </span>
       </div>
+
+      <button
+        type="button"
+        class="tw-p-2 tw-text-gray-400 hover:tw-text-gray-600 hover:tw-bg-gray-200 tw-rounded-lg tw-transition-all tw-duration-200"
+        (click)="closePopup()"
+      >
+        <i class="fas fa-times tw-text-lg"></i>
+      </button>
     </div>
 
     <!-- Loading State -->
-    <div *ngIf="isFetching" class="tw-p-8 tw-text-center">
+    <div *ngIf="isFetching" class="tw-flex tw-items-center tw-justify-center tw-h-full tw-w-full">
       <div
-        class="tw-animate-spin tw-rounded-full tw-h-8 tw-w-8 tw-border-b-2 tw-border-blue-600 tw-mx-auto tw-mb-4"
+        class="tw-w-10 tw-h-10 tw-border-4 tw-border-blue-500 tw-border-t-transparent tw-rounded-full tw-animate-spin"
       ></div>
-      <p class="tw-text-gray-600">Loading...</p>
     </div>
 
-    <!-- Form -->
-    <form
-      *ngIf="!isFetching"
-      (ngSubmit)="onSubmit()"
-      class="tw-p-6 tw-space-y-6"
-    >
-      <!-- Basic Information -->
-      <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6">
-        <!-- Title -->
-        <div class="tw-col-span-2">
-          <label
-            class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2"
-          >
-            Lead Title *
-          </label>
+    <!-- Content Area -->
+    <div *ngIf="!isFetching" class="tw-flex-1 tw-flex tw-flex-col tw-overflow-hidden">
+      <!-- Lead Title Section -->
+      <div class="tw-px-5 tw-py-4 md:tw-p-6 md:tw-py-5 tw-bg-gray-50 tw-border-b tw-border-gray-200">
+        <!-- Title Input -->
+        <div class="tw-mb-4">
           <input
             type="text"
             [(ngModel)]="leadData.title"
             name="title"
-            class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-blue-500"
-            placeholder="Enter lead title"
+            class="tw-w-full tw-text-2xl md:tw-text-3xl tw-font-bold tw-text-gray-900 tw-bg-white tw-border-2 tw-border-gray-200 tw-rounded-xl tw-outline-none tw-px-4 tw-py-3 focus:tw-border-blue-500 tw-transition-all tw-duration-300 tw-shadow-sm"
+            placeholder="Enter lead title..."
             required
           />
         </div>
 
-        <!-- Contact Details -->
-        <div>
-          <label
-            class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2"
-          >
-            Contact Details
-          </label>
-          <div
-            class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4 tw-p-4 tw-bg-gray-50 tw-rounded-lg"
-          >
-            <div>
-              <label
-                class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1"
-                >Name</label
+        <!-- Status, Priority, Category, and Assignment Row -->
+        <div class="tw-flex tw-flex-col tw-gap-4">
+          <!-- Left Side: Priority, Category, Column -->
+          <div class="tw-flex tw-flex-col sm:tw-flex-row tw-items-start sm:tw-items-center tw-space-y-3 sm:tw-space-y-0 sm:tw-space-x-4">
+            <!-- Priority Select -->
+            <div class="tw-relative">
+              <app-priority-selection-dropdown
+                [selectedPriority]="leadData.priority"
+                (prioritySelected)="onPrioritySelected($event)"
+              ></app-priority-selection-dropdown>
+            </div>
+
+            <!-- Category Select -->
+            <div class="tw-relative">
+              <select
+                [(ngModel)]="leadData.category"
+                (change)="updateCategory(leadData.category || '')"
+                name="category"
+                class="tw-appearance-none tw-bg-white tw-border-2 tw-border-gray-200 tw-rounded-xl tw-px-4 tw-py-2.5 tw-text-sm tw-font-semibold tw-text-gray-700 focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500 tw-transition-all tw-duration-300 tw-cursor-pointer tw-pr-10 hover:tw-border-gray-300 tw-shadow-sm"
               >
+                <option value="">No Category</option>
+                <option
+                  *ngFor="let category of availableCategories"
+                  [value]="category._id"
+                >
+                  {{ category.name }}
+                </option>
+              </select>
+              <i
+                class="fas fa-chevron-down tw-absolute tw-right-3 tw-top-1/2 tw-transform tw--translate-y-1/2 tw-text-gray-400 tw-text-xs tw-pointer-events-none"
+              ></i>
+            </div>
+
+            <!-- Column Select -->
+            <div class="tw-relative">
+              <select
+                [(ngModel)]="leadData.column"
+                name="column"
+                class="tw-appearance-none tw-bg-white tw-border-2 tw-border-gray-200 tw-rounded-xl tw-px-4 tw-py-2.5 tw-text-sm tw-font-semibold tw-text-gray-700 focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500 tw-transition-all tw-duration-300 tw-cursor-pointer tw-pr-10 hover:tw-border-gray-300 tw-shadow-sm"
+                required
+              >
+                <option value="">Select Column</option>
+                <option *ngFor="let column of columnOptions" [value]="column._id">
+                  {{ column.title }}
+                </option>
+              </select>
+              <i
+                class="fas fa-chevron-down tw-absolute tw-right-3 tw-top-1/2 tw-transform tw--translate-y-1/2 tw-text-gray-400 tw-text-xs tw-pointer-events-none"
+              ></i>
+            </div>
+          </div>
+
+          <!-- Right Side: Closing Date and Assignment -->
+          <div class="tw-flex tw-items-center tw-gap-3">
+            <!-- Closing Date -->
+            <div class="tw-relative">
+              <ng-container *ngIf="leadData.closingDate; else noClosingDateTemplate">
+                <div
+                  class="tw-bg-blue-50 tw-text-blue-700 tw-px-4 tw-py-2.5 tw-rounded-xl tw-text-sm tw-font-semibold tw-inline-flex tw-items-center tw-space-x-2 tw-cursor-pointer tw-border-2 tw-border-blue-200 hover:tw-bg-blue-100 hover:tw-text-blue-800 tw-transition-all tw-duration-300 tw-shadow-sm"
+                  (click)="toggleDatePicker()"
+                >
+                  <i class="fas fa-calendar-check tw-text-sm"></i>
+                  <span>Closing: {{ formatDate(leadData.closingDate) }}</span>
+                </div>
+              </ng-container>
+
+              <ng-template #noClosingDateTemplate>
+                <div
+                  class="tw-bg-gray-50 tw-text-gray-700 tw-px-4 tw-py-2.5 tw-rounded-xl tw-text-sm tw-font-semibold tw-inline-flex tw-items-center tw-space-x-2 tw-cursor-pointer tw-border-2 tw-border-gray-200 hover:tw-bg-gray-100 tw-transition-all tw-duration-300 tw-shadow-sm"
+                  (click)="toggleDatePicker()"
+                >
+                  <i class="fas fa-calendar-plus tw-text-sm"></i>
+                  <span>Set closing date</span>
+                </div>
+              </ng-template>
+
+              <!-- Date Picker Popup -->
+              <div
+                *ngIf="showCustomDatePicker"
+                class="tw-absolute tw-top-full tw-left-0 tw-mt-2 tw-bg-white tw-border-2 tw-border-gray-200 tw-rounded-2xl tw-shadow-xl tw-p-5 tw-w-80 tw-z-50"
+                (click)="$event.stopPropagation()"
+              >
+                <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+                  <button
+                    type="button"
+                    (click)="previousMonth()"
+                    class="tw-p-2 tw-text-gray-600 hover:tw-text-gray-800 tw-rounded-lg hover:tw-bg-gray-100 tw-transition-all tw-duration-200"
+                  >
+                    <i class="fas fa-chevron-left tw-text-sm"></i>
+                  </button>
+
+                  <h3 class="tw-text-sm tw-font-bold tw-text-gray-900">
+                    {{ currentCalendarDate | date : "MMMM yyyy" }}
+                  </h3>
+
+                  <button
+                    type="button"
+                    (click)="nextMonth()"
+                    class="tw-p-2 tw-text-gray-600 hover:tw-text-gray-800 tw-rounded-lg hover:tw-bg-gray-100 tw-transition-all tw-duration-200"
+                  >
+                    <i class="fas fa-chevron-right tw-text-sm"></i>
+                  </button>
+                </div>
+
+                <div class="tw-grid tw-grid-cols-7 tw-gap-1 tw-mb-3">
+                  <div
+                    *ngFor="let day of dayHeaders"
+                    class="tw-text-center tw-text-xs tw-font-semibold tw-text-gray-500 tw-py-2"
+                  >
+                    {{ day }}
+                  </div>
+
+                  <button
+                    *ngFor="let day of calendarDays"
+                    type="button"
+                    (click)="selectDate(day.date)"
+                    [class]="
+                      'tw-w-9 tw-h-9 tw-text-sm tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-transition-all tw-duration-200 hover:tw-bg-blue-100 ' +
+                      (day.isToday ? 'tw-bg-blue-600 tw-text-white' : '') +
+                      (day.isSelected ? 'tw-bg-green-600 tw-text-white' : '') +
+                      (!day.isCurrentMonth
+                        ? 'tw-text-gray-300'
+                        : 'tw-text-gray-700 hover:tw-bg-gray-100')
+                    "
+                  >
+                    {{ day.date.getDate() }}
+                  </button>
+                </div>
+
+                <div class="tw-flex tw-items-center tw-justify-between tw-pt-3 tw-border-t tw-border-gray-200">
+                  <button
+                    type="button"
+                    (click)="clearClosingDate()"
+                    class="tw-text-xs tw-text-red-600 hover:tw-text-red-800 tw-px-3 tw-py-2 tw-rounded-lg hover:tw-bg-red-50 tw-transition-all tw-duration-200 tw-font-semibold"
+                  >
+                    NO DATE
+                  </button>
+
+                  <button
+                    type="button"
+                    (click)="setTodayAsClosingDate()"
+                    class="tw-text-xs tw-text-blue-600 hover:tw-text-blue-800 tw-px-3 tw-py-2 tw-rounded-lg hover:tw-bg-blue-50 tw-transition-all tw-duration-200 tw-font-semibold"
+                  >
+                    TODAY
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Member Dropdown -->
+            <crm-team-member-dropdown
+              [leadId]="''"
+              [allignment]="'right'"
+              [placement]="'bottom'"
+              [isModernMemberSelect]="true"
+              (onMemberAdded)="onMembersUpdated($event)"
+            ></crm-team-member-dropdown>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Content -->
+      <form
+        (ngSubmit)="onSubmit()"
+        class="tw-flex-1 tw-overflow-y-auto tw-p-5 md:tw-p-6 tw-space-y-8"
+      >
+        <!-- Contact Details Section -->
+        <div>
+          <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4">
+            Contact Details
+          </h3>
+          <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-5">
+            <div>
+              <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700 tw-mb-2">
+                Name
+              </label>
               <input
                 type="text"
                 [(ngModel)]="leadData.contactDetails.name"
                 name="contactName"
-                class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
-                placeholder="Contact name"
+                class="tw-mt-1 tw-block tw-w-full tw-rounded-xl tw-border-2 tw-border-gray-200 tw-shadow-sm focus:tw-border-blue-500 focus:tw-ring-blue-500 sm:tw-text-sm tw-px-4 tw-py-2.5 tw-transition-all tw-duration-300"
+                placeholder="Enter contact name"
               />
             </div>
             <div>
-              <label
-                class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1"
-                >Phone</label
-              >
+              <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700 tw-mb-2">
+                Phone
+              </label>
               <input
                 type="tel"
                 [(ngModel)]="leadData.contactDetails.phone"
                 name="contactPhone"
-                class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
-                placeholder="Phone number"
+                class="tw-mt-1 tw-block tw-w-full tw-rounded-xl tw-border-2 tw-border-gray-200 tw-shadow-sm focus:tw-border-blue-500 focus:tw-ring-blue-500 sm:tw-text-sm tw-px-4 tw-py-2.5 tw-transition-all tw-duration-300"
+                placeholder="Enter phone number"
               />
             </div>
             <div>
-              <label
-                class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1"
-                >Email</label
-              >
+              <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700 tw-mb-2">
+                Email
+              </label>
               <input
                 type="email"
                 [(ngModel)]="leadData.contactDetails.email"
                 name="contactEmail"
-                class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
-                placeholder="Email address"
+                class="tw-mt-1 tw-block tw-w-full tw-rounded-xl tw-border-2 tw-border-gray-200 tw-shadow-sm focus:tw-border-blue-500 focus:tw-ring-blue-500 sm:tw-text-sm tw-px-4 tw-py-2.5 tw-transition-all tw-duration-300"
+                placeholder="Enter email address"
               />
             </div>
             <div>
-              <label
-                class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1"
-                >Address</label
-              >
+              <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700 tw-mb-2">
+                Address
+              </label>
               <input
                 type="text"
                 [(ngModel)]="leadData.contactDetails.address"
                 name="contactAddress"
-                class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
-                placeholder="Address"
+                class="tw-mt-1 tw-block tw-w-full tw-rounded-xl tw-border-2 tw-border-gray-200 tw-shadow-sm focus:tw-border-blue-500 focus:tw-ring-blue-500 sm:tw-text-sm tw-px-4 tw-py-2.5 tw-transition-all tw-duration-300"
+                placeholder="Enter address"
               />
             </div>
           </div>
         </div>
 
-        <!-- Column -->
+        <!-- Products Section -->
         <div>
-          <label
-            class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2"
-          >
-            Column *
-          </label>
-          <select
-            [(ngModel)]="leadData.column"
-            name="column"
-            class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-blue-500 column-select-trigger"
-            required
-          >
-            <option value="">Select a column</option>
-            <option *ngFor="let column of columnOptions" [value]="column._id">
-              {{ column.title }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Products -->
-      <div>
-        <div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
-          <label class="tw-block tw-text-sm tw-font-medium tw-text-gray-700">
-            Products
-          </label>
-          <button
-            type="button"
-            (click)="addProduct()"
-            class="tw-px-3 tw-py-1 tw-text-sm tw-bg-blue-600 tw-text-white tw-rounded-lg hover:tw-bg-blue-700 tw-transition-colors"
-          >
-            <i class="ri-add-line tw-mr-1"></i>
-            Add Product
-          </button>
-        </div>
-
-        <div
-          *ngIf="leadData.product.length === 0"
-          class="tw-text-center tw-py-4 tw-text-gray-500 tw-text-sm"
-        >
-          No products added yet
-        </div>
-
-        <div
-          *ngFor="let product of leadData.product; let i = index"
-          class="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-4 tw-p-4 tw-bg-gray-50 tw-rounded-lg tw-mb-3"
-        >
-          <div>
-            <label
-              class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1"
-              >Product Name</label
+          <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+            <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900">Products</h3>
+            <button
+              type="button"
+              (click)="addProduct()"
+              class="tw-px-4 tw-py-2.5 tw-bg-green-100 tw-text-green-700 tw-rounded-xl hover:tw-bg-green-200 tw-transition-all tw-duration-300 tw-font-semibold tw-shadow-sm"
             >
+              <i class="fas fa-plus tw-mr-2"></i>Add Product
+            </button>
+          </div>
+
+          <div
+            *ngIf="leadData.product.length === 0"
+            class="tw-text-center tw-py-8 tw-text-gray-500 tw-italic"
+          >
+            No products added yet
+          </div>
+
+          <div
+            *ngFor="let product of leadData.product; let i = index"
+            class="tw-flex tw-items-center tw-space-x-3 tw-p-4 tw-bg-gray-50 tw-rounded-xl tw-mb-3"
+          >
             <input
               type="text"
               [(ngModel)]="product.name"
               [name]="'productName' + i"
-              class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
               placeholder="Product name"
+              class="tw-flex-1 tw-rounded-xl tw-border-2 tw-border-gray-200 tw-shadow-sm focus:tw-border-blue-500 focus:tw-ring-blue-500 sm:tw-text-sm tw-px-4 tw-py-2.5 tw-transition-all tw-duration-300"
             />
-          </div>
-          <div>
-            <label
-              class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1"
-              >Price</label
-            >
             <input
               type="text"
               [(ngModel)]="product.price"
               [name]="'productPrice' + i"
-              class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
               placeholder="Price"
               (blur)="calculateTotalAmount()"
+              class="tw-w-28 tw-rounded-xl tw-border-2 tw-border-gray-200 tw-shadow-sm focus:tw-border-blue-500 focus:tw-ring-blue-500 sm:tw-text-sm tw-px-4 tw-py-2.5 tw-transition-all tw-duration-300"
             />
-          </div>
-          <div class="tw-flex tw-items-end tw-gap-2">
-            <div class="tw-flex-1">
-              <label
-                class="tw-block tw-text-xs tw-font-medium tw-text-gray-600 tw-mb-1"
-                >Quantity</label
-              >
-              <input
-                type="text"
-                [(ngModel)]="product.quantity"
-                [name]="'productQuantity' + i"
-                class="tw-w-full tw-px-2 tw-py-1 tw-text-sm tw-border tw-border-gray-300 tw-rounded tw-focus:ring-1 tw-focus:ring-blue-500 tw-focus:border-blue-500"
-                placeholder="Quantity"
-                (blur)="calculateTotalAmount()"
-              />
-            </div>
+            <input
+              type="text"
+              [(ngModel)]="product.quantity"
+              [name]="'productQuantity' + i"
+              placeholder="Qty"
+              (blur)="calculateTotalAmount()"
+              class="tw-w-24 tw-rounded-xl tw-border-2 tw-border-gray-200 tw-shadow-sm focus:tw-border-blue-500 focus:tw-ring-blue-500 sm:tw-text-sm tw-px-4 tw-py-2.5 tw-transition-all tw-duration-300"
+            />
             <button
               type="button"
               (click)="removeProduct(i)"
-              class="tw-p-2 tw-text-red-600 hover:tw-bg-red-50 tw-rounded tw-transition-colors"
+              class="tw-p-2 tw-text-red-600 hover:tw-text-red-800 hover:tw-bg-red-50 tw-rounded-lg tw-transition-all tw-duration-300"
             >
-              <i class="ri-delete-bin-line"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-6">
-        <!-- Priority -->
-        <div>
-          <label
-            class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2"
-          >
-            Priority
-          </label>
-          <app-priority-selection-dropdown
-            [selectedPriority]="leadData.priority"
-            (prioritySelected)="onPrioritySelected($event)"
-          ></app-priority-selection-dropdown>
-        </div>
-
-        <!-- Category -->
-        <div>
-          <label
-            class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2"
-          >
-            Category
-          </label>
-          <!-- <app-task-category-selection-dropdown
-            [boardId]="null"
-            [selectedCategory]="leadData.category"
-            (onCategoryUpdated)="onCategorySelected($event)"
-          ></app-task-category-selection-dropdown> -->
-          <div class="tw-relative">
-            <select
-              [(ngModel)]="leadData.category"
-              (change)="updateCategory(leadData.category || '')"
-              name="category"
-              class="tw-appearance-none tw-bg-white tw-border tw-border-gray-300 tw-rounded-lg tw-px-3 tw-py-2 tw-text-sm tw-font-medium tw-text-gray-700 focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500 tw-transition-all tw-duration-200 tw-cursor-pointer tw-pr-8 hover:tw-border-gray-400 tw-w-full category-select-trigger"
-            >
-              <option value="">No Category</option>
-              <option
-                *ngFor="let category of availableCategories"
-                [value]="category._id"
-              >
-                {{ category.name }}
-              </option>
-            </select>
-            <i
-              class="fas fa-chevron-down tw-absolute tw-right-2 tw-top-1/2 tw-transform tw--translate-y-1/2 tw-text-gray-400 tw-text-xs tw-pointer-events-none"
-            ></i>
-          </div>
-        </div>
-
-        <!-- Closing Date -->
-        <div>
-          <label
-            class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2"
-          >
-            Closing Date
-          </label>
-          <div class="tw-relative date-picker-container">
-            <input
-              type="date"
-              [(ngModel)]="leadData.closingDate"
-              name="closingDate"
-              class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-blue-500 date-picker-trigger"
-            />
-            <button
-              type="button"
-              (click)="toggleDatePicker()"
-              class="tw-absolute tw-right-2 tw-top-2 tw-p-1 tw-text-gray-400 hover:tw-text-gray-600 date-picker-trigger"
-            >
-              <i class="ri-calendar-line"></i>
+              <i class="fas fa-trash"></i>
             </button>
           </div>
         </div>
 
-        <!-- Amount -->
+        <!-- Amount Section -->
         <div>
-          <label
-            class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2"
-          >
+          <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4">
             Amount
-          </label>
+          </h3>
           <input
             type="text"
             [(ngModel)]="leadData.amount"
             name="amount"
-            class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-blue-500"
+            class="tw-block tw-w-full tw-rounded-xl tw-border-2 tw-border-gray-200 tw-shadow-sm focus:tw-border-blue-500 focus:tw-ring-blue-500 sm:tw-text-2xl tw-font-bold tw-px-4 tw-py-3 tw-transition-all tw-duration-300"
             placeholder="Enter amount"
           />
         </div>
-      </div>
 
-      <!-- Description -->
-      <div>
-        <label
-          class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2"
-        >
-          Description
-        </label>
-        <ngx-editor-menu
-          [editor]="editor!"
-          [toolbar]="toolbar"
-        ></ngx-editor-menu>
-        <ngx-editor
-          name="description"
-          [editor]="editor!"
-          [(ngModel)]="leadData.description"
-          [placeholder]="'Add lead description...'"
-          class="tw-min-h-[200px] tw-max-h-[200px] tw-overflow-y-auto"
-          style="height: 200px"
-        ></ngx-editor>
-      </div>
-
-      <!-- Assigned Members -->
-      <div>
-        <label
-          class="tw-block tw-text-sm tw-font-medium tw-text-gray-700 tw-mb-2"
-        >
-          Assign To *
-        </label>
-        <crm-team-member-dropdown
-          [leadId]="''"
-          [allignment]="'left'"
-          [placement]="'bottom'"
-          [isModernMemberSelect]="true"
-          (onMemberAdded)="onMembersUpdated($event)"
-        ></crm-team-member-dropdown>
-      </div>
-
-      <!-- Custom Date Picker -->
-      <div
-        *ngIf="showCustomDatePicker"
-        class="tw-absolute tw-top-20 tw-left-1/2 tw-transform tw--translate-x-1/2 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-shadow-lg tw-p-4 tw-z-10"
-      >
-        <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
-          <button
-            type="button"
-            (click)="previousMonth()"
-            class="tw-p-1 tw-text-gray-400 hover:tw-text-gray-600"
-          >
-            <i class="ri-arrow-left-s-line"></i>
-          </button>
-          <span class="tw-font-medium tw-text-gray-900">
-            {{ currentCalendarDate | date : "MMMM yyyy" }}
-          </span>
-          <button
-            type="button"
-            (click)="nextMonth()"
-            class="tw-p-1 tw-text-gray-400 hover:tw-text-gray-600"
-          >
-            <i class="ri-arrow-right-s-line"></i>
-          </button>
-        </div>
-
-        <div class="tw-grid tw-grid-cols-7 tw-gap-1 tw-mb-2">
-          <div
-            *ngFor="let day of dayHeaders"
-            class="tw-text-center tw-text-xs tw-font-medium tw-text-gray-500 tw-p-1"
-          >
-            {{ day }}
+        <!-- Description Section -->
+        <div>
+          <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-4">
+            Description
+          </h3>
+          <div class="tw-border-2 tw-border-gray-200 tw-rounded-xl tw-overflow-hidden tw-shadow-sm">
+            <ngx-editor-menu
+              [editor]="editor!"
+              [toolbar]="toolbar"
+            ></ngx-editor-menu>
+            <ngx-editor
+              name="description"
+              [editor]="editor!"
+              [(ngModel)]="leadData.description"
+              [placeholder]="'Add lead description...'"
+              class="tw-min-h-[200px] tw-max-h-[200px] tw-overflow-y-auto"
+              style="height: 200px"
+            ></ngx-editor>
           </div>
         </div>
-
-        <div class="tw-grid tw-grid-cols-7 tw-gap-1">
-          <button
-            *ngFor="let day of calendarDays"
-            type="button"
-            (click)="selectDate(day.date)"
-            [class]="
-              'tw-p-2 tw-text-xs tw-rounded-lg tw-transition-colors ' +
-              (day.isToday ? 'tw-bg-blue-600 tw-text-white' : '') +
-              (day.isSelected ? 'tw-bg-green-600 tw-text-white' : '') +
-              (!day.isCurrentMonth
-                ? 'tw-text-gray-300'
-                : 'tw-text-gray-700 hover:tw-bg-gray-100')
-            "
-          >
-            {{ day.date.getDate() }}
-          </button>
-        </div>
-      </div>
+      </form>
 
       <!-- Form Actions -->
-      <div
-        class="tw-flex tw-items-center tw-justify-end tw-gap-3 tw-pt-6 tw-border-t tw-border-gray-200"
-      >
+      <div class="tw-flex tw-items-center tw-justify-end tw-gap-3 tw-p-5 md:tw-p-6 tw-border-t tw-border-gray-200 tw-bg-gray-50">
         <button
           type="button"
           (click)="closePopup()"
-          class="tw-px-4 tw-py-2 tw-text-gray-700 tw-bg-gray-100 hover:tw-bg-gray-200 tw-rounded-lg tw-transition-colors"
+          class="tw-px-5 tw-py-2.5 tw-bg-gray-100 tw-text-gray-700 tw-text-sm tw-font-semibold tw-rounded-xl hover:tw-bg-gray-200 tw-transition-all tw-duration-300 tw-shadow-sm"
         >
           Cancel
         </button>
         <button
           type="submit"
           [disabled]="!isFormValid() || isCreating"
-          class="tw-px-6 tw-py-2 tw-bg-blue-600 tw-text-white hover:tw-bg-blue-700 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed tw-rounded-lg tw-transition-colors"
+          (click)="onSubmit()"
+          class="tw-px-6 tw-py-2.5 tw-bg-blue-600 tw-text-white tw-text-sm tw-font-semibold tw-rounded-xl hover:tw-bg-blue-700 disabled:tw-bg-gray-300 disabled:tw-cursor-not-allowed tw-transition-all tw-duration-300 tw-flex tw-items-center tw-space-x-2 tw-shadow-md hover:tw-shadow-lg"
         >
-          <span *ngIf="!isCreating">Create Lead</span>
-          <span *ngIf="isCreating" class="tw-flex tw-items-center tw-gap-2">
-            <div
-              class="tw-animate-spin tw-rounded-full tw-h-4 tw-w-4 tw-border-b-2 tw-border-white"
-            ></div>
-            Creating...
-          </span>
+          <i *ngIf="isCreating" class="fas fa-spinner fa-spin"></i>
+          <span>{{ isCreating ? "Creating..." : "Create Lead" }}</span>
         </button>
       </div>
-    </form>
+    </div>
 
-    <!-- Click outside to close -->
+    <!-- Click outside to close for date picker -->
     <div
       *ngIf="showCustomDatePicker"
-      class="tw-fixed tw-inset-0 tw-z-0 ng-star-inserted"
+      class="tw-fixed tw-inset-0 tw-z-40 ng-star-inserted"
       (click)="toggleDatePicker()"
     ></div>
   </div>
 </div>
+
+<style>
+.tw-animate-scale-in {
+  animation: scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Focus ring styling */
+.focus\:tw-ring-blue-500:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Custom scrollbar */
+.tw-overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tw-overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.tw-overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.tw-overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+</style>
