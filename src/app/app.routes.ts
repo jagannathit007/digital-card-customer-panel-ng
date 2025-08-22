@@ -13,6 +13,7 @@ import { EmployeesComponent } from './views/pages/attendance-management/employee
 import { LoginComponent } from './views/pages/task-management/task-components/task/shared/teammembers-auth/login/login.component';
 import { MemberprofileComponent } from './views/pages/task-management/task-components/task/shared/memberprofile/memberprofile.component';
 import { AttendanceDashboardComponent } from './views/pages/attendance-management/attendance-dashboard/attendance-dashboard.component';
+import { IdeaBoardComponent } from './views/pages/idea-board/idea-board.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'auth/login' },
@@ -43,12 +44,11 @@ export const routes: Routes = [
         canActivate: [AuthGuard],
         data: { requiredProduct: 'website-details' }
       },
-      // {
-      //   path: 'google-standee',
-      //   loadComponent:()=>import('./views/pages/google-standee/google-standee.component').then(m=>m.GoogleStandeeComponent),
-      //   canActivate: [AuthGuard],
-      //   data: { requiredProduct: 'google-standee' }
-      // },
+      {
+        path: 'idea-board',
+        component: IdeaBoardComponent,
+        canActivate: [AuthGuard],
+      },
       {
         path: 'attendance',
         loadChildren: () => import('./views/pages/attendance-management/attendance.module').then(m => m.AttendanceModule),
