@@ -281,9 +281,36 @@ export class CrmTeamReportComponent implements OnInit, OnDestroy {
     return lead.leadId + lead.leadTitle + index;
   }
 
+  /**
+   * Get the total unique lead count for a specific column
+   * This counts unique leads across all members in the column, avoiding duplicates
+   * when the same lead is assigned to multiple members
+   */
   getColumnLeadCount(columnName: string): number {
     if (!this.reportData || !this.reportData.leads[columnName]) return 0;
-    return Object.values(this.reportData.leads[columnName]).reduce((total, leads) => total + leads.length, 0);
+    
+    // Collect all unique lead IDs from all members in this column
+    // This prevents counting the same lead multiple times when it's assigned to multiple members
+    const uniqueLeadIds = new Set<string>();
+    
+    Object.values(this.reportData.leads[columnName]).forEach((leads: LeadReport[]) => {
+      leads.forEach(lead => {
+        uniqueLeadIds.add(lead.leadId);
+      });
+    });
+    
+    return uniqueLeadIds.size;
+  }
+
+  /**
+   * Get the lead count for a specific member in a specific column
+   * This shows how many leads are assigned to this individual member
+   */
+  getMemberLeadCount(columnName: string, memberName: string): number {
+    if (!this.reportData || !this.reportData.leads[columnName] || !this.reportData.leads[columnName][memberName]) return 0;
+    
+    // For individual members, we can use the length since each member's leads are already unique
+    return this.reportData.leads[columnName][memberName].length;
   }
 
   formatDateForExcel(dateString: string): string {
@@ -345,7 +372,7 @@ export class CrmTeamReportComponent implements OnInit, OnDestroy {
           }
           
           // Member header
-          worksheetData.push([`👤 ${memberName} (${this.reportData!.leads[columnName][memberName].length} leads)`]);
+          worksheetData.push([`👤 ${memberName} (${this.getMemberLeadCount(columnName, memberName)} leads)`]);
           worksheetData.push([]);
           
           // Table headers for this member

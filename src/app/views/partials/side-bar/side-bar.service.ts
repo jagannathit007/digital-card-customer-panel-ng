@@ -131,7 +131,7 @@ export class SideBarService {
         taskManagementMenu.menu.splice(taskManagementMenu.menu.length, 0, {
           title: 'Team Report',
           link: 'task-management/team-report',
-          icon: 'pie-chart',
+          icon: 'bar-chart-2',
         });
       }
       if (userDetails.role === 'admin') {
