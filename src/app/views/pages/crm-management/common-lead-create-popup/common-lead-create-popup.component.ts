@@ -428,4 +428,24 @@ export class CommonLeadCreatePopupComponent implements OnInit, OnDestroy {
     };
     return icons[priority] || icons.warm;
   }
+
+  formatDate(dateString: string | null): string {
+  if (!dateString) return '--';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
+clearClosingDate() {
+  this.leadData.closingDate = null;
+  this.showCustomDatePicker = false;
+}
+
+// Set today as closing date
+setTodayAsClosingDate() {
+  this.selectDate(new Date());
+}
 }
