@@ -653,7 +653,7 @@
                     class="tw-flex tw-items-center tw-space-x-4 tw-p-3 tw-bg-gray-50 tw-rounded-xl"
                   >
                     <span class="tw-font-semibold">{{ item.name }}</span>
-                    <span class="tw-text-gray-600">{{ item.prise }}</span>
+                    <span class="tw-text-gray-600">{{ item.price }}</span>
                     <span class="tw-text-gray-600"
                       >Qty: {{ item.quantity }}</span
                     >
@@ -709,7 +709,7 @@
                     />
                     <input
                       type="text"
-                      [(ngModel)]="item.prise"
+                      [(ngModel)]="item.price"
                       placeholder="Price"
                       class="tw-w-28 tw-rounded-xl tw-border-2 tw-border-gray-200 tw-shadow-sm focus:tw-border-blue-500 focus:tw-ring-blue-500 sm:tw-text-sm tw-px-4 tw-py-2.5 tw-transition-all tw-duration-300"
                     />

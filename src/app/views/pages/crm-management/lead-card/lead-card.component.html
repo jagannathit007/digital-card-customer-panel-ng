@@ -89,7 +89,7 @@
       </div>
       <div class="tw-space-y-1">
         <div *ngFor="let item of lead.product.slice(0, 2)" class="tw-pl-3">
-          {{ item.name }} - {{ item.quantity }} x {{ item.prise }}
+          {{ item.name }} - {{ item.quantity }} x {{ item.price }}
         </div>
         <div *ngIf="lead.product.length > 2" class="tw-pl-3 tw-text-gray-400">
           +{{ lead.product.length - 2 }} more...

@@ -43,7 +43,7 @@ interface CreateLeadData {
   amount: string;
   product: Array<{
     name: string;
-    prise: string;
+    price: string;
     quantity: string;
   }>;
 }
@@ -304,7 +304,7 @@ export class CommonLeadCreatePopupComponent implements OnInit, OnDestroy {
   addProduct() {
     this.leadData.product.push({
       name: '',
-      prise: '',
+      price: '',
       quantity: '',
     });
   }

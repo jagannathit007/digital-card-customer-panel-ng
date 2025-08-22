@@ -75,7 +75,7 @@ interface Lead {
   quotationDate?: string | null;
   product: Array<{
     name: string;
-    prise: string;
+    price: string;
     quantity: string;
   }>;
   createdBy: LeadMember;
@@ -173,7 +173,7 @@ export class LeadDetailPopupComponent implements OnInit, OnDestroy {
   editAmount = '';
   editProduct: Array<{
     name: string;
-    prise: string;
+    price: string;
     quantity: string;
   }> = [];
   isSavingTitle = false;
@@ -626,7 +626,7 @@ export class LeadDetailPopupComponent implements OnInit, OnDestroy {
   addProductItem(): void {
     this.editProduct.push({
       name: '',
-      prise: '',
+      price: '',
       quantity: '',
     });
   }

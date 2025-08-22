@@ -59,7 +59,7 @@ export interface Lead {
   amount: string;
   product: Array<{
     name: string;
-    prise: string;
+    price: string;
     quantity: string;
   }>;
 }
@@ -121,7 +121,7 @@ export class LeadCardComponent implements OnInit, OnDestroy {
   editedAmount = signal<string>('');
   editedProduct = signal<Array<{
     name: string;
-    prise: string;
+    price: string;
     quantity: string;
   }>>([]);
 

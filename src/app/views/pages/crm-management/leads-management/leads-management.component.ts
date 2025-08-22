@@ -83,7 +83,7 @@ export interface Lead {
   amount: string;
   product: Array<{
     name: string;
-    prise: string;
+    price: string;
     quantity: string;
   }>;
 }
