@@ -699,4 +699,27 @@ export class CrmService {
       return false;
     }
   }
+
+  async getCrmMemberReport(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: `${this.baseURL}/member-report`,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data != null) {
+        return response.data;
+      } else {
+        swalHelper.showToast('No CRM reports found', 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
 }

@@ -1,0 +1,393 @@
+<!-- Modern CRM Team Report Component Template -->
+<div class="tw-container tw-mx-auto tw-p-6 tw-bg-gray-50 tw-min-h-screen">
+  <!-- Filters Section - Card with Glass Morphism Effect -->
+  <div class="tw-bg-white/80 tw-backdrop-blur-sm tw-rounded-xl tw-shadow-lg tw-p-6 tw-mb-8 tw-border tw-border-white/20">
+    <div class="tw-flex tw-flex-col md:tw-flex-row md:tw-items-center md:tw-justify-between tw-mb-6 tw-gap-4">
+      <div>
+        <h2 class="tw-text-2xl tw-font-bold tw-text-gray-800 tw-mb-1">CRM Member Report</h2>
+        <p class="tw-text-gray-500 tw-text-sm">Generate detailed reports for CRM team performance</p>
+      </div>
+      
+      <!-- Action Buttons - Floating Style -->
+      <div class="tw-flex tw-gap-3 tw-flex-wrap">
+        <button 
+        (click)="resetFilters()"
+        class="tw-inline-flex tw-items-center tw-px-5 tw-py-2.5 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-text-gray-700 tw-font-medium tw-shadow-sm hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Reset Filters
+      </button>
+      
+        <button 
+          (click)="getReport()" 
+          [disabled]="isLoading"
+          class="tw-relative tw-overflow-hidden tw-bg-blue-600 tw-to-blue-500 tw-hover:from-blue-700 tw-hover:to-blue-600 tw-disabled:tw-from-gray-400 tw-disabled:tw-to-gray-500 tw-text-white tw-px-6 tw-py-3 tw-rounded-md tw-font-medium tw-transition-all tw-duration-300 tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:ring-offset-2 tw-shadow-md hover:tw-shadow-lg tw-group"
+        >
+          <span class="tw-relative tw-z-10 tw-flex tw-items-center tw-gap-2">
+            <span *ngIf="!isLoading">Generate Report</span>
+            <span *ngIf="isLoading" class="tw-flex tw-items-center tw-gap-2">
+              <span class="tw-animate-spin tw-rounded-full tw-h-4 tw-w-4 tw-border-b-2 tw-border-white"></span>
+              Loading...
+            </span>
+          </span>
+          <span class="tw-absolute tw-bg-blue-600 tw-opacity-0 group-hover:tw-opacity-100 tw-transition-opacity tw-duration-300"></span>
+        </button>
+
+        <button
+          (click)="exportReport()" 
+          [disabled]="!reportData || isLoading"
+          class="tw-relative tw-overflow-hidden tw-bg-green-600 tw-hover:from-green-700 tw-hover:to-green-600 tw-disabled:tw-from-gray-400 tw-disabled:tw-to-gray-500 tw-text-white tw-px-6 tw-py-3 tw-rounded-md tw-font-medium tw-transition-all tw-duration-300 tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-green-500 tw-focus:ring-offset-2 tw-shadow-md hover:tw-shadow-lg tw-group"
+        >
+          <span class="tw-relative tw-z-10 tw-flex tw-items-center tw-gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Export Excel
+          </span>
+          <span class="tw-absolute tw-inset-0 tw-bg-green-600 tw-opacity-0 group-hover:tw-opacity-100 tw-transition-opacity tw-duration-300"></span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Filter Grid - Modern Layout -->
+    <div class="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 lg:tw-grid-cols-4 tw-gap-4">
+      <!-- Member Selection -->
+      <div class="tw-space-y-2">
+        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700 tw-flex tw-items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4 tw-mr-1 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+          Select Member <span class="tw-text-red-500">*</span>
+        </label>
+        <div class="tw-relative">
+          <select 
+            [(ngModel)]="selectedMemberId" 
+            class="tw-appearance-none tw-w-full tw-pl-10 tw-pr-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-xl tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200 tw-shadow-sm hover:tw-border-gray-300"
+          >
+            <option value="all">All Members</option>
+            <option *ngFor="let member of members" [value]="member._id">
+              {{ member.name }} ({{ member.role }})
+            </option>
+          </select>
+          <div class="tw-absolute tw-left-3 tw-top-3 tw-text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Year Selection -->
+      <div class="tw-space-y-2">
+        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700 tw-flex tw-items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4 tw-mr-1 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          Select Year
+        </label>
+        <div class="tw-relative">
+          <select 
+            [(ngModel)]="selectedYear"
+            (ngModelChange)="onYearChange()"
+            class="tw-appearance-none tw-w-full tw-pl-10 tw-pr-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-xl tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200 tw-shadow-sm hover:tw-border-gray-300"
+          >
+            <option [ngValue]="null" disabled selected>Select Year</option>
+            <option *ngFor="let y of years" [value]="y">
+              {{ y }}
+            </option>
+          </select>
+          <div class="tw-absolute tw-left-3 tw-top-3 tw-text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Month Selection -->
+      <div class="tw-space-y-2">
+        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700 tw-flex tw-items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4 tw-mr-1 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          Select Month
+        </label>
+        <div class="tw-relative">
+          <select 
+            [(ngModel)]="selectedMonth"
+            [disabled]="selectedYear === null"
+            class="tw-appearance-none tw-w-full tw-pl-10 tw-pr-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-xl tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200 tw-shadow-sm hover:tw-border-gray-300 tw-disabled:tw-bg-gray-100 tw-disabled:tw-text-gray-500 tw-disabled:tw-cursor-not-allowed"
+          >
+            <option [ngValue]="null" disabled selected>Select Months</option>
+            <option value="all">All Months</option>
+            <option *ngFor="let month of months" [value]="month.value">
+              {{ month.name }}
+            </option>
+          </select>
+          <div class="tw-absolute tw-left-3 tw-top-3 tw-text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Date Field Selection -->
+      <div class="tw-space-y-2">
+        <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700 tw-flex tw-items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4 tw-mr-1 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          Date Field
+        </label>
+        <div class="tw-relative">
+          <select 
+            [(ngModel)]="selectedDateField"
+            [disabled]="selectedYear === null"
+            class="tw-appearance-none tw-w-full tw-pl-10 tw-pr-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-xl tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-transparent tw-bg-white tw-transition-all tw-duration-200 tw-shadow-sm hover:tw-border-gray-300 tw-disabled:tw-bg-gray-100 tw-disabled:tw-text-gray-500 tw-disabled:tw-cursor-not-allowed"
+          >
+            <option value="" disabled>Select Date Field</option>
+            <option value="closingDate">Closing Date</option>
+            <option value="quotationDate">Quotation Date</option>
+            <option value="createdAt">Created At</option>
+            <option value="wonAt">Won At</option>
+            <option value="lostAt">Lost At</option>
+          </select>
+          <div class="tw-absolute tw-left-3 tw-top-3 tw-text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Section - Modern Card Design -->
+  <div *ngIf="searchClicked && !isLoading" class="tw-bg-white tw-rounded-xl tw-shadow-lg tw-overflow-hidden tw-border tw-border-gray-100">
+    <!-- Error Message - Modern Empty State -->
+    <div *ngIf="reportError" class="tw-p-12 tw-text-center tw-bg-gradient-to-br tw-from-gray-50 tw-to-gray-100">
+      <div class="tw-inline-flex tw-items-center tw-justify-center tw-w-16 tw-h-16 tw-rounded-full tw-bg-red-100 tw-text-red-600 tw-mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-8 tw-w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <h3 class="tw-text-xl tw-font-bold tw-text-gray-800 tw-mb-2">Report Error</h3>
+      <p class="tw-text-gray-600 tw-mb-6">{{ reportError }}</p>
+      <button 
+        (click)="getReport()"
+        class="tw-inline-flex tw-items-center tw-px-5 tw-py-2.5 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-text-gray-700 tw-font-medium tw-shadow-sm hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Try Again
+      </button>
+    </div>
+
+    <!-- No Data Message - Modern Empty State -->
+    <div *ngIf="!reportError && (!reportData || getObjectKeys(reportData?.leads).length === 0)" class="tw-p-12 tw-text-center tw-bg-gradient-to-br tw-from-gray-50 tw-to-gray-100">
+      <div class="tw-inline-flex tw-items-center tw-justify-center tw-w-16 tw-h-16 tw-rounded-full tw-bg-blue-100 tw-text-blue-600 tw-mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-8 tw-w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <h3 class="tw-text-xl tw-font-bold tw-text-gray-800 tw-mb-2">No Reports Found</h3>
+      <p class="tw-text-gray-600 tw-mb-6">There are no reports matching your selected filters.</p>
+      <button 
+        (click)="resetFilters()"
+        class="tw-inline-flex tw-items-center tw-px-5 tw-py-2.5 tw-bg-white tw-border tw-border-gray-200 tw-rounded-lg tw-text-gray-700 tw-font-medium tw-shadow-sm hover:tw-bg-gray-50 tw-transition-colors tw-duration-200"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        Reset Filters
+      </button>
+    </div>
+
+    <!-- Report Data - Modern Table Design -->
+    <div *ngIf="!reportError && reportData && getObjectKeys(reportData.leads).length > 0">
+      <!-- Summary Stats -->
+      <div class="tw-bg-gradient-to-r tw-from-blue-600 tw-to-blue-500 tw-px-6 tw-py-4 tw-text-white">
+        <div class="tw-grid tw-grid-cols-2 md:tw-grid-cols-5 tw-gap-4">
+          <div class="tw-text-center">
+            <div class="tw-text-2xl tw-font-bold">{{ reportData.summary.totalLeads }}</div>
+            <div class="tw-text-sm tw-text-blue-100">Total Leads</div>
+          </div>
+          <div class="tw-text-center">
+            <div class="tw-text-2xl tw-font-bold tw-text-green-300">{{ reportData.summary.totalWon }}</div>
+            <div class="tw-text-sm tw-text-blue-100">Won</div>
+          </div>
+          <div class="tw-text-center">
+            <div class="tw-text-2xl tw-font-bold tw-text-red-300">{{ reportData.summary.totalLost }}</div>
+            <div class="tw-text-sm tw-text-blue-100">Lost</div>
+          </div>
+          <div class="tw-text-center">
+            <div class="tw-text-2xl tw-font-bold tw-text-yellow-300">{{ reportData.summary.totalActive }}</div>
+            <div class="tw-text-sm tw-text-blue-100">Active</div>
+          </div>
+          <div class="tw-text-center">
+            <div class="tw-text-2xl tw-font-bold">₹{{ reportData.summary.totalAmount.toLocaleString() }}</div>
+            <div class="tw-text-sm tw-text-blue-100">Total Amount</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column-wise Leads - Accordion Style -->
+      <div *ngFor="let columnName of getObjectKeys(reportData.leads)" class="tw-border-b tw-border-gray-200 tw-last:border-b-0">
+        <!-- Column Header with Gradient Background - Now clickable -->
+        <div 
+          class="tw-bg-gradient-to-r tw-from-green-600 tw-to-green-500 tw-px-6 tw-py-5 tw-cursor-pointer"
+          (click)="toggleColumnAccordion(columnName)"
+        >
+          <div class="tw-flex tw-items-center tw-justify-between">
+            <h4 class="tw-text-xl tw-font-bold tw-text-white tw-flex tw-items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              {{ columnName }}
+            </h4>
+            <div class="tw-flex tw-items-center">
+              <span class="tw-text-sm tw-font-medium tw-text-green-100 tw-bg-white/20 tw-px-3 tw-py-1 tw-rounded-full tw-mr-3">
+                {{ getColumnLeadCount(columnName) }} leads
+              </span>
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                class="tw-h-5 tw-w-5 tw-text-white tw-transition-transform tw-duration-300" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+                [class.tw-rotate-180]="isColumnOpen(columnName)"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Member-wise Leads - Card Style - With Animation -->
+        <div 
+          *ngIf="isColumnOpen(columnName)"
+          [@slideInOut] 
+          class="tw-py-5 tw-px-6 tw-border-b tw-border-gray-100 tw-bg-gray-50/50"
+        >
+          <div *ngFor="let memberName of getObjectKeys(reportData.leads[columnName])" class="tw-mb-6 tw-last:mb-0">
+            <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+              <h5 class="tw-text-lg tw-font-semibold tw-text-gray-800 tw-flex tw-items-center">
+                <span class="tw-inline-flex tw-items-center tw-justify-center tw-w-8 tw-h-8 tw-mr-3 tw-bg-green-100 tw-text-green-800 tw-rounded-full">
+                  {{ memberName.charAt(0) }}
+                </span>
+                {{ memberName }}
+              </h5>
+              <span class="tw-text-sm tw-font-medium tw-text-gray-600 tw-bg-gray-100 tw-px-3 tw-py-1 tw-rounded-full">
+                {{ reportData.leads[columnName][memberName].length }} leads
+              </span>
+            </div>
+            
+            <!-- Leads Table - Modern Design -->
+            <div class="tw-overflow-x-auto tw-rounded-lg tw-border tw-border-gray-200 tw-shadow-sm">
+              <table class="tw-w-full tw-text-sm tw-bg-white">
+                <thead class="tw-bg-gray-50">
+                  <tr>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Lead Title</th>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Priority</th>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Status</th>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Amount</th>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Closing Date</th>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Created At</th>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Contact</th>
+                  </tr>
+                </thead>
+                <tbody class="tw-divide-y tw-divide-gray-200">
+                  <tr 
+                    *ngFor="let lead of reportData.leads[columnName][memberName]; trackBy: trackByLeadId; let i = index" 
+                    class="tw-hover:bg-green-50/50 tw-transition-colors tw-duration-150"
+                  >
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                      <div class="tw-flex tw-items-center">
+                        <div class="tw-flex-shrink-0 tw-h-10 tw-w-10 tw-rounded tw-bg-gray-100 tw-flex tw-items-center tw-justify-center tw-mr-3">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </div>
+                        <div class="tw-min-w-0 tw-flex-1 tw-px-2 tw-py-1 tw-truncate">
+                          <div class="tw-font-semibold tw-text-gray-900 hover:tw-text-green-600 hover:tw-underline hover:tw-cursor-pointer" (click)="redirectToLead(lead)">{{ lead.leadTitle }}</div>
+                          <div class="tw-text-xs tw-text-gray-500">
+                            <span *ngIf="lead.attachmentCount > 0">
+                              <i class="ri-attachment-2"></i> {{ lead.attachmentCount }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                      <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded tw-text-xs tw-font-medium tw-capitalize"
+                            [ngClass]="{
+                              'tw-bg-red-100 tw-text-red-800': lead.priority === 'hot',
+                              'tw-bg-yellow-100 tw-text-yellow-800': lead.priority === 'warm',
+                              'tw-bg-blue-100 tw-text-blue-800': lead.priority === 'cold'
+                            }">
+                        {{ lead.priority }}
+                      </span>
+                    </td>
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                      <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded tw-text-xs tw-font-medium tw-capitalize"
+                            [ngClass]="{
+                              'tw-bg-green-100 tw-text-green-800': lead.isWon === 'Yes',
+                              'tw-bg-red-100 tw-text-red-800': lead.isLost === 'Yes',
+                              'tw-bg-gray-100 tw-text-gray-800': lead.isWon !== 'Yes' && lead.isLost !== 'Yes'
+                            }">
+                        {{ lead.isWon === 'Yes' ? 'Won' : lead.isLost === 'Yes' ? 'Lost' : 'Active' }}
+                      </span>
+                    </td>
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap tw-font-medium">
+                      {{ lead.amount !== '-' ? '₹' + lead.amount : '-' }}
+                    </td>
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                      <div class="tw-flex tw-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4 tw-mr-1 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        {{ lead.closingDate }}
+                      </div>
+                    </td>
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap tw-text-gray-500">
+                      {{ lead.createdAt }}
+                    </td>
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                      <div class="tw-text-sm">
+                        <div class="tw-font-medium">{{ lead.contactName }}</div>
+                        <div class="tw-text-gray-500">{{ lead.contactEmail }}</div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modern Loading Overlay -->
+<div
+  class="tw-fixed tw-inset-0 tw-flex tw-items-center tw-justify-center tw-bg-black/50 tw-z-30 tw-backdrop-blur-sm"
+  *ngIf="isLoading"
+>
+  <div class="tw-bg-white tw-rounded-xl tw-shadow-xl tw-p-8 tw-max-w-md tw-w-full tw-mx-4 tw-text-center">
+    <div class="tw-inline-flex tw-items-center tw-justify-center tw-w-16 tw-h-16 tw-rounded-full tw-bg-green-100 tw-text-green-600 tw-mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-8 tw-w-8 tw-animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </div>
+    <h3 class="tw-text-xl tw-font-bold tw-text-gray-800 tw-mb-2">Generating Report</h3>
+    <p class="tw-text-gray-600">Please wait while we process your request...</p>
+    <div class="tw-mt-6 tw-w-full tw-bg-gray-200 tw-rounded-full tw-h-2">
+      <div class="tw-bg-green-600 tw-h-2 tw-rounded-full tw-animate-pulse" style="width: 60%"></div>
+    </div>
+  </div>
+</div>

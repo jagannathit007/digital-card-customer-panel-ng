@@ -835,7 +835,9 @@
                 >
                   <i class="fas fa-paperclip tw-text-gray-400 tw-text-xl"></i>
                 </div>
-                <h3 class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-2">
+                <h3
+                  class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-2"
+                >
                   No attachments yet
                 </h3>
                 <p class="tw-text-gray-500">
@@ -978,5 +980,19 @@
         </div>
       </div>
     </div>
+
+    <!-- Click outside to close for closing date picker -->
+    <div
+      *ngIf="showCustomDatePicker"
+      class="tw-fixed tw-inset-0 tw-z-40 ng-star-inserted"
+      (click)="toggleDatePicker()"
+    ></div>
+
+    <!-- Click outside to close for closing quotation date picker -->
+    <div
+      *ngIf="showQuotationDatePicker"
+      class="tw-fixed tw-inset-0 tw-z-40 ng-star-inserted"
+      (click)="toggleQuotationDatePicker()"
+    ></div>
   </div>
 </div>

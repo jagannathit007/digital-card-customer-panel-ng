@@ -1,0 +1,75 @@
+// CRM Team Report Component Styles
+// Most styling is handled by Tailwind CSS classes in the template
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+// Custom scrollbar for better UX
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+// Animation for accordion
+.accordion-content {
+  transition: all 0.3s ease-in-out;
+}
+
+// Custom focus styles for better accessibility
+button:focus-visible,
+select:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+// Hover effects for interactive elements
+.interactive-element {
+  transition: all 0.2s ease-in-out;
+}
+
+.interactive-element:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+// Loading animation
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .tw-container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .tw-grid {
+    grid-template-columns: 1fr;
+  }
+}

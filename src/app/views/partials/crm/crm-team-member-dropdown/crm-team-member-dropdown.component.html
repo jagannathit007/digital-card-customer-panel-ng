@@ -187,3 +187,6 @@
     <div class="tw-absolute tw-top-full tw-left-1/2 tw-transform tw--translate-x-1/2 tw-w-0 tw-h-0 tw-border-l-4 tw-border-r-4 tw-border-t-4 tw-border-transparent tw-border-t-white"></div>
   </div>
 </div>
+
+    <!-- Click outside to close -->
+<div *ngIf="isDropdownOpen" class="tw-fixed tw-inset-0 tw-z-0 ng-star-inserted" (click)="toggleDropdown()"></div>

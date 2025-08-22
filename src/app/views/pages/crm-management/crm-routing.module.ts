@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { CrmDashboardComponent } from './crm-dashboard/crm-dashboard.component';
 import { LeadsManagementComponent } from './leads-management/leads-management.component';
 import { LeadDetailPopupComponent } from './lead-detail-popup/lead-detail-popup.component';
+import { CrmTeamReportComponent } from './crm-team-report/crm-team-report.component';
 
 const routes: Routes = [
     { path: 'dashboard', component: CrmDashboardComponent },
@@ -16,6 +17,7 @@ const routes: Routes = [
       },
     ],
   },
+  { path: 'reports', component: CrmTeamReportComponent },
 ];
 
 @NgModule({

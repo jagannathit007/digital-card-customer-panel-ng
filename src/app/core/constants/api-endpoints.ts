@@ -310,7 +310,47 @@ public GET_GOOGLE_CALENDAR_ID: string = `${this.PATH}/task/google/calendar-id`;
   public GET_LEAVES: string = `${this.PATH}/leave/list`;
   public MANAGE_LEAVE: string = `${this.PATH}/leave/manage`;
   public APPLY_LEAVE: string = `${this.PATH}/leave/apply`;
+
+//  ! CRM Module
+public GET_CRM_DETAILS: string = `${this.PATH}/crm/get-details`;
+public GET_CRM_COLUMNS: string = `${this.PATH}/crm/column/get-all`;
+public CREATE_CRM_COLUMN: string = `${this.PATH}/crm/column/create`;
+public REORDER_CRM_COLUMN: string = `${this.PATH}/crm/column/reorder`;
+
+// CRM Leads
+public ADD_LEAD: string = `${this.PATH}/crm/lead/add`;
+public CREATE_LEAD: string = `${this.PATH}/crm/lead/create`;
+public GET_LEADS: string = `${this.PATH}/crm/lead/get-all`;
+public GET_LEAD_DETAILS: string = `${this.PATH}/crm/lead/get-details`;
+public UPDATE_LEAD_TITLE: string = `${this.PATH}/crm/lead/update/title`;
+public UPDATE_LEAD_DESCRIPTION: string = `${this.PATH}/crm/lead/update/description`;
+public UPDATE_LEAD_CATEGORY: string = `${this.PATH}/crm/lead/update/category`;
+public UPDATE_LEAD_PRIORITY: string = `${this.PATH}/crm/lead/update/priority`;
+public UPDATE_LEAD_CLOSING_DATE: string = `${this.PATH}/crm/lead/update/closing-date`;
+public UPDATE_LEAD_QUOTATION_DATE: string = `${this.PATH}/crm/lead/update/quotation-date`;
+public UPDATE_LEAD_ASSIGNED_TO: string = `${this.PATH}/crm/lead/update/assigned-to`;
+public UPDATE_LEAD_CONTACT_DETAILS: string = `${this.PATH}/crm/lead/update/contact-details`;
+public UPDATE_LEAD_AMOUNT: string = `${this.PATH}/crm/lead/update/amount`;
+public UPDATE_LEAD_PRODUCT: string = `${this.PATH}/crm/lead/update/product`;
+public DELETE_LEAD: string = `${this.PATH}/crm/lead/delete`;
+public REORDER_LEAD: string = `${this.PATH}/crm/lead/reorder`;
+public MARK_LEAD_WON: string = `${this.PATH}/crm/lead/mark-won`;
+public MARK_LEAD_LOST: string = `${this.PATH}/crm/lead/mark-lost`;
+
+// CRM Categories
+public GET_CRM_CATEGORIES: string = `${this.PATH}/crm/categories/get-all`;
+
+// CRM Team Members
+public GET_CRM_TEAM_MEMBERS: string = `${this.PATH}/crm/team-members/get-all`;
+
+// CRM Reports
+public GET_CRM_MEMBER_REPORT: string = `${this.PATH}/crm/member-report`;
+
+// CRM Attachments
+public GET_CRM_ATTACHMENTS: string = `${this.PATH}/crm/attachment/get`;
+public ADD_CRM_ATTACHMENT: string = `${this.PATH}/crm/attachment/add`;
+public DELETE_CRM_ATTACHMENT: string = `${this.PATH}/crm/attachment/delete`;
+
 }
 
-const storage = new AppStorage();
-export let apiEndpoints = new ApiEndpoints(storage);
+export let apiEndpoints = new ApiEndpoints(new AppStorage());
