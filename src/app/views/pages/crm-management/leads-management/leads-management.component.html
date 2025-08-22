@@ -15,6 +15,21 @@
           
           <!-- View Toggle Button -->
           <div class="tw-flex tw-items-center tw-gap-4" *ngIf="crmId()">
+            <!-- Column Filter for Table View -->
+            <div *ngIf="viewMode() === 'table'" class="tw-flex tw-items-center tw-gap-2">
+              <label class="tw-text-sm tw-font-medium tw-text-gray-700">Filter by Column:</label>
+              <select
+                [(ngModel)]="selectedTableColumnValue"
+                (change)="onTableColumnChange()"
+                class="tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md tw-text-sm tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-blue-500"
+              >
+                <option value="">All Columns</option>
+                <option *ngFor="let column of crmColumns()" [value]="column._id">
+                  {{ column.title }}
+                </option>
+              </select>
+            </div>
+            
             <!-- View Toggle -->
             <div class="tw-flex tw-items-center tw-bg-gray-100 tw-rounded-lg tw-p-1">
               <button
@@ -41,20 +56,6 @@
               </button>
             </div>
 
-            <!-- Column Filter for Table View -->
-            <div *ngIf="viewMode() === 'table'" class="tw-flex tw-items-center tw-gap-2">
-              <label class="tw-text-sm tw-font-medium tw-text-gray-700">Filter by Column:</label>
-              <select
-                [(ngModel)]="selectedTableColumnValue"
-                (change)="onTableColumnChange()"
-                class="tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-md tw-text-sm tw-focus:ring-2 tw-focus:ring-blue-500 tw-focus:border-blue-500"
-              >
-                <option value="">All Columns</option>
-                <option *ngFor="let column of crmColumns()" [value]="column._id">
-                  {{ column.title }}
-                </option>
-              </select>
-            </div>
           </div>
         </div>
         <p class="tw-text-gray-600" *ngIf="viewMode() === 'kanban'">Manage your leads efficiently with Kanban view</p>
