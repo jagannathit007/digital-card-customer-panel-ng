@@ -54,6 +54,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   pageSize = 10;
   totalItems = 0;
   totalPages = 0;
+  showPassword = false;
 
   constructor(
     private attendanceService: AttendanceService,
@@ -605,5 +606,9 @@ export class EmployeesComponent implements OnInit, OnDestroy {
 
   trackById(index: number, item: any): string {
     return item._id;
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 }

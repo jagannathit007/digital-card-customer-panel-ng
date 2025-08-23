@@ -473,7 +473,7 @@
                     </label>
                     <div class="tw-relative">
                       <input
-                        type="password"
+                        [type]="showPassword ? 'text' : 'password'"
                         class="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-blue-500 tw-pr-10"
                         [(ngModel)]="form.password"
                         [ngModelOptions]="{ standalone: true }"
@@ -481,7 +481,9 @@
                         placeholder="••••••••"
                       />
                       <i
-                        class="ri-eye-line tw-absolute tw-right-3 tw-top-2.5 tw-text-gray-400 hover:tw-text-gray-600 tw-cursor-pointer"
+                        [class]="showPassword ? 'ri-eye-off-line' : 'ri-eye-line'"
+                        class="tw-absolute tw-right-3 tw-top-2.5 tw-text-gray-400 hover:tw-text-gray-600 tw-cursor-pointer"
+                        (click)="togglePasswordVisibility()"
                       ></i>
                     </div>
                   </div>
