@@ -351,6 +351,16 @@ public GET_CRM_ATTACHMENTS: string = `${this.PATH}/crm/attachment/get`;
 public ADD_CRM_ATTACHMENT: string = `${this.PATH}/crm/attachment/add`;
 public DELETE_CRM_ATTACHMENT: string = `${this.PATH}/crm/attachment/delete`;
 
+// ! IDEA BOARD MODULE
+public ADD_IDEA: string = `${this.PATH}/ideas/add`;
+public GET_IDEAS: string = `${this.PATH}/ideas/list`;
+public UPDATE_IDEA: string = `${this.PATH}/ideas/update`;
+public DELETE_IDEA: string = `${this.PATH}/ideas/delete`;
+public ADD_IDEA_CATEGORY: string = `${this.PATH}/ideas/categories/add`;
+public GET_IDEA_CATEGORIES: string = `${this.PATH}/ideas/categories/list`;
+public UPDATE_IDEA_CATEGORY: string = `${this.PATH}/ideas/categories/update`;
+public DELETE_IDEA_CATEGORY: string = `${this.PATH}/ideas/categories/delete`;
+
 }
 
 export let apiEndpoints = new ApiEndpoints(new AppStorage());
