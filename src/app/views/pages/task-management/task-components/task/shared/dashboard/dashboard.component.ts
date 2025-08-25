@@ -6,16 +6,76 @@ import { CommonModule } from '@angular/common';
 import { routes } from 'src/app/app.routes';
 import { Router } from '@angular/router';
 import { TaskPermissionsService } from 'src/app/services/task-permissions.service';
+import { FormsModule } from '@angular/forms';
+import { environment } from 'src/env/env.local';
+
+interface RecentActivity {
+  type: 'team_task' | 'personal_task';
+  action: string;
+  title: string;
+  boardName: string;
+  user: {
+    name: string;
+    profileImage: string;
+  };
+  timestamp: string;
+  taskId: string;
+}
+
+interface RecentlyCreatedTask {
+  type: 'team_task' | 'personal_task';
+  title: string;
+  description: string;
+  status: string;
+  boardName: string;
+  boardId: string;
+  createdBy: {
+    name: string;
+    profileImage: string;
+  };
+  assignedTo: Array<{
+    name: string;
+    profileImage: string;
+  }>;
+  dueDate: string | null;
+  createdAt: string;
+  taskId: string;
+}
+
+interface EmployeeTaskDetails {
+  employee: {
+    _id: string;
+    name: string;
+    emailId: string;
+    profileImage: string;
+    role: string;
+    isActive: boolean;
+  };
+  todaysDueTasksCount: number;
+  statusWiseTasks: { [key: string]: number };
+  completedTaskCount: number;
+  deletedTaskCount: number;
+  tasksCreatedByEmployee: number;
+  personalTasksCount: number;
+  personalCompletedCount: number;
+  totalTasksForToday: number;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CustomdataComponent, CommonModule],
+  imports: [CustomdataComponent, CommonModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
 export class DashboardComponent implements OnInit {
   isLoading = signal<boolean>(true);
   dashboardStats: any = {};
+  recentActivities: RecentActivity[] = [];
+  recentlyCreatedTasks: RecentlyCreatedTask[] = [];
+  employeeTaskDetails: EmployeeTaskDetails[] = [];
+  selectedDate: string = new Date().toISOString().split('T')[0];
+  imageBaseUrl = environment.imageURL;
 
   constructor(
     private storage: AppStorage,
@@ -55,20 +115,106 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  getActivityIcon(activity: RecentActivity): string {
+    if (activity.type === 'team_task') {
+      return activity.action === 'completed' ? 'fa-check-circle' : 'fa-edit';
+    } else {
+      return activity.action === 'completed' ? 'fa-check-circle' : 'fa-tasks';
+    }
+  }
+
+  getActivityColor(activity: RecentActivity): string {
+    if (activity.action === 'completed') {
+      return 'tw-bg-green-600';
+    } else if (activity.type === 'team_task') {
+      return 'tw-bg-blue-600';
+    } else {
+      return 'tw-bg-purple-600';
+    }
+  }
+
+  getTimeAgo(timestamp: string): string {
+    const now = new Date();
+    const activityTime = new Date(timestamp);
+    const diffInMinutes = Math.floor((now.getTime() - activityTime.getTime()) / (1000 * 60));
+    
+    if (diffInMinutes < 1) return 'Just now';
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays}d ago`;
+    
+    return activityTime.toLocaleDateString();
+  }
+
+  getStatusCount(statusWiseTasks: { [key: string]: number }, status: string): number {
+    return statusWiseTasks[status] || 0;
+  }
+
   async ngOnInit(): Promise<void> {
     this.loadDashboardStats();
+    this.loadRecentActivities();
+    this.loadRecentlyCreatedTasks();
+    this.loadEmployeeDayWiseTasks();
   }
 
   async loadDashboardStats() {
     console.log('Loading dashboard stats...');
     const response = await this.taskService.getDashboardStats({});
 
-    if (this.dashboardStats) {
+    if (response) {
       this.dashboardStats = response;
       console.log('Dashboard stats:', this.dashboardStats);
+    }
+  }
+
+  async loadRecentActivities() {
+    console.log('Loading recent activities...');
+    const response = await this.taskService.getRecentActivities({});
+
+    if (response) {
+      this.recentActivities = response;
+      console.log('Recent activities:', this.recentActivities);
+    }
+  }
+
+  async loadRecentlyCreatedTasks() {
+    console.log('Loading recently created tasks...');
+    const response = await this.taskService.getRecentlyCreatedTasks({});
+
+    if (response) {
+      this.recentlyCreatedTasks = response;
+      console.log('Recently created tasks:', this.recentlyCreatedTasks);
+    }
+  }
+
+  async loadEmployeeDayWiseTasks() {
+    this.isLoading.set(true);
+    console.log('Loading employee day-wise tasks...');
+    const response = await this.taskService.getEmployeeDayWiseTasks({
+      date: this.selectedDate
+    });
+
+    if (response) {
+      this.employeeTaskDetails = response.employeeTaskDetails;
       this.isLoading.set(false);
+      console.log('Employee task details:', this.employeeTaskDetails);
+    }
+    this.isLoading.set(false);
+  }
+
+  onDateChange() {
+    this.loadEmployeeDayWiseTasks();
+  }
+
+  navigateToTask(task: any, type: string) {
+    if (type === 'team_task') {
+      this.router.navigate([`/task-management/teamtask/detail/${task.taskId}`], { queryParams: { boardId: task.boardId }});
     } else {
-      this.isLoading.set(false);
+      this.router.navigate(['/task-management/personal-task/my-day'], { queryParams: { taskId:task.taskId } });
     }
   }
 

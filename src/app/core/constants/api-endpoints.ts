@@ -200,6 +200,9 @@ class ApiEndpoints {
 
 // task management dashboard 
 public TASK_DASHBOARD_STATS: string = `${this.PATH}/task/dashboard/stats`;
+public TASK_DASHBOARD_RECENT_ACTIVITIES: string = `${this.PATH}/task/dashboard/recent-activities`;
+public TASK_DASHBOARD_RECENTLY_CREATED_TASKS: string = `${this.PATH}/task/dashboard/recently-created-tasks`;
+public TASK_DASHBOARD_EMPLOYEE_DAY_WISE_TASKS: string = `${this.PATH}/task/dashboard/employee-day-wise-tasks`;
 
 public TEAM_MEMBER_SIGNIN: string = `${this.PATH}/task/sign-in`;
 public TEAM_MEMBER_VERIFY_TOKEN: string = `${this.PATH}/task/verify-invitation-token`;

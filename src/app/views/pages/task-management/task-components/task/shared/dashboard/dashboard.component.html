@@ -32,9 +32,19 @@
 </div>
 
 <div *ngIf="!isLoading()">
+  <div class="tw-grid tw-gap-6 tw-p-2 sm:tw-p-6 tw-bg-gray-50"
+  [ngClass]="{
+    'tw-grid-cols-1': !taskPermissionsService.isAdminLevelPermission(),
+    'tw-grid-cols-1 lg:tw-grid-cols-2': taskPermissionsService.isAdminLevelPermission()
+  }"
+  >
   <!-- Stats Cards -->
   <div
-    class="tw-grid tw-grid-cols-1 md:tw-grid-cols-4 tw-gap-6 tw-p-6 tw-bg-gray-50"
+    class="tw-grid tw-gap-6 tw-p-6 tw-bg-gray-50 tw-h-fit"
+    [ngClass]="{
+    'tw-grid-cols-1': taskPermissionsService.isAdminLevelPermission(),
+    'tw-grid-cols-1 md:tw-grid-cols-3': !taskPermissionsService.isAdminLevelPermission()
+  }"
   >
     <div
       *ngIf="!taskPermissionsService.isAdminLevelPermission()"
@@ -142,16 +152,6 @@
           </div>
         </div>
       </div>
-
-      <!-- <div class="tw-flex tw-items-center tw-justify-between tw-pt-3 tw-border-t tw-border-gray-100">
-    <div class="tw-flex tw-items-center tw-gap-2">
-      <div class="tw-w-2 tw-h-2 tw-bg-green-500 tw-rounded-full"></div>
-      <span class="tw-text-xs tw-text-gray-500">Today's Progress</span>
-    </div>
-    <div class="tw-text-xs tw-text-gray-400">
-      {{ (dashboardStats.todaysCompletedPersoalTasks + dashboardStats.todaysCompletedTeamTasks) }} total
-    </div>
-  </div> -->
     </div>
 
     <div
@@ -200,16 +200,6 @@
           </div>
         </div>
       </div>
-
-      <!-- <div class="tw-flex tw-items-center tw-justify-between tw-pt-3 tw-border-t tw-border-gray-100">
-    <div class="tw-flex tw-items-center tw-gap-2">
-      <div class="tw-w-2 tw-h-2 tw-bg-orange-500 tw-rounded-full"></div>
-      <span class="tw-text-xs tw-text-gray-500">Awaiting Action</span>
-    </div>
-    <div class="tw-text-xs tw-text-gray-400">
-      {{ (dashboardStats.todaysPendingPersoalTasks + dashboardStats.todaysPendingTeamTasks) }} total
-    </div>
-  </div> -->
     </div>
 
     <div
@@ -266,10 +256,119 @@
     </div>
   </div>
 
+  <!-- Recently Created Tasks -->
+    <div
+    *ngIf="taskPermissionsService.isAdminLevelPermission()"
+      class="tw-bg-white tw-rounded tw-shadow tw-border tw-border-gray-200 tw-h-fit"
+      
+    >
+      <div
+        class="tw-flex tw-items-center tw-justify-between tw-p-6 tw-border-b tw-border-gray-200"
+      >
+        <h2 class="tw-text-lg tw-font-semibold tw-text-gray-900">
+          Recently Tasks
+        </h2>
+        <span class="tw-text-sm tw-text-gray-500">{{ recentlyCreatedTasks.length }} tasks</span>
+      </div>
+
+      <div class="tw-divide-y tw-divide-gray-200 tw-min-h-[375px]">
+        <div
+          class="tw-flex tw-items-start tw-gap-4 tw-p-6"
+          *ngFor="let task of recentlyCreatedTasks"
+        >
+          <div
+            class="tw-p-2 tw-bg-blue-600 tw-rounded tw-flex tw-items-center tw-justify-center tw-mt-1"
+          >
+            <i class="fa-solid fa-plus tw-text-white tw-text-sm"></i>
+          </div>
+          <div class="tw-flex-1">
+            <div class="tw-font-medium tw-text-gray-900 tw-line-clamp-1 tw-overflow-hidden tw-text-ellipsis tw-cursor-pointer hover:tw-text-blue-600"
+                 (click)="navigateToTask(task, task.type)"
+                 title="{{ task.title }}">
+              {{ task.title }}
+            </div>
+            <p class="tw-text-gray-500 tw-text-sm tw-mt-1 tw-line-clamp-1 tw-overflow-hidden tw-text-ellipsis">
+              {{ task.boardName }} • {{ task.createdBy.name }}
+            </p>
+            <div class="tw-flex tw-items-center tw-gap-2 tw-mt-2">
+              <span
+                class="tw-px-2 tw-py-1 tw-rounded tw-text-xs tw-font-medium"
+                [class]="getStatusColorClass(task.status)"
+              >
+                {{ task.status }}
+              </span>
+              <span class="tw-text-xs tw-text-gray-400">
+                {{ getTimeAgo(task.createdAt) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="tw-p-6 tw-flex tw-items-center tw-justify-center tw-text-sm tw-text-gray-500"
+          *ngIf="!recentlyCreatedTasks.length"
+        >
+          No recently created tasks
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Main Content Area -->
   <div
     class="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 2xl:tw-grid-cols-3 tw-gap-6 tw-p-2 sm:tw-p-6 tw-bg-gray-50"
   >
+    <!-- Recent Activities -->
+    <!-- <div
+      class="tw-bg-white tw-rounded tw-shadow tw-border tw-border-gray-200 tw-h-fit"
+    >
+      <div
+        class="tw-flex tw-items-center tw-justify-between tw-p-6 tw-border-b tw-border-gray-200"
+      >
+        <h2 class="tw-text-lg tw-font-semibold tw-text-gray-900">
+          Recent Activities
+        </h2>
+        <span class="tw-text-sm tw-text-gray-500">{{ recentActivities.length }} activities</span>
+      </div>
+
+      <div class="tw-divide-y tw-divide-gray-200 tw-min-h-[375px]">
+        <div
+          class="tw-flex tw-items-start tw-gap-4 tw-p-6"
+          *ngFor="let activity of recentActivities"
+        >
+          <div
+            class="tw-p-2 tw-rounded tw-flex tw-items-center tw-justify-center tw-mt-1"
+            [class]="getActivityColor(activity)"
+          >
+            <i class="fa-solid tw-text-white tw-text-sm" [class]="getActivityIcon(activity)"></i>
+          </div>
+          <div class="tw-flex-1">
+            <div class="tw-flex tw-items-center tw-gap-2 tw-mb-1">
+              <span class="tw-font-medium tw-text-gray-900">{{ activity.user.name }}</span>
+              <span class="tw-text-gray-500">{{ activity.action }}</span>
+              <span class="tw-text-gray-900 tw-font-medium tw-cursor-pointer hover:tw-text-blue-600" 
+                    (click)="navigateToTask(activity.taskId, activity.type)">
+                {{ activity.title }}
+              </span>
+            </div>
+            <p class="tw-text-gray-500 tw-text-sm tw-mb-1">
+              {{ activity.boardName }}
+            </p>
+            <p class="tw-text-xs tw-text-gray-400">
+              {{ getTimeAgo(activity.timestamp) }}
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="tw-p-6 tw-flex tw-items-center tw-justify-center tw-text-sm tw-text-gray-500"
+          *ngIf="!recentActivities.length"
+        >
+          No recent activities
+        </div>
+      </div>
+    </div> -->
+
     <!-- Recent personal Tasks -->
     <div
       class="tw-bg-white tw-rounded tw-shadow tw-border tw-border-gray-200 tw-h-fit"
@@ -309,7 +408,6 @@
             <p
               class="tw-text-gray-500 tw-text-sm tw-mt-1 tw-line-clamp-1 tw-overflow-hidden tw-text-ellipsis"
             >
-              <!-- {{ task?.board?.name || "N/A" }} -->
               • Due: {{ getTime(task.dueOn) }}
             </p>
           </div>
@@ -343,35 +441,6 @@
       </div>
 
       <div class="tw-divide-y tw-divide-gray-200 tw-min-h-[375px]">
-        <!-- <div class="tw-flex tw-items-center tw-gap-4 tw-p-6">
-          <div
-            class="tw-w-8 tw-h-8 tw-bg-green-600 tw-rounded tw-flex tw-items-center tw-justify-center"
-          >
-            <svg
-              class="tw-w-4 tw-h-4 tw-text-white"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-              ></path>
-            </svg>
-          </div>
-          <div class="tw-flex-1">
-            <div class="tw-font-medium tw-text-gray-900">
-              Complete Dashboard Design
-            </div>
-            <p class="tw-text-gray-500 tw-text-sm tw-mt-1">
-              Project Alpha • Due: Today
-            </p>
-          </div>
-          <span
-            class="tw-bg-green-100 tw-text-green-800 tw-px-2 tw-py-1 tw-rounded tw-text-xs tw-font-medium"
-            >Completed</span
-          >
-        </div> -->
-
         <div
           class="tw-flex tw-items-center tw-gap-4 tw-p-6"
           *ngFor="let task of dashboardStats.recentTeamTasks"
@@ -402,7 +471,6 @@
               title="{{ task?.board?.name || 'N/A' }}"
             >
               {{ task?.board?.name || "N/A" }}
-              <!-- • Due: Tomorrow -->
             </p>
           </div>
           <span
@@ -418,64 +486,6 @@
         >
           No recent tasks
         </div>
-
-        <!-- <div class="tw-flex tw-items-center tw-gap-4 tw-p-6">
-          <div
-            class="tw-w-8 tw-h-8 tw-bg-blue-600 tw-rounded tw-flex tw-items-center tw-justify-center"
-          >
-            <svg
-              class="tw-w-4 tw-h-4 tw-text-white"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-              <path
-                fill-rule="evenodd"
-                d="M4 5a2 2 0 012-2v1a2 2 0 002 2h8a2 2 0 002-2V3a2 2 0 012 2v6h-3a2 2 0 00-2 2v3H6a2 2 0 01-2-2V5zm8 8a2 2 0 012-2h3l-3 3v-1z"
-              ></path>
-            </svg>
-          </div>
-          <div class="tw-flex-1">
-            <div class="tw-font-medium tw-text-gray-900">
-              Documentation Update
-            </div>
-            <p class="tw-text-gray-500 tw-text-sm tw-mt-1">
-              Project Gamma • Due: Next Week
-            </p>
-          </div>
-          <span
-            class="tw-bg-blue-100 tw-text-blue-800 tw-px-2 tw-py-1 tw-rounded tw-text-xs tw-font-medium"
-            >Pending</span
-          >
-        </div>
-
-        <div class="tw-flex tw-items-center tw-gap-4 tw-p-6">
-          <div
-            class="tw-w-8 tw-h-8 tw-bg-purple-600 tw-rounded tw-flex tw-items-center tw-justify-center"
-          >
-            <svg
-              class="tw-w-4 tw-h-4 tw-text-white"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"
-              ></path>
-            </svg>
-          </div>
-          <div class="tw-flex-1">
-            <div class="tw-font-medium tw-text-gray-900">
-              UI Components Review
-            </div>
-            <p class="tw-text-gray-500 tw-text-sm tw-mt-1">
-              Project Delta • Due: Friday
-            </p>
-          </div>
-          <span
-            class="tw-bg-gray-100 tw-text-gray-800 tw-px-2 tw-py-1 tw-rounded tw-text-xs tw-font-medium"
-            >Pending</span
-          >
-        </div> -->
       </div>
     </div>
     
@@ -483,7 +493,7 @@
     <!-- Sidebar -->
     <div class="tw-space-y-6">
       <!-- Quick Actions -->
-      <div
+      <!-- <div
         class="tw-bg-white tw-rounded tw-shadow tw-border tw-border-gray-200"
       >
         <div class="tw-p-6 tw-border-b tw-border-gray-200">
@@ -532,80 +542,131 @@
             </div>
           </button>
         </div>
+      </div> -->
+    </div>
+  </div>
+
+  <!-- Employee Day-wise Task Details Table -->
+  <div class="tw-p-6 tw-bg-gray-50" *ngIf="taskPermissionsService.isAdminLevelPermission()">
+    <div class="tw-bg-white tw-rounded-lg tw-shadow tw-border tw-border-gray-200">
+      <div class="tw-flex tw-items-center tw-justify-between tw-p-6 tw-border-b tw-border-gray-200">
+        <h2 class="tw-text-xl tw-font-semibold tw-text-gray-900">
+          Employee Day-wise Task Details
+        </h2>
+        <div class="tw-flex tw-items-center tw-gap-4">
+          <label class="tw-text-sm tw-font-medium tw-text-gray-700">Select Date:</label>
+          <input
+            type="date"
+            [(ngModel)]="selectedDate"
+            (change)="onDateChange()"
+            class="tw-border tw-border-gray-300 tw-rounded-md tw-px-3 tw-py-2 tw-text-sm focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 focus:tw-border-transparent"
+          />
+        </div>
       </div>
 
-      <!-- Progress Overview -->
-      <!-- <div class="tw-bg-white tw-rounded tw-shadow tw-border tw-border-gray-200">
-            <div class="tw-p-6 tw-border-b tw-border-gray-200">
-                <h2 class="tw-text-lg tw-font-semibold tw-text-gray-900">Progress Overview</h2>
-            </div>
-            <div class="tw-p-6 tw-space-y-4">
-                <div>
-                    <div class="tw-flex tw-justify-between tw-text-sm tw-mb-2">
-                        <span class="tw-text-gray-600">Weekly Goal</span>
-                        <span class="tw-font-medium tw-text-gray-900">75%</span>
+      <div class="tw-overflow-x-auto">
+        <table class="tw-min-w-full tw-divide-y tw-divide-gray-200">
+          <thead class="tw-bg-gray-50">
+            <tr>
+              <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                Employee
+              </th>
+              <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                Today's Due Tasks
+              </th>
+              <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                Status-wise Tasks
+              </th>
+              <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                Completed
+              </th>
+              <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                Deleted
+              </th>
+              <!-- <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                Created Today
+              </th>
+              <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                Personal Tasks
+              </th>
+              <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-medium tw-text-gray-500 tw-uppercase tw-tracking-wider">
+                Total
+              </th> -->
+            </tr>
+          </thead>
+          <tbody class="tw-bg-white tw-divide-y tw-divide-gray-200">
+            <tr *ngFor="let employee of employeeTaskDetails" class="hover:tw-bg-gray-50">
+              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                <div class="tw-flex tw-items-center">
+                  <div class="tw-flex-shrink-0 tw-h-10 tw-w-10">
+                    <img
+                      class="tw-h-10 tw-w-10 tw-rounded-full tw-object-cover"
+                      [src]="imageBaseUrl + employee.employee.profileImage"
+                      [alt]="employee.employee.name"
+                                             onerror="this.src='/assets/images/avatar.png'"
+                    />
+                  </div>
+                  <div class="tw-ml-4">
+                    <div class="tw-text-sm tw-font-medium tw-text-gray-900">
+                      {{ employee.employee.name }}
                     </div>
-                    <div class="tw-w-full tw-bg-gray-200 tw-rounded tw-h-2">
-                        <div class="tw-bg-blue-600 tw-h-2 tw-rounded tw-w-3/4"></div>
+                    <div class="tw-text-sm tw-text-gray-500">
+                      {{ employee.employee.role }}
                     </div>
+                  </div>
                 </div>
+              </td>
+              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                <span class="tw-text-sm tw-text-gray-900 tw-font-medium">
+                  {{ employee.todaysDueTasksCount }}
+                </span>
+              </td>
+              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                <div class="tw-flex tw-flex-wrap tw-gap-1">
+                  <span *ngFor="let status of ['normal', 'ready', 'in progress', 'need review', 'need rework', 'on hold', 'blocked']"
+                        class="tw-px-2 tw-py-1 tw-text-xs tw-rounded-full"
+                        [class]="getStatusColorClass(status)">
+                    {{ status }}: {{ getStatusCount(employee.statusWiseTasks, status) }}
+                  </span>
+                </div>
+              </td>
+              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                <span class="tw-text-sm tw-text-green-600 tw-font-medium">
+                  {{ employee.completedTaskCount }}
+                </span>
+              </td>
+              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                <span class="tw-text-sm tw-text-red-600 tw-font-medium">
+                  {{ employee.deletedTaskCount }}
+                </span>
+              </td>
+              <!-- <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                <span class="tw-text-sm tw-text-blue-600 tw-font-medium">
+                  {{ employee.tasksCreatedByEmployee }}
+                </span>
+              </td>
+              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                <div class="tw-text-sm tw-text-gray-900">
+                  <div>Due: {{ employee.personalTasksCount }}</div>
+                  <div class="tw-text-green-600">Completed: {{ employee.personalCompletedCount }}</div>
+                </div>
+              </td>
+              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                <span class="tw-text-sm tw-text-gray-900 tw-font-bold">
+                  {{ employee.totalTasksForToday }}
+                </span>
+              </td> -->
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-                <div>
-                    <div class="tw-flex tw-justify-between tw-text-sm tw-mb-2">
-                        <span class="tw-text-gray-600">Monthly Target</span>
-                        <span class="tw-font-medium tw-text-gray-900">60%</span>
-                    </div>
-                    <div class="tw-w-full tw-bg-gray-200 tw-rounded tw-h-2">
-                        <div class="tw-bg-green-600 tw-h-2 tw-rounded tw-w-3/5"></div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="tw-flex tw-justify-between tw-text-sm tw-mb-2">
-                        <span class="tw-text-gray-600">Project Alpha</span>
-                        <span class="tw-font-medium tw-text-gray-900">90%</span>
-                    </div>
-                    <div class="tw-w-full tw-bg-gray-200 tw-rounded tw-h-2">
-                        <div class="tw-bg-purple-600 tw-h-2 tw-rounded" style="width: 90%"></div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-
-      <!-- Recent Activity -->
-      <!-- <div class="tw-bg-white tw-rounded tw-shadow tw-border tw-border-gray-200">
-            <div class="tw-p-6 tw-border-b tw-border-gray-200">
-                <h2 class="tw-text-lg tw-font-semibold tw-text-gray-900">Recent Activity</h2>
-            </div>
-            <div class="tw-p-6 tw-space-y-3">
-                <div class="tw-flex tw-items-start tw-gap-3">
-                    <div class="tw-w-2 tw-h-2 tw-bg-green-600 tw-rounded-full tw-mt-2"></div>
-                    <div class="tw-text-sm">
-                        <p class="tw-text-gray-900 tw-font-medium">Task completed</p>
-                        <p class="tw-text-gray-500">Dashboard design finished</p>
-                        <p class="tw-text-xs tw-text-gray-400 tw-mt-1">2 hours ago</p>
-                    </div>
-                </div>
-                
-                <div class="tw-flex tw-items-start tw-gap-3">
-                    <div class="tw-w-2 tw-h-2 tw-bg-blue-600 tw-rounded-full tw-mt-2"></div>
-                    <div class="tw-text-sm">
-                        <p class="tw-text-gray-900 tw-font-medium">New project created</p>
-                        <p class="tw-text-gray-500">Mobile app redesign</p>
-                        <p class="tw-text-xs tw-text-gray-400 tw-mt-1">4 hours ago</p>
-                    </div>
-                </div>
-                
-                <div class="tw-flex tw-items-start tw-gap-3">
-                    <div class="tw-w-2 tw-h-2 tw-bg-orange-600 tw-rounded-full tw-mt-2"></div>
-                    <div class="tw-text-sm">
-                        <p class="tw-text-gray-900 tw-font-medium">Team member added</p>
-                        <p class="tw-text-gray-500">John joined Project Alpha</p>
-                        <p class="tw-text-xs tw-text-gray-400 tw-mt-1">1 day ago</p>
-                    </div>
-                </div>
-            </div>
-        </div> -->
+      <div
+        class="tw-p-6 tw-flex tw-items-center tw-justify-center tw-text-sm tw-text-gray-500"
+        *ngIf="!employeeTaskDetails.length"
+      >
+        No employee data available for the selected date
+      </div>
     </div>
   </div>
 </div>

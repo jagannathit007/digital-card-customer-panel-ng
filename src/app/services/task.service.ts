@@ -44,6 +44,75 @@ export class TaskService {
     }
   }
 
+  async getRecentActivities(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.TASK_DASHBOARD_RECENT_ACTIVITIES,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async getRecentlyCreatedTasks(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.TASK_DASHBOARD_RECENTLY_CREATED_TASKS,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
+  async getEmployeeDayWiseTasks(data: any) {
+    try {
+      this.getHeaders();
+      let response = await this.apiManager.request(
+        {
+          url: apiEndpoints.TASK_DASHBOARD_EMPLOYEE_DAY_WISE_TASKS,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status == 200 && response.data) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return null;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return null;
+    }
+  }
+
   async GetAllMembers(data: any) {
     try {
       this.getHeaders();
