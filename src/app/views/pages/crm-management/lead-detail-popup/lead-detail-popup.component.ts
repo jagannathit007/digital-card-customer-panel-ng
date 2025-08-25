@@ -53,6 +53,17 @@ interface category {
   isDeleted: boolean;
 }
 
+interface Followup {
+  _id: string;
+  leadId: string;
+  description: string;
+  type: 'call' | 'email' | 'whatsapp';
+  date: string;
+  time?: string; // Optional time field
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface Lead {
   _id: string;
   title: string;
@@ -62,6 +73,7 @@ interface Lead {
   position: number;
   assignedTo: LeadMember[];
   attachments: LeadAttachment[];
+  followups?: Followup[];
   category: any;
   priority: 'cold' | 'warm' | 'hot';
   closingDate: string | null;
@@ -157,9 +169,20 @@ export class LeadDetailPopupComponent implements OnInit, OnDestroy {
   };
 
   // UI State
-  currentTab: 'description' | 'attachments' = 'description';
+  currentTab: 'description' | 'attachments' | 'followups' = 'description';
   isEditingTitle = false;
   isEditingDescription = false;
+  
+  // Followup state
+  isAddingFollowup = false;
+  isEditingFollowup = false;
+  editingFollowupId: string | null = null;
+  newFollowup = {
+    description: '',
+    type: 'call' as 'call' | 'email' | 'whatsapp',
+    date: new Date().toISOString().split('T')[0],
+    time: new Date().toISOString().split('T')[1].substring(0, 5) // Default to current time
+  };
   isEditingContactDetails = false;
   isEditingAmount = false;
   isEditingProduct = false;
@@ -397,6 +420,7 @@ export class LeadDetailPopupComponent implements OnInit, OnDestroy {
           updatedAt: response.updatedAt || '',
           wonAt: response.wonAt || null,
           lostAt: response.lostAt || null,
+          followups: response.followups || [],
         };
 
         this.createBackup();
@@ -826,7 +850,177 @@ export class LeadDetailPopupComponent implements OnInit, OnDestroy {
 
   // Tab methods
   setTab(tab: string): void {
-    this.currentTab = tab as 'description' | 'attachments';
+    this.currentTab = tab as 'description' | 'attachments' | 'followups';
+  }
+
+  // Followup methods
+  startAddingFollowup(): void {
+    this.isAddingFollowup = true;
+    this.newFollowup = {
+      description: '',
+      type: 'call',
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toISOString().split('T')[1].substring(0, 5) // Default to current time
+    };
+  }
+
+  cancelAddingFollowup(): void {
+    this.isAddingFollowup = false;
+    this.newFollowup = {
+      description: '',
+      type: 'call',
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toISOString().split('T')[1].substring(0, 5) // Default to current time
+    };
+  }
+
+  async addFollowup(): Promise<void> {
+    if (!this.newFollowup.description.trim()) {
+      await swalHelper.showToast('Description is required', 'warning');
+      return;
+    }
+
+    // Date is optional, but if date is provided, time is required
+    if (this.newFollowup.date && !this.newFollowup.time) {
+      await swalHelper.showToast('Time is required when date is provided', 'warning');
+      return;
+    }
+
+    if (!this.newFollowup.date && this.newFollowup.time) {
+      await swalHelper.showToast('Date is required when time is provided', 'warning');
+      return;
+    }
+
+    const result = await this.crmService.createFollowup({
+      leadId: this.leadId,
+      description: this.newFollowup.description.trim(),
+      type: this.newFollowup.type,
+      date: this.newFollowup.date,
+      time: this.newFollowup.time
+    });
+
+    if (result) {
+      this.lead.followups = this.lead.followups || [];
+      this.lead.followups.unshift(result);
+      this.isAddingFollowup = false;
+      this.newFollowup = {
+        description: '',
+        type: 'call',
+        date: new Date().toISOString().split('T')[0],
+        time: new Date().toISOString().split('T')[1].substring(0, 5) // Default to current time
+      };
+    }
+  }
+
+  startEditingFollowup(followup: Followup): void {
+    this.isEditingFollowup = true;
+    this.editingFollowupId = followup._id;
+    this.newFollowup = {
+      description: followup.description,
+      type: followup.type,
+      date: new Date(followup.date).toISOString().split('T')[0],
+      time: followup.time || new Date(followup.date).toISOString().split('T')[1].substring(0, 5)
+    };
+  }
+
+  cancelEditingFollowup(): void {
+    this.isEditingFollowup = false;
+    this.editingFollowupId = null;
+    this.newFollowup = {
+      description: '',
+      type: 'call',
+      date: new Date().toISOString().split('T')[0],
+      time: new Date().toISOString().split('T')[1].substring(0, 5) // Default to current time
+    };
+  }
+
+  async updateFollowup(): Promise<void> {
+    if (!this.editingFollowupId) return;
+
+    if (!this.newFollowup.description.trim()) {
+      await swalHelper.showToast('Description is required', 'warning');
+      return;
+    }
+
+    // Date is optional, but if date is provided, time is required
+    if (this.newFollowup.date && !this.newFollowup.time) {
+      await swalHelper.showToast('Time is required when date is provided', 'warning');
+      return;
+    }
+
+    if (!this.newFollowup.date && this.newFollowup.time) {
+      await swalHelper.showToast('Date is required when time is provided', 'warning');
+      return;
+    }
+
+    const result = await this.crmService.updateFollowup({
+      followupId: this.editingFollowupId,
+      description: this.newFollowup.description.trim(),
+      type: this.newFollowup.type,
+      date: this.newFollowup.date,
+      time: this.newFollowup.time
+    });
+
+    if (result) {
+      let index = -1;
+      
+      for(let abc of this.lead.followups || []){
+        if(abc._id == this.editingFollowupId){
+          index = this.lead.followups ? this.lead.followups.indexOf(abc) : -1;
+          break;
+        }
+      }
+
+      if (index !== -1 && this.lead.followups) {
+        this.lead.followups[index] = result;
+      }
+      this.isEditingFollowup = false;
+      this.editingFollowupId = null;
+      this.newFollowup = {
+        description: '',
+        type: 'call',
+        date: new Date().toISOString().split('T')[0],
+        time: new Date().toISOString().split('T')[1].substring(0, 5) // Default to current time
+      };
+    }
+  }
+
+  async deleteFollowup(followupId: string): Promise<void> {
+    // const confirmed = await swalHelper.confirmation(
+    //   'Are you sure you want to delete this followup?',
+    //   'This action cannot be undone.'
+    // );
+
+    const confirmed = await swalHelper.confirmation(
+      'Are you sure?',
+      'This will soft delete the employee if they have attendance records, or hard delete otherwise.',
+      'warning'
+    );
+
+    if (confirmed.isConfirmed) {
+      const result = await this.crmService.deleteFollowup({ followupId });
+      if (result) {
+        this.lead.followups = this.lead.followups?.filter(f => f._id !== followupId) || [];
+      }
+    }
+  }
+
+  getFollowupTypeIcon(type: string): string {
+    switch (type) {
+      case 'call': return 'fas fa-phone';
+      case 'email': return 'fas fa-envelope';
+      case 'whatsapp': return 'fab fa-whatsapp';
+      default: return 'fas fa-phone';
+    }
+  }
+
+  getFollowupTypeColor(type: string): string {
+    switch (type) {
+      case 'call': return 'tw-bg-blue-100 tw-text-blue-800';
+      case 'email': return 'tw-bg-green-100 tw-text-green-800';
+      case 'whatsapp': return 'tw-bg-green-100 tw-text-green-800';
+      default: return 'tw-bg-gray-100 tw-text-gray-800';
+    }
   }
 
   // Utility methods
@@ -842,6 +1036,22 @@ export class LeadDetailPopupComponent implements OnInit, OnDestroy {
       day: 'numeric',
       year: 'numeric',
     });
+  }
+
+  formatDateTime(dateString: string, timeString?: string): string {
+    if (!dateString) return '--';
+    const date = new Date(dateString);
+    const dateStr = date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+    
+    if (timeString) {
+      return `${dateStr} at ${timeString}`;
+    }
+    
+    return dateStr;
   }
 
   @HostListener('document:click', ['$event'])
@@ -906,6 +1116,10 @@ export class LeadDetailPopupComponent implements OnInit, OnDestroy {
 
   trackByMemberId(index: number, member: LeadMember): string {
     return member._id;
+  }
+
+  trackByFollowupId(index: number, followup: Followup): string {
+    return followup._id;
   }
 
   // Attachment methods

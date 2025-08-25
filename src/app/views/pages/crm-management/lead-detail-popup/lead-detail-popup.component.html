@@ -383,7 +383,7 @@
       <div class="tw-border-b tw-border-gray-200 tw-bg-white">
         <nav class="tw-flex tw-space-x-0">
           <button
-            *ngFor="let tab of ['description', 'attachments']; let i = index"
+            *ngFor="let tab of ['description', 'attachments', 'followups']; let i = index"
             (click)="setTab(tab)"
             [class.tw-border-blue-500]="currentTab === tab"
             [class.tw-text-blue-600]="currentTab === tab"
@@ -396,6 +396,12 @@
               class="tw-ml-2 tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-px-2 tw-py-1 tw-rounded-full"
             >
               {{ lead.attachments.length || 0 }}
+            </span>
+            <span
+              *ngIf="tab === 'followups'"
+              class="tw-ml-2 tw-bg-gray-100 tw-text-gray-600 tw-text-xs tw-px-2 tw-py-1 tw-rounded-full"
+            >
+              {{ lead.followups?.length || 0 }}
             </span>
           </button>
         </nav>
@@ -973,6 +979,186 @@
                       style="width: 100%"
                     ></div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Followups Tab -->
+        <div
+          *ngIf="currentTab === 'followups'"
+          class="tw-h-full tw-flex tw-flex-col"
+        >
+          <div class="tw-p-5 md:tw-p-6 tw-h-full tw-flex tw-flex-col">
+            <!-- Followups List -->
+            <div class="tw-space-y-4 tw-mb-6 tw-flex-1 tw-overflow-y-auto">
+              <!-- No Followups State -->
+              <div
+                *ngIf="!lead.followups || lead.followups.length === 0"
+                class="tw-text-center tw-py-12"
+              >
+                <div
+                  class="tw-w-16 tw-h-16 tw-bg-gray-100 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mx-auto tw-mb-4"
+                >
+                  <i class="fas fa-phone tw-text-gray-400 tw-text-xl"></i>
+                </div>
+                <h3
+                  class="tw-text-lg tw-font-semibold tw-text-gray-900 tw-mb-2"
+                >
+                  No followups yet
+                </h3>
+                <p class="tw-text-gray-500">
+                  Add followups to track your communication with this lead.
+                </p>
+              </div>
+
+              <!-- Followup Items -->
+              <div
+                *ngFor="let followup of lead.followups; trackBy: trackByFollowupId"
+                class="tw-group tw-bg-white tw-border-2 tw-border-gray-200 tw-rounded-xl tw-p-4 hover:tw-shadow-md tw-transition-all tw-duration-300"
+              >
+                <div class="tw-flex tw-items-start tw-justify-between">
+                  <div class="tw-flex tw-items-start tw-space-x-4 tw-flex-1 tw-min-w-0">
+                    <!-- Followup Icon -->
+                    <div
+                      class="tw-w-12 tw-h-12 tw-rounded-xl tw-flex tw-items-center tw-justify-center tw-flex-shrink-0 tw-mt-1"
+                      [ngClass]="getFollowupTypeColor(followup.type)"
+                    >
+                      <i
+                        [class]="getFollowupTypeIcon(followup.type) + ' tw-text-lg'"
+                      ></i>
+                    </div>
+
+                    <!-- Followup Info -->
+                    <div class="tw-flex-1 tw-min-w-0">
+                      <div class="tw-flex tw-items-center tw-space-x-2 tw-mb-2">
+                        <span
+                          class="tw-text-xs tw-font-semibold tw-px-2 tw-py-1 tw-rounded-full tw-capitalize"
+                          [ngClass]="getFollowupTypeColor(followup.type)"
+                        >
+                          {{ followup.type }}
+                        </span>
+                        <span class="tw-text-xs tw-text-gray-500">
+                          {{ formatDateTime(followup.date, followup.time) }}
+                        </span>
+                      </div>
+                      <p class="tw-text-sm tw-text-gray-900 tw-leading-relaxed">
+                        {{ followup.description }}
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Actions -->
+                  <div
+                    class="tw-flex tw-items-center tw-space-x-2 tw-opacity-0 group-hover:tw-opacity-100 tw-transition-opacity tw-duration-300"
+                  >
+                    <button
+                      type="button"
+                      (click)="startEditingFollowup(followup)"
+                      class="tw-p-2 tw-text-gray-400 hover:tw-text-blue-600 hover:tw-bg-blue-50 tw-rounded-lg tw-transition-all tw-duration-300"
+                    >
+                      <i class="fas fa-edit tw-text-sm"></i>
+                    </button>
+
+                    <button
+                      type="button"
+                      (click)="deleteFollowup(followup._id)"
+                      class="tw-p-2 tw-text-gray-400 hover:tw-text-red-600 hover:tw-bg-red-50 tw-rounded-lg tw-transition-all tw-duration-300"
+                    >
+                      <i class="fas fa-trash tw-text-sm"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Add Followup Form -->
+            <div class="tw-border-t tw-border-gray-200 tw-pt-6">
+              <div *ngIf="!isAddingFollowup && !isEditingFollowup" class="tw-text-center">
+                <button
+                  type="button"
+                  (click)="startAddingFollowup()"
+                  class="tw-inline-flex tw-items-center tw-space-x-2 tw-px-6 tw-py-3 tw-bg-blue-600 tw-text-white tw-text-sm tw-font-semibold tw-rounded-xl hover:tw-bg-blue-700 tw-transition-all tw-duration-300 tw-shadow-md hover:tw-shadow-lg"
+                >
+                  <i class="fas fa-plus tw-text-sm"></i>
+                  <span>Add Followup</span>
+                </button>
+              </div>
+
+              <!-- Add/Edit Followup Form -->
+              <div *ngIf="isAddingFollowup || isEditingFollowup" class="tw-space-y-4">
+                <div class="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-4">
+                  <!-- Type Selection -->
+                  <div>
+                    <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700 tw-mb-2">
+                      Type
+                    </label>
+                    <select
+                      [(ngModel)]="newFollowup.type"
+                      class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-xl tw-outline-none focus:tw-border-blue-500 tw-transition-all tw-duration-300"
+                    >
+                      <option value="call">Call</option>
+                      <option value="email">Email</option>
+                      <option value="whatsapp">WhatsApp</option>
+                    </select>
+                  </div>
+
+                  <!-- Date Selection -->
+                  <div>
+                    <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700 tw-mb-2">
+                      Date <span class="tw-text-gray-500">(Optional)</span>
+                    </label>
+                    <input
+                      type="date"
+                      [(ngModel)]="newFollowup.date"
+                      class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-xl tw-outline-none focus:tw-border-blue-500 tw-transition-all tw-duration-300"
+                    />
+                  </div>
+
+                  <!-- Time Selection -->
+                  <div>
+                    <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700 tw-mb-2">
+                      Time <span class="tw-text-gray-500">(Required if date selected)</span>
+                    </label>
+                    <input
+                      type="time"
+                      [(ngModel)]="newFollowup.time"
+                      class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-xl tw-outline-none focus:tw-border-blue-500 tw-transition-all tw-duration-300"
+                    />
+                  </div>
+                </div>
+
+                <!-- Description -->
+                <div>
+                  <label class="tw-block tw-text-sm tw-font-semibold tw-text-gray-700 tw-mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    [(ngModel)]="newFollowup.description"
+                    rows="3"
+                    placeholder="Enter followup details..."
+                    class="tw-w-full tw-px-4 tw-py-3 tw-border-2 tw-border-gray-200 tw-rounded-xl tw-outline-none focus:tw-border-blue-500 tw-transition-all tw-duration-300 tw-resize-none"
+                  ></textarea>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="tw-flex tw-justify-end tw-space-x-3">
+                  <button
+                    type="button"
+                    (click)="isAddingFollowup ? cancelAddingFollowup() : cancelEditingFollowup()"
+                    class="tw-px-5 tw-py-2.5 tw-bg-gray-100 tw-text-gray-700 tw-text-sm tw-font-semibold tw-rounded-xl hover:tw-bg-gray-200 tw-transition-all tw-duration-300 tw-shadow-sm"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    (click)="isAddingFollowup ? addFollowup() : updateFollowup()"
+                    [disabled]="!newFollowup.description.trim() || (newFollowup.date && !newFollowup.time) || (!newFollowup.date && newFollowup.time)"
+                    class="tw-px-5 tw-py-2.5 tw-bg-blue-600 tw-text-white tw-text-sm tw-font-semibold tw-rounded-xl hover:tw-bg-blue-700 disabled:tw-bg-gray-300 disabled:tw-cursor-not-allowed tw-transition-all tw-duration-300 tw-shadow-md hover:tw-shadow-lg"
+                  >
+                    {{ isAddingFollowup ? 'Add Followup' : 'Update Followup' }}
+                  </button>
                 </div>
               </div>
             </div>

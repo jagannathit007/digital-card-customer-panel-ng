@@ -307,6 +307,102 @@ export class CrmService {
     }
   }
 
+  // Followup methods
+  async createFollowup(data: any) {
+    try {
+      this.getHeaders();
+      const response = await this.apiManager.request(
+        {
+          url: `${this.baseURL}/followup/create`,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status === 200 && response.data) {
+        swalHelper.showToast(response.message, 'success');
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
+  async getFollowupsByLeadId(data: any) {
+    try {
+      this.getHeaders();
+      const response = await this.apiManager.request(
+        {
+          url: `${this.baseURL}/followup/get-by-lead`,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status === 200 && response.data) {
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
+  async updateFollowup(data: any) {
+    try {
+      this.getHeaders();
+      const response = await this.apiManager.request(
+        {
+          url: `${this.baseURL}/followup/update`,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status === 200 && response.data) {
+        swalHelper.showToast(response.message, 'success');
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
+  async deleteFollowup(data: any) {
+    try {
+      this.getHeaders();
+      const response = await this.apiManager.request(
+        {
+          url: `${this.baseURL}/followup/delete`,
+          method: 'POST',
+        },
+        data,
+        this.headers
+      );
+      if (response.status === 200 && response.data) {
+        swalHelper.showToast(response.message, 'success');
+        return response.data;
+      } else {
+        swalHelper.showToast(response.message, 'warning');
+        return false;
+      }
+    } catch (err) {
+      swalHelper.showToast('Something went wrong!', 'error');
+      return false;
+    }
+  }
+
   async updateLeadTitle(data: any) {
     try {
       this.getHeaders();
