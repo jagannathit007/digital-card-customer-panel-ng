@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { swalHelper } from 'src/app/core/constants/swal-helper';
 import { ModalService } from 'src/app/core/utilities/modal';
 import { IdeaBoardService } from 'src/app/services/idea-board.service';
 declare var $: any;
@@ -216,15 +217,21 @@ export class IdeaBoardComponent implements OnInit {
   }
 
   async onDeleteIdea(id: string) {
-    if (confirm('Are you sure you want to delete this idea?')) {
-      try {
-        const response = await this.ideaBoardService.deleteIdea({ ideaId: id });
-        if (response) {
-          await this.loadIdeas();
-        }
-      } catch (error) {
-        console.error('Error deleting idea:', error);
+    const confirmed = await swalHelper.confirmation(
+      'Are you sure?',
+      "You won't be able to revert this.",
+      'warning'
+    );
+
+    if (!confirmed.isConfirmed) return;
+
+    try {
+      const response = await this.ideaBoardService.deleteIdea({ ideaId: id });
+      if (response) {
+        await this.loadIdeas();
       }
+    } catch (error) {
+      console.error('Error deleting idea:', error);
     }
   }
 
@@ -335,22 +342,24 @@ export class IdeaBoardComponent implements OnInit {
   }
 
   async onDeleteCategory(categoryId: string) {
-    if (
-      confirm(
-        'Are you sure you want to delete this category? Ideas in this category will become uncategorized.'
-      )
-    ) {
-      try {
-        const response = await this.ideaBoardService.deleteIdeaCategory({
-          categoryId,
-        });
-        if (response) {
-          await this.loadCategoryList();
-          await this.loadCategories(); // Refresh dropdown categories
-        }
-      } catch (error) {
-        console.error('Error deleting category:', error);
+    const confirmed = await swalHelper.confirmation(
+      'Are you sure?',
+      "You won't be able to revert this.",
+      'warning'
+    );
+
+    if (!confirmed.isConfirmed) return;
+
+    try {
+      const response = await this.ideaBoardService.deleteIdeaCategory({
+        categoryId,
+      });
+      if (response) {
+        await this.loadCategoryList();
+        await this.loadCategories(); // Refresh dropdown categories
       }
+    } catch (error) {
+      console.error('Error deleting category:', error);
     }
   }
 
