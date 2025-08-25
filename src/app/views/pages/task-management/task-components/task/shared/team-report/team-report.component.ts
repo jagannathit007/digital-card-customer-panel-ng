@@ -335,6 +335,18 @@ isBoardOpen(boardName: string): boolean {
     return Object.values(this.reportData.tasks[boardName]).reduce((total, tasks) => total + tasks.length, 0);
   }
 
+  getTotalTaskCountForMember(): number {
+    if (!this.reportData || !this.selectedMemberName || this.selectedMemberId === 'all') return 0;
+    
+    let totalCount = 0;
+    Object.keys(this.reportData.tasks).forEach(boardName => {
+      if (this.reportData!.tasks[boardName][this.selectedMemberName]) {
+        totalCount += this.reportData!.tasks[boardName][this.selectedMemberName].length;
+      }
+    });
+    return totalCount;
+  }
+
   formatDateForExcel(dateString: string): string {
     if (!dateString || dateString === 'No due date' || dateString === 'No created date' || dateString === 'No') {
       return dateString || 'N/A';
@@ -371,6 +383,13 @@ isBoardOpen(boardName: string): boolean {
       
       let currentRow = 3;
       
+      // If specific member is selected, show member header first
+      if (this.selectedMemberId !== 'all' && this.selectedMemberName) {
+        worksheetData.push([`👤 ${this.selectedMemberName.toUpperCase()} (${this.getTotalTaskCountForMember()} total tasks)`]);
+        worksheetData.push([]);
+        currentRow += 2;
+      }
+      
       // Process data board-wise (frontend jaisa)
       Object.keys(this.reportData.tasks).forEach((boardName, boardIndex) => {
         // Board header - frontend jaisa blue header
@@ -384,9 +403,12 @@ isBoardOpen(boardName: string): boolean {
             return;
           }
           
-          // Member header
-          worksheetData.push([`👤 ${memberName} (${this.reportData!.tasks[boardName][memberName].length} tasks)`]);
-          worksheetData.push([]);
+          // Member header (only show if all members are selected)
+          if (this.selectedMemberId === 'all') {
+            worksheetData.push([`👤 ${memberName} (${this.reportData!.tasks[boardName][memberName].length} tasks)`]);
+            worksheetData.push([]);
+            currentRow += 2;
+          }
           
           // Table headers for this member
           worksheetData.push([
@@ -484,7 +506,21 @@ isBoardOpen(boardName: string): boolean {
               }
             };
           }
-          // Member headers
+          // Member headers (main member header when specific member is selected)
+          else if (cell.v && typeof cell.v === 'string' && cell.v.includes('👤') && cell.v.includes('total tasks')) {
+            cell.s = {
+              font: { bold: true, sz: 14, color: { rgb: "7C3AED" } },
+              fill: { fgColor: { rgb: "F3E8FF" } },
+              alignment: { horizontal: "left", vertical: "center" },
+              border: {
+                top: { style: "medium", color: { rgb: "7C3AED" } },
+                bottom: { style: "medium", color: { rgb: "7C3AED" } },
+                left: { style: "medium", color: { rgb: "7C3AED" } },
+                right: { style: "medium", color: { rgb: "7C3AED" } }
+              }
+            };
+          }
+          // Member headers (individual member headers when all members are selected)
           else if (cell.v && typeof cell.v === 'string' && cell.v.includes('👤')) {
             cell.s = {
               font: { bold: true, sz: 12, color: { rgb: "374151" } },

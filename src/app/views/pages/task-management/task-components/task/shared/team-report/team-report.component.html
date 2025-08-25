@@ -233,165 +233,264 @@
 
     <!-- Report Data - Modern Table Design -->
     <div *ngIf="!reportError && reportData && getObjectKeys(reportData.tasks).length > 0">
-      <!-- Board-wise Tasks - Accordion Style -->
-<div *ngFor="let boardName of getObjectKeys(reportData.tasks)" class="tw-border-b tw-border-gray-200 tw-last:border-b-0">
-  <!-- Board Header with Gradient Background - Now clickable -->
-  <div 
-    class="tw-bg-gradient-to-r tw-from-blue-600 tw-to-blue-500 tw-px-6 tw-py-5 tw-cursor-pointer"
-    (click)="toggleBoardAccordion(boardName)"
-  >
-    <div class="tw-flex tw-items-center tw-justify-between">
-      <h4 class="tw-text-xl tw-font-bold tw-text-white tw-flex tw-items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
-        </svg>
-        {{ boardName }}
-      </h4>
-      <div class="tw-flex tw-items-center">
-        <span class="tw-text-sm tw-font-medium tw-text-blue-100 tw-bg-white/20 tw-px-3 tw-py-1 tw-rounded-full tw-mr-3">
-          {{ getBoardTaskCount(boardName) }} tasks
-        </span>
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          class="tw-h-5 tw-w-5 tw-text-white tw-transition-transform tw-duration-300" 
-          fill="none" 
-          viewBox="0 0 24 24" 
-          stroke="currentColor"
-          [class.tw-rotate-180]="isBoardOpen(boardName)"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-        </svg>
+      <!-- Member Header - Show when specific member is selected -->
+      <div *ngIf="selectedMemberId !== 'all' && selectedMemberName" class="tw-bg-gradient-to-r tw-from-purple-600 tw-to-purple-500 tw-px-6 tw-py-5 tw-mb-6 tw-rounded-t-xl">
+        <div class="tw-flex tw-items-center tw-justify-between">
+          <h3 class="tw-text-2xl tw-font-bold tw-text-white tw-flex tw-items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-6 tw-w-6 tw-mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            {{ selectedMemberName }}
+          </h3>
+          <div class="tw-flex tw-items-center">
+            <span class="tw-text-sm tw-font-medium tw-text-purple-100 tw-bg-white/20 tw-px-3 tw-py-1 tw-rounded-full">
+              {{ getTotalTaskCountForMember() }} total tasks
+            </span>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Member-wise Tasks - Card Style - With Animation -->
-  <div 
-    *ngIf="isBoardOpen(boardName)"
-    [@slideInOut] 
-    class="tw-py-5 tw-px-6 tw-border-b tw-border-gray-100 tw-bg-gray-50/50"
-  >
-    <!-- Rest of your member/task content remains the same -->
-    <div *ngFor="let memberName of getObjectKeys(reportData.tasks[boardName])" class="tw-mb-6 tw-last:mb-0">
-      <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
-        <h5 class="tw-text-lg tw-font-semibold tw-text-gray-800 tw-flex tw-items-center">
-          <span class="tw-inline-flex tw-items-center tw-justify-center tw-w-8 tw-h-8 tw-mr-3 tw-bg-blue-100 tw-text-blue-800 tw-rounded-full">
-            {{ memberName.charAt(0) }}
-          </span>
-          {{ memberName }}
-        </h5>
-        <span class="tw-text-sm tw-font-medium tw-text-gray-600 tw-bg-gray-100 tw-px-3 tw-py-1 tw-rounded-full">
-          {{ reportData.tasks[boardName][memberName].length }} tasks
-        </span>
-      </div>
-      
-      <!-- Tasks Table - Modern Design -->
-      <div class="tw-overflow-x-auto tw-rounded-lg tw-border tw-border-gray-200 tw-shadow-sm">
-        <table class="tw-w-full tw-text-sm tw-bg-white">
-          <!-- Table content remains the same -->
-          <thead class="tw-bg-gray-50">
-            <tr>
-              <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Task Title</th>
-              <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Column</th>
-              <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Status</th>
-              <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Due Date</th>
-              <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Created At</th>
-              <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Completed</th>
-              <!-- <th class="tw-px-6 tw-py-4 tw-text-center tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">
-                <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                </svg>
-              </th>
-              <th class="tw-px-6 tw-py-4 tw-text-center tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">
-                <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
-              </th> -->
-            </tr>
-          </thead>
-          <tbody class="tw-divide-y tw-divide-gray-200">
-            <tr 
-              *ngFor="let task of reportData.tasks[boardName][memberName]; trackBy: trackByTaskId; let i = index" 
-              class="tw-hover:bg-blue-50/50 tw-transition-colors tw-duration-150"
-            >
-              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
-                <div class="tw-flex tw-items-center">
-                  <div class="tw-flex-shrink-0 tw-h-10 tw-w-10 tw-rounded tw-bg-gray-100 tw-flex tw-items-center tw-justify-center tw-mr-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                  </div>
-                  <div class="tw-min-w-0 tw-flex-1 tw-px-2 tw-py-1 tw-truncate">
-                    <div class="tw-font-semibold tw-text-gray-900 hover:tw-text-blue-600 hover:tw-underline hover:tw-cursor-pointer" (click)="redirectToTask(task)">{{ task.taskTitle }}</div>
-                    <div>
-                      <span *ngIf="task.commentCount > 0">
-                        <i class="ri-message-2-line"></i>
+      <!-- Board-wise Tasks - Accordion Style -->
+      <div *ngFor="let boardName of getObjectKeys(reportData.tasks)" class="tw-border-b tw-border-gray-200 tw-last:border-b-0">
+        <!-- Board Header with Gradient Background - Now clickable -->
+        <div 
+          class="tw-bg-gradient-to-r tw-from-blue-600 tw-to-blue-500 tw-px-6 tw-py-5 tw-cursor-pointer"
+          (click)="toggleBoardAccordion(boardName)"
+        >
+          <div class="tw-flex tw-items-center tw-justify-between">
+            <h4 class="tw-text-xl tw-font-bold tw-text-white tw-flex tw-items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+              </svg>
+              {{ boardName }}
+            </h4>
+            <div class="tw-flex tw-items-center">
+              <span class="tw-text-sm tw-font-medium tw-text-blue-100 tw-bg-white/20 tw-px-3 tw-py-1 tw-rounded-full tw-mr-3">
+                {{ getBoardTaskCount(boardName) }} tasks
+              </span>
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                class="tw-h-5 tw-w-5 tw-text-white tw-transition-transform tw-duration-300" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+                [class.tw-rotate-180]="isBoardOpen(boardName)"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Member-wise Tasks - Card Style - With Animation -->
+        <div 
+          *ngIf="isBoardOpen(boardName)"
+          [@slideInOut] 
+          class="tw-py-5 tw-px-6 tw-border-b tw-border-gray-100 tw-bg-gray-50/50"
+        >
+          <!-- When specific member is selected, show only that member's tasks -->
+          <div *ngIf="selectedMemberId !== 'all'" class="tw-mb-6 tw-last:mb-0">
+            <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+              <h5 class="tw-text-lg tw-font-semibold tw-text-gray-800 tw-flex tw-items-center">
+                <span class="tw-inline-flex tw-items-center tw-justify-center tw-w-8 tw-h-8 tw-mr-3 tw-bg-purple-100 tw-text-purple-800 tw-rounded-full">
+                  {{ selectedMemberName.charAt(0) }}
+                </span>
+                {{ selectedMemberName }}
+              </h5>
+              <span class="tw-text-sm tw-font-medium tw-text-gray-600 tw-bg-gray-100 tw-px-3 tw-py-1 tw-rounded-full">
+                {{ reportData.tasks[boardName][selectedMemberName]?.length || 0 }} tasks
+              </span>
+            </div>
+            
+            <!-- Tasks Table - Modern Design -->
+            <div class="tw-overflow-x-auto tw-rounded-lg tw-border tw-border-gray-200 tw-shadow-sm">
+              <table class="tw-w-full tw-text-sm tw-bg-white">
+                <!-- Table content remains the same -->
+                <thead class="tw-bg-gray-50">
+                  <tr>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Task Title</th>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Column</th>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Status</th>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Due Date</th>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Created At</th>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Completed</th>
+                  </tr>
+                </thead>
+                <tbody class="tw-divide-y tw-divide-gray-200">
+                  <tr 
+                    *ngFor="let task of reportData.tasks[boardName][selectedMemberName]; trackBy: trackByTaskId; let i = index" 
+                    class="tw-hover:bg-blue-50/50 tw-transition-colors tw-duration-150"
+                  >
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                      <div class="tw-flex tw-items-center">
+                        <div class="tw-flex-shrink-0 tw-h-10 tw-w-10 tw-rounded tw-bg-gray-100 tw-flex tw-items-center tw-justify-center tw-mr-3">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                          </svg>
+                        </div>
+                        <div class="tw-min-w-0 tw-flex-1 tw-px-2 tw-py-1 tw-truncate">
+                          <div class="tw-font-semibold tw-text-gray-900 hover:tw-text-blue-600 hover:tw-underline hover:tw-cursor-pointer" (click)="redirectToTask(task)">{{ task.taskTitle }}</div>
+                          <div>
+                            <span *ngIf="task.commentCount > 0">
+                              <i class="ri-message-2-line"></i>
+                            </span>
+                            <span *ngIf="task.attachmentCount > 0">
+                              <i class="ri-attachment-2"></i>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                      <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded tw-text-xs tw-font-medium tw-bg-blue-100 tw-text-blue-800">
+                        {{ task.columnName }}
                       </span>
-                      <span *ngIf="task.attachmentCount > 0">
-                        <i class="ri-attachment-2"></i>
+                    </td>
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                      <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded tw-text-xs tw-font-medium tw-capitalize"
+                            [ngClass]="{
+                              'tw-bg-green-100 tw-text-green-800': task.status === 'completed',
+                              'tw-bg-yellow-100 tw-text-yellow-800': task.status === 'in-progress',
+                              'tw-bg-red-100 tw-text-red-800': task.status === 'pending',
+                              'tw-bg-gray-100 tw-text-gray-800': task.status !== 'completed' && task.status !== 'in-progress' && task.status !== 'pending'
+                            }">
+                        {{ task.status }}
                       </span>
-                    </div>
-                  </div>
-                </div>
-              </td>
-              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
-                <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded tw-text-xs tw-font-medium tw-bg-blue-100 tw-text-blue-800">
-                  {{ task.columnName }}
+                    </td>
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                      <div class="tw-flex tw-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4 tw-mr-1 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        {{ task.dueDate || '-' }}
+                      </div>
+                    </td>
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap tw-text-gray-500">
+                      {{ task.createdAt || '-' }}
+                    </td>
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                      <span *ngIf="task.isCompleted === 'Yes'" class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium tw-bg-green-100 tw-text-green-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-3 tw-w-3 tw-mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Yes
+                      </span>
+                      <span *ngIf="task.isCompleted !== 'Yes'" class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium tw-bg-red-100 tw-text-red-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-3 tw-w-3 tw-mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        No
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+                     <!-- When all members are selected, show the original structure -->
+           <div *ngIf="selectedMemberId === 'all'">
+             <div *ngFor="let memberName of getObjectKeys(reportData.tasks[boardName])" class="tw-mb-6 tw-last:mb-0">
+            <div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+              <h5 class="tw-text-lg tw-font-semibold tw-text-gray-800 tw-flex tw-items-center">
+                <span class="tw-inline-flex tw-items-center tw-justify-center tw-w-8 tw-h-8 tw-mr-3 tw-bg-blue-100 tw-text-blue-800 tw-rounded-full">
+                  {{ memberName.charAt(0) }}
                 </span>
-              </td>
-              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
-                <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded tw-text-xs tw-font-medium tw-capitalize"
-                      [ngClass]="{
-                        'tw-bg-green-100 tw-text-green-800': task.status === 'completed',
-                        'tw-bg-yellow-100 tw-text-yellow-800': task.status === 'in-progress',
-                        'tw-bg-red-100 tw-text-red-800': task.status === 'pending',
-                        'tw-bg-gray-100 tw-text-gray-800': task.status !== 'completed' && task.status !== 'in-progress' && task.status !== 'pending'
-                      }">
-                  {{ task.status }}
-                </span>
-              </td>
-              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
-                <div class="tw-flex tw-items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4 tw-mr-1 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  {{ task.dueDate || '-' }}
-                </div>
-              </td>
-              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap tw-text-gray-500">
-                {{ task.createdAt || '-' }}
-              </td>
-              <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
-                <span *ngIf="task.isCompleted === 'Yes'" class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium tw-bg-green-100 tw-text-green-800">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-3 tw-w-3 tw-mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  Yes
-                </span>
-                <span *ngIf="task.isCompleted !== 'Yes'" class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium tw-bg-red-100 tw-text-red-800">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-3 tw-w-3 tw-mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                  No
-                </span>
-              </td>
-              <!-- <td class="tw-px-6 tw-py-4 tw-text-center tw-whitespace-nowrap">
-                <span class="tw-inline-flex tw-items-center tw-justify-center tw-w-8 tw-h-8 tw-bg-blue-100 tw-text-blue-800 tw-text-sm tw-font-bold tw-rounded-full tw-transition-all tw-duration-200 hover:tw-bg-blue-200">
-                  {{ task.commentCount || 0 }}
-                </span>
-              </td>
-              <td class="tw-px-6 tw-py-4 tw-text-center tw-whitespace-nowrap">
-                <span class="tw-inline-flex tw-items-center tw-justify-center tw-w-8 tw-h-8 tw-bg-gray-100 tw-text-gray-800 tw-text-sm tw-font-bold tw-rounded-full tw-transition-all tw-duration-200 hover:tw-bg-gray-200">
-                  {{ task.attachmentCount || 0 }}
-                </span>
-              </td> -->
-            </tr>
-          </tbody>
-        </table>
+                {{ memberName }}
+              </h5>
+              <span class="tw-text-sm tw-font-medium tw-text-gray-600 tw-bg-gray-100 tw-px-3 tw-py-1 tw-rounded-full">
+                {{ reportData.tasks[boardName][memberName].length }} tasks
+              </span>
+            </div>
+            
+            <!-- Tasks Table - Modern Design -->
+            <div class="tw-overflow-x-auto tw-rounded-lg tw-border tw-border-gray-200 tw-shadow-sm">
+              <table class="tw-w-full tw-text-sm tw-bg-white">
+                <!-- Table content remains the same -->
+                <thead class="tw-bg-gray-50">
+                  <tr>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Task Title</th>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Column</th>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Status</th>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Due Date</th>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Created At</th>
+                    <th class="tw-px-6 tw-py-4 tw-text-left tw-font-semibold tw-text-gray-700 tw-border-b tw-border-gray-200 tw-whitespace-nowrap">Completed</th>
+                  </tr>
+                </thead>
+                <tbody class="tw-divide-y tw-divide-gray-200">
+                  <tr 
+                    *ngFor="let task of reportData.tasks[boardName][memberName]; trackBy: trackByTaskId; let i = index" 
+                    class="tw-hover:bg-blue-50/50 tw-transition-colors tw-duration-150"
+                  >
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                      <div class="tw-flex tw-items-center">
+                        <div class="tw-flex-shrink-0 tw-h-10 tw-w-10 tw-rounded tw-bg-gray-100 tw-flex tw-items-center tw-justify-center tw-mr-3">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-5 tw-w-5 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                          </svg>
+                        </div>
+                        <div class="tw-min-w-0 tw-flex-1 tw-px-2 tw-py-1 tw-truncate">
+                          <div class="tw-font-semibold tw-text-gray-900 hover:tw-text-blue-600 hover:tw-underline hover:tw-cursor-pointer" (click)="redirectToTask(task)">{{ task.taskTitle }}</div>
+                          <div>
+                            <span *ngIf="task.commentCount > 0">
+                              <i class="ri-message-2-line"></i>
+                            </span>
+                            <span *ngIf="task.attachmentCount > 0">
+                              <i class="ri-attachment-2"></i>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                      <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded tw-text-xs tw-font-medium tw-bg-blue-100 tw-text-blue-800">
+                        {{ task.columnName }}
+                      </span>
+                    </td>
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                      <span class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded tw-text-xs tw-font-medium tw-capitalize"
+                            [ngClass]="{
+                              'tw-bg-green-100 tw-text-green-800': task.status === 'completed',
+                              'tw-bg-yellow-100 tw-text-yellow-800': task.status === 'in-progress',
+                              'tw-bg-red-100 tw-text-red-800': task.status === 'pending',
+                              'tw-bg-gray-100 tw-text-gray-800': task.status !== 'completed' && task.status !== 'in-progress' && task.status !== 'pending'
+                            }">
+                        {{ task.status }}
+                      </span>
+                    </td>
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                      <div class="tw-flex tw-items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-4 tw-w-4 tw-mr-1 tw-text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        {{ task.dueDate || '-' }}
+                      </div>
+                    </td>
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap tw-text-gray-500">
+                      {{ task.createdAt || '-' }}
+                    </td>
+                    <td class="tw-px-6 tw-py-4 tw-whitespace-nowrap">
+                      <span *ngIf="task.isCompleted === 'Yes'" class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium tw-bg-green-100 tw-text-green-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-3 tw-w-3 tw-mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Yes
+                      </span>
+                      <span *ngIf="task.isCompleted !== 'Yes'" class="tw-inline-flex tw-items-center tw-px-2.5 tw-py-0.5 tw-rounded-full tw-text-xs tw-font-medium tw-bg-red-100 tw-text-red-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="tw-h-3 tw-w-3 tw-mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        No
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+           </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
     </div>
 
     <!-- Modern Pagination -->
